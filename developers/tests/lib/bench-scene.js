@@ -8,7 +8,9 @@
  *
  * Measured per scene: frame interval p50/p95/p99 and sustained FPS, renderFrame CPU, CPU self
  * time of the timed parts (the core part timers plus jelly prepare / build, food, eligibility),
- * the share of frames drawn by the WebGL scene (the others fell back to Canvas2D), then, in a
+ * the share of frames drawn by the WebGL scene (the others fell back to Canvas2D), long tasks
+ * (count, total, longest), food observations of all connections against the pellets drawn and the
+ * unique pellets the connections see (foodObs), then, in a
  * separate short pass that is not timed, WebGL draw calls / instances / vertices, time spent in
  * GL upload calls, label rasters, Canvas2D calls, jelly points submitted and indexed, the JS heap.
  * capture() draws one deterministic frame (static world, seeded Math.random, fresh jelly
@@ -23,7 +25,7 @@
  * In Node (require) only the pure parts load: scenes, world, packets, statistics. */
 (function (root) {
     'use strict';
-    var VERSION = 1;
+    var VERSION = 2;
 
     /* ------------------------------------------------------------------ */
     /* Pure parts (also used by developers/tests/bench-dense.js in Node)   */
@@ -43,7 +45,8 @@
     var MAP_HALF = 7071;
     var PALETTE = [[255, 64, 64], [64, 160, 255], [80, 220, 120], [255, 200, 40], [190, 90, 255], [255, 130, 40], [40, 220, 220], [240, 90, 170]];
 
-    /* One scene: bodies (non-food), food, sockets (1 = main, 2 = main + one multibox unit),
+    /* One scene: bodies (non-food), food, sockets (1 = main, 2 = main + one multibox unit, 3 =
+     * main + two units),
      * jelly and labels (nick + mass) on/off, layout 'spread', 'crowd' (all bodies overlapping
      * in a small area) or 'wide' (bodies and food over 4 x 4 views, most of them off screen),
      * sizeMul (bigger cells: more jelly points), bots: like Expanding Land's bots, every player has
@@ -92,9 +95,12 @@
                 scene({ bodies: 400, food: 10000, layout: 'fullmap', sockets: 1, socketIds: true }));
             return out;
         }
+        /* quick: also Full Map (15 spectators) and multibox with two units, so the gate compares
+         * them with the baseline too */
         if (kind === 'quick') {
             out.push(scene({ bodies: 100, food: 2000 }), scene({ bodies: 1000, food: 10000 }), scene({ bodies: 1000, food: 10000, sockets: 2 }),
-                scene({ bodies: 500, food: 2000, layout: 'crowd' }));
+                scene({ bodies: 500, food: 2000, layout: 'crowd' }), scene({ bodies: 1000, food: 10000, sockets: 3 }),
+                scene({ bodies: 400, food: 10000, layout: 'fullmap', sockets: 16, socketIds: true }));
             return out;
         }
         var B = [100, 500, 1000, 2000], F = [2000, 10000];
@@ -124,9 +130,11 @@
         var rnd = makeRng(spec.seed + spec.bodies * 7 + spec.food * 3 + (spec.layout === 'crowd' ? 11 : 0));
         var vw = VIEW.w / VIEW.scale, vh = VIEW.h / VIEW.scale;
         var w = { spec: spec, rnd: rnd, tick: 0, nextId: 10, bodies: [], food: [], own: [], vw: vw, vh: vh, removedFood: [], addedFood: [], removedBodies: [], players: 0 };
-        /* main socket's own cell in the middle, the unit's own cell to the right */
+        /* main socket's own cell in the middle, the first unit's own cell to the right, the
+         * second unit's to the left (own cell id 1 + unit) */
         w.own.push({ id: 1, x: 0, y: 0, r: 150, vx: 0, vy: 0, color: [0, 200, 255], name: 'Bench', unit: 0 });
         if (spec.sockets > 1 && spec.layout !== 'fullmap') w.own.push({ id: 2, x: 700, y: 120, r: 130, vx: 0, vy: 0, color: [255, 120, 0], name: 'Unit', unit: 1 });
+        if (spec.sockets > 2 && spec.layout !== 'fullmap') w.own.push({ id: 3, x: -700, y: -120, r: 120, vx: 0, vy: 0, color: [160, 80, 255], name: 'Unit 2', unit: 2 });
         var crowd = spec.layout === 'crowd', wide = spec.layout === 'wide', full = spec.layout === 'fullmap', span = wide ? 4 : 1.25;
         var spanX = crowd ? 2600 : full ? 2 * MAP_HALF - 400 : vw * span, spanY = crowd ? 2000 : full ? 2 * MAP_HALF - 400 : vh * span;
         function size() {
@@ -250,14 +258,23 @@
     var UNIT_ID_SHIFT = 1000000;
     function socketId(spec, unit, id) { return unit > 0 && spec && spec.socketIds ? id + UNIT_ID_SHIFT * unit : id; }
 
-    /* what a socket sees: unit 0 (main) everything, unit 1 the right part of the world;
-     * fullmap: its view (w.views) */
+    /* what a socket sees: unit 0 (main) everything, unit 1 the right part of the world, unit 2
+     * the left part; fullmap: its view (w.views) */
     function sees(w, unit, c) {
         if (w.views) {
             var v = w.views[unit];
             return !!v && c.x >= v[0] && c.x <= v[2] && c.y >= v[1] && c.y <= v[3];
         }
-        return unit === 0 || c.x > -300;
+        return unit === 0 || (unit === 1 ? c.x > -300 : c.x < 300);
+    }
+    /* pellets of the world seen by at least one of the first `sockets` connections: what the
+     * client should draw once each (the food observation counters compare with it) */
+    function seenFood(w, sockets) {
+        var n = 0;
+        for (var i = 0; i < w.food.length; i++) {
+            for (var u = 0; u < sockets; u++) if (sees(w, u, w.food[i])) { n++; break; }
+        }
+        return n;
     }
     /* the update packet (16) of one socket. Main: the private-server layout of
      * practice-sim.js (flag 0x80: cell type + party code). Unit: the layout spect.js reads
@@ -384,7 +401,7 @@
 
     var pure = {
         VERSION: VERSION, VIEW: VIEW, TICK_MS: TICK_MS, makeRng: makeRng, scene: scene, matrix: matrix, createWorld: createWorld, step: step,
-        encodeUpdate: encodeUpdate, encodeClear: encodeClear, encodeBorder: encodeBorder, encodeAddOwn: encodeAddOwn, sees: sees, socketId: socketId,
+        encodeUpdate: encodeUpdate, encodeClear: encodeClear, encodeBorder: encodeBorder, encodeAddOwn: encodeAddOwn, sees: sees, seenFood: seenFood, socketId: socketId,
         percentile: percentile, dist: dist, createScopes: createScopes, STAGES: STAGES, WRAPS: WRAPS, calibrate: calibrate
     };
     if (typeof module === 'object' && module.exports && typeof window === 'undefined') { module.exports = pure; return; }
@@ -558,14 +575,16 @@
         /* multibox units: real spect.js units on stand-in sockets */
         if (spec.layout !== 'fullmap' && spec.sockets > 1 && typeof window.addBox === 'function' && window.spects) {
             var prevCreate = window.createLegendWebSocket;
-            for (var u = 1; u < spec.sockets && u < 2; u++) {
+            for (var u = 1; u < spec.sockets && u < 3; u++) {
                 window.createLegendWebSocket = function (url) { return fakeSocket(url); };
-                try { window.addBox(); } finally { window.createLegendWebSocket = prevCreate; }
-                var unit = window.spects[window.spects.length - 1];
+                var unit = null;
+                try { unit = window.addBox(); } finally { window.createLegendWebSocket = prevCreate; }
+                /* no free player slot: the scene runs with the units it has (s.units[i] is world unit i + 1) */
+                if (!unit) break;
                 unit._lmBench = true;
                 s.units.push(unit);
                 try { unit.socket.onopen(); } catch (e) { console.warn('[bench] unit open', e); }
-                feedUnit(unit, encodeAddOwn(socketId(spec, u, 2)));
+                feedUnit(unit, encodeAddOwn(socketId(spec, u, 1 + u)));
                 feedUnit(unit, encodeUpdate(s.w, u, true));
             }
             if (prevCreate === undefined) try { delete window.createLegendWebSocket; } catch (e) { }
@@ -619,17 +638,32 @@
         if (window._lmScope === s.sc) window._lmScope = s.prevScope || null;
     }
 
-    /* frames by requestAnimationFrame: interval and the renderFrame time of each frame */
+    /* frames by requestAnimationFrame: interval and the renderFrame time of each frame; long
+     * tasks (main thread busy 50 ms or more at a time) while measuring: count, total and longest */
     function measureFrames(s, ms) {
         return new Promise(function (resolve) {
             var iv = [], rt = [], prev = 0, t0 = now(), pk0 = s.packetIncl, ticks0 = s.w.tick, glN = 0, dr = DR();
+            var lt = { n: 0, ms: 0, max: 0, supported: false }, obs = null;
+            try {
+                obs = new PerformanceObserver(function (list) {
+                    list.getEntries().forEach(function (e) { lt.n++; lt.ms += e.duration; if (e.duration > lt.max) lt.max = e.duration; });
+                });
+                obs.observe({ type: 'longtask' });
+                lt.supported = true;
+            } catch (e) { obs = null; }
             s.frameRender = 0;
             function f(t) {
                 if (prev) { iv.push(t - prev); rt.push(s.frameRender); if (dr._lmFrameGL) glN++; }
                 s.frameRender = 0;
                 prev = t;
-                if (t - t0 < ms) requestAnimationFrame(f);
-                else resolve({ iv: iv, rt: rt, secs: (t - t0) / 1000, packetMs: s.packetIncl - pk0, ticks: s.w.tick - ticks0, glFrames: glN });
+                if (t - t0 < ms) { requestAnimationFrame(f); return; }
+                if (obs) {
+                    try { obs.takeRecords().forEach(function (e) { lt.n++; lt.ms += e.duration; if (e.duration > lt.max) lt.max = e.duration; }); } catch (e) { }
+                    obs.disconnect();
+                }
+                var secs = (t - t0) / 1000;
+                resolve({ iv: iv, rt: rt, secs: secs, packetMs: s.packetIncl - pk0, ticks: s.w.tick - ticks0, glFrames: glN,
+                    longTasks: { supported: lt.supported, count: lt.n, ms: r2(lt.ms), max: r2(lt.max), msPerSec: r2(secs ? lt.ms / secs : 0) } });
             }
             requestAnimationFrame(f);
         });
@@ -775,6 +809,19 @@
     function heapMB() {
         try { return performance.memory ? Math.round(performance.memory.usedJSHeapSize / 1048576 * 10) / 10 : null; } catch (e) { return null; }
     }
+    /* Food observations against unique pellets: every connection's copy (LM.food + LM.foodMulti),
+     * the pellets the food pass draws (lmFoodDrawList: one per pellet), and the pellets of the
+     * world that one of the scene's connections sees. drawn above unique: one pellet drawn more
+     * than once; below: pellets lost. */
+    function foodCounts(s) {
+        var l = LM(), obsMain = (l.food || []).length, obsMulti = (l.foodMulti || []).length, drawn = obsMain;
+        try {
+            var fl = typeof lmFoodDrawList === 'function' ? lmFoodDrawList : window.lmFoodDrawList;
+            if (typeof fl === 'function') { var d = fl(); drawn = d ? d.length : 0; }
+        } catch (e) { drawn = -1; }
+        var unique = s && s.w ? seenFood(s.w, 1 + s.units.length) : 0;
+        return { observations: obsMain + obsMulti, main: obsMain, multi: obsMulti, drawn: drawn, unique: unique, extra: drawn - unique };
+    }
     function worldCounts() {
         var l = LM();
         var n = { cells: l.cells.length, food: l.food.length, foodMulti: (l.foodMulti || []).length, removed: (l.removedCells || []).length, own: (l.playerCells || []).length, unitOwn: (l.playerCellsMulti || []).length };
@@ -802,8 +849,8 @@
             canvas: [DR().canvasWidth, DR().canvasHeight], scale: VIEW.scale, settings: s.settings,
             frames: fr.iv.length, secs: r2(fr.secs), fps: r2(fr.iv.length / fr.secs), ticksPerSec: r2(fr.ticks / fr.secs),
             glShare: fr.iv.length ? r2(fr.glFrames / fr.iv.length) : 0,
-            frameMs: dist(fr.iv), renderMs: dist(fr.rt), packetMsPerSec: r2(fr.packetMs / fr.secs),
-            stages: {}, counts: cnt, world: worldCounts(), heapMB: { before: heap0, after: heapMB() }, errors: s.errors, missingStages: s.missing
+            frameMs: dist(fr.iv), renderMs: dist(fr.rt), packetMsPerSec: r2(fr.packetMs / fr.secs), longTasks: fr.longTasks,
+            stages: {}, counts: cnt, world: worldCounts(), foodObs: foodCounts(s), heapMB: { before: heap0, after: heapMB() }, errors: s.errors, missingStages: s.missing
         };
         var n = Math.max(1, fr.iv.length);
         for (var i = 0; i < STAGES.length; i++) {
@@ -836,7 +883,7 @@
         for (var t = 0; t < ticks; t++) step(s.w);
         feedMain(encodeUpdate(s.w, 0, true));
         s.units.forEach(function (u, i) {
-            if (!views) feedUnit(u, encodeAddOwn(socketId(s.spec, i + 1, 2)));
+            if (!views) feedUnit(u, encodeAddOwn(socketId(s.spec, i + 1, 2 + i)));
             else feedUnit(u, encodeBorder());
             feedUnit(u, encodeUpdate(s.w, i + 1, true));
         });

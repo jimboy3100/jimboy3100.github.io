@@ -167,10 +167,14 @@ labels and packets.
 `--warm MS` / `--measure MS`, `--repeat N`, `--profile` (top functions by CPU self time),
 `--eval FILE` (an expression evaluated in the page after each scene), `--vsync`, `--no-capture`.
 
-`--quick` runs 4 scenes (about a minute after the page has loaded) and compares them with
-`bench-baseline.json`. The limits are generous so it does not flake: GL draw calls, jelly points
-(fewer points means less jelly detail), the WebGL frame share and the world size always count;
-render p50 / frame p95 only when the baseline comes from the same GPU and Chrome major version
+`--quick` runs 6 scenes (about a minute and a half after the page has loaded; one of them Full
+Map with 15 spectators, one multibox with two units) and compares them with
+`bench-baseline.json`. Every scene also records long tasks (count, ms per second, longest) and
+food observations (pellet copies on every connection, pellets drawn, unique pellets the
+connections see). The limits are generous so it does not flake: GL draw calls, jelly points
+(fewer points means less jelly detail), the WebGL frame share, the world size and pellets drawn
+against unique pellets (drawn twice or lost) always count; render p50 / frame p95 and long tasks
+only when the baseline comes from the same GPU and Chrome major version
 and the machine is not busy (fixed CPU and GPU workloads in the page, run around the scenes, are
 at most 1.4x slower than for the baseline); otherwise they are printed as info. A scene that fails
 is measured once more and the better run counts. Other programs using the GPU (for example other

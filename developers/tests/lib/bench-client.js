@@ -66,11 +66,14 @@ function fmtRow(r, prev) {
     const delta = (a, b) => (b == null ? '' : ' (' + (a - b >= 0 ? '+' : '') + (Math.round((a - b) * 100) / 100) + ')');
     const pr = prev || null;
     const c = r.counts || {};
+    const lt = r.longTasks, fo = r.foodObs;
     return '| ' + [r.name, r.fps + (pr ? delta(r.fps, pr.fps) : ''), r.frameMs.p50 + '/' + r.frameMs.p95 + '/' + r.frameMs.p99,
         r.renderMs.p50 + (pr ? delta(r.renderMs.p50, pr.renderMs.p50) : '') + '/' + r.renderMs.p95, r.glShare,
         Math.round(r.packetMsPerSec * 10) / 10, g('jelly prepare') + '/' + g('jelly build') + '/' + Math.round((g('jelly move') + g('jelly physics')) * 1000) / 1000, g('food'),
         Math.round((g('text pass') + g('text raster')) * 1000) / 1000, c.uploadMs + ' / ' + c.textRasters,
-        c.draws, c.pointsSubmitted + '/' + c.pointsIndexed, r.world.cells + '/' + r.world.food, r.heapMB.after,
+        c.draws, c.pointsSubmitted + '/' + c.pointsIndexed, r.world.cells + '/' + r.world.food,
+        lt ? (lt.supported === false ? 'n/a' : lt.count + ' / ' + lt.msPerSec + ' / ' + lt.max) : '',
+        fo ? fo.observations + ' / ' + fo.drawn + ' / ' + fo.unique : '', r.heapMB.after,
         r.diff ? (r.diff.sizeDiffers ? 'size' : r.diff.max + ' / ' + r.diff.differingPct + '%') : ''].join(' | ') + ' |';
 }
 
@@ -82,11 +85,12 @@ function summaryMd(meta, results, prevByName) {
     L.push('- ' + meta.warm + ' ms warm-up, ' + meta.measure + ' ms measured per scene' + (meta.repeat > 1 ? ', median of ' + meta.repeat + ' runs' : '') + (meta.compare ? '; deltas against ' + meta.compare : ''));
     L.push('- machine speed check: CPU ' + meta.calibrationMs + ' ms, GPU ' + meta.calibrationGpuMs + ' ms (fixed workloads in the page; higher while other programs keep the machine busy)');
     L.push('- page errors: ' + meta.errors.length, '');
-    L.push('| scene | FPS | frame p50/p95/p99 ms | render p50/p95 ms | GL share | packets ms/s | jelly prep/build/move ms | food ms | text ms | GL upload ms / label rasters | GL draws | jelly points sub/idx | cells/food | heap MB | frame diff max / px |');
-    L.push('|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|');
+    L.push('| scene | FPS | frame p50/p95/p99 ms | render p50/p95 ms | GL share | packets ms/s | jelly prep/build/move ms | food ms | text ms | GL upload ms / label rasters | GL draws | jelly points sub/idx | cells/food | long tasks n / ms/s / max ms | food seen / drawn / unique | heap MB | frame diff max / px |');
+    L.push('|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|');
     results.forEach((r) => L.push(fmtRow(r, prevByName ? prevByName[r.name] : null)));
     L.push('', 'Stage times are CPU self time per frame (ms) on the main thread (jelly move: the movePoints loop); GL share: frames drawn by the WebGL scene (the rest fell back to Canvas2D).',
-        'GL upload ms, label rasters, GL draws and jelly points are per frame from a separate untimed pass.');
+        'GL upload ms, label rasters, GL draws and jelly points are per frame from a separate untimed pass.',
+        'Long tasks: main-thread tasks of 50 ms or more while measuring. Food: copies of pellets on every connection, pellets the food pass draws, pellets of the world one of the connections sees (drawn above unique: drawn twice; below: lost).');
     L.push('A frame diff compares the deterministic world frame of each scene with the compared run (max channel difference / share of pixels that differ).');
     return L.join('\n') + '\n';
 }

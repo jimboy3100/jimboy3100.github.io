@@ -2,143 +2,273 @@
  "meta": {
   "gpu": "ANGLE (Intel, Intel(R) UHD Graphics (0x00009A60) Direct3D11 vs_5_0 ps_5_0, D3D11)",
   "browser": "Chrome/158.0.8127.37",
-  "head": "eaf378ee",
-  "date": "2026-11-25T19:51:53.686Z",
+  "head": "af7c465af",
+  "date": "2026-11-28T09:58:55.459Z",
   "canvas": "1600x900",
   "dpr": 1,
   "warm": 2500,
   "measure": 3000,
-  "calibrationMs": 57.2,
-  "calibrationGpuMs": 30.5,
+  "calibrationMs": 32.4,
+  "calibrationGpuMs": 14.2,
   "errors": []
  },
  "results": [
   {
    "name": "b100-f2000-s1",
-   "fps": 52.1,
+   "fps": 57.28,
    "frameMs": {
-    "n": 166,
-    "mean": 19.35,
-    "p50": 9.5,
-    "p95": 44.38,
-    "p99": 122.92,
-    "max": 584.8
+    "n": 172,
+    "mean": 17.56,
+    "p50": 5.7,
+    "p95": 34.42,
+    "p99": 149.75,
+    "max": 835.9
    },
    "renderMs": {
-    "n": 166,
-    "mean": 9.67,
-    "p50": 7,
-    "p95": 27.62,
-    "p99": 59.35,
-    "max": 66.6
+    "n": 172,
+    "mean": 14.95,
+    "p50": 4,
+    "p95": 23.11,
+    "p99": 145.7,
+    "max": 827.7
    },
    "glShare": 1,
    "counts": {
-    "draws": 11,
-    "pointsSubmitted": 3675,
-    "pointsIndexed": 2701,
-    "uploadMs": 19.47,
-    "textRasters": 2.7
+    "draws": 15,
+    "pointsSubmitted": 3668,
+    "pointsIndexed": 2675,
+    "uploadMs": 12.91,
+    "textRasters": 1.85
    },
    "world": {
     "cells": 101,
     "food": 2000
+   },
+   "longTasks": {
+    "count": 4,
+    "msPerSec": 395.98,
+    "max": 832
+   },
+   "foodObs": {
+    "observations": 2000,
+    "drawn": 2000,
+    "unique": 2000,
+    "extra": 0
    }
   },
   {
    "name": "b1000-f10000-s1",
-   "fps": 7.89,
+   "fps": 14.17,
    "frameMs": {
-    "n": 25,
-    "mean": 127.39,
-    "p50": 98.2,
-    "p95": 251.9,
-    "p99": 308.13,
-    "max": 324.5
+    "n": 43,
+    "mean": 70.82,
+    "p50": 63.5,
+    "p95": 109.68,
+    "p99": 220.4,
+    "max": 278.4
    },
    "renderMs": {
-    "n": 25,
-    "mean": 120,
-    "p50": 86.5,
-    "p95": 243.38,
-    "p99": 299.26,
-    "max": 316.8
+    "n": 43,
+    "mean": 65.3,
+    "p50": 57.6,
+    "p95": 105.76,
+    "p99": 214.05,
+    "max": 275.2
    },
    "glShare": 1,
    "counts": {
-    "draws": 11,
-    "pointsSubmitted": 39734,
-    "pointsIndexed": 22048,
-    "uploadMs": 49.52,
-    "textRasters": 14.75
+    "draws": 15,
+    "pointsSubmitted": 40062,
+    "pointsIndexed": 19217,
+    "uploadMs": 93.52,
+    "textRasters": 24.9
    },
    "world": {
     "cells": 1001,
     "food": 10000
+   },
+   "longTasks": {
+    "count": 30,
+    "msPerSec": 778.08,
+    "max": 276
+   },
+   "foodObs": {
+    "observations": 10000,
+    "drawn": 10000,
+    "unique": 10000,
+    "extra": 0
    }
   },
   {
    "name": "b1000-f10000-s2",
-   "fps": 11.43,
+   "fps": 17.98,
    "frameMs": {
-    "n": 35,
-    "mean": 87.91,
-    "p50": 85.6,
-    "p95": 108.08,
-    "p99": 119,
-    "max": 120.8
+    "n": 55,
+    "mean": 55.67,
+    "p50": 53.3,
+    "p95": 91.37,
+    "p99": 119.88,
+    "max": 120.1
    },
    "renderMs": {
-    "n": 35,
-    "mean": 78.05,
-    "p50": 78.4,
-    "p95": 93.86,
-    "p99": 111.99,
-    "max": 112.6
+    "n": 55,
+    "mean": 51.65,
+    "p50": 48.8,
+    "p95": 84.92,
+    "p99": 100.39,
+    "max": 101.9
    },
    "glShare": 1,
    "counts": {
-    "draws": 12,
-    "pointsSubmitted": 40386,
-    "pointsIndexed": 19395,
-    "uploadMs": 15.64,
-    "textRasters": 18
+    "draws": 17,
+    "pointsSubmitted": 40275,
+    "pointsIndexed": 18782,
+    "uploadMs": 23.23,
+    "textRasters": 50.5
    },
    "world": {
-    "cells": 1003,
+    "cells": 1541,
     "food": 10000
+   },
+   "longTasks": {
+    "count": 28,
+    "msPerSec": 612.02,
+    "max": 105
+   },
+   "foodObs": {
+    "observations": 15434,
+    "drawn": 10000,
+    "unique": 10000,
+    "extra": 0
    }
   },
   {
    "name": "b500-f2000-s1-crowd",
-   "fps": 4.44,
+   "fps": 43.54,
    "frameMs": {
-    "n": 21,
-    "mean": 225.91,
-    "p50": 44.4,
-    "p95": 142.5,
-    "p99": 3048.66,
-    "max": 3775.2
+    "n": 132,
+    "mean": 23,
+    "p50": 22.05,
+    "p95": 40.81,
+    "p99": 51.85,
+    "max": 52.4
    },
    "renderMs": {
-    "n": 21,
-    "mean": 220.55,
-    "p50": 35,
-    "p95": 143.5,
-    "p99": 3048.86,
-    "max": 3775.2
+    "n": 132,
+    "mean": 21.08,
+    "p50": 19.25,
+    "p95": 36.26,
+    "p99": 41.44,
+    "max": 49.8
    },
    "glShare": 1,
    "counts": {
-    "draws": 11,
-    "pointsSubmitted": 20278,
-    "pointsIndexed": 19729,
-    "uploadMs": 63.08,
-    "textRasters": 15.4
+    "draws": 15,
+    "pointsSubmitted": 20341,
+    "pointsIndexed": 19731,
+    "uploadMs": 10.18,
+    "textRasters": 14.7
    },
    "world": {
     "cells": 501,
     "food": 2000
+   },
+   "longTasks": {
+    "count": 1,
+    "msPerSec": 16.82,
+    "max": 51
+   },
+   "foodObs": {
+    "observations": 2000,
+    "drawn": 2000,
+    "unique": 2000,
+    "extra": 0
+   }
+  },
+  {
+   "name": "b1000-f10000-s3",
+   "fps": 12.3,
+   "frameMs": {
+    "n": 41,
+    "mean": 81.52,
+    "p50": 67.9,
+    "p95": 86.8,
+    "p99": 374.36,
+    "max": 431.6
+   },
+   "renderMs": {
+    "n": 41,
+    "mean": 70.48,
+    "p50": 57.9,
+    "p95": 70.2,
+    "p99": 363.64,
+    "max": 424.8
+   },
+   "glShare": 1,
+   "counts": {
+    "draws": 18,
+    "pointsSubmitted": 40036,
+    "pointsIndexed": 18807,
+    "uploadMs": 2.4,
+    "textRasters": 29.15
+   },
+   "world": {
+    "cells": 2157,
+    "food": 10000
+   },
+   "longTasks": {
+    "count": 39,
+    "msPerSec": 864.86,
+    "max": 427
+   },
+   "foodObs": {
+    "observations": 21011,
+    "drawn": 10000,
+    "unique": 10000,
+    "extra": 0
+   }
+  },
+  {
+   "name": "b400-f10000-s16-fullmap-ids",
+   "fps": 74.35,
+   "frameMs": {
+    "n": 224,
+    "mean": 13.5,
+    "p50": 12.6,
+    "p95": 31.32,
+    "p99": 34.96,
+    "max": 48.9
+   },
+   "renderMs": {
+    "n": 224,
+    "mean": 9.64,
+    "p50": 7.85,
+    "p95": 16.45,
+    "p99": 22.97,
+    "max": 30.6
+   },
+   "glShare": 1,
+   "counts": {
+    "draws": 13,
+    "pointsSubmitted": 1864,
+    "pointsIndexed": 1304,
+    "uploadMs": 4.35,
+    "textRasters": 0.7
+   },
+   "world": {
+    "cells": 491,
+    "food": 665
+   },
+   "longTasks": {
+    "count": 0,
+    "msPerSec": 0,
+    "max": 0
+   },
+   "foodObs": {
+    "observations": 11889,
+    "drawn": 10000,
+    "unique": 10000,
+    "extra": 0
    }
   }
  ]

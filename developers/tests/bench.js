@@ -34,7 +34,10 @@ const LIMITS = {
     pointsHigh: (b) => b * 1.25 + 50,    /* more means more work for the same scene */
     glShareDrop: 0.2,                    /* share of frames drawn by the WebGL scene */
     cellsTolerance: 0.03,                /* world size against the baseline */
-    busy: 1.4                            /* speed check this much slower than the baseline's: timings not judged */
+    busy: 1.4,                           /* speed check this much slower than the baseline's: timings not judged */
+    longTaskMax: (b) => b * 3 + 150,     /* longest long task ms: a new stall */
+    longTaskShare: (b) => b * 2 + 150,   /* long task ms per second */
+    foodExtra: (u) => u * 0.02 + 10      /* pellets drawn minus unique pellets, against the baseline's: duplicates or lost pellets */
 };
 
 /* the numbers the baseline keeps of a scene */
@@ -42,7 +45,9 @@ function slim(r) {
     return {
         name: r.name, fps: r.fps, frameMs: r.frameMs, renderMs: r.renderMs, glShare: r.glShare,
         counts: { draws: r.counts.draws, pointsSubmitted: r.counts.pointsSubmitted, pointsIndexed: r.counts.pointsIndexed, uploadMs: r.counts.uploadMs, textRasters: r.counts.textRasters },
-        world: { cells: r.world.cells, food: r.world.food }
+        world: { cells: r.world.cells, food: r.world.food },
+        longTasks: r.longTasks ? { count: r.longTasks.count, msPerSec: r.longTasks.msPerSec, max: r.longTasks.max } : undefined,
+        foodObs: r.foodObs ? { observations: r.foodObs.observations, drawn: r.foodObs.drawn, unique: r.foodObs.unique, extra: r.foodObs.extra } : undefined
     };
 }
 
@@ -79,6 +84,19 @@ function gate(base, cur) {
         c(r.counts.pointsSubmitted > LIMITS.pointsHigh(b.counts.pointsSubmitted), 'jelly points ' + r.counts.pointsSubmitted + ', baseline ' + b.counts.pointsSubmitted);
         c(r.glShare < b.glShare - LIMITS.glShareDrop, 'WebGL frames ' + r.glShare + ', baseline ' + b.glShare + ' (more Canvas2D fallback)');
         c(Math.abs(r.world.cells - b.world.cells) > b.world.cells * LIMITS.cellsTolerance + 2, 'cells in the world ' + r.world.cells + ', baseline ' + b.world.cells);
+        const lt = r.longTasks, blt = b.longTasks;
+        if (lt && lt.supported !== false && blt) {
+            t(lt.max > LIMITS.longTaskMax(blt.max), 'longest long task ' + lt.max + ' ms, baseline ' + blt.max + ' ms');
+            t(lt.msPerSec > LIMITS.longTaskShare(blt.msPerSec), 'long tasks ' + lt.msPerSec + ' ms/s, baseline ' + blt.msPerSec + ' ms/s');
+        }
+        /* food: one pellet seen by several connections is drawn once, adjacent pellets stay two */
+        const fo = r.foodObs, bfo = b.foodObs;
+        if (fo && fo.drawn < 0) fail.push(n + ': the food draw list failed');
+        else if (fo && bfo) {
+            const what = 'food drawn ' + fo.drawn + ' for ' + fo.unique + ' unique pellets (' + fo.observations + ' observations), baseline ' + bfo.drawn + ' for ' + bfo.unique;
+            c(fo.extra - bfo.extra > LIMITS.foodExtra(bfo.unique), what + ' (pellets drawn more than once)');
+            c(bfo.extra - fo.extra > LIMITS.foodExtra(bfo.unique), what + ' (pellets lost)');
+        }
     });
     return { fail, info };
 }
@@ -142,6 +160,23 @@ function selfCheck() {
     const unit = decodeUpdate(B.encodeUpdate(w1, 1, true), false);
     ok(unit.cells.length > 0 && unit.cells.every((c) => !(c.flags & 0x80)), 'unit layout (no private-server flag)');
     ok(unit.cells.every((c) => c.x > -301), 'unit sees only its side');
+    /* two units: each its own own cell and its side; every pellet is seen by the main socket */
+    const w3 = B.createWorld(B.scene({ bodies: 200, food: 500, sockets: 3 }));
+    ok(w3.own.length === 3 && w3.own.map((c) => c.id).join() === '1,2,3', 'two-unit scene own cells ' + w3.own.map((c) => c.id).join());
+    const u2 = decodeUpdate(B.encodeUpdate(w3, 2, true), false);
+    ok(u2.cells.length > 0 && u2.cells.every((c) => c.x < 301) && u2.cells.some((c) => c.id === 3), 'second unit sees its side and its own cell');
+    ok(B.seenFood(w3, 3) === 500 && B.seenFood(w3, 1) === 500, 'unique pellets of a multibox scene');
+    /* Full Map: pellets seen by two overlapping views count once, unseen ones not at all */
+    const wf = B.createWorld(B.scene({ bodies: 50, food: 3000, layout: 'fullmap', sockets: 3, socketIds: true }));
+    wf.views[1] = [-3000, -3000, 1000, 1000];
+    wf.views[2] = [0, 0, 4000, 4000];
+    const inV = (v, c) => c.x >= v[0] && c.x <= v[2] && c.y >= v[1] && c.y <= v[3];
+    const want = wf.food.filter((c) => inV(wf.views[0], c) || inV(wf.views[1], c) || inV(wf.views[2], c)).length;
+    const sum = [0, 1, 2].reduce((a, u) => a + wf.food.filter((c) => inV(wf.views[u], c)).length, 0);
+    ok(B.seenFood(wf, 3) === want && want > 0 && sum > want && want < wf.food.length, 'unique pellets of overlapping Full Map views ' + B.seenFood(wf, 3) + '/' + want + '/' + sum);
+    const qk = B.matrix('quick');
+    ok(qk.some((s) => s.layout === 'fullmap' && s.sockets > 1), 'quick scenes lack a Full Map scene');
+    ok(qk.some((s) => s.layout !== 'fullmap' && s.sockets > 2), 'quick scenes lack a multibox scene with two units');
     /* statistics */
     const d = B.dist([5, 1, 4, 2, 3]);
     ok(d.p50 === 3 && d.max === 5 && d.mean === 3 && Math.abs(d.p95 - 4.8) < 1e-9, 'percentiles ' + JSON.stringify(d));
@@ -179,6 +214,25 @@ function selfCheck() {
     ok(gate(base, mod((x) => (x.counts.draws = 40))).fail.length === 1, 'gate passes 4x draw calls');
     ok(gate(base, mod((x) => (x.glShare = 0.5))).fail.length === 1, 'gate passes more Canvas2D fallback');
     ok(gate(base, mod((x) => (x.missingStages = ['drawRender.drawFood']))).fail.length === 1, 'gate passes a lost stage');
+    /* long tasks and food observations */
+    r.longTasks = { supported: true, count: 10, msPerSec: 100, max: 80 };
+    r.foodObs = { observations: 9000, drawn: 3005, unique: 3000, extra: 5 };
+    ok(gate(base, mod(() => { })).fail.length === 0, 'gate fails an identical run with long tasks and food');
+    ok(gate(base, mod((x) => (x.longTasks.max = 1200))).fail.length === 1, 'gate passes a new 1.2 s long task');
+    ok(gate(base, mod((x) => (x.longTasks.msPerSec = 700))).fail.length === 1, 'gate passes 7x long task time');
+    ok(gate(base, mod((x) => (x.longTasks.max = 250))).fail.length === 0, 'gate fails a noisy long task');
+    const offGpu = mod((x) => (x.longTasks.max = 1200));
+    offGpu.meta.gpu = 'H';
+    ok(gate(base, offGpu).fail.length === 0, 'long tasks gated on another GPU');
+    ok(gate(base, mod((x) => { x.foodObs.drawn = 3600; x.foodObs.extra = 600; })).fail.length === 1, 'gate passes pellets drawn twice');
+    ok(gate(base, mod((x) => { x.foodObs.drawn = 2500; x.foodObs.extra = -500; })).fail.length === 1, 'gate passes lost pellets');
+    ok(gate(base, mod((x) => { x.foodObs.drawn = 3030; x.foodObs.extra = 30; })).fail.length === 0, 'gate fails a pellet or two of churn');
+    ok(gate(base, mod((x) => (x.foodObs.drawn = -1))).fail.length === 1, 'gate passes a failed food draw list');
+    const old = mod(() => { });
+    delete base.results[0].longTasks; delete base.results[0].foodObs;
+    ok(gate(base, old).fail.length === 0, 'gate fails against a baseline without the new counters');
+    const sl = slim(Object.assign({ fps: 1, frameMs: {}, renderMs: {}, glShare: 1 }, old.results[0], { counts: { draws: 1 }, world: { cells: 1, food: 1 } }));
+    ok(sl.longTasks && sl.longTasks.max === 80 && sl.foodObs && sl.foodObs.extra === 5, 'baseline keeps the long tasks and food counters');
     if (fs.existsSync(BASELINE)) {
         try {
             const bl = JSON.parse(fs.readFileSync(BASELINE, 'utf8'));
