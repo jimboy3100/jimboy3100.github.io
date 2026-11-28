@@ -511,6 +511,22 @@ now = load(); G = groups();
     /* the list has not come again for over 3 s: its players may be anywhere */
     check('ghost list past its max age: no ghost drawn', drawn([gh(2000, 1000, 5000), gh(-2000, 1000, 5000)], [], () => { LM.ghostCellsTime = Date.now() - 3500; }) === 0);
     check('ghost list within its max age outside every view: drawn', drawn([gh(-2000, 1000, 5000)], [], () => { mainView(); LM.ghostCellsTime = Date.now() - 2500; }) === 1);
+    /* the minimap's ghost block (drawMiniMap) follows the same list age */
+    {
+        const mm = cut('                    if (defaultmapsettings.showMiniMapGhostCells', '                    if (defaultmapsettings.showMiniMapGuides)', 'minimap ghosts');
+        let arcsMM = 0;
+        const ctxMM = { beginPath() {}, moveTo() {}, arc() { arcsMM++; }, fill() {} };
+        const runMM = vm.runInContext('(function (ogario, defaultmapsettings, defaultSettings, r, l, n, o) {' + mm + '})', g);
+        const mmDrawn = (age, rawX) => {
+            arcsMM = 0;
+            const lm = { ghostCells: [{ x: 0, y: 0, size: 500, inView: false, rawX }], ghostCellsTime: age === null ? 0 : Date.now() - age };
+            runMM.call({ miniMapCtx: ctxMM, pi2: 2 * Math.PI }, lm, { showMiniMapGhostCells: true }, {}, 7000, 7000, 0.01, 200);
+            return arcsMM;
+        };
+        check('minimap ghosts: a list 2.5 s old drawn', mmDrawn(2500, 0) === 1);
+        check('minimap ghosts: a list past its max age (3.5 s) not drawn, as on the game canvas', mmDrawn(3500, 0) === 0);
+        check('minimap ghosts: a list without a time or rawX (other servers) drawn', mmDrawn(null, 0) === 1 && mmDrawn(3500, undefined) === 1);
+    }
     check('ghost: the cell of a stalled spectator (no world update for 5 s) does not hide it', drawn(top(), [cell(2100, 1050, 700, { spectator: 3, _lmSrvName: 'Top' })], () => {
         g.window.spects = [{ number: 3, _lmFeedOk: () => true, isSocketOpen: () => true, _lmWorldStamp: () => Date.now() - 5000 }]; g.lmMbFrameHide(); }) === 1);
     /* culling: the frame's view box (LM.camMin/Max, the cells' culling), not a box moved to the

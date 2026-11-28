@@ -2021,6 +2021,13 @@ function lmSrcStale(sp, now) {
  * server view counts as coverage when its last world update came at most LM_GHOST_COV_SLACK ms
  * before the list and less than LM_GHOST_COV_MAX_AGE ms ago. */
 var LM_GHOST_LIST_MAX_AGE = 3000, LM_GHOST_COV_SLACK = 200, LM_GHOST_COV_MAX_AGE = 500;
+/* An agar.io ghost list (opcode 69, rawX) that has not come again for LM_GHOST_LIST_MAX_AGE: its
+ * players may be anywhere by now, so neither the game canvas (drawGhostCells) nor the minimap
+ * draws it. Lists without a time or rawX (other servers) never expire. */
+function lmGhostListExpired(lm, now) {
+    var gc = lm.ghostCells;
+    return lm.ghostCellsTime > 0 && !!gc && !!gc[0] && gc[0].rawX !== undefined && now - lm.ghostCellsTime > LM_GHOST_LIST_MAX_AGE;
+}
 /* A ghost is hidden by live cells only when they can be its player: the cells of one connection
  * that can be his (his own cells, or cells with his name; with no name, unnamed cells) inside the
  * ghost hold between LM_GHOST_ID_MIN and LM_GHOST_ID_MAX of the ghost's mass (size squared). A
@@ -32347,7 +32354,9 @@ function thelegendmodproject() {
                         this.miniMapCtx.stroke();
                         this.miniMapCtx.restore();
                     }
-                    if (defaultmapsettings.showMiniMapGhostCells) {
+                    /* the same list age as the game canvas: a list that stopped coming is not drawn
+                     * here either (it was kept on the minimap for as long as the socket stayed open) */
+                    if (defaultmapsettings.showMiniMapGhostCells && !lmGhostListExpired(ogario, Date.now())) {
                         var h = ogario.ghostCells;
                         this.miniMapCtx.beginPath();
                         var c = 0;
@@ -85955,8 +85964,7 @@ function pickPlayerCellBySize(players, selectBiggest) {
                  * be covered by it (the lag margin grew past every view, so old ghosts were drawn
                  * everywhere). */
                 var _ghostNow = Date.now();
-                if (LM.ghostCellsTime > 0 && ghostsCells[0] && ghostsCells[0].rawX !== undefined &&
-                    _ghostNow - LM.ghostCellsTime > LM_GHOST_LIST_MAX_AGE) return;
+                if (lmGhostListExpired(LM, _ghostNow)) return;
                 /*
                  * Always Canvas2D. The WebGL layer sits ABOVE the 2D canvas, so GL
                  * ghosts covered real cells whenever the frame rendered cells on
