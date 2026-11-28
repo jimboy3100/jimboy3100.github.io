@@ -58,5 +58,61 @@ gone.forEach(c => check(c + ': no hotkey command', hkSrc.indexOf("'" + c + "'") 
   check('settings.showQuest: no text', read('languages/lm-en.js').indexOf('"settings.showQuest"') < 0);
 }
 
+/* The hotkeys while the main player (P1) is dead or spectating (decision 8): the real key and mouse
+ * button handlers (document.onkeydown / onkeyup, window.onmousedown / onmouseup) and the real hotkey
+ * commands of ogario/hotkeysCommand.js, on the actions of developers/tests/lib/mbaction.js. A living
+ * multibox unit you selected gets from each key or button exactly what P1 gets while it plays; a
+ * selected unit that is dead or on a closed socket gets nothing (nor does P1). With P1 spectating, a
+ * left click on the game is the unit's (its bound command), not a spectate follow pick. */
+{
+  const { world } = require('./lib/mbaction.js');
+  const W = world({ v4 });
+  const kA = v4.indexOf('    var _lmHeldByCode = {};'), kB = v4.indexOf('    /* A window that keeps keyup events', kA);
+  const mA = v4.indexOf('    var _lmMouseHeld = {};'), mB = v4.indexOf('    window.onbeforeunload', mA);
+  if (W.missing || kA < 0 || kB < 0 || mA < 0 || mB < 0) check('key / mouse handler code found', false);
+  else {
+    const c = W.ctx;
+    vm.runInContext(hkSrc, c);
+    Object.assign(c, {
+      hotkeysSetup: { inputClassName: 'custom-key-in', getPressedKey: (e) => e.key, mouseKey: (w) => ({ 1: 'MOUSE LEFT', 3: 'MOUSE RIGHT' })[w] || '' },
+      drawRender: {}, document: { addEventListener() { } }, addEventListener() { }
+    });
+    vm.runInContext(v4.slice(kA, kB) + '\n' + v4.slice(mA, mB), c);
+    const keys = { split: 'hk-split', doubleSplit: 'hk-doubleSplit', tripleSplit: 'hk-tripleSplit', split16: 'hk-split16', popSplit: 'hk-popSplit',
+      crazyDoubleSplit: 'hk-crazyDoubleSplit', feed: 'hk-feed', macroFeed: 'hk-macroFeed', macroFeedPerm: 'hk-macroFeedPerm', lineSplit: 'hk-lineSplit' };
+    const canvas = { tagName: 'CANVAS', className: '', closest: () => null };
+    const key = (k, up) => c.document[up ? 'onkeyup' : 'onkeydown']({ key: k, keyCode: 75, target: canvas, preventDefault() { } });
+    const btn = (w, up) => c[up ? 'onmouseup' : 'onmousedown']({ which: w, button: w - 1, target: canvas, preventDefault() { } });
+    /* one press of the input bound to cmd: held commands 100 ms, the toggle pressed again after 100 ms */
+    const press = (how, cmd) => {
+      c.keyBlind = {}; c.hotkeys = how === 'key' ? { K: cmd } : { 'MOUSE RIGHT': cmd };
+      const down = () => (how === 'key' ? key('K') : btn(3)), up = () => (how === 'key' ? key('K', true) : btn(3, true));
+      down(); if (cmd === 'hk-macroFeed') W.advance(100); up();
+      if (cmd === 'hk-macroFeedPerm') { W.advance(100); down(); up(); }
+      W.advance(2000);
+    };
+    for (const how of ['key', 'mouse']) {
+      for (const a of Object.keys(keys)) {
+        W.state({ main: 'alive', focus: 0 }); press(how, keys[a]); const ref = W.kinds('main');
+        const got = ['dead', 'spectating'].map((m) => { W.state({ main: m, focus: 2 }); press(how, keys[a]); return W.kinds('u2') === ref && W.count('main') === 0; });
+        const none = ['dead', 'stale'].map((u) => { W.state({ main: 'dead', unit: u, focus: 2 }); press(how, keys[a]); return W.log.length === 0; });
+        check((how === 'key' ? 'key' : 'mouse button') + ' ' + keys[a] + ', P1 dead / spectating, living P2 selected: P2 gets what P1 gets; P2 dead / closed socket: nothing',
+          ref.length > 0 && got.every(Boolean) && none.every(Boolean));
+      }
+    }
+    /* the left button while P1 spectates */
+    let picks = 0;
+    W.state({ main: 'spectating', focus: 2 }); W.lm()._lmSpecCellPick = () => { picks++; };
+    c.keyBlind = {}; c.hotkeys = { 'MOUSE LEFT': 'hk-split' }; btn(1); btn(1, true); W.advance(500);
+    check('P1 spectating, living P2 selected: a left click splits P2 once and is no spectate follow pick', W.kinds('u2') === 'split' && W.count('main') === 0 && picks === 0);
+    picks = 0; W.state({ main: 'spectating', focus: 0 }); W.lm()._lmSpecCellPick = () => { picks++; };
+    c.keyBlind = {}; c.hotkeys = { 'MOUSE LEFT': 'hk-split' }; btn(1); btn(1, true); W.advance(500);
+    check('P1 spectating, no unit selected: the left click still picks the player to follow (nothing sent)', picks === 1 && W.log.length === 0);
+    W.state({ main: 'dead', focus: 2 }); c._menu = true;
+    c.keyBlind = {}; c.hotkeys = { 'MOUSE RIGHT': 'hk-split' }; btn(3); btn(3, true); W.advance(500);
+    check('the menu open: a mouse button does nothing (also for a living P2)', W.log.length === 0);
+  }
+}
+
 if (fail) { console.log(fail + ' check(s) failed'); process.exit(1); }
 console.log('all removed hotkey checks passed');

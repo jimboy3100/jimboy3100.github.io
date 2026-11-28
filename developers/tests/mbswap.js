@@ -288,6 +288,40 @@ for (const how of ['terminate', 'beforecalculation']) {
         check('quick respawn without units (a spectator only): reconnects as before', r.log === 'reconnect wss://x,tryResp' && r.play === false, r.log);
     }
 }
+/* decision 8: lmMbSteersLiving, the one test the death menus and the spectate click / tap ask (the
+ * player you control is a living multibox unit, whatever the main player does) */
+{
+    const e = env({ focus: 2, mainAlive: false, units: 2 });
+    const f = e.ctx.lmMbSteersLiving;
+    if (typeof f !== 'function') check('lmMbSteersLiving found', false);
+    else {
+        const r = [];
+        r.push(f());
+        e.ctx.legendmod.isSpectateEnabled = true; r.push(f());
+        e.ctx.legendmod.play = true; e.ctx.legendmod.isSpectateEnabled = false; r.push(f());
+        check('steering a living unit: P1 dead, P1 spectating, P1 alive: yes', r.join() === 'true,true,true', r.join());
+        const no = [];
+        e.ctx.multiboxPlayerEnabled = null; no.push(f());
+        e.ctx.multiboxPlayerEnabled = 2; e.unit(2).active = false; no.push(f());
+        e.unit(2).active = null; no.push(f());
+        e.unit(2).active = true; e.unit(2).player = false; no.push(f());
+        e.ctx.multiboxPlayerEnabled = 9; no.push(f());
+        check('    ... P1 selected, the selected unit dead / connecting / a spectator, a number without a unit: no', no.join() === 'false,false,false,false,false', no.join());
+    }
+    /* P1 dead with the death menu up, or spectating: the switch key to the living P2 hides the menu
+     * (its mouse buttons, pad and phone buttons work again) and spawns nothing */
+    for (const spec of [false, true]) {
+        const s = env({ focus: null, mainAlive: false, units: 2 });
+        let hidden = 0;
+        s.ctx.application.hideMenu = () => { hidden++; };
+        s.ctx.legendmod.isSpectateEnabled = spec;
+        s.unit(1).active = false;
+        s.ctx.application.multiboxchange();
+        check('P1 ' + (spec ? 'spectating' : 'dead') + ', the switch key: the living P2 controlled, the menu hidden, nothing spawned',
+            s.ctx.multiboxPlayerEnabled === 2 && hidden === 1 && s.unit(2).respawns === 0 && s.unit(1).respawns === 0 && s.ctx.legendmod.play === false,
+            s.ctx.multiboxPlayerEnabled + ' / ' + hidden);
+    }
+}
 
 console.log(failed ? failed + ' failed' : 'all multiboxSwap checks passed');
 process.exit(failed ? 1 : 0);

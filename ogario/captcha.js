@@ -23,9 +23,12 @@ function CaptchaRouter(arg) {
 
     /* _retried: a failed or timed-out check is tried once more, then the player is told
      * (the spawn request just never came back, so the player could not spawn and saw nothing) */
-    /* Play hid the menu before the captcha: "press Play again" needs the menu back */
+    /* Play hid the menu before the captcha: "press Play again" needs the menu back (not over the
+     * living multibox unit you control: the toast says it, Esc opens the menu) */
     function lmReopenMenu() {
-        try { if (window.application && window.legendmod && !window.legendmod.play) window.application.showMenu(300); } catch (err) { }
+        try {
+            if (window.application && window.legendmod && !window.legendmod.play && !(typeof window.lmMbSteersLiving === 'function' && window.lmMbSteersLiving())) window.application.showMenu(300);
+        } catch (err) { }
     }
     function requestCaptchaV3(t, e, _tries, _retried) {
         if (!window.grecaptchaV3 || typeof window.grecaptchaV3.execute !== "function") {

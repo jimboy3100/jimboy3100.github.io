@@ -1080,5 +1080,53 @@ function death(o) {
     }
 }
 
+/* 8. Decision 8: no death menu over the living multibox unit you control. The menu (#overlays)
+ * blocks the mouse buttons, the pad and the phone buttons, so the main player's (P1) death on Garix
+ * ("Auto-switch focus after death" off), Senpa and the Imsolo / Agar2 death notification put it over
+ * the unit you play (updateCells and Sigmally did not), and so did a failed captcha check. With P1
+ * selected, a selected dead unit or no unit the menu shows as before. */
+{
+    const capt = read(path.join(root, 'ogario', 'captcha.js'));
+    const gi = v4.indexOf('application.switchToNextLivingUnit never existed');
+    const garix = gi < 0 ? null : block(v4, 'if (this.removePlayerCell && !this.playerCells.length) {', v4.lastIndexOf('// Death check', gi));
+    const si = v4.indexOf('// Death check (as the Sigmally parser)');
+    const senpa = si < 0 ? null : block(v4, 'if (self.removePlayerCell && !self.playerCells.length) {', si);
+    const ii = v4.indexOf('case 21: // 0x15');
+    const imsolo = ii < 0 ? null : block(v4, "if (this.serverType === 'imsolo' || this.serverType === 'agar2') {", ii);
+    const reopen = block(capt, '    function lmReopenMenu() {');
+    if (!garix || !senpa || !imsolo || !reopen || garix.indexOf('switchToNextLivingUnit') < 0) check('death menu code found', false);
+    else {
+        const paths = {
+            garix: '(function () {' + garix + '}).call(legendmod);',
+            senpa: 'var self = legendmod;\n' + senpa,
+            'imsolo death notification': '(function () {' + imsolo + '}).call(legendmod);',
+            'captcha failed': reopen + '\nlmReopenMenu();'
+        };
+        const run = (code, o) => {
+            const ctx = { console: { log: noop, warn: noop }, toastr: {}, Date, menuShown: 0 };
+            ctx.window = ctx;
+            vm.createContext(ctx);
+            vm.runInContext(v4.slice(a, b), ctx);
+            vm.runInContext('var defaultmapsettings = window.defaultmapsettings = { mbSwitchAfterDeath: ' + !!o.autoSwitch + ' };\n' +
+                'var application = window.application = { onPlayerDeath() { }, showMenu() { window.menuShown++; } };\n' +
+                'var legendmod = window.legendmod = { play: true, serverType: "imsolo", removePlayerCell: true, playerCells: [], playerCellsMulti: [], multiBoxPlayerExists: true }, LM = legendmod;\n' +
+                'window.userBots = { isAlive: true, startedBots: false };', ctx);
+            if (o.captcha) ctx.legendmod.play = false;
+            ctx.spects.length = 0;
+            if (o.unit) ctx.spects.push({ number: 2, slotId: 2, player: true, active: o.unit === 'alive' });
+            ctx.multiboxPlayerEnabled = o.focus || null;
+            try { vm.runInContext(code, ctx); } catch (e) { return 'error ' + e.message; }
+            return ctx.menuShown;
+        };
+        for (const p of Object.keys(paths)) {
+            const o = { captcha: p === 'captcha failed' };
+            const live = run(paths[p], Object.assign({ unit: 'alive', focus: 2 }, o));
+            check(p + ': P1 dead, the living P2 selected: no death menu over it', live === 0, live);
+            const rest = [run(paths[p], Object.assign({ unit: 'dead', focus: 2 }, o)), run(paths[p], Object.assign({ unit: 'alive', focus: 0 }, o)), run(paths[p], o)];
+            check(p + ': P2 selected but dead, P1 selected (P2 alive), no unit: the menu as before', rest.join() === '1,1,1', rest.join());
+        }
+    }
+}
+
 console.log(failed ? failed + ' failed' : 'all multibox death checks passed');
 process.exit(failed ? 1 : 0);

@@ -193,5 +193,44 @@ check('three players: the second unit (number 5) is P3, not P2', ind(5, [spec(1)
   delete ctx.lmMbPlayers; delete ctx.LM_MB_RING_DEFAULT_COLORS;
 }
 
+// ── decision 8: the phone buttons while the main player (P1) is dead or spectating. The real Split,
+// 2x, 16x and Feed touch handlers of LMmobile.js on the real actions (developers/tests/lib/mbaction.js):
+// a living multibox unit you selected gets from each button exactly what P1 gets while it plays; a
+// selected unit that is dead or on a closed socket gets nothing (nor P1); the open menu blocks them
+// as before. A tap on the game while P1 spectates is no follow pick then (it moved the unit's aim).
+{
+  const { world } = require('./lib/mbaction.js');
+  const W = world();
+  const h = (name) => { const b = body(mob, name + ".addEventListener('touchstart', function (e) {"); return b ? b + ');' : null; };
+  const parts = [h('bSplit'), h('bDbl'), h('b16'), h('bFeed'), body(mob, "bFeed.addEventListener('touchend', function (e) {"),
+    cutIn(mob, '        var lastActionByKey = {};', '        /* ═══', 'LMmobile.js'), body(mob, 'function feedStart() {'), body(mob, 'function feedStop() {')];
+  if (W.missing || parts.some((p) => !p)) check('phone button / action code found', false);
+  else {
+    const c = W.ctx, btn = (n) => ({ n, h: {}, addEventListener(t, f) { this.h[t] = f; } });
+    Object.assign(c, { bSplit: btn('split'), bDbl: btn('dbl'), b16: btn('16'), bFeed: btn('feed'), prefs: { tapHaptic: false }, vibrate() { } });
+    let clock = 0;
+    c.Date = { now: () => (clock += 1000) }; /* each tap past the buttons' debounce */
+    vm.runInContext('var feedMacroOn = false;\nfunction feedWatch() { }\nfunction isMenuVisible() { return !!window._menu; }\n' + parts.slice(5).join('\n') +
+      '\nwindow._lmMobileFeedHeld = function () { return feedMacroOn; };\n' + parts.slice(0, 4).join('\n') + '\n' + parts[4] + ');', c);
+    const ev = { preventDefault() { }, stopPropagation() { }, targetTouches: [] };
+    const tap = (b) => { c[b].h.touchstart(ev); if (b === 'bFeed') { W.advance(100); c.bFeed.h.touchend(ev); } W.advance(2000); };
+    for (const b of ['bSplit', 'bDbl', 'b16', 'bFeed']) {
+      W.state({ main: 'alive', focus: 0 }); tap(b); const ref = W.kinds('main');
+      const got = ['dead', 'spectating'].map((m) => { W.state({ main: m, focus: 2 }); tap(b); return W.kinds('u2') === ref && W.count('main') === 0; });
+      const none = ['dead', 'stale'].map((u) => { W.state({ main: 'dead', unit: u, focus: 2 }); tap(b); return W.log.length === 0; });
+      check('phone ' + c[b].n + ' button, P1 dead / spectating, living P2 selected: P2 gets what P1 gets; P2 dead / closed socket: nothing',
+        ref.length > 0 && got.every(Boolean) && none.every(Boolean), ref);
+    }
+    W.state({ main: 'dead', focus: 2 }); c._menu = true; tap('bSplit'); tap('bFeed');
+    check('phone buttons with the menu open: nothing, also for a living P2', W.log.length === 0);
+    const canvas = { tagName: 'CANVAS', closest: () => null };
+    W.state({ main: 'spectating', focus: 2 }); let picked = 0; W.lm()._lmSpecCellPick = () => { picked++; };
+    const taken = W.lm()._lmSpecClickAt(canvas, 300, 200);
+    check('P1 spectating, living P2 selected: a tap on the game is no follow pick (the aim of P2 stays)', taken === false && picked === 0 && !W.lm()._cursorCalls && W.lm().clientX === 0);
+    picked = 0; W.state({ main: 'spectating', focus: 0 }); W.lm()._lmSpecCellPick = () => { picked++; };
+    check('P1 spectating, no unit selected: a tap still picks the player to follow', W.lm()._lmSpecClickAt(canvas, 300, 200) === true && picked === 1);
+  }
+}
+
 console.log(fail ? fail + ' check(s) failed' : 'all phone extras checks passed');
 process.exit(fail ? 1 : 0);

@@ -397,6 +397,15 @@ function lmMbFocused() {
     var n = +window.multiboxPlayerEnabled || 0;
     return n ? getActiveSpect(n) : window.legendmod || null;
 }
+/* true while the player you control is a living multibox unit (a playing connection with a life,
+ * never a spectator), whatever the main player does: dead or spectating, the unit plays on and
+ * takes the keys, mouse buttons, pad and phone buttons (window.core.act sends them to it), so no
+ * death menu is put over it and a spectate click or tap is not taken from it */
+function lmMbSteersLiving() {
+    var n = +window.multiboxPlayerEnabled || 0;
+    return !!n && lmMbAlive(getActiveSpect(n));
+}
+window.lmMbSteersLiving = lmMbSteersLiving;
 /* Where the focus goes when the unit sp loses it (it died, its socket closed, it was removed):
  * the main player while it plays (as before), else the next living unit after it in slot order
  * (wrapping round; never a spectator), else none: 0, the main player's view. With "Auto-switch
@@ -44445,7 +44454,9 @@ function thelegendmodproject() {
                         if (self.removePlayerCell && !self.playerCells.length) {
                             self.play = false;
                             application.onPlayerDeath();
-                            application.showMenu(300);
+                            /* no death menu over the living multibox unit you control (it blocked
+                             * its mouse buttons, pad and phone buttons) */
+                            if (!lmMbSteersLiving()) application.showMenu(300);
                             window.userBots.isAlive = false;
                             if (window.userBots.startedBots) window.connectionBots.send(new Uint8Array([5, Number(window.userBots.isAlive)]).buffer);
                         }
@@ -47006,7 +47017,8 @@ function thelegendmodproject() {
                         if (this._playerCellIDSet) this._playerCellIDSet.clear();
                         window.userBots.isAlive = false;
                         if (window.userBots.startedBots) window.connectionBots.send(new Uint8Array([5, 0]).buffer);
-                        application.showMenu();
+                        /* not over the living multibox unit you control */
+                        if (!lmMbSteersLiving()) application.showMenu();
                         console.log('%c[MultiProto]%c Death notification received', 'color:#f3a', 'color:inherit');
                     }
                     break;
@@ -54473,6 +54485,9 @@ function thelegendmodproject() {
          * was not a tap). */
         _lmSpecClickAt(target, clientX, clientY, onlyCheck) {
             if (this.play || !(this.isFreeSpectate || this.isSpectateEnabled || this._isWorldSpectating)) return false;
+            /* the main player spectates while you steer a living multibox unit: the click or tap is
+             * that unit's (its mouse button command; a tap moved its aim to the tap point) */
+            if (typeof lmMbSteersLiving === 'function' && lmMbSteersLiving()) return false;
             if (!target || target.tagName !== 'CANVAS' || (target.closest && target.closest('.hud, .hud-b, #overlays')) || $("#overlays").is(":visible")) return false;
             if (onlyCheck) return true;
             if (Number.isFinite(clientX) && Number.isFinite(clientY)) {
@@ -55670,10 +55685,14 @@ function thelegendmodproject() {
                     application
                         .onPlayerDeath();
 
-                    application
-                        .showMenu(
-                            300
-                        );
+                    /* "Auto-switch focus after death" off (or no unit cell listed yet) while you
+                     * steer a living multibox unit: no death menu over it */
+                    if (!lmMbSteersLiving()) {
+                        application
+                            .showMenu(
+                                300
+                            );
+                    }
                 }
             }
             if (window.autoPlay && legendmod.play) calcTarget();

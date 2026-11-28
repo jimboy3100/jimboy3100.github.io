@@ -203,6 +203,41 @@ const check = (name, ok) => { console.log((ok ? 'ok   ' : 'FAIL ') + name); if (
     check('16 split on a unit: a new life of the unit ends it', ctx.sent.join() === 'u2:split,u2:split');
 })();
 
+/* Decision 8 (manual split / feed parity): the main player (P1) dead or spectating does not take the
+ * manual controls from a living multibox unit you selected. Each action, from its own entry point
+ * (application / LM.lineSplit, as its key, mouse button, pad or phone button runs it), sends the
+ * unit exactly what P1 gets for it while P1 plays (agar.io: single splits; Imsolo: the atomic
+ * 2/3/4 split opcodes), and P1 nothing. A selected unit that is dead, still connecting, on a closed
+ * socket or a spectator (no playing unit) gets nothing, and nothing goes to P1 instead. */
+(function () {
+    const { world, ACTIONS } = require('./lib/mbaction.js');
+    const W = world({ v4: src });
+    if (W.missing) { check('action code found: ' + W.missing.join(', '), false); return; }
+    const run = (s, a) => { W.state(s); ACTIONS[a](W); W.advance(2000); return W; };
+    for (const server of ['agario', 'imsolo']) {
+        for (const a of Object.keys(ACTIONS)) {
+            const ref = run({ main: 'alive', focus: 0, server }, a).kinds('main');
+            const dead = run({ main: 'dead', focus: 2, server }, a), deadU = dead.kinds('u2'), deadM = dead.count('main');
+            const spec = run({ main: 'spectating', focus: 2, server }, a), specU = spec.kinds('u2'), specM = spec.count('main');
+            const refN = ref.split(','), shown = refN.length > 4 ? refN[0] + ' x' + refN.length : ref;
+            check('parity (' + server + ') ' + a + ': P1 dead / P1 spectating, P2 selected: P2 gets what P1 gets [' + shown + '], P1 nothing',
+                ref.length > 0 && deadU === ref && specU === ref && deadM === 0 && specM === 0);
+            const bad = ['dead', 'connecting', 'stale', 'spectator'].filter((u) => run({ main: 'dead', unit: u, focus: 2, server }, a).log.length);
+            check('parity (' + server + ') ' + a + ': the selected P2 dead / connecting / closed socket / a spectator: nothing sent to anyone', bad.length === 0);
+        }
+    }
+    /* P1 dies while a macro or a held feed runs on the selected unit: it goes on (the unit's life,
+     * socket and connection did not change); the unit's own death still ends it */
+    W.state({ main: 'alive', focus: 2 }); W.app().split16(); W.advance(50);
+    W.lm().play = false; W.app()._lmLifeStartAt = 0; W.advance(1000);
+    check('16 split on P2: P1 dies after the second split: the other two still reach P2', W.kinds('u2') === 'split,split,split,split' && W.count('main') === 0);
+    W.state({ main: 'alive', focus: 2 }); W.app().macroFeed(true); W.advance(100);
+    const before = W.count('u2'); W.lm().play = false; W.app()._lmLifeStartAt = 0; W.advance(200);
+    check('held feed on P2: P1 dies: it goes on feeding P2', before >= 5 && W.count('u2') >= before + 10 && W.count('main') === 0);
+    W.unit().active = false; W.unit().playerCellIDs = []; const atDeath = W.count('u2'); W.advance(200);
+    check('    ... then P2 dies: it stops, nothing to P1', W.count('u2') === atDeath && W.count('main') === 0 && !W.app().macroFeedActive);
+})();
+
 
 console.log(failed ? failed + ' FAILED' : 'all split macro checks passed');
 process.exit(failed ? 1 : 0);

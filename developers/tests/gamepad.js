@@ -247,4 +247,29 @@ const same=(a,b)=>JSON.stringify(a)===JSON.stringify(b);
       ',hideMenu(){},gameServerConnect(){window.lmCalls.push("reconnect");}});',Object.assign(c.w,{lmCalls:c.calls}));
     c.pads=[gp({3:true})];c.go();c.step();
     check('Y with quick respawn on, units open: only the dead unit you control respawns, no reconnect',c.calls.join().indexOf('unit-respawn')>=0&&c.calls.indexOf('reconnect')<0&&c.w.spects.length===1,c.calls.join()); } }
+/* decision 8: the pad while the main player (P1) is dead or spectating, with the real hotkey commands
+ * and the real actions (developers/tests/lib/mbaction.js): a button sends the living multibox unit
+ * you selected exactly what it sends P1 while P1 plays; a selected unit that is dead or on a closed
+ * socket gets nothing (nor P1); the open menu blocks the pad as before */
+{ const {world}=require('./lib/mbaction.js');const W=world({v4});
+  if(W.missing)check('action code found',false);else{
+  const c=W.ctx,L={};let now=[];
+  const ov={style:{get display(){return c._menu?'':'none';}},get offsetParent(){return c._menu?{}:null;},get offsetHeight(){return c._menu?100:0;}};
+  Object.assign(c,{innerWidth:1000,innerHeight:800,navigator:{getGamepads:()=>now},
+   document:{hidden:false,hasFocus:()=>true,activeElement:null,getElementById:id=>id==='overlays'?ov:id==='canvas'?{dispatchEvent(){}}:null,querySelector:()=>null,addEventListener(){},dispatchEvent(){}},
+   legendmod5:{gamepadEnabled:true,gamepadDeadzone:0.2},setInterval(){},Event:class{constructor(t){this.type=t}},MouseEvent:class{constructor(t,o){this.type=t;Object.assign(this,o)}},WheelEvent:class{constructor(t){this.type=t}},
+   addEventListener:(t,f)=>{L[t]=f;}});
+  vm.runInContext(hkSrc,c);vm.runInContext(src,c);
+  now=[gp()];L.gamepadconnected({gamepad:now[0]});W.advance(32);
+  const cmds=['hk-split','hk-doubleSplit','hk-tripleSplit','hk-split16','hk-popSplit','hk-crazyDoubleSplit','hk-feed','hk-macroFeed','hk-macroFeedPerm','hk-lineSplit'];
+  /* A pressed (held 100 ms for macro feed; the permanent feed pressed again 100 ms later to stop it) */
+  const press=(cmd)=>{c.LMGamepad.setButton(0,cmd);now=[gp({0:true})];W.advance(cmd==='hk-macroFeed'?100:32);now=[gp()];W.advance(32);
+   if(cmd==='hk-macroFeedPerm'){W.advance(68);now=[gp({0:true})];W.advance(32);now=[gp()];W.advance(32);}W.advance(2000);};
+  for(const cmd of cmds){
+   W.state({main:'alive',focus:0});press(cmd);const ref=W.kinds('main');
+   const got=['dead','spectating'].map(m=>{W.state({main:m,focus:2});press(cmd);return W.kinds('u2')===ref&&W.count('main')===0;});
+   const none=['dead','stale'].map(u=>{W.state({main:'dead',unit:u,focus:2});press(cmd);return W.log.length===0;});
+   check('pad '+cmd+', P1 dead / spectating, living P2 selected: P2 gets what P1 gets; P2 dead / closed socket: nothing',ref.length>0&&got.every(Boolean)&&none.every(Boolean));}
+  W.state({main:'dead',focus:2});c._menu=true;press('hk-split');
+  check('pad with the menu open: nothing, also for a living P2',W.log.length===0); } }
 console.log(fail?fail+' failed':'all gamepad checks passed');process.exit(fail?1:0);
