@@ -265,21 +265,21 @@
     }
     /* Runs cb right after the next drawn frame, in the same task: a WebGL canvas without
      * preserveDrawingBuffer still holds the picture then. Uses the frame hook of the render loop
-     * (window._lmPerfFrame, shared with perf.js: its own hook keeps running). */
+     * (window._lmAfterFrame; an earlier hook keeps running). */
     function afterFrame(cb) {
-        var prev = W._lmPerfFrame, done = false, to = 0;
+        var prev = W._lmAfterFrame, done = false, to = 0;
         var finish = function () {
             if (done) return;
             done = true;
             clearTimeout(to);
-            if (W._lmPerfFrame === hook) W._lmPerfFrame = prev;
+            if (W._lmAfterFrame === hook) W._lmAfterFrame = prev;
             cb();
         };
-        var hook = function (a, b) {
-            if (prev) { try { prev(a, b); } catch (e) { } }
+        var hook = function () {
+            if (prev) { try { prev(); } catch (e) { } }
             finish();
         };
-        W._lmPerfFrame = hook;
+        W._lmAfterFrame = hook;
         /* no frame (hidden tab, render loop stopped): capture what is there */
         to = setTimeout(finish, 700);
     }

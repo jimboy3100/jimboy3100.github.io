@@ -46,8 +46,7 @@
         "Replay tools",
         "Gamepad support",
         "Mobile touch controls",
-        "Performance diagnostics",
-        "Adaptive performance",
+        "WebGL rendering",
         "Chat system",
         "HUD helpers",
         "Accessibility features",
@@ -296,8 +295,8 @@
         "DefinedTerm",
         "lm:Feature"
       ],
-      "name": "Performance diagnostics",
-      "description": "WebGL2 acceleration, adaptive performance, FPS cap, diagnostics window."
+      "name": "WebGL rendering",
+      "description": "WebGL2 acceleration, FPS cap."
     },
     {
       "@id": "https://www.legendmod.ml/knowledge/#feature-accessibility",

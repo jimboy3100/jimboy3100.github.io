@@ -22,8 +22,8 @@
  *   --eval FILE                   an expression evaluated in the page after each scene's measurement
  *                                 (it may return a promise); its value is stored as the scene's extra
  *   --setup FILE                  an expression evaluated in the page once before the first scene
- *                                 (for example LMPerf.keepRecording(true): a run with the diagnostics
- *                                 recording); its value is printed and stored in meta.setup
+ *                                 (for example a setting changed through application.setSettings); its value
+ *                                 is printed and stored in meta.setup
  *   --boot MS                     wait after the game started, before the first scene (default 5000)
  * Needs Node 22+ and Chrome (CHROME_PATH, or the usual install locations). */
 'use strict';
@@ -209,7 +209,7 @@ async function main(argv) {
         await evalJs(benchSrc + '\n;true');
         if (setupJs) {
             try { setup = await evalJs(setupJs); } catch (e) { setup = 'setup failed: ' + e.message; }
-            /* an expression without a value (LMPerf.keepRecording(true) returns nothing): null, not undefined */
+            /* an expression without a value: null, not undefined */
             if (setup === undefined) setup = null;
             console.log('bench: setup: ' + JSON.stringify(setup).slice(0, 500));
         }

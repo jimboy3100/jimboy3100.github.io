@@ -395,24 +395,6 @@
     "ja": "WASMによる高速化 <span class=\"badge badge-new\">新機能</span>",
     "it": "Accelerazione WASM <span class=\"badge badge-new\">Nuovo</span>"
   },
-  "site.features.performanceModeSwitchFor": {
-    "en": "Performance mode switch for weak PCs and phones",
-    "el": "Διακόπτης Performance mode για αδύναμους υπολογιστές και κινητά",
-    "es": "Interruptor de modo rendimiento para PCs y móviles poco potentes",
-    "bg": "Превключвател за режим на производителност за слаби компютри и телефони",
-    "fr": "Mode performance pour les PC et téléphones peu puissants",
-    "ar": "مفتاح وضع الأداء للحواسيب والهواتف الضعيفة",
-    "zh": "適用於低效能電腦與手機的效能模式開關",
-    "ru": "Переключатель режима производительности для слабых ПК и телефонов",
-    "de": "Performance-Modus für schwache PCs und Handys",
-    "tr": "Zayıf PC'ler ve telefonlar için performans modu anahtarı",
-    "pl": "Przełącznik trybu wydajności dla słabych PC i telefonów",
-    "nl": "Schakelaar voor prestatiemodus voor zwakke pc's en telefoons",
-    "pt": "Modo desempenho para PCs fracos e celulares",
-    "id": "Switch mode performa untuk PC dan HP lemah",
-    "ja": "低スペックPCやスマホ向けのパフォーマンスモード切り替え",
-    "it": "Interruttore modalità prestazioni per PC e telefoni poco potenti"
-  },
   "site.features.optionalFpsLimitAnd": {
     "en": "Optional FPS limit (saves battery)",
     "el": "Προαιρετικό όριο FPS (εξοικονομεί μπαταρία)",

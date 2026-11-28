@@ -59,7 +59,9 @@ const GONE = ['hudMergeCountdown', 'menuFpsCap', 'adaptivePerfTarget', 'adaptive
   /* the menu text size (Settings > Accessibility; the browser zoom does it) */
   'a11yTextScale',
   /* the stopwatch above the minimap (Settings > Stats "Show stopwatch") */
-  'showStopwatch'];
+  'showStopwatch',
+  /* Settings > Performance and network: Performance mode and its automatic choice */
+  'performanceMode', 'adaptivePerf'];
 check('removed settings are no settings any more (a saved value is ignored)', GONE.every(k => !(k in D) && !(k in SCH) && V(k, true) === undefined && V(k, 30) === undefined));
 check('line split: 2-4 splits per press, a saved 1 is read as 2', V('lineSplitCount', 1) === 2 && V('lineSplitCount', 4) === 4 && V('lineSplitCount', 9) === 4 && SCH.lineSplitCount[0] === 2);
 check('gamepadMoveCurve 100 -> 3', V('gamepadMoveCurve', 100) === 3);
@@ -227,14 +229,6 @@ app.saveSettings(S, 'ogarioSettings');
 ctx.LMEvents.listen = true;
 app.saveSettings(S, 'ogarioSettings');
 check('without listeners nothing is sent, and the change is not sent later either', events.length === 0);
-/* the adaptive performance copy: toJSON gives the player's values; a lowered value is no change */
-Object.defineProperty(S, 'toJSON', { value: function () { const c = Object.assign({}, this); c.animation = 80; return c; }, configurable: true, writable: true, enumerable: false });
-S.animation = 80; app.saveSettings(S, 'ogarioSettings'); events.length = 0;
-S.animation = 20;
-app.saveSettings(S, 'ogarioSettings');
-check('a value only lowered by Adaptive performance (not the player) is not announced', events.length === 0 && JSON.parse(ctx.localStorage.getItem('ogarioSettings')).animation === 80);
-delete S.toJSON;
-S.animation = 80;
 /* a full storage: the change is in effect, so it is announced; the error reaches the caller as before.
  * S09: the player is told once that it is not saved, and the next save stores everything */
 const realSet = ctx.localStorage.setItem, toasts = [];
@@ -342,7 +336,7 @@ check('setSettings on and off: two events, the new value each time', J(events) =
   }
 }
 
-// ── S5c one path for a value (real setSettings, hotkey toggles, Performance mode, the presets' setOpt):
+// ── S5c one path for a value (real setSettings, hotkey toggles, the presets' setOpt):
 // effects run once and only for a real change, the switch follows without running anything
 {
   const H = vm.runInContext('({\n' + ss + cut('        toggleSkins() {', '        /* a board (leaderboard-positions') + '\n})', ctx);
@@ -356,30 +350,25 @@ check('setSettings on and off: two events, the new value each time', J(events) =
   /* a switch of the menu: a bubbling change (a click) runs setSettings, as the menu's handler does */
   const box = id => (els[id] = { type: 'checkbox', checked: !!S[id], dispatchEvent(ev) { moved.push(id); if (ev.bubbles) H.setSettings(id, this.checked); } });
   try {
-    ['showTop5', 'showStats', 'autoResp', 'performanceMode'].forEach(box);
-    S.performanceMode = false;
-    ctx.localStorage.removeItem('lmPerfBackup');
+    ['showTop5', 'showStats', 'autoResp'].forEach(box);
     H.setShowTop5(); H.setShowStats(); H.toggleAutoResp();
     check('hotkeys: each effect once (was twice), the switches follow silently', J(fx) === J(['setTop5', 'displayStats', 'setAutoResp', 'displayChatInfo']) &&
       ['showTop5', 'showStats', 'autoResp'].every(k => els[k].checked === S[k]) && J(moved) === J(['showTop5', 'showStats', 'autoResp']) || (console.log('   ' + J(fx) + ' ' + J(moved)), false));
-    /* an older caller (hotkeysCommand.js, a script) stores the value itself and then syncs */
-    ctx.localStorage.setItem('lmPerfBackup', J({ jellyPhisycs: false }));
-    S.performanceMode = true; els.performanceMode.checked = true; S.jellyPhisycs = true;
-    S.performanceMode = false; H.syncHotkeyOption('performanceMode');
-    check('older caller turning Performance mode off itself: the handler sees the change, a value changed meanwhile stays', S.jellyPhisycs === true && ctx.localStorage.getItem('lmPerfBackup') === null && els.performanceMode.checked === false);
-    /* Performance mode without the menu: every value through setSettings */
-    delete els.performanceMode;
+    /* a value without the menu: through setSettings (its effect, the copy in ogario) */
     let rs = 0;
     ctx.drawRender = { resizeCanvas() { rs++; } };
     ctx.ogario.highDPI = true; S.highDPI = true;
-    H.setSettings('performanceMode', true);
-    check('Performance mode on without its switches: High DPI canvas resized and the copy in ogario follows', rs === 1 && S.highDPI === false && ctx.ogario.highDPI === false);
-    H.setSettings('performanceMode', false);
+    H.setSettings('highDPI', false);
+    check('High DPI off without its switch: canvas resized and the copy in ogario follows', rs === 1 && S.highDPI === false && ctx.ogario.highDPI === false);
+    H.setSettings('highDPI', true);
     H.setSettings('highDPI', true);
     check('the same High DPI value again: no second canvas resize', S.highDPI === true && rs === 2);
+    /* the removed Performance mode: a script setting it changes nothing */
+    const jellyWas = S.jellyPhisycs;
+    H.setSettings('performanceMode', true);
+    check('setSettings("performanceMode") of an old script: no setting, the effects unchanged', !('performanceMode' in S) && S.highDPI === true && S.jellyPhisycs === jellyWas && rs === 2);
     /* the presets' setOpt, without the menu */
-    const ownOpt = () => { };
-    const presetSet = vm.runInContext('(function (application, ownOpt) {' + cut('                var setOpt = function (k, v) {', '                /* The values from before the first of consecutive presets') + 'return setOpt; })', ctx)(H, ownOpt);
+    const presetSet = vm.runInContext('(function (application) {' + cut('                var setOpt = function (k, v) {', '                /* The values from before the first of consecutive presets') + 'return setOpt; })', ctx)(H);
     presetSet('highDPI', false);
     check('a preset without the menu: High DPI through setSettings (canvas resized, copy in ogario)', S.highDPI === false && ctx.ogario.highDPI === false && rs === 3);
     /* values checked before their effects */
@@ -395,9 +384,8 @@ check('setSettings on and off: two events, the new value each time', J(events) =
     check('mass format 0 and "0" of older scripts still mean 12.3k or exact', mf0 === 2 && S.massFormat === 1);
   } finally {
     ctx.document.getElementById = getWas; ctx.Event = evWas;
-    S.highDPI = D.highDPI; S.massFormat = D.massFormat; S.hudMergeSound = D.hudMergeSound; S.performanceMode = false; S.jellyPhisycs = D.jellyPhisycs;
+    S.highDPI = D.highDPI; S.massFormat = D.massFormat; S.hudMergeSound = D.hudMergeSound; S.jellyPhisycs = D.jellyPhisycs;
     ['showTop5', 'showStats', 'autoResp'].forEach(k => { S[k] = D[k]; });
-    ctx.localStorage.removeItem('lmPerfBackup');
     delete ctx.drawRender;
   }
 }

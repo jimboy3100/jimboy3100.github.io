@@ -9,7 +9,7 @@
 //                                     [--full] [--jobs N] [--prune DAYS] [--node]
 // Default: the fast set, without the slow probes (the SLOW list in run.js), desktop and mobile side by side.
 // --full: every probe (the coordinator's check before a version bump). --quick is the default and still accepted.
-// --node: run the node tests (every developers/tests/*.js but the tools run.js, smoke.js, crlf.js, trace.js)
+// --node: run the node tests (every developers/tests/*.js but the tools run.js, smoke.js, crlf.js)
 //   instead of the browser runs, --jobs at once (default 4), each at most 300 s.
 // --jobs N: up to N headless Chromes at once (default 2: desktop and mobile side by side; 1 is the old
 //   sequential run); more splits each mode's probes into parts (probes sharing a name prefix,
@@ -50,7 +50,7 @@ const pruneDays = argVal('--prune', '');
  * (any other probe counts as 2 s). Update when a probe gets much slower or faster. */
 const SLOW = {
   'smalltools': 10, 'themebridge': 8, 'winstack': 6, 'replaystudio': 6,
-  'themeworkshop': 5, 'perf': 5, 'server-token-typing': 31, 'conn-drop-menu': 10
+  'themeworkshop': 5, 'server-token-typing': 31, 'conn-drop-menu': 10
 };
 const weight = name => SLOW[name] || 2;
 
@@ -90,7 +90,7 @@ async function pool(items, n, fn) {
 
 /* the node tests, n at once: one line each with its time, the output of the failed ones */
 async function runNodeTests(n) {
-  const TOOLS = new Set(['run.js', 'smoke.js', 'crlf.js', 'trace.js']);
+  const TOOLS = new Set(['run.js', 'smoke.js', 'crlf.js']);
   const list = fs.readdirSync(here).filter(f => f.endsWith('.js') && !TOOLS.has(f)).sort();
   const t0 = Date.now();
   let bad = 0;

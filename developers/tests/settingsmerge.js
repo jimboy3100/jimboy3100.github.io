@@ -61,6 +61,31 @@ app.loadSettings();
 const S = ctx.defaultmapsettings, reSaved = JSON.parse(ctx.localStorage.getItem('ogarioSettings'));
 check('mass: load of an old save with Short mass off -> exact, save rewritten', S.massFormat === 1 && S.shortMass === false && reSaved.massFormat === 1);
 
+// the removed Performance mode (lmEndPerfMode in the real loadSettings): a save with the mode on gets
+// the effects it turned off back once from its copy; the copy, the diagnostics window place and the
+// old network history go; the keys leave the save
+{
+  const loadWith = (saved, perfCopy) => {
+    ctx.localStorage.setItem('ogarioSettings', JSON.stringify(saved));
+    if (perfCopy !== undefined) ctx.localStorage.setItem('lmPerfBackup', JSON.stringify(perfCopy));
+    ctx.localStorage.setItem('lmPerfDiagPos', '{"x":1,"y":2}');
+    ctx.localStorage.setItem('lmNetHistory', '[]');
+    app.loadSettings();
+    return JSON.parse(ctx.localStorage.getItem('ogarioSettings'));
+  };
+  let sv = loadWith(Object.assign({}, D, { performanceMode: true, adaptivePerf: true, jellyPhisycs: false, videoSkins: false, highDPI: false }), { jellyPhisycs: true, videoSkins: true, highDPI: false, showMass: false, glAntialias: 'yes' });
+  check('performance mode on in the save: its effects come back from the copy (its keys only, booleans only)', S.jellyPhisycs === true && S.videoSkins === true && S.highDPI === false &&
+    S.showMass === D.showMass && S.glAntialias === D.glAntialias && sv.jellyPhisycs === true && sv.videoSkins === true);
+  check('performance mode: its keys leave the save and the settings', !('performanceMode' in sv) && !('adaptivePerf' in sv) && !('performanceMode' in S) && !('adaptivePerf' in S));
+  check('performance mode: the copy, the window place and the network history are removed', ['lmPerfBackup', 'lmPerfDiagPos', 'lmNetHistory'].every(k => ctx.localStorage.getItem(k) === null));
+  sv = loadWith(Object.assign({}, D, { performanceMode: false, jellyPhisycs: false }), { jellyPhisycs: true });
+  check('performance mode off in the save: a left-over copy changes nothing', S.jellyPhisycs === false && sv.jellyPhisycs === false && ctx.localStorage.getItem('lmPerfBackup') === null);
+  sv = loadWith(Object.assign({}, D, { performanceMode: true, jellyPhisycs: false }));
+  check('performance mode on without a copy (storage was full): the values stay as saved', S.jellyPhisycs === false && !('performanceMode' in sv));
+  ctx.localStorage.setItem('ogarioSettings', JSON.stringify(Object.assign({}, D, { shortMass: false, massFormat: 0 })));
+  app.loadSettings();
+}
+
 // the real setSettings: scripts and older addons still set the old key or 0
 const app2 = vm.runInContext('({\n' + cut('        setSettings(id, checked) {', '        profiling() {') + cut('        _lmChoiceSync(name) {', '        addSliderBox(id, name') + '\n})', ctx);
 app2.saveSettings = function () { };

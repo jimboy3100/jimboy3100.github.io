@@ -229,7 +229,7 @@
 "site.index.fasterReconnectFirstRetry": "<b>Faster reconnect</b> (first retry after about 1 second) with a message if the server stays down.",
 "site.index.newSettingRecordReplays": "New setting <b>Record replays</b> (turn it off to save memory).",
 "site.index.fasterLoadingNoRedirect": "Faster loading: no redirect per file, a much smaller jQuery UI, updated jQuery and Bootstrap with security fixes.",
-"site.index.settingsSplitMacroDelays": "Settings: split-macro delays, Performance mode, Anti-aliasing, Download/Load settings files, Copy debug info, last private server remembered.",
+"site.index.settingsSplitMacroDelays": "Settings: split-macro delays, Anti-aliasing, Download/Load settings files, Copy debug info, last private server remembered.",
 "site.index.expandingLandClearMessages": "Expanding Land: clear messages when a login or purchase fails, quest timers count down, the Game Over card no longer blocks the mouse.",
 "site.index.mobileTheSettingsPanel": "Mobile: the settings panel opens (gear button), the joystick aims at the right angle, fast split taps are no longer dropped.",
 "site.index.replayLinksReplayTo": "Replay links (<i>?replay=</i>) to files on this website load again, and skipping in a replay is fast.",

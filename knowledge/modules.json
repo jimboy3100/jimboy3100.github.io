@@ -78,13 +78,6 @@
       "feature": "Various"
     },
     {
-      "id": "perf",
-      "file": "ogario/modules/perf.js",
-      "lines": 1848,
-      "description": "Performance diagnostics, Performance mode automatic (2 levels), frame time tracking, Chrome Long Animation Frames API.",
-      "feature": "Performance"
-    },
-    {
       "id": "themeworkshop",
       "file": "ogario/modules/themeworkshop.js",
       "lines": 1233,

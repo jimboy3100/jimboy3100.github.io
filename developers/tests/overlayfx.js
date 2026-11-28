@@ -26,7 +26,7 @@
  * cell outside the frame), the chat bubble of a cell outside the GL view, overlapping cells (later cell over a mark or the moved labels,
  * earlier cell under it, own labels), Canvas/WebGL transitions, frames with no marks (no
  * clear, overlay hidden), high DPI, resize between frames, WebGL context loss, the order of
- * the overlay calls, and the frame counters by Canvas2D reason (Performance diagnostics).
+ * the overlay calls, and the frame counters by Canvas2D reason.
  * node developers/tests/overlayfx.js [ogario.v4.js] */
 'use strict';
 const fs = require('fs');
@@ -183,7 +183,7 @@ function cellMethod(name) {
 const CELL_METHODS = ['draw', 'drawChat', 'lmChatLine', 'lmChatBubble', 'drawMass', 'drawSpecialSkin', 'drawImageSpecialSkin', 'layoutNick', 'drawNick',
     'setNick', 'setMass', 'setDrawing', 'setDrawingScale', 'setScale', 'setFontSize', 'setStrokeSize'];
 const haveMethods = CELL_METHODS.filter((n) => cellMethod(n));
-const frameA = src.indexOf('/* read by Performance diagnostics (renderer label) */');
+const frameA = src.indexOf('/* whether this frame was drawn by WebGL (the pie overlay below, the benches) */');
 const frameEndM = src.indexOf('this.drawLmPings(_lmFxCtx);', frameA);
 const frameSrc = src.slice(frameA, src.indexOf('\n', frameEndM));
 const lateA = src.indexOf('if (this.overlayCanvas) {\n                var oCtx = this.overlayCanvas.getContext(\'2d\');');
@@ -361,7 +361,7 @@ function frameLines(from, to) {
     return j < 0 ? null : src.slice(i, j);
 }
 const whySrc = frameLines('/* the reason when canUseWebGLScene is not reached', 'var unifiedWebGLAllowed =');
-const countSrc = frameLines('/* frames by renderer and Canvas2D reason', '/* read by Performance diagnostics');
+const countSrc = frameLines('/* frames by renderer and Canvas2D reason', '/* whether this frame was drawn by WebGL');
 const runWhy = whySrc ? new Function('defaultmapsettings', whySrc) : null;
 const runCount = countSrc ? new Function('unifiedWebGLWorldOK', 'unifiedWebGLAllowed', countSrc) : null;
 const runLatePass = new Function('LM', 'window', '_lmPieOnOverlay', '_elDeathVisual', '_getParticleBlob', '_drawExpandingLandDeathSnapshotCell', '_lmPieX', lateSrc);
@@ -922,7 +922,7 @@ function lookup(mapOver, chatLines, cmdLines, myNick) {
     check('chat lookup: a later command line replaces the chat line of that nick', m.get('a').message === 'cmd later', m.get('a') && m.get('a').message);
 }
 
-/* ---- why a frame is Canvas2D: the counters of the Performance diagnostics ---- */
+/* ---- why a frame is Canvas2D: the frame counters by reason ---- */
 reset(); team(['mate']);
 const mate2 = makeCell({ x: 0, y: 40, size: 40, targetNick: 'mate' });
 scene([mate2]);

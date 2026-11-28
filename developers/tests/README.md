@@ -51,7 +51,7 @@ Network/console log errors are printed as warnings only, because the live server
 
 ## Node tests
 
-Every `developers/tests/*.js` except the tools `run.js`, `smoke.js`, `crlf.js` and `trace.js` runs in
+Every `developers/tests/*.js` except the tools `run.js`, `smoke.js` and `crlf.js` runs in
 Node (`node developers/tests/<name>.js`, or all of them with `run.js --node`). Before a push run the ones
 that load the files you changed, plus `i18n.js` when you changed texts (new or changed texts are written in
 English only: `i18n.js` passes and counts the languages that lack them; see developers/i18n/README.md). Among them:
@@ -109,38 +109,6 @@ any entry in `fail` (or a thrown error) fails the run.
 
 `crlf.js <repoDir>` restores each modified file's original line endings (CRLF or LF) after editing.
 
-## Freeze trace (on your own PC)
-
-When the game stops for a moment every few seconds, this finds out what ran during the stop:
-
-```
-node developers/tests/trace.js --secs 120
-```
-
-1. A normal Chrome window opens on `https://www.legendmod.ml/play.html` with a temporary
-   profile (no extensions, nothing from your own profile).
-2. Play normally (pick a server, spawn, play as usual). Do not close the window.
-3. It stops by itself after 120 s, or as soon as Legend Mod's Performance diagnostics have
-   counted 3 freezes (each one is printed when it happens). Ctrl+C stops earlier.
-4. The summary is printed and saved next to the trace in `developers/tests/out/`
-   (ignored by git, nothing is uploaded):
-   `trace-<time>.json` (open it in Chrome DevTools > Performance > Load profile) and
-   `trace-<time>-summary.txt` (the summary plus Legend Mod's own performance report).
-
-For every task of 100 ms or more on the page's main thread the summary shows the JavaScript
-functions that took its time (self time, labelled `legendmod`, `agar.io`, `extension` or
-`other`), the garbage collection and the GPU process work during it, a verdict (JavaScript of
-whom, garbage collection, a GPU stall, browser work) and Legend Mod's own freeze line for it.
-Freezes without a long task are listed separately (GPU or browser).
-
-Options: `--url <address>` (another page, e.g. `--url https://agar.io` for a baseline without
-Legend Mod), `--secs N`, `--until-freezes N` (0: only the time limit), `--no-gpu` (smaller trace),
-`--out <dir>`, `--keep-profile`. Without any option it only prints its usage.
-
-The same freeze breakdown is in the game: Performance diagnostics (button in Animation, or its
-hotkey), then "Keep recording when closed" and Copy report. Each freeze line there looks like
-`287 ms freeze 22:41:10.384 · WebGL2 · skin texture upload 241 ms, cells update 21 ms, render 17 ms · LoAF ... · network normal · probable contributor: ...`.
-
 ## Dense-scene jelly benchmark
 
 ```
@@ -175,7 +143,7 @@ pieces, some off screen; 3% grow or shrink every tick so mass texts change), 2k/
 churn, 1 or 2 sockets, crowded and wide layouts. Every scene has the same settings, 1600x900 at
 DPR 1, zoom 0.4, camera fixed, jelly on (the default) unless the name says `nojelly`. Per scene:
 frame time p50/p95/p99 and FPS (frames unthrottled), renderFrame CPU p50/p95, CPU self time per
-frame of the timed parts (the Performance diagnostics scope names plus jelly prepare / build /
+frame of the timed parts (the core's part timers plus jelly prepare / build /
 move, food, eligibility), the share of frames drawn by the WebGL scene (renderer fallback), and
 from a separate untimed pass the WebGL draw calls, time inside GL upload calls (a GPU wait shows
 there), label rasters, jelly points submitted / indexed, cells / food and the JS heap. It writes
@@ -254,8 +222,8 @@ keeps the known colour, a new cell without colour has none (drawn grey, never bl
 black stays black, channels below 16 are padded, a cut packet changes no colour; team colours
 (real minimapCell) colour cells only when the teammate sent one and do not reach a stranger's
 nameless pieces; the colour remembered per nick is forgotten on the next server; "My custom
-colour" turned off gives the own cells their colour back; the WebGL colour settings keep black;
-the parser's colour diagnostics. In headless Chrome the real WebGL batch and the real cell.draw
+colour" turned off gives the own cells their colour back; the WebGL colour settings keep black.
+In headless Chrome the real WebGL batch and the real cell.draw
 (jelly on/off) draw the same colour for valid colours, black, strings that are no colour and no
 colour, and the own custom colour without writing it into the cell. The Chrome part is skipped
 without Chrome. `node developers/tests/cellcolors.js [ogario.v4.js] [--no-chrome]`

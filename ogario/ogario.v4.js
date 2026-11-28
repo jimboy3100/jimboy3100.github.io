@@ -79,9 +79,7 @@
     }
     /* A click on a switch whose box is in a <label> (every Settings switch): Switchery sent a
      * change with the box's OLD value, then the label ticked the box and sent the real one, so
-     * each click ran its setting twice, first backwards. Turning Performance mode off ran "on"
-     * first, which saved the already lowered effects as the ones to give back: jelly physics
-     * and the other effects stayed off. The label's own change is the only one now. */
+     * each click ran its setting twice, first backwards. The label's own change is the only one now. */
     var fixSwitchery = function (Sw) {
         var p = Sw && Sw.prototype, orig = p && p.bindClick;
         if (typeof orig !== 'function' || orig._lmLabelFix) return;
@@ -1421,9 +1419,7 @@ window._lmRecentErrors = window._lmRecentErrors || [];
         keep('unhandled promise: ' + (r && (r.message || r)) );
     });
 })();
-/* "Copy debug info" (Settings): the one report for a bug report. The Performance diagnostics
- * window's Copy button gives the same text: its performance report (ogario/modules/perf.js) is
- * the second part, so a player never sends half of it. */
+/* "Copy debug info" (Settings): the one report for a bug report. */
 function lmDebugReport() {
     var lines = [];
     try {
@@ -1448,7 +1444,6 @@ function lmDebugReport() {
         lines.push('Last errors (' + errs.length + '):');
         for (var i = 0; i < errs.length; i++) lines.push('  ' + errs[i]);
     } catch (e) { lines.push('debug info error: ' + e); }
-    try { if (window.LMPerf && typeof window.LMPerf.report === 'function') lines.push('', window.LMPerf.report()); } catch (e) { lines.push('performance report error: ' + e); }
     var text = lines.join('\n');
     /* nicks, clan tags, skin URLs, tokens and room paths out (ogario/modules/smalltools.js) */
     try { if (window.LMSmallTools && typeof LMSmallTools.redactReport === 'function') text = LMSmallTools.redactReport(text); } catch (e) { }
@@ -2309,7 +2304,7 @@ function lmFoodDrawList() {
     if (!_lmFood.on) return LM ? LM.food : null;
     return _lmFood.list;
 }
-/* counts for the Performance diagnostics and tests */
+/* counts for the tests */
 function lmFoodStats() {
     var F = _lmFood, obs = 0;
     for (var i = 0; i < F.ents.length; i++) obs += F.ents[i].obs.length;
@@ -8110,14 +8105,8 @@ var _lmVideoSkins = lmVideoSkinRegistry({
         return v;
     },
     onFree: function (url) { delete window.videoSkinPlayer[url]; },
-    /* the tick is timed by the Performance diagnostics freeze breakdown while it records */
     startTimer: function (fn, ms) {
-        return (window.videoSkinSweeper = setInterval(function () {
-            var S = window._lmScope;
-            if (!S) return fn();
-            var d = S.b('video skins');
-            try { fn(); } finally { S.e(d); }
-        }, ms));
+        return (window.videoSkinSweeper = setInterval(fn, ms));
     },
     clearTimer: function (id) { clearInterval(id); window.videoSkinSweeper = null; },
     top5: function () { return application.top5; },
@@ -20885,9 +20874,7 @@ var defaultmapsettings = {
     highDPI: false,
     recordReplays: true,          /* off = no packets kept for replays (saves memory), and no match history or game stats */
     glAntialias: true,            /* WebGL anti-aliasing (MSAA); read when the GPU context is created */
-    performanceMode: false,       /* one switch for weak PCs/phones: turns the costly effects off */
     fpsLimit: 0,                  /* frames per second cap (0 = off): less heat/battery on laptops and phones */
-    adaptivePerf: false,          /* Performance mode, automatic: below 60 FPS (or the FPS limit) for a while, effects off for now, back when fast again (runtime only, never saved) */
     reducedMotion: false,         /* no death screen shake, death particles or Expanding Land entrance spin */
     autoHideNames: true,
     autoHideMass: true,
@@ -21014,7 +21001,7 @@ var defaultmapsettings = {
     showTargeting: true,
     showLbData: true,
     showTime: false,
-    showDevConsole: false,        /* developer console: render time by the FPS, profiler box, packet log; its switch is in the Performance diagnostics window */
+    showDevConsole: false,        /* developer console: render time by the FPS, profiler box, packet log (Settings > Stats) */
     //normalLb: true,
     centeredLb: true,
     tweenMaxEffect: false,
@@ -21297,18 +21284,39 @@ function lmFoldClickFollow(s) {
     });
     return had;
 }
+/* Performance mode, its automatic choice (Adaptive performance) and the Performance diagnostics
+ * window are gone. A stored set saved with the mode on had the effects it turns off saved as off,
+ * their earlier values kept in lmPerfBackup: they are put back once, as turning the mode off did.
+ * The stored keys of the three (that copy, the window's place, the old network history) are
+ * removed. s: the stored gameplay settings or null. Returns true when s changed. */
+function lmEndPerfMode(s) {
+    var bak = null, changed = false;
+    try { bak = JSON.parse(window.localStorage.getItem('lmPerfBackup') || 'null'); } catch (e) { bak = null; }
+    if (s && typeof s === 'object' && !Array.isArray(s)) {
+        if (s.performanceMode === true && bak && typeof bak === 'object' && !Array.isArray(bak)) {
+            ['jellyPhisycs', 'videoSkins', 'highDPI', 'showBgSectors', 'animatedRainbowColor', 'borderGlow', 'suckAnimation', 'eatPulse', 'glAntialias'].forEach(function (k) {
+                if (Object.prototype.hasOwnProperty.call(bak, k) && typeof bak[k] === 'boolean') s[k] = bak[k];
+            });
+        }
+        ['performanceMode', 'adaptivePerf'].forEach(function (k) {
+            if (Object.prototype.hasOwnProperty.call(s, k)) { delete s[k]; changed = true; }
+        });
+    }
+    try { ['lmPerfBackup', 'lmPerfDiagPos', 'lmNetHistory'].forEach(function (k) { window.localStorage.removeItem(k); }); } catch (e) { }
+    return changed;
+}
 /* Hotkey commands merged into others: "Go to zoom bookmark 1-3" are the zoom level hotkeys 1-3,
- * "Screenshot mode" is Show/hide HUD, "Show / hide net graph" is Show / hide performance diagnostics
- * (its FPS, ping and renderer are there). An old command's key goes to the new one when that has no
+ * "Screenshot mode" is Show/hide HUD. An old command's key goes to the new one when that has no
  * key of its own, else it is free again; the key of a removed command (Hotkey conflicts; Save the
  * current zoom as zoom level 1-5; Skin collections, part of the player profiles now; the Command
  * Centre, deleted; precision zoom; enlarge the minimap; next / previous profile and Undo profile; the instant replay; Switch server [public/private], whose private relay never had an address; Show/hide quest, whose box nothing filled; the old Multibox toggle back;
  * Open the Lab; the keys that only opened a window or a panel or switched a rarely changed setting
  * (their window, panel or switch stays); Reconnect to the previous server; the Settings profiles
- * window, deleted with the settings profiles) is free. For the stored hotkeys (loadHotkeys). Returns true when map changed. */
+ * window, deleted with the settings profiles; Show / hide performance diagnostics and the net graph
+ * before it, deleted with the diagnostics window) is free. For the stored hotkeys (loadHotkeys). Returns true when map changed. */
 function lmRenameOldHotkeys(map) {
     if (!map || typeof map !== 'object') return false;
-    var gone = /^hk-(?:lmLab|analytics|performanceMode|mergeRings|el(?:Leagues|Shop|Challenges|Potions|ClaimAll)|replay(?:Pause|Faster|Slower|Fwd|Back|Studio)|middleMultiView|gamepadWindow|lmProfilesWindow|copyServerLink|chatSounds|lmPlugins|hudEditor|prevServer)$/;
+    var gone = /^hk-(?:lmLab|analytics|performanceMode|perfDiag|netGraph|mergeRings|el(?:Leagues|Shop|Challenges|Potions|ClaimAll)|replay(?:Pause|Faster|Slower|Fwd|Back|Studio)|middleMultiView|gamepadWindow|lmProfilesWindow|copyServerLink|chatSounds|lmPlugins|hudEditor|prevServer)$/;
     var own = function (k) { return Object.prototype.hasOwnProperty.call(map, k); };
     var bound = function (cmd) {
         for (var x in map) if (own(x) && map[x] === cmd) return true;
@@ -21328,7 +21336,6 @@ function lmRenameOldHotkeys(map) {
         if (v === 'hk-lmThemeWorkshop') { delete map[k]; changed = true; continue; }
         if ((z = /^hk-zoomRecall([1-3])$/.exec(v))) to = 'hk-zoom' + z[1];
         else if (v === 'hk-screenshotMode') to = 'hk-showHUD';
-        else if (v === 'hk-netGraph') to = 'hk-perfDiag';
         if (!to) continue;
         if (bound(to)) delete map[k]; else map[k] = to;
         changed = true;
@@ -21363,8 +21370,7 @@ function lmKillerShown(now) {
 /* S5: one place announces gameplay setting changes. Every path that changes one (switch,
  * slider, text box, select, hotkey toggle, preset, gamepad, import of a part) saves
  * through application.saveSettings(defaultmapsettings, 'ogarioSettings'); the save compares
- * the player's values (perf.js toJSON leaves out Adaptive performance's temporary ones) with
- * the last saved ones and sends one 'settingsChange' per changed key. A slider is announced
+ * the player's values with the last saved ones and sends one 'settingsChange' per changed key. A slider is announced
  * when its debounced save runs (it rests or is released), not on every step; an unchanged
  * value is not announced. */
 var _lmSettingsSeen = null, _lmSettingsBy = {}, _lmSettingsRun = 0;
@@ -21372,9 +21378,7 @@ var _lmSettingsSeen = null, _lmSettingsBy = {}, _lmSettingsRun = 0;
  * writes every setting again) */
 var _lmSettingsUnsaved = false;
 function lmSettingsUserView() {
-    var s = defaultmapsettings;
-    if (typeof s.toJSON === 'function') { try { return s.toJSON(); } catch (e) { } }
-    return s;
+    return defaultmapsettings;
 }
 function lmSettingsCommit(view) {
     var seen = _lmSettingsSeen, k, v;
@@ -21409,7 +21413,6 @@ function lmSettingsCommit(view) {
  * array, 's' plain text (not JSON; max: its longest length, re: its form); clear: the import removes it when the export has none (it described the settings being
  * replaced). Each module checks the value again when it reads it. */
 var LM_EXPORT_KEYS = [
-    { key: 'lmPerfBackup', type: 'o', clear: true },
     { key: 'lmPresetUndo', type: 'o', clear: true },
     { key: 'lm-mobile-prefs', type: 'o' },
     { key: 'lmGamepad', type: 'o' },
@@ -24677,7 +24680,9 @@ function thelegendmodproject() {
             /* the old second video volume (folded into the level) and the settings that became one
              * choice (lmFoldLegacySettings): the save is rewritten, so it is folded once */
             /* the old Game stats position: a place other than the top goes once into the HUD layout */
-            if (settings && (lmFoldLegacySettings(settings) | lmHudAdoptOld(settings, false))) {
+            /* Performance mode gone: the effects it had turned off come back once (lmEndPerfMode) */
+            var _lmPerfGone = lmEndPerfMode(settings);
+            if (settings && (lmFoldLegacySettings(settings) | lmHudAdoptOld(settings, false) | _lmPerfGone)) {
                 try { window.localStorage.setItem('ogarioSettings', JSON.stringify(settings)); } catch (e) { }
             }
             for (const option in defaultmapsettings) {
@@ -24738,8 +24743,8 @@ function thelegendmodproject() {
                 }
             }
             if (options.ogarioHotkeys) options.ogarioHotkeysKnown = Object.keys(hotkeysCommand);
-            /* Issue #15: include Performance Mode backup and preset undo snapshot so they survive a browser wipe.
-             * They hold gameplay settings, so they go with those only (the import reads them only
+            /* Issue #15: include the preset undo snapshot so it survives a browser wipe.
+             * It holds gameplay settings, so they go with those only (the import reads them only
              * with those too). The configuration of the phone controls, the gamepad and the add-on
              * windows (LM_EXPORT_KEYS) goes with them as well. */
             if (options.ogarioSettings) {
@@ -24834,9 +24839,9 @@ function thelegendmodproject() {
                                 _impRemove('ogarioHotkeysKnown');
                             }
                         }
-                        /* Performance mode's backup and the preset undo snapshot belong to the
-                         * gameplay settings: only with them, and the old ones go when the import
-                         * has none (they described the settings being replaced). The configuration
+                        /* The preset undo snapshot belongs to the
+                         * gameplay settings: only with them, and the old one goes when the import
+                         * has none (it described the settings being replaced). The configuration
                          * of the phone controls, the gamepad and the add-on windows only when the
                          * export has it (one from a computer has no phone controls and leaves this
                          * phone's as they are); each module checks its values on load. */
@@ -24870,8 +24875,7 @@ function thelegendmodproject() {
             }
         },
         /* Import without a reload: the written values into the running game. Gameplay settings
-         * through setSettings (their effects, the switch / list / slider, the save; Performance mode
-         * first, as it switches others), the theme like a theme preset, the hotkeys into the Hotkeys
+         * through setSettings (their effects, the switch / list / slider, the save), the theme like a theme preset, the hotkeys into the Hotkeys
          * window (commands newer than the export get their default keys), commands and player
          * profiles read again, the phone controls and their layout through their reload. Returns
          * what takes effect only at the next load: anti-aliasing, the gamepad buttons, the voice
@@ -24891,36 +24895,19 @@ function thelegendmodproject() {
             if (sel('ogarioSettings') && v.ogarioSettings && typeof v.ogarioSettings === 'object') {
                 var sv = v.ogarioSettings;
                 var keys = Object.keys(sv).filter(function (k) { return own(defaultmapsettings, k); });
-                var pi = keys.indexOf('performanceMode');
-                if (pi > 0) { keys.splice(pi, 1); keys.unshift('performanceMode'); }
-                /* Performance mode switched on here makes its own copy: the export's copy goes back after */
-                var pbText = null;
-                try { pbText = window.localStorage.getItem('lmPerfBackup'); } catch (e) { }
                 var AFTER = { streamMode: 'setStreamMode', hideSkinUrl: 'setHideSkinUrl', showQuickMenu: 'setShowQuickMenu', showQuickBots: 'setShowQuickBots', showSkinsPanel: 'setShowSkinsPanel', hideChat: 'setHideChat' };
                 var aa = false;
                 keys.forEach(function (k) {
                     if (same(defaultmapsettings[k], sv[k])) return;
                     try {
-                        /* one Performance mode message for the whole import */
-                        app._lmPerfApplying = k !== 'performanceMode';
                         app.setSettings(k, sv[k]);
                     } catch (e) {
                         defaultmapsettings[k] = sv[k];
-                    } finally {
-                        app._lmPerfApplying = false;
                     }
-                    if (k === 'glAntialias' || k === 'performanceMode') aa = true;
+                    if (k === 'glAntialias') aa = true;
                     if (AFTER[k] && typeof app[AFTER[k]] === 'function') { try { app[AFTER[k]](); } catch (e) { } }
                 });
                 try { this.saveSettings(defaultmapsettings, 'ogarioSettings'); } catch (e) { }
-                try {
-                    var pbNow = window.localStorage.getItem('lmPerfBackup');
-                    if (pbNow !== pbText) {
-                        if (pbText === null) window.localStorage.removeItem('lmPerfBackup');
-                        else window.localStorage.setItem('lmPerfBackup', pbText);
-                    }
-                    window._lmPerfBackupMem = null;
-                } catch (e) { }
                 /* anti-aliasing is fixed when the WebGL canvas is made */
                 if (aa) { try { if (typeof window.lmGlAAPending !== 'function' || window.lmGlAAPending()) need.push('glAntialias'); } catch (e) { need.push('glAntialias'); } }
                 var MH = window._lmMobileHost, ME = window.LMMobileEditor;
@@ -25031,10 +25018,9 @@ function thelegendmodproject() {
             if (window.LMThemeWorkshop && window.LMThemeWorkshop.settle) { try { window.LMThemeWorkshop.settle(); } catch (eTw) { } }
             clearTimeout(this._lmSettingsSaveT);
             this._lmSettingsSaveT = null;
-            /* Performance mode's backup and the preset undo snapshot hold values of the settings
-             * being reset: kept, they put pre-reset values back later (mode off / Undo preset) */
+            /* the preset undo snapshot holds values of the settings being reset: kept, it puts
+             * pre-reset values back later (Undo preset) */
             try {
-                window.localStorage.removeItem('lmPerfBackup');
                 window.localStorage.removeItem('lmPresetUndo');
             } catch (e) { }
             if (window.localStorage.getItem('ogarioSettings') !== null) {
@@ -25054,10 +25040,6 @@ function thelegendmodproject() {
                 if (checked === undefined) return;
             }
             if (defaultmapsettings.hasOwnProperty(id) && null !== checked) {
-                /* Adaptive performance keeps lowered values for now: the player's change wins */
-                if (window.LMPerf) { try { window.LMPerf.onSetting(id, checked); } catch (e) { } }
-                /* ... and over the copy Performance mode keeps (after the adaptive values are back) */
-                this._lmPerfModeOwn(id, checked);
                 //switch (defaultmapsettings[id] = checked, ogario.hasOwnProperty(id) && (ogario[id] = checked), id) {
                 /* the value before this call: a press of a Settings switch sends its old value first
                  * (Switchery in a label), so a notice is given only for a real change */
@@ -25216,66 +25198,9 @@ function thelegendmodproject() {
                     case 'blockPopups':
                         this.setBlockPopups();
                         break;
-                    case 'adaptivePerf':
-                        if (window.LMPerf) window.LMPerf.configChanged();
-                        break;
                     case 'glAntialias':
-                        /* Performance mode shows one message for all of its changes; switched back to
-                         * what the running GPU context has, no reload is needed */
-                        if (!_lmSame && window.toastr && !this._lmPerfApplying && lmGlAAPending()) toastr.info(lmT('game1.perf.aaReload'));
-                        break;
-                    case 'performanceMode':
-                        /* Only a real change turns the mode on or off: a second "on" (a script)
-                         * saved the already lowered values as the ones to give back, so "off"
-                         * left jelly physics and the rest off. A loaded setting is not applied
-                         * here (the values it lowered are saved with it). */
-                        if (checked === _lmSetWas) break;
-                        /* On: remember the current values and turn the costly effects off.
-                         * Off: put the remembered values back.
-                         * Each value goes through setSettings, with or without the menu: side
-                         * effects such as the High DPI canvas resize and the rainbow colour timer,
-                         * the slider's callback, the copy in ogario, the switch or slider shown
-                         * silently. Without the switches the value was only stored (no resize), and
-                         * a change event sent to a switch gave no error back when its handler failed. */
-                        var _lmPerfKeys = this._lmPerfModeKeys.filter(function (k) { return Object.prototype.hasOwnProperty.call(defaultmapsettings, k); });
-                        var _lmPerfApp = this;
-                        var _lmPerfSet = function (k, v) {
-                            if (defaultmapsettings[k] !== v) _lmPerfApp.setSettings(k, v);
-                        };
-                        this._lmPerfApplying = true;
-                        try {
-                            if (checked) {
-                                var _lmPerfBak = {};
-                                _lmPerfKeys.forEach(function (k) { _lmPerfBak[k] = defaultmapsettings[k]; });
-                                window._lmPerfBackupMem = null;
-                                try { window.localStorage.setItem('lmPerfBackup', JSON.stringify(_lmPerfBak)); } catch (e) {
-                                    /* storage full: the values are kept until the page is reloaded, and the player is told;
-                                     * an older stored copy goes (it is not of these values) */
-                                    window._lmPerfBackupMem = _lmPerfBak;
-                                    try { window.localStorage.removeItem('lmPerfBackup'); } catch (e2) { }
-                                    if (window.toastr) toastr.warning(_lmG1tag('game1.tag.performance', 'game1.perf.storageFull'));
-                                }
-                                _lmPerfKeys.forEach(function (k) { _lmPerfSet(k, false); });
-                            } else {
-                                /* the copy in memory is the one of this "on" (its storage write failed) */
-                                var _lmPerfOld = window._lmPerfBackupMem && typeof window._lmPerfBackupMem === 'object' ? window._lmPerfBackupMem : null;
-                                if (!_lmPerfOld) { try { _lmPerfOld = JSON.parse(window.localStorage.getItem('lmPerfBackup') || 'null'); } catch (e) { } }
-                                window._lmPerfBackupMem = null;
-                                if (_lmPerfOld && typeof _lmPerfOld === 'object') {
-                                    _lmPerfKeys.forEach(function (k) {
-                                        if (!Object.prototype.hasOwnProperty.call(_lmPerfOld, k)) return;
-                                        var v = _lmPerfOld[k];
-                                        /* the backup can come from an import: only a value of the setting's type */
-                                        if (typeof v !== 'boolean') return;
-                                        _lmPerfSet(k, v);
-                                    });
-                                }
-                                try { window.localStorage.removeItem('lmPerfBackup'); } catch (e) { }
-                            }
-                        } finally {
-                            this._lmPerfApplying = false;
-                        }
-                        if (window.toastr) toastr.info(lmT(checked ? 'game1.perf.modeOn' : 'game1.perf.modeOff'));
+                        /* switched back to what the running GPU context has, no reload is needed */
+                        if (!_lmSame && window.toastr && lmGlAAPending()) toastr.info(lmT('game1.perf.aaReload'));
                         break;
                 }
                 /* a setting with a slider (addSliderBox): the slider and its value show the value
@@ -25290,40 +25215,6 @@ function thelegendmodproject() {
                  * a slider being dragged saves once it rests */
                 if (!this._lmSliderInput) this.saveSettings(defaultmapsettings, 'ogarioSettings');
             }
-        },
-        /* The settings Performance mode turns off; it keeps their earlier values ('lmPerfBackup')
-         * to put back when it is turned off. */
-        _lmPerfModeKeys: ['jellyPhisycs', 'videoSkins', 'highDPI', 'showBgSectors', 'animatedRainbowColor',
-            'borderGlow', 'suckAnimation', 'eatPulse', 'glAntialias'],
-        /* What the player sets while the mode is on wins over that copy: turning the mode off
-         * puts back only the values nobody changed meanwhile. setSettings calls this before a
-         * value is stored (after Adaptive performance put its lowered values back), presets and
-         * their Undo call it for their keys.
-         * - One of the keys set while the mode is on (switch, hotkey, preset): the value is the
-         *   player's, it leaves the copy. Not for the mode's own changes.
-         * - The mode turned off: a key that no longer has the value the mode gave it was changed
-         *   meanwhile some other way (a slider, a script), so it leaves the copy too. */
-        _lmPerfModeOwn(id, value) {
-            var keys = this._lmPerfModeKeys, drop = [];
-            if (id === 'performanceMode') {
-                if (value !== false || defaultmapsettings.performanceMode !== true) return;
-                drop = keys.filter(function (k) {
-                    var v = defaultmapsettings[k];
-                    return v !== false;
-                });
-            } else if (defaultmapsettings.performanceMode === true && !this._lmPerfApplying && keys.indexOf(id) >= 0) {
-                drop = [id];
-            }
-            if (!drop.length) return;
-            var mem = window._lmPerfBackupMem;
-            if (mem && typeof mem === 'object') drop.forEach(function (k) { delete mem[k]; });
-            try {
-                var b = JSON.parse(window.localStorage.getItem('lmPerfBackup') || 'null');
-                if (!b || typeof b !== 'object') return;
-                var n = 0;
-                drop.forEach(function (k) { if (Object.prototype.hasOwnProperty.call(b, k)) { delete b[k]; n++; } });
-                if (n) window.localStorage.setItem('lmPerfBackup', JSON.stringify(b));
-            } catch (e) { }
         },
         /* A setting's switch (and its Switchery, which follows a change event that does not
          * bubble, so the settings handler is not run) or dropdown shows its value without
@@ -25992,9 +25883,7 @@ function thelegendmodproject() {
                 if (fit === undefined) return;
                 t = fit;
                 if (app._lmSliderCb && Object.prototype.hasOwnProperty.call(app._lmSliderCb, name)) {
-                    /* as a switch: Adaptive performance and Performance mode see the player's value
-                     * (a blur set to 0 by hand stayed 5 after the mode went off), the callback
-                     * runs once there; the save waits until the slider rests */
+                    /* as a switch: the callback runs once there; the save waits until the slider rests */
                     var was = app._lmSliderInput;
                     app._lmSliderInput = true;
                     try { app.setSettings(name, t); } finally { app._lmSliderInput = was; }
@@ -26355,21 +26244,12 @@ function thelegendmodproject() {
                     multibox: { key: 'pkg.pt.presetMultibox', en: 'Multibox', set: { mbSwitchAfterDeath: true, mbAutoRespawn: true, multiKeepMoving: true, middleMultiViewWhenClose: true, cameraSmoothLerp: true } }
                 };
                 application.lmPresets = presets;
-                /* A preset value is the player's choice, over the value Adaptive performance lowered for
-                 * now and over Performance mode's copy: setSettings tells both (also for a slider);
-                 * where it is not run (the value is there already, a setting without a control)
-                 * this does, so each key tells them once. */
-                var ownOpt = function (k, v) {
-                    if (window.LMPerf && typeof window.LMPerf.onSetting === 'function') { try { window.LMPerf.onSetting(k, v); } catch (e) { } }
-                    application._lmPerfModeOwn(k, v);
-                };
                 var setOpt = function (k, v) {
                     /* setSettings applies it with or without the menu: its effects, a slider's
                      * callback, the copy in ogario, the save; the switch, list or slider follows
                      * silently. Through a change event sent to the switch a failing handler gave
                      * no error back, and without the menu the value was only stored. */
                     if (defaultmapsettings[k] !== v) application.setSettings(k, v);
-                    else ownOpt(k, v);
                     /* the eye buttons next to the nick and the skin (no switch in Settings) */
                     var after = k === 'streamMode' ? 'setStreamMode' : k === 'hideSkinUrl' ? 'setHideSkinUrl' : '';
                     if (after && typeof application[after] === 'function') application[after]();
@@ -26405,9 +26285,8 @@ function thelegendmodproject() {
                     /* a Theme Workshop preview ends first: the save below would store its sounds */
                     if (window.LMThemeWorkshop && window.LMThemeWorkshop.settle) { try { window.LMThemeWorkshop.settle(); } catch (eTw) { } }
                     /* a second preset keeps the values from before the first one */
-                    /* the player's values, not one Adaptive performance has lowered for now */
                     var snap = undoSnap || {};
-                    keys.forEach(function (k) { if (!snap.hasOwnProperty(k)) snap[k] = window.LMPerf && typeof window.LMPerf.userValue === 'function' ? window.LMPerf.userValue(k) : defaultmapsettings[k]; });
+                    keys.forEach(function (k) { if (!snap.hasOwnProperty(k)) snap[k] = defaultmapsettings[k]; });
                     undoSnap = snap;
                     try { window.localStorage.setItem(undoKey, JSON.stringify(snap)); } catch (e) { }
                     keys.forEach(function (k) { setOpt(k, p.set[k]); });
@@ -26455,16 +26334,10 @@ function thelegendmodproject() {
             })();
             //this.addOptions(["unlockedFPS"], "animationGroup");
             /* Settings menu layout: one place per option. Ids and stored keys did not change when
-             * options moved (recordReplays to Replays, performanceMode to Performance, reducedMotion
-             * to Expanding Land, the gameplay sounds to Sounds, merge options to Merging, click
-             * spectate and the stream overlay to Spectating, jelly physics and the eat animation from
-             * Skins to Animation, the developer console from Stats to Performance). */
+             * options moved (recordReplays to Replays, reducedMotion to Expanding Land, the gameplay
+             * sounds to Sounds, merge options to Merging, click spectate and the stream overlay to
+             * Spectating, jelly physics and the eat animation from Skins to Animation). */
             this.addOptions(["highDPI", "glAntialias", "jellyPhisycs", "suckAnimation"], "animationGroup");
-            /* Performance and network: Performance mode with its automatic choice (adaptivePerf) and the
-             * diagnostics button are added below with the sliders. The developer console
-             * (showDevConsole) is switched in the diagnostics window (ogario/modules/perf.js),
-             * a developer facility rather than a player setting. */
-            this.addOptions(["performanceMode"], "perfGroup");
 
             this.addOptions(["autoZoom", "centerWeightCamera"], "zoomGroup");
             this.addOptions([], "boardGroup");
@@ -26503,7 +26376,7 @@ function thelegendmodproject() {
              * (buildHotkeysControls): all input bindings live there, none in Settings. */
             //this.addOptions(["showTop5", "showTargeting", "showLbData", "centeredLb", "normalLb", "fpsAtTop", "tweenMaxEffect"], "hudGroup"),
             this.addOptions(["showTop5", "showTargeting", "showLbData", "centeredLb", "tweenMaxEffect", "top5skins"], "hudGroup");
-            this.addOptions(["showStats", "showStatsMass", "showStatsESTE", "showStatsEMTE", "showStatsMTE", "showStatsSTE", "showStatsTTE", "showStatsPTE", "showStatsN16", "showStatsFPS", "showStatsPPS", "showStatsAlive", "gameOverStats", "showTime"], "statsGroup");
+            this.addOptions(["showStats", "showStatsMass", "showStatsESTE", "showStatsEMTE", "showStatsMTE", "showStatsSTE", "showStatsTTE", "showStatsPTE", "showStatsN16", "showStatsFPS", "showStatsPPS", "showStatsAlive", "gameOverStats", "showTime", "showDevConsole"], "statsGroup");
             /* Replays and history */
             this.addOptions(["recordReplays"], "replayGroup");
             this.addOptions(["oneColoredSpectator", "multiBoxShadow", "multiKeepMoving", "middleMultiViewWhenClose", "middleMultiView", "mbSwitchAfterDeath", "mbFreeze", "mbAutoRespawn", "cameraSmoothLerp"], "multiBox");
@@ -26542,12 +26415,6 @@ function thelegendmodproject() {
             }
             this.addSliderBox(".animationGroup", "animation", 5, 200, 1);
             this.addSliderBox(".animationGroup", "fpsLimit", 0, 240, 10);
-            /* Performance mode automatic (adaptivePerf: effects off only while the game is slow) and the
-             * diagnostics window (ogario/modules/perf.js) */
-            this.addOptionTo(".perfGroup", "adaptivePerf");
-            $('<button type="button" id="lm-perf-diag-btn" class="btn btn-xs btn-block btn-primary" style="margin:4px 0 2px;"></button>')
-                .attr('data-i18n', 'settings.lmPerfDiag').text(lmT('settings.lmPerfDiag')).appendTo('.perfGroup')
-                .on('click', function () { if (window.LMPerf) window.LMPerf.openDiag(); return false; });
             /* one choice for the mass text ("Short mass" was a second switch for the same) */
             this.addChoiceBox(".massGroup", "massFormat", "settings.massFormat", [[1, 'pkg.mg.massExact'], [2, 'pkg.mg.massShort'], [3, 'pkg.mg.massAuto']]);
 
@@ -38115,7 +37982,6 @@ function thelegendmodproject() {
                              * and fills with its default black (the cached disc stayed black), WebGL
                              * drew it grey. Both now give the fallback; real '#000000' stays black. */
                             else if (lmColorInt(color2) < 0) {
-                                if (window._lmColorDiag) window._lmColorDiag('no colour string', this, { color: '#808080', renderer: 'Canvas2D' });
                                 color2 = "#808080";
                                 _useFallbackGradient = true;
                             }
@@ -40247,7 +40113,6 @@ function thelegendmodproject() {
             this._lmServerBorder = null;
             this._lmBorderCX = this._lmBorderCY = this._lmBorderKX = this._lmBorderKY = null;
             this._lmFullBorder = null;
-            this._lmBorderTraceAdd('connect', 0);
             this.isLegendWorld = false; // reset Expanding Land state on new connection
             LM.isLegendWorld = false;    // ALSO reset on the LM object (separate from legendmod)
 
@@ -40667,7 +40532,7 @@ function thelegendmodproject() {
              * that is already playing (connection-level flush of border, own cells, cells) */
             var _lmReplaySock = url.indexOf('imsolo.pro.replay') !== -1;
             this.socket.onmessage = function (t) {
-                if (app.socket !== _lmSock) { if (app._lmND) app._lmND.stale++; return; }
+                if (app.socket !== _lmSock) return;
                 app.onMessage(t);
             };
             this.socket.onerror = function (t) {
@@ -40746,10 +40611,8 @@ function thelegendmodproject() {
              * (open → immediate close → open → immediate close loops). */
             this._connOpenTime = Date.now();
             if (this === window.legendmod) this._lmResetFreezeDetector();
-            /* a new connection: its own network diagnostics (the previous one is kept once) */
+            /* a new connection: the play gate's view of it starts again (lmPlayBlockReason) */
             if (this === window.legendmod) this._lmNetDiagStart();
-            /* connect event for the Performance diagnostics window (ogario/modules/perf.js) */
-            if (window.LMPerf && this === window.legendmod) { try { window.LMPerf.netEvent('open', { ws: this.ws }); } catch (e) { } }
             var self = this;
             if (this._reconnStabilityTimer) clearTimeout(this._reconnStabilityTimer);
             /* delt.io needs 30s stability before resetting reconnect counter;
@@ -40923,20 +40786,9 @@ function thelegendmodproject() {
             if (window._lwUpdateWorldSpecBtn) window._lwUpdateWorldSpecBtn();
         },
         onMessage(message) {
-            /* network diagnostics: callback count, time, longest gap between two callbacks (also
-             * the visible-only one), and whether the previous callback was not a world update */
+            /* when the page handled the last message (the play gate, lmPlayBlockReason) */
             var _lmNd = this._lmND;
-            if (_lmNd) {
-                var _lmNdT = performance.now();
-                if (_lmNd.msgAt) {
-                    var _lmNdG = _lmNdT - _lmNd.msgAt;
-                    if (_lmNdG > _lmNd.msgGap) _lmNd.msgGap = _lmNdG;
-                    if (_lmNdG > _lmNd.msgGapVis && !_lmNd.hidden && _lmNd.visAt < _lmNd.msgAt) _lmNd.msgGapVis = _lmNdG;
-                    if (_lmNd.msgAt !== _lmNd.wMsgAt) _lmNd.oAt = _lmNd.msgAt;
-                }
-                _lmNd.rx++;
-                _lmNd.msgAt = _lmNdT;
-            }
+            if (_lmNd) _lmNd.msgAt = performance.now();
 
             //console.log(message.data)
 
@@ -40985,7 +40837,7 @@ function thelegendmodproject() {
                 switch (opcode) {
                     case 16:
                         // Sigmally cell update (different format from agar.io)
-                        if (this._lmND) this._lmWuRx(0);
+                        if (this._lmND) this._lmWuRx();
                         this._handleSigmallyCellUpdate(data);
                         break;
                     case 17: {
@@ -41296,9 +41148,7 @@ function thelegendmodproject() {
                         /* Cells are built like garixUpdateCells/updateCells: indexedCells +
                          * ogarbasicassembly, removed through removeCell(). Positions get the
                          * map rotation (Delta receiveX/receiveY). */
-                        /* diagnostics: an attempt; complete only when every section was whole
-                         * (a cut one ends as incomplete below, or as rejected in the catch) */
-                        if (self._lmND) { self._lmWuRx(0); self._lmWuBegin(); }
+                        if (self._lmND) self._lmWuRx();
                         /* Layout (Delta ProtocolSenpa): u16 eaten x {u32 eater, u32 victim};
                          * u16 added x {u32 id, i32 x, i32 y, u16 size, u8 type, type 0: u16 player
                          * + u24 colour, 2: u24 colour, 5: u16 n + n bytes}; u16 moved x {u32 id,
@@ -41509,14 +41359,7 @@ function thelegendmodproject() {
                             window.userBots.isAlive = false;
                             if (window.userBots.startedBots) window.connectionBots.send(new Uint8Array([5, Number(window.userBots.isAlive)]).buffer);
                         }
-                        if (_spCut) {
-                            /* incomplete, counted as such: the catch only warns */
-                            if (self._lmND) self._lmWuEnd(false);
-                            var _spE = new RangeError('world update cut short');
-                            _spE.lmCounted = true;
-                            throw _spE;
-                        }
-                        if (self._lmND) self._lmWuEnd(true);
+                        if (_spCut) throw new RangeError('world update cut short');
                         self.countPps();
                         break;
                     }
@@ -41612,8 +41455,6 @@ function thelegendmodproject() {
                         break;
                 }
                 } catch (eSp) {
-                    /* diagnostics as handleMessage: a world update that threw is rejected, another packet counted apart */
-                    if (this._lmND && !eSp.lmCounted && !this._lmWuFail()) this._lmND.pBad++;
                     if (!(eSp instanceof RangeError)) throw eSp;
                     var _spNow = Date.now();
                     if (!(this._lmBadPacketAt > _spNow - 5000)) {
@@ -41638,123 +41479,46 @@ function thelegendmodproject() {
         },
         /* Freeze detector (drawRender.render): a new connection or a closed one starts it again,
          * so the last world update and the latches of the previous server do not carry over */
-        _lmResetFreezeDetector(closing) {
-            /* a packet gap still open when the connection closes or changes was never listed
-             * (it is listed only when world updates come back): list it, timed up to now when the
-             * connection is just ending; on a new open only as measured, as the time since the
-             * last update then also holds the time between the two connections */
-            if (window.drawRender && drawRender._lmStallMax && this._lmLastWorldUpdate) {
-                var _lmGap = closing ? Math.max(drawRender._lmStallMax, Date.now() - this._lmLastWorldUpdate) : drawRender._lmStallMax;
-                if (_lmGap >= 250 && window.LMPerf) {
-                    try {
-                        if (this._lmGapEvent) this._lmGapEvent(_lmGap, Math.max(0, Date.now() - this._lmLastWorldUpdate - _lmGap));
-                        else if (window.LMPerf.event) window.LMPerf.event('packet gap', _lmGap, 'no world update' + (this.play ? ', playing' : ''));
-                    } catch (_lmEvE) { }
-                }
-            }
+        _lmResetFreezeDetector() {
             this._lmLastWorldUpdate = 0;
             if (window.drawRender) {
                 drawRender._lmStallLogged = 0;
                 drawRender._lmFreezeLogged = 0;
-                drawRender._lmStallMax = 0;
             }
         },
-        /* A packet gap for Performance diagnostics (ogario/modules/perf.js packetGap), with what
-         * happened during it: world updates held back on purpose (dead main player while a
-         * multibox unit plays, the spawn gate), rejected ones, the tab hidden, other packets
-         * handled. dur: the gap; sinceEnd: ms since it ended (0: still open). Rare: no per-packet work. */
-        _lmGapEvent(dur, sinceEnd) {
-            var P = window.LMPerf, d = this._lmND;
-            if (!P || !(dur >= 250)) return;
-            if (d && P.packetGap) {
-                /* a time of 0 is "never" (the clock starts at 0 with the page, so the gap can begin before it) */
-                var from = performance.now() - (sinceEnd > 0 ? sinceEnd : 0) - dur;
-                var inGap = function (t) { return t > 0 && t >= from; };
-                /* rejected: compressed frames only (zAt). A parsed update, even a rejected one, restarts
-                 * the gap (_lmLastWorldUpdate), so one in it only ended it and did not cause it */
-                P.packetGap(dur, !!this.play, inGap(d.mbAt) ? 'multibox' : inGap(d.gateAt) ? 'spawn' : '', inGap(d.zAt),
-                    d.hidden || inGap(d.visAt), inGap(d.oAt) || (inGap(d.msgAt) && d.msgAt !== d.wMsgAt));
-            } else if (P.event) P.event('packet gap', dur, 'no world update' + (this.play ? ', playing' : ''));
-        },
-        /* Network diagnostics of the main connection (_lmND; perf.js reads it for its report).
-         * Counters and performance.now() times of one connection (a generation): message
-         * callbacks, world updates received / attempted / applied / incomplete / rejected / held
-         * back on purpose, replay ones, times of the last callback, attempt, applied update and
-         * drawn frame. One object for the page, zeroed for each connection: nothing is allocated
-         * per packet. A callback time is when the page handled a message, not when it arrived
-         * (a busy main thread delays it). Started in onOpen, ended in onClose / closeConnection
-         * (which detaches onclose) or by the next start, once per connection. */
+        /* What the play gate (lmPlayBlockReason) knows of the main connection (_lmND): whether one
+         * is open (live) and since when (t0), when the page handled its last message (msgAt) and
+         * its last world update (wMsgAt), and whether the tab is hidden or was shown again (visAt).
+         * One object for the page, nothing is allocated per packet. A callback time is when the
+         * page handled a message, not when it arrived. Started in onOpen, ended in onClose /
+         * closeConnection (which detaches onclose) or by the next start, once per connection. */
         _lmNetDiagStart() {
             var d = this._lmND;
             if (!d) {
-                d = this._lmND = { gen: 0, live: false, t0: 0, prev: null, reason: '', hidden: false, visAt: 0, renderAt: 0, renderErr: 0 };
+                d = this._lmND = { live: false, t0: 0, hidden: false, visAt: 0, msgAt: 0, wMsgAt: 0 };
                 try {
                     d.hidden = !!document.hidden;
                     document.addEventListener('visibilitychange', function () { d.hidden = !!document.hidden; d.visAt = performance.now(); });
                 } catch (e) { }
-            } else this._lmNetDiagEnd('replaced');
-            this._lmNetDiagZero(d);
-            d.gen++;
+            }
+            d.msgAt = 0;
+            d.wMsgAt = 0;
             d.live = true;
             d.t0 = performance.now();
         },
-        _lmNetDiagZero(d) {
-            d.rx = 0; d.stale = 0; d.msgAt = 0; d.oAt = 0; d.wMsgAt = 0; d.msgGap = 0; d.msgGapVis = 0;
-            d.wRx = 0; d.wTry = 0; d.wOk = 0; d.wPart = 0; d.wBad = 0; d.wLost = 0; d.wMb = 0; d.wGate = 0; d.wHid = 0; d.wRp = 0; d.wSeek = 0;
-            d.pBad = 0; d.zBad = 0; d.open = 0;
-            d.tryAt = 0; d.okAt = 0; d.badAt = 0; d.zAt = 0; d.mbAt = 0; d.gateAt = 0;
-        },
-        /* the connection ended (reason: close, closeConnection, replaced): its numbers are kept as
-         * the previous connection, once (a second end before the next start does nothing) */
-        _lmNetDiagEnd(reason) {
+        /* the connection ended (once: a second end before the next start does nothing) */
+        _lmNetDiagEnd() {
             var d = this._lmND;
             if (!d || !d.live) return;
-            var p = {};
-            for (var k in d) if (k !== 'prev' && Object.prototype.hasOwnProperty.call(d, k)) p[k] = d[k];
-            p.reason = reason;
-            p.endAt = performance.now();
-            d.prev = p;
             d.live = false;
-            this._lmNetDiagZero(d);
-            d.t0 = p.endAt; /* no connection open since then (a replay or Practice may still count) */
+            d.msgAt = 0;
+            d.wMsgAt = 0;
+            d.t0 = performance.now(); /* no connection open since then (a replay or Practice may still count) */
         },
-        /* a world update packet (opcode 16, Senpa 20) was received; held: 1 dropped on purpose for
-         * the dead main player while a multibox unit plays, 2 by the spawn transit gate */
-        _lmWuRx(held) {
+        /* a world update packet (opcode 16, Senpa 20) was received */
+        _lmWuRx() {
             var d = this._lmND;
-            d.wRx++;
             d.wMsgAt = d.msgAt;
-            if (d.hidden) d.wHid++;
-            if (held === 1) { d.wMb++; d.mbAt = performance.now(); }
-            else if (held === 2) { d.wGate++; d.gateAt = performance.now(); }
-        },
-        /* a parser starts on a world update; an attempt still open was never finished (it threw
-         * past every handler that counts it) */
-        _lmWuBegin() {
-            var d = this._lmND;
-            if (d.open) { d.wBad++; d.wLost++; }
-            d.open = 1;
-            d.wTry++;
-            d.tryAt = performance.now();
-            if (window._lmReplayQuiet) { d.wRp++; d.wSeek++; } else if (window._lmEvReplayOn) d.wRp++;
-        },
-        /* the parser got to its end: complete when every section, count and terminator was read
-         * (a tolerant parser that stopped early is incomplete, not applied) */
-        _lmWuEnd(complete) {
-            var d = this._lmND;
-            d.open = 0;
-            if (complete) { d.wOk++; d.okAt = performance.now(); }
-            else { d.wPart++; d.badAt = performance.now(); }
-        },
-        /* a caught exception: the open world update attempt (if any) is rejected; false when no
-         * world update was being parsed */
-        _lmWuFail() {
-            var d = this._lmND;
-            if (!d.open) return false;
-            d.open = 0;
-            d.wBad++;
-            d.badAt = performance.now();
-            return true;
         },
         onClose(t) {
             console.log('\x1b[32m%s\x1b[34m%s\x1b[0m', consoleMsgLM, ' Game server socket close',
@@ -41762,15 +41526,11 @@ function thelegendmodproject() {
                 t ? ('code ' + t.code + (t.reason ? ' reason "' + t.reason + '"' : '') + (t.wasClean === false ? ' (not clean)' : '')) : '',
                 this._connOpenTime ? ('after ' + (Date.now() - this._connOpenTime) + ' ms open') : 'before open',
                 this.clientKey ? '(241 key ok)' : '(no 241 key)', LM.loginConfirmed ? '(logged in)' : '(not logged in)');
-            if (this === window.legendmod) this._lmResetFreezeDetector(true);
-            if (this === window.legendmod && this._lmND) this._lmNetDiagEnd('close');
-            if (window.LMPerf && this === window.legendmod) {
-                try { window.LMPerf.netEvent('close', { code: t && t.code, reason: t && t.reason, wasClean: t && t.wasClean, openMs: this._connOpenTime ? Date.now() - this._connOpenTime : 0 }); } catch (e) { }
-            }
+            if (this === window.legendmod) this._lmResetFreezeDetector();
+            if (this === window.legendmod && this._lmND) this._lmNetDiagEnd();
             this.flushCellsData();
             /* the closed socket's border must not outlive it (beacon / tab-return restore) */
             this._lmServerBorder = null;
-            this._lmBorderTraceAdd('close', 0);
             /* A dropped connection ends the life (the server forgets the player): the menu comes
              * back with Play, as after a death. It stayed hidden over the reconnected world, with
              * the player no longer in the game, until Esc. The multibox units end with it:
@@ -41984,11 +41744,10 @@ function thelegendmodproject() {
                 this.sigPingInterval = null;
             }
             if (this.socket) {
-                /* no close event comes (handlers dropped below): a packet gap going on is timed up to now */
-                if (this === window.legendmod) this._lmResetFreezeDetector(true);
-                /* and its network diagnostics end here (after the gap above, which reads them;
-                 * nothing the second time, e.g. after onClose) */
-                if (this === window.legendmod && this._lmND) this._lmNetDiagEnd('closeConnection');
+                /* no close event comes (handlers dropped below): the freeze detector starts again here */
+                if (this === window.legendmod) this._lmResetFreezeDetector();
+                /* and the play gate's view of it ends here (nothing the second time, e.g. after onClose) */
+                if (this === window.legendmod && this._lmND) this._lmNetDiagEnd();
                 this.socket.onopen = null;
                 this.socket.onmessage = null;
                 this.socket.onerror = null;
@@ -43580,9 +43339,6 @@ function thelegendmodproject() {
             try {
                 this._lmHandlePacket(data);
             } catch (e) {
-                /* diagnostics: a world update that threw (also a compressed one) is rejected; any
-                 * other packet that threw is counted apart */
-                if (this._lmND && !this._lmWuFail()) this._lmND.pBad++;
                 if (!(e instanceof RangeError)) throw e;
                 var _lmNow = Date.now();
                 if (!(this._lmBadPacketAt > _lmNow - 5000)) {
@@ -45493,9 +45249,8 @@ function thelegendmodproject() {
 
                 case 16: //2020 jimboy3100 specific private servers
                     // Skip main client's cell updates when dead and multibox spect is active
-                    /* (the same checks in the same order, the result kept for the diagnostics) */
                     var _lmMbHeld = !!(window.mainPlayerDeadMbActive && this._lmKeepMainSuppressed());
-                    if (this._lmND) this._lmWuRx(_lmMbHeld ? 1 : this._spawnTransitGate ? 2 : 0);
+                    if (this._lmND) this._lmWuRx();
                     if (_lmMbHeld || this._spawnTransitGate) {
                         /* the cells it adds must not come back nameless and grey later */
                         if (this._lmCellIdentity) this._lmCellIdentityScan(new window.buffer.Buffer(data.buffer), s);
@@ -45514,10 +45269,7 @@ function thelegendmodproject() {
                             this.updateCells(new window.buffer.Buffer(data.buffer), s);
                         }
                     } catch (e) {
-                        /* diagnostics: rejected, not applied (packets/s below still counts it); an
-                         * error thrown on is counted once by the packet handler's catch */
                         if (e instanceof RangeError) {
-                            if (this._lmND) this._lmWuFail();
                             // Buffer overread — malformed or unexpected cell data format; skip this packet
                         } else {
                             throw e;
@@ -50956,8 +50708,6 @@ function thelegendmodproject() {
                 message =
                     this.decompressMessage(message);
             } catch (error) {
-                /* diagnostics: a compressed frame rejected (most world updates come compressed) */
-                if (this._lmND) { this._lmND.zBad++; this._lmND.badAt = this._lmND.zAt = performance.now(); }
                 console.warn(
                     "[LM] Rejected invalid compressed packet:",
                     error
@@ -50966,7 +50716,6 @@ function thelegendmodproject() {
             }
 
             if (!message || message.length < 1) {
-                if (this._lmND) { this._lmND.zBad++; this._lmND.badAt = this._lmND.zAt = performance.now(); }
                 console.warn(
                     "[LM] Rejected empty decompressed packet"
                 );
@@ -50978,7 +50727,7 @@ function thelegendmodproject() {
                     /* Same as uncompressed opcode 16: agar.io sends most cell updates
                      * here, so the dead main client's viewport must be dropped too. */
                     var _lmMbHeldZ = !!(window.mainPlayerDeadMbActive && this._lmKeepMainSuppressed());
-                    if (this._lmND) this._lmWuRx(_lmMbHeldZ ? 1 : 0);
+                    if (this._lmND) this._lmWuRx();
                     if (_lmMbHeldZ) {
                         if (this._lmCellIdentity) this._lmCellIdentityScan(message, e);
                         break;
@@ -51544,7 +51293,6 @@ function thelegendmodproject() {
          * A NaN, infinite, reversed or empty border is dropped before mapSize or the tier change. */
         _lmOnServerBorder(minX, minY, maxX, maxY, src) {
             if (!this._lmBorderValid(minX, minY, maxX, maxY)) {
-                this._lmBorderTraceAdd('reject-' + src, 0, minX, minY, maxX, maxY);
                 if (!(this._lmBorderWarnAt > Date.now() - 5000)) {
                     this._lmBorderWarnAt = Date.now();
                     console.warn('[Protocol] Ignoring an invalid map border:', minX, minY, maxX, maxY);
@@ -51571,7 +51319,6 @@ function thelegendmodproject() {
                 /* this server is ready: bots stopped by the server change start again here (once) */
                 if (window._lmBotsResume && typeof window._lmBotsTryResume === 'function') setTimeout(window._lmBotsTryResume, 0);
             }
-            this._lmBorderTraceAdd(src, 0, minX, minY, maxX, maxY);
             return true;
         },
         /* this connection's last valid border, or null (none yet, or from an earlier socket) */
@@ -51583,38 +51330,12 @@ function thelegendmodproject() {
          * (offset, size or bounds), so a normal tab return leaves the camera and map alone. */
         _lmReapplyServerBorder(why, always) {
             var b = this._lmServerBorderNow();
-            if (!b) { this._lmBorderTraceAdd(why + '-none', 0); return false; }
+            if (!b) return false;
             if (!always && this.mapOffset === 0 && this.mapSize === ~~(b.maxX - b.minX) &&
                 this.mapMinX === b.minX && this.mapMinY === b.minY && this.mapMaxX === b.maxX && this.mapMaxY === b.maxY) return false;
             this.mapOffsetFixed = false;
             this.setMapOffset(b.minX, b.minY, b.maxX, b.maxY);
-            this._lmBorderTraceAdd(why, 0, b.minX, b.minY, b.maxX, b.maxY);
             return true;
-        },
-        /* Map border trace for the diagnostics report (LMPerf.report): last 64 border events with the
-         * socket epoch, raw packet bounds, the map that came of it, the food box and the camera/DPR.
-         * No server address or token. Not drawn and not per frame: border packets and tab returns only. */
-        _lmBorderTraceAdd(ev, n, a, b, c, d) {
-            var t = this._lmBorderTrace || (this._lmBorderTrace = []);
-            var dr = typeof drawRender !== 'undefined' ? drawRender : null;
-            t.push({
-                t: Date.now(), ev: ev, n: n, epoch: this._connectSeq || 0, lw: !!LM.isLegendWorld,
-                raw: arguments.length > 2 ? [a, b, c, d] : null,
-                map: [this.mapMinX, this.mapMinY, this.mapMaxX, this.mapMaxY], size: this.mapSize, offset: this.mapOffset, tier: LM.mapTier,
-                food: [LM.srvViewMinX, LM.srvViewMinY, LM.srvViewMaxX, LM.srvViewMaxY],
-                cam: [this.viewX, this.viewY, dr ? dr.scale : undefined], dpr: window.devicePixelRatio,
-                canvas: dr ? [dr.canvasWidth, dr.canvasHeight] : null
-            });
-            if (t.length > 64) t.shift();
-        },
-        borderTrace() {
-            var r = function (v) { return Number.isFinite(v) ? Math.round(v * 100) / 100 : String(v); };
-            var box = function (q) { return q ? q.map(r).join(',') : '-'; };
-            return (this._lmBorderTrace || []).map(function (e) {
-                return new Date(e.t).toISOString().slice(11, 23) + ' ' + e.ev + (e.n ? ' ' + Math.round(e.n) + 'ms' : '') + ' epoch ' + e.epoch + (e.lw ? ' EL' : '') +
-                    ' raw ' + box(e.raw) + ' map ' + box(e.map) + ' size ' + r(e.size) + ' offset ' + r(e.offset) + ' tier ' + e.tier +
-                    ' food ' + box(e.food) + ' cam ' + box(e.cam) + ' dpr ' + r(e.dpr) + ' canvas ' + box(e.canvas);
-            });
         },
         /*
          * agar.io's full map border (the first opcode 64 over 14000 x 14000; it comes twice at the
@@ -52076,7 +51797,6 @@ function thelegendmodproject() {
          * terminator was there; otherwise the update is counted by _lmWuIncomplete. */
         garixUpdateCells(data, offset) {
             this._lmLastWorldUpdate = Date.now(); /* freeze detector (drawRender.render) */
-            if (this._lmND) this._lmWuBegin(); /* network diagnostics: an attempt; applied only when complete */
             this.megaFFAscore();
             var self = this;
             var len = data.byteLength, complete = true, cut = false;
@@ -52101,8 +51821,6 @@ function thelegendmodproject() {
             // before any record is applied.
             if (offset + 2 > len || offset + 2 + 8 * data.getUint16(offset, true) > len) {
                 this._lmWuIncomplete('Garix');
-                /* diagnostics: dropped before anything was applied: rejected */
-                if (this._lmND) this._lmWuFail();
                 return false;
             }
             var eatCount = data.getUint16(offset, true); offset += 2;
@@ -52306,13 +52024,11 @@ function thelegendmodproject() {
                         );
                 }
             }
-            /* diagnostics: applied when every count and terminator was there, else incomplete */
-            if (this._lmND) this._lmWuEnd(complete);
             if (window.autoPlay && legendmod.play) calcTarget();
             return complete;
         },
         /* A Garix / Sigmally cell update (opcode 16) that was cut short or did not end where
-         * its counts and terminators say: counted in _lmWuBadN (for diagnostics) and named in
+         * its counts and terminators say: counted in _lmWuBadN (the console line gives it) and named in
          * the console at most every 5 s. Only the server name and the count are logged, never
          * packet bytes. Rare: nothing runs for a complete update. */
         _lmWuIncomplete(server) {
@@ -52343,7 +52059,6 @@ function thelegendmodproject() {
          * ═══════════════════════════════════════════════════════════════ */
         _handleSigmallyCellUpdate(data) {
             this._lmLastWorldUpdate = Date.now(); /* freeze detector (drawRender.render) */
-            if (this._lmND) this._lmWuBegin(); /* network diagnostics: an attempt; applied only when complete */
             this.megaFFAscore();
             var offset = 1; // skip opcode byte
             var len = data.byteLength, complete = true, ended = false;
@@ -52390,8 +52105,6 @@ function thelegendmodproject() {
             }
             if (eatCount < 0) {
                 this._lmWuIncomplete('Sigmally');
-                /* diagnostics: dropped before anything was applied: rejected */
-                if (this._lmND) this._lmWuFail();
                 return false;
             }
             offset += 2;
@@ -52590,8 +52303,6 @@ function thelegendmodproject() {
                 window.userBots.isAlive = false;
                 if (window.userBots.startedBots) window.connectionBots.send(new Uint8Array([5, Number(window.userBots.isAlive)]).buffer);
             }
-            /* diagnostics: applied when every count and terminator was there, else incomplete */
-            if (this._lmND) this._lmWuEnd(complete);
             if (window.autoPlay && legendmod.play) calcTarget();
             this.countPps();
             return complete;
@@ -52738,10 +52449,6 @@ function thelegendmodproject() {
              * rolls nothing back): the eat list and the remove list are checked whole before
              * they are used, and each record is read whole before anything is changed. An eat
              * list cut short changes nothing and is no world update for the freeze detector. */
-            /* network diagnostics: an attempt. Its reads throw on a short packet (counted as
-             * rejected where it is caught, also an eat list cut short), so getting to the end
-             * is a complete update */
-            if (this._lmND) this._lmWuBegin();
             var eatEventsLength = view.readUInt16LE(offset);
             if (offset + 2 + eatEventsLength * 8 > view.length) throw new RangeError('World update: eat list cut short');
             this._lmLastWorldUpdate = Date.now(); /* freeze detector (drawRender.render) */
@@ -52805,8 +52512,6 @@ function thelegendmodproject() {
             }
             var _tcm = this._teamColorMap;
             _tcm.clear();
-            /* cell colour diagnostics (Performance diagnostics recording; null while off) */
-            var _lmCD = window._lmColorDiag || null;
             var _myNick = (typeof profiles !== 'undefined' && profiles[application.selectedProfile]) ? profiles[application.selectedProfile].nick : '';
             for (var _ti = 0; _ti < application.teamPlayers.length; _ti++) {
                 var _tp = application.teamPlayers[_ti];
@@ -53532,11 +53237,6 @@ function thelegendmodproject() {
                 /* the server's colour (multibox copies are compared by it, lmMultiboxPositionTwin)
                  * and the speed from the last packet (copies are compared at one time) */
                 if (rawServerColor) cellUpdateCells._lmRawColor = rawServerColor;
-                if (_lmCD && !isFood && !isVirus) {
-                    var _lmCc = cellUpdateCells.color;
-                    if (_lmCc === '#000000') _lmCD(rawServerColor === '#000000' ? 'server black' : 'drawn black', cellUpdateCells, { raw: rawServerColor, op: 16, flags: flags });
-                    else if (_lmCc == null || _lmCc === '') _lmCD('without colour', cellUpdateCells, { raw: rawServerColor, op: 16, flags: flags });
-                }
                 if (!isFood && typeof lmObsVelocity === 'function') lmObsVelocity(cellUpdateCells, x, y, this.time || Date.now());
                 cellUpdateCells.startX = cellUpdateCells.x;
                 cellUpdateCells.startY = cellUpdateCells.y;
@@ -53976,7 +53676,6 @@ function thelegendmodproject() {
             this._lmDeathDue = false;
             this._lmOwnDeathCheck();
 
-            if (this._lmND) this._lmWuEnd(true);
             //window.counterCell=0;
             if (
                 window.autoPlay &&
@@ -60854,7 +60553,7 @@ function pickPlayerCellBySize(players, selectBiggest) {
         /* Why a frame is not drawn by WebGL. canUseWebGLScene leaves one of these in
          * _lmGlWhy (WEBGL: it may be), renderFrame counts every frame by it in _lmGlWhyN
          * (BATCH: allowed but drawWebGLCellBatch failed; NO_GL / LOST: no context) for the
-         * Performance diagnostics report (perf.js). COVER_*: a later cell may cover that
+         * tests and the benches. COVER_*: a later cell may cover that
          * overlay mark (COVER_LABELS: the ring / labels moved onto the overlay with a badge
          * or effect). GLW_IDS[n] names reason n. */
         GLW: {
@@ -76225,7 +75924,6 @@ function pickPlayerCellBySize(players, selectBiggest) {
                         _parsedColor >= 0
                             ? _parsedColor
                             : 0x808080;
-                    if (_parsedColor < 0 && window._lmColorDiag) window._lmColorDiag('no colour string', cell, { color: '#808080', renderer: 'WebGL' });
 
                     cell._colorInt =
                         cInt;
@@ -77751,7 +77449,7 @@ function pickPlayerCellBySize(players, selectBiggest) {
 
             try {
                 var _tGrid = performance.now();
-                /* Performance diagnostics freeze breakdown (ogario/modules/perf.js; null while off) */
+                /* part timers of the dense-world bench (developers/tests/lib/bench-scene.js; null in play) */
                 var _lmScGrid = window._lmScope ? window._lmScope.b('grid') : -1;
 
                 /*
@@ -78335,7 +78033,7 @@ function pickPlayerCellBySize(players, selectBiggest) {
                         .jellyPhisycs
                 ) {
                     /*
-                     * Timed as one part (diagnostics "jelly physics" and the
+                     * Timed as one part (bench part "jelly physics" and the
                      * client profiler): preparing the points and building the
                      * collision index are part of the jelly cost too.
                      */
@@ -78412,7 +78110,7 @@ function pickPlayerCellBySize(players, selectBiggest) {
                          * ───────────────────────────────────────────────────
                          */
 
-                        /* timed on its own (diagnostics "jelly move"; prepare and index are their methods) */
+                        /* timed on its own (bench part "jelly move"; prepare and index are their methods) */
                         var _lmScMove = window._lmScope ? window._lmScope.b('jelly move') : -1;
                         for (
                             var jellyMoveIndex = 0;
@@ -78893,11 +78591,11 @@ function pickPlayerCellBySize(players, selectBiggest) {
                         );
                     }
                 }
-                /* frames by renderer and Canvas2D reason, for the Performance diagnostics */
+                /* frames by renderer and Canvas2D reason (developers/tests/overlayfx.js) */
                 this._lmGlCount(unifiedWebGLWorldOK ? this.GLW.WEBGL : unifiedWebGLAllowed ? this.GLW.BATCH : this._lmGlWhy);
 
 
-                /* read by Performance diagnostics (renderer label) */
+                /* whether this frame was drawn by WebGL (the pie overlay below, the benches) */
                 this._lmFrameGL = unifiedWebGLWorldOK;
                 this._gpuSceneActive = unifiedWebGLWorldOK;
                 /*
@@ -82342,10 +82040,6 @@ function pickPlayerCellBySize(players, selectBiggest) {
         //'renderFrame': async function() { //Sonia5
         //await this.sleep(4); //Sonia5				
         render() {
-            /* Performance diagnostics (ogario/modules/perf.js; null while it is off): the time
-             * of every frame callback, also of those the FPS limit skips below */
-            var _lmPf = window._lmPerfFrame;
-            if (_lmPf) { try { _lmPf.raf(performance.now()); } catch (_lmPfE) { } }
             /* the frame time requestAnimationFrame passes (jelly step cadence): it follows the
              * display refresh, the time the callback starts drifts with main thread work */
             drawRender._lmRafTs = +arguments[0] || 0;
@@ -82380,28 +82074,15 @@ function pickPlayerCellBySize(players, selectBiggest) {
                  * drawn, so the theme keeps the player's values; undone in the finally below */
                 var _lmPv = window._lmPhoneVis;
                 if (_lmPv) _lmPv(true);
-                /* frame timing for Adaptive performance / Performance diagnostics
-                 * (ogario/modules/perf.js); also when the frame throws (its time and the
-                 * error are kept, the error still goes to the handler below) */
-                if (_lmPf) {
-                    var _lmPt0 = performance.now(), _lmPerr = null;
-                    /* its GPU time while the diagnostics record (a timer query the hook ends) */
-                    if (_lmPf.g0) { try { _lmPf.g0(); } catch (_lmPfE3) { } }
-                    try {
-                        drawRender.renderFrame();
-                    } catch (_lmFrameError) {
-                        _lmPerr = _lmFrameError || 'error';
-                        throw _lmFrameError;
-                    } finally {
-                        try { _lmPf(_lmPt0, performance.now(), _lmPerr); } catch (_lmPfE2) { }
-                    }
-                } else drawRender.renderFrame();
-                /* network diagnostics: the last frame drawn without an error */
-                var _lmNdR = window.legendmod && window.legendmod._lmND;
-                if (_lmNdR) _lmNdR.renderAt = performance.now();
+                /* the hook of screenshot mode (ogario/modules/smalltools.js afterFrame) runs right
+                 * after the frame, also when it throws (the error still goes to the handler below) */
+                var _lmAf = window._lmAfterFrame;
+                try {
+                    drawRender.renderFrame();
+                } finally {
+                    if (_lmAf) { try { _lmAf(); } catch (_lmAfE) { } }
+                }
             } catch (renderError) {
-                var _lmNdE = window.legendmod && window.legendmod._lmND;
-                if (_lmNdE) _lmNdE.renderErr++;
                 if (!drawRender._lastRenderErrorLog || Date.now() - drawRender._lastRenderErrorLog > 5000) {
                     drawRender._lastRenderErrorLog = Date.now();
                     console.error('[LM RENDER] Frame failed:', renderError);
@@ -82428,8 +82109,6 @@ function pickPlayerCellBySize(players, selectBiggest) {
                     var _fl = window.legendmod;
                     if (_fl && _fl._lmLastWorldUpdate && !document.hidden && _fl.isSocketOpen && _fl.isSocketOpen()) {
                         var _gap = Date.now() - _fl._lmLastWorldUpdate;
-                        /* the longest gap of this stall, for the diagnostics event list */
-                        if (_gap > 200 && _gap > (drawRender._lmStallMax || 0)) drawRender._lmStallMax = _gap;
                         /* Short stall tracker: log stalls 200ms–3s that repeat */
                         if (_gap > 200 && _gap <= 3000 && !drawRender._lmStallLogged) {
                             drawRender._lmStallLogged = Date.now();
@@ -82444,18 +82123,6 @@ function pickPlayerCellBySize(players, selectBiggest) {
                             }
                         } else if (_gap < 100 && drawRender._lmStallLogged) {
                             drawRender._lmStallLogged = 0;
-                        }
-                        if (_gap < 100 && drawRender._lmStallMax) {
-                            /* Performance diagnostics: world updates stopped this long (kept only
-                             * while it measures); next to the freezes it shows network vs. game */
-                            if (drawRender._lmStallMax >= 250 && window.LMPerf) {
-                                /* with what happened during it (held back on purpose, rejected, tab hidden...) */
-                                try {
-                                    if (_fl._lmGapEvent) _fl._lmGapEvent(drawRender._lmStallMax, _gap);
-                                    else if (window.LMPerf.event) window.LMPerf.event('packet gap', drawRender._lmStallMax, 'no world update' + (_fl.play ? ', playing' : ''));
-                                } catch (_lmEvE) { }
-                            }
-                            drawRender._lmStallMax = 0;
                         }
                         /* Major freeze: >3 s */
                         if (_gap > 3000 && !drawRender._lmFreezeLogged) {
@@ -82590,7 +82257,6 @@ function pickPlayerCellBySize(players, selectBiggest) {
                  * the map geometry from this connection's last border packet
                  * (_lmServerBorder), and only when the map no longer matches it.
                  */
-                LM._lmBorderTraceAdd('visible', hiddenMs);
                 if (LM.isLegendWorld) LM._lmReapplyServerBorder('resume', false);
             });
         }
@@ -84499,7 +84165,6 @@ function minimapCell(envId, cb, i, s) {
         /* the white of a teammate that sent no colour is for the minimap and team list only:
          * _lmColorSent says the colour is the teammate's own, so only then it colours cells */
         if (isHexColor(i)) this._lmColorSent = true;
-        if (i === '#000000' && this.color !== i && window._lmColorDiag) window._lmColorDiag('teammate sent black', null, { conn: 'chat relay', nick: this.nick, color: i, src: 'team colour (chat relay)' });
         this.color = isHexColor(i) ? i : (this.color || '#ffffff');
         if (isHexColor(inRevIdx) && 7 === inRevIdx.length) {
             this.customColor = inRevIdx;
@@ -87094,17 +86759,6 @@ Object.defineProperty(Array.prototype, 'stDev', {
         document.body.appendChild(hudHelpersScript);
     } catch (e) {
         console.warn('[LM] Error loading HUD helpers script:', e);
-    }
-    /* Adaptive performance and performance diagnostics
-     * (nothing runs while its option is off and its window is closed) */
-    try {
-        var perfScript = document.createElement('script');
-        perfScript.type = 'text/javascript';
-        perfScript.src = 'https://www.legendmod.ml/ogario/modules/perf.js?v=' + (window.OgVer || '');
-        perfScript.charset = 'utf-8';
-        document.body.appendChild(perfScript);
-    } catch (e) {
-        console.warn('[LM] Error loading perf script:', e);
     }
     /* Gamepad / controller support (always on; it reads pads only while one is connected) */
     try {

@@ -1,7 +1,6 @@
 /* "Copy debug info": one report for a bug report, with the real lmDebugReport / lmCopyDebugInfo of
- * ogario/ogario.v4.js. Settings > Copy debug info and the Copy button of the Performance diagnostics
- * window (ogario/modules/perf.js) give the same text: the general part, then LMPerf.report(), with
- * private data taken out (LMSmallTools.redactReport) from both parts.
+ * ogario/ogario.v4.js (Settings > Copy debug info), with private data taken out
+ * (LMSmallTools.redactReport). No performance report any more (the diagnostics window is gone).
  * node developers/tests/debugreport.js */
 const fs = require('fs'), vm = require('vm'), path = require('path');
 const root = path.join(__dirname, '..', '..');
@@ -26,7 +25,8 @@ function page(opts) {
         toastr: { success: (t) => toasts.push(['success', t]), warning: (t) => toasts.push(['warning', t]) },
         lmT: (k) => k
     };
-    if (opts.perf !== false) ctx.LMPerf = { report: () => 'Legend Mod 9.999 performance report\nFPS: 60 nick SECRETNICK' };
+    /* a leftover LMPerf (an old script still on the page) is not read any more */
+    if (opts.perf) ctx.LMPerf = { report: () => 'Legend Mod 9.999 performance report\nFPS: 60 nick SECRETNICK' };
     if (opts.redact !== false) ctx.LMSmallTools = { redactReport: (t) => t.replace(/SECRET[A-Z0-9]*/g, '[hidden]') };
     if (opts.clip) ctx.navigator.clipboard = { writeText: (t) => { ctx._clip = t; return opts.clip === 'refuse' ? Promise.reject(new Error('no')) : Promise.resolve(); } };
     ctx.window = ctx;
@@ -39,10 +39,10 @@ function page(opts) {
     let t = p.ctx.lmDebugReport();
     check('general part: build, page, screen, server, errors', /^Legend Mod build 9\.999, loader 2\n/.test(t) && t.indexOf('Screen: 915x412 @2') >= 0 &&
         t.indexOf('region EU, mode :ffa') >= 0 && t.indexOf('Last errors (1):\n  12:00:00 boom') >= 0);
-    check('then the performance report', t.indexOf('\n\nLegend Mod 9.999 performance report\nFPS: 60') > t.indexOf('Last errors'));
-    check('private data out of both parts', t.indexOf('SECRET') < 0 && t.indexOf('/el-room/[hidden]') >= 0 && t.indexOf('nick [hidden]') >= 0);
-    t = page({ perf: false }).ctx.lmDebugReport();
-    check('without the performance module: the general part alone', t.indexOf('performance report') < 0 && /Last errors \(1\):\n  12:00:00 boom$/.test(t));
+    check('private data out', t.indexOf('SECRET') < 0 && t.indexOf('/el-room/[hidden]') >= 0);
+    check('the general part alone, no performance report', t.indexOf('performance report') < 0 && /Last errors \(1\):\n  12:00:00 boom$/.test(t));
+    t = page({ perf: true }).ctx.lmDebugReport();
+    check('an LMPerf left on the page adds nothing', t.indexOf('performance report') < 0 && /Last errors \(1\):\n  12:00:00 boom$/.test(t));
 
     p = page({ clip: 'ok' });
     p.ctx.lmCopyDebugInfo();
@@ -56,8 +56,7 @@ function page(opts) {
     p.ctx.lmCopyDebugInfo();
     check('copy: nothing works -> warning and the text in the console', p.toasts.length === 1 && p.toasts[0][0] === 'warning' && p.logs.length === 1 && p.logs[0].indexOf('Legend Mod build') === 0);
 
-    check('Settings link and the Performance window use it', /"#lm-copy-debug", function \(ev\) \{\n[^}]*lmCopyDebugInfo\(\);/.test(main) &&
-        /btn\('lm-perf-copy', '', function \(\) \{ if \(typeof window\.lmCopyDebugInfo === 'function'\) window\.lmCopyDebugInfo\(\); \}\)/.test(fs.readFileSync(path.join(root, 'ogario', 'modules', 'perf.js'), 'utf8')));
+    check('Settings link uses it', /"#lm-copy-debug", function \(ev\) \{\n[^}]*lmCopyDebugInfo\(\);/.test(main));
     console.log(fail ? fail + ' FAILED' : 'all debug report checks passed');
     process.exit(fail ? 1 : 0);
 })();

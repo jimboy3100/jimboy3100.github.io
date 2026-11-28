@@ -97,7 +97,7 @@ tplIds.forEach(id => {
       lmHudLayouts: { v: 1, active: 'A', list: [{ name: 'A', c: {} }] },
       lmThemeWorkshop: { v: 1, themes: [] },
       lmPracticeCfg: { bots: 4 },
-      lmGamepad: { v: 1, map: [] }, 'lm-mobile-prefs': { btnScale: 1 }, 'lm-mobile-layouts': { v: 1 }, lmPerfBackup: { jellyPhisycs: true }, lmPresetUndo: { s: {} }
+      lmGamepad: { v: 1, map: [] }, 'lm-mobile-prefs': { btnScale: 1 }, 'lm-mobile-layouts': { v: 1 }, lmPresetUndo: { s: {} }
     };
     const priv = { lmAnalyticsGames: [{ m: 1 }], lmAnalyticsGoals: { v: 1, custom: [] }, lmAnalyticsTracks: [{ t: 1 }], lmPracticeStore: { best: 1 }, 'lm-director-watch': ['nick'], lmSettingsBackups: [{ t: 1 }], ogarioPlayerProfiles: [1] };
     Object.keys(conf).concat(Object.keys(priv)).forEach(k => src.setItem(k, J(conf[k] || priv[k])));
@@ -143,7 +143,9 @@ tplIds.forEach(id => {
     check('import: the radial menu and screenshot options of an older export are not written', dst2.getItem('lmRadialMenu') === null && dst2.getItem('lmSmallTools') === null);
     imp({ lmCustomMacros: { v: 1, slots: [{ name: 'm', steps: [] }] } }, (k, t) => dst2.setItem(k, t), k => dst2.removeItem(k));
     check('import: the custom macros of an older export are not written', dst2.getItem('lmCustomMacros') === null);
-    check('import: Performance mode backup of the replaced settings goes when the export has none', dst2.getItem('lmPerfBackup') === null);
+    /* the removed Performance mode: its copy is neither exported nor imported */
+    { const srcPm = makeStorage(0); srcPm.setItem('lmPerfBackup', J({ jellyPhisycs: true })); check('export: no Performance mode copy', !('lmPerfBackup' in exp(srcPm))); }
+    { const dstPm = makeStorage(0); imp({ lmPerfBackup: { jellyPhisycs: true } }, (k, t) => dstPm.setItem(k, t), k => dstPm.removeItem(k)); check('import: the Performance mode copy of an older export is not written', dstPm.getItem('lmPerfBackup') === null); }
     /* the removed Command Centre: stars left in this browser are not exported, and an older
      * export that has them writes nothing (and no error) */
     const src3 = makeStorage(0);

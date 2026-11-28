@@ -34,14 +34,15 @@ function between(a, b, from) {
     return i < 0 || j < 0 ? null : src.slice(i, j + b.length);
 }
 const methods = ['        _lmBorderValid(', '        _lmOnServerBorder(', '        _lmServerBorderNow()', '        _lmReapplyServerBorder(',
-    '        _lmBorderTraceAdd(', '        borderTrace()', '        setMapOffset(left', '        handleMapEvent(eventType',
+    '        setMapOffset(left', '        handleMapEvent(eventType',
     '        handleSubmessage(message) {', '        calMinMax() {', '        drawMapBorders(ctx, macros', '        _lmApplyFullBorder(', '        _lmFullBorderNow()',
     '        translateX(x) {', '        translateY(x) {'].map((m) => [m, block(m)]);
 const sectorFn = block('        calculateMapSector(t, xgh2');
 if (!sectorFn) { console.log('FAIL code not found: calculateMapSector'); process.exit(1); }
 const pktStart = src.indexOf('        handleMessage(data) {\n'), pktEnd = src.indexOf('        countPps() {', pktStart);
 const teams = block('function _lmElTeamsActive(');
-const resume = between("LM._lmBorderTraceAdd('visible', hiddenMs);", "LM._lmReapplyServerBorder('resume', false);");
+const resumeLine = "if (LM.isLegendWorld) LM._lmReapplyServerBorder('resume', false);";
+const resume = src.indexOf(resumeLine) >= 0 ? resumeLine : null;
 const connectReset = between('            this._connectSeq = (this._connectSeq || 0) + 1;', 'LM.isLegendWorld = false;');
 const closeReset = between("            /* the closed socket's border must not outlive it", 'LM.isLegendWorld = false;');
 const missing = methods.filter((m) => !m[1]).map((m) => m[0].trim());
@@ -329,22 +330,6 @@ const foodBox = (h, half) => { h.food = []; for (let x = -half; x <= half; x += 
     h.viewX = 4000; h.viewY = -2000;
     t.resume();
     check('world spectate camera kept on tab return; map midpoint = server centre', h.viewX === 4000 && h.mapMidX === cx && h.mapMidY === (b.minY + b.maxY) / 2);
-}
-
-/* 9. the trace: epoch, raw bounds, map, food box, camera and DPR; no address */
-{
-    const t = boot(), h = t.h;
-    elJoin(t, 40000);
-    foodBox(h, 8000); h.calMinMax();
-    t.resume(1234);
-    h.handleMessage(border(NaN, 0, 1, 1));
-    const lines = h.borderTrace();
-    const last = lines.join('\n');
-    check('trace lists connect, border, beacon, tab return and the rejected border', /connect epoch 1/.test(last) && / packet epoch 1 raw -20000,-20000,20000,20000/.test(last) &&
-        /visible 1234ms epoch 1 EL .* map -20000,-20000,20000,20000 size 40000 offset 0 tier \d+ food -8015,-8015,8015,8015 cam 0,0,0.5 dpr 2 canvas 915,412/.test(last) && /reject-packet .*raw NaN,0,1,1/.test(last), last);
-    check('trace has no server address', !/wss?:|token/i.test(last));
-    for (let i = 0; i < 200; i++) h.handleMessage(circle(40000 + i));
-    check('trace keeps the last 64', h.borderTrace().length === 64);
 }
 
 /* 10. a message still queued on the replaced socket does not reach the game (the real _finishConnect) */

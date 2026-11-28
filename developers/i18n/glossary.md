@@ -100,8 +100,6 @@ lower case inside a sentence.
 | workshop | εργαστήριο | |
 | gallery | συλλογή | |
 | notification | ειδοποίηση | |
-| adaptive performance | προσαρμοστική απόδοση | |
-| performance mode | λειτουργία απόδοσης | |
 | diagnostics | διαγνωστικά | |
 | accessibility | προσβασιμότητα | |
 | Rounded / Square HUD | Στρογγυλεμένο / Τετράγωνο | |
@@ -204,8 +202,6 @@ are short nouns. Sentence case, not Title Case.
 | workshop | taller | |
 | gallery | galería | |
 | notification | notificación | |
-| adaptive performance | rendimiento adaptativo | |
-| performance mode | modo rendimiento | |
 | diagnostics | diagnóstico | |
 | accessibility | accesibilidad | |
 | Rounded / Square HUD | Redondeado / Cuadrado | |
@@ -308,8 +304,6 @@ in Cyrillic (скин, сплит, сървър, пинг, бот); keep FPS and
 | workshop | работилница | |
 | gallery | галерия | |
 | notification | известие | |
-| adaptive performance | адаптивна производителност | |
-| performance mode | режим производителност | |
 | diagnostics | диагностика | |
 | accessibility | достъпност | |
 | Rounded / Square HUD | Заоблен / Квадратен | |
@@ -412,8 +406,6 @@ French players keep split, feed, skin, ping, lag, bot, multibox and replay in En
 | workshop | atelier | |
 | gallery | galerie | |
 | notification | notification | |
-| adaptive performance | performances adaptatives | |
-| performance mode | mode performance | |
 | diagnostics | diagnostic | |
 | accessibility | accessibilité | |
 | Rounded / Square HUD | Arrondi / Carré | |
@@ -519,8 +511,6 @@ for headings (الإعدادات). Pick one form per window. Arab agar.io player
 | workshop | الورشة | |
 | gallery | المعرض | |
 | notification | إشعار | |
-| adaptive performance | الأداء التكيّفي | |
-| performance mode | وضع الأداء | |
 | diagnostics | التشخيص | |
 | accessibility | إمكانية الوصول | |
 | Rounded / Square HUD | دائري / مربع | |
@@ -625,8 +615,6 @@ No second-person pronoun needed; where one is used, 你.
 | workshop | 工作坊 | |
 | gallery | 圖庫 | |
 | notification | 通知 | |
-| adaptive performance | 自適應效能 | |
-| performance mode | 效能模式 | |
 | diagnostics | 診斷 | |
 | accessibility | 無障礙 | |
 | Rounded / Square HUD | 圓角 / 方角 | |
@@ -730,8 +718,6 @@ the packs already do.
 | workshop | мастерская | |
 | gallery | галерея | |
 | notification | уведомление | |
-| adaptive performance | адаптивная производительность | |
-| performance mode | режим производительности | |
 | diagnostics | диагностика | |
 | accessibility | доступность | |
 | Rounded / Square HUD | Скруглённый / Квадратный | |
@@ -835,8 +821,6 @@ English is involved (Clan-Tag, Party-Code, Streamer-Modus).
 | workshop | Werkstatt | |
 | gallery | Galerie | |
 | notification | Benachrichtigung | |
-| adaptive performance | Adaptive Leistung | |
-| performance mode | Leistungsmodus | |
 | diagnostics | Diagnose | |
 | accessibility | Barrierefreiheit | |
 | Rounded / Square HUD | Abgerundet / Eckig | |
@@ -940,8 +924,6 @@ skin'ler) and take an apostrophe only after an abbreviation or a name (FPS'i, Di
 | workshop | atölye | |
 | gallery | galeri | |
 | notification | bildirim | |
-| adaptive performance | uyarlanabilir performans | |
-| performance mode | performans modu | |
 | diagnostics | tanılama | |
 | accessibility | erişilebilirlik | |
 | Rounded / Square HUD | Yuvarlak / Köşeli | |
@@ -1045,8 +1027,6 @@ skin, ping, lag, bot and multibox and inflect them (skiny, splitem).
 | workshop | warsztat | |
 | gallery | galeria | |
 | notification | powiadomienie | |
-| adaptive performance | adaptacyjna wydajność | |
-| performance mode | tryb wydajności | |
 | diagnostics | diagnostyka | |
 | accessibility | dostępność | |
 | Rounded / Square HUD | Zaokrąglony / Kwadratowy | |
@@ -1150,8 +1130,6 @@ it reads better (clantag, partycode, streamermodus).
 | workshop | werkplaats | |
 | gallery | galerij | |
 | notification | melding | |
-| adaptive performance | adaptieve prestaties | |
-| performance mode | prestatiemodus | |
 | diagnostics | diagnose | |
 | accessibility | toegankelijkheid | |
 | Rounded / Square HUD | Afgerond / Vierkant | |
@@ -1255,8 +1233,6 @@ them ("dar split", "dar feed", "respawnar"), so keep the loan word and build the
 | workshop | oficina | |
 | gallery | galeria | |
 | notification | notificação | |
-| adaptive performance | desempenho adaptativo | |
-| performance mode | modo desempenho | |
 | diagnostics | diagnóstico | |
 | accessibility | acessibilidade | |
 | Rounded / Square HUD | Arredondado / Quadrado | |
@@ -1361,8 +1337,6 @@ English verbs work in sentences as they are: "untuk split", "jangan feed".
 | workshop | workshop | EN |
 | gallery | galeri | |
 | notification | notifikasi | |
-| adaptive performance | performa adaptif | |
-| performance mode | mode performa | |
 | diagnostics | diagnostik | |
 | accessibility | aksesibilitas | |
 | Rounded / Square HUD | Bulat / Kotak | |
@@ -1468,8 +1442,6 @@ FPS, Ping, XP, DNA and key names.
 | workshop | ワークショップ | |
 | gallery | ギャラリー | |
 | notification | 通知 | |
-| adaptive performance | 自動パフォーマンス調整 | verify |
-| performance mode | パフォーマンスモード | |
 | diagnostics | 診断 | |
 | accessibility | アクセシビリティ | |
 | Rounded / Square HUD | 角丸 / 四角 | |
@@ -1573,8 +1545,6 @@ noun, in sentences the Italian verb form is fine.
 | workshop | workshop | EN |
 | gallery | galleria | |
 | notification | notifica | |
-| adaptive performance | prestazioni adattive | |
-| performance mode | modalità prestazioni | |
 | diagnostics | diagnostica | |
 | accessibility | accessibilità | |
 | Rounded / Square HUD | Arrotondato / Quadrato | |

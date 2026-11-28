@@ -30,8 +30,8 @@ check('import: writes everything first, then applies it live', imp.includes("var
     imp.indexOf('var _impNeed = this._lmImportLive(importValue, _impSelected, _impBackup, _impTouched);') > imp.indexOf('fullRolledBack'));
 check('import: no reload by itself, only from the Reload now button', (imp.match(/location\.reload\(\)/g) || []).length === 1 &&
     /'\.lm-import-reload', function \(\) \{\s*window\._lmSettingsReload = true;\s*window\.location\.reload\(\);/.test(imp));
-check('import: settings through setSettings (Performance mode first), theme, hotkeys with new defaults, commands, player profiles', imp.includes('        _lmImportLive(v, sel, backup, touched) {') &&
-    imp.includes('app.setSettings(k, sv[k]);') && imp.includes("keys.unshift('performanceMode')") && imp.includes('Settings.setTheme(); Settings.saveThemeSettings();') &&
+check('import: settings through setSettings, theme, hotkeys with new defaults, commands, player profiles', imp.includes('        _lmImportLive(v, sel, backup, touched) {') &&
+    imp.includes('app.setSettings(k, sv[k]);') && !imp.includes('performanceMode') && !imp.includes('lmPerfBackup') && imp.includes('Settings.setTheme(); Settings.saveThemeSettings();') &&
     imp.includes("if (typeof dk === 'string' && dk && !own(h, dk)) h[dk] = c;") && imp.includes('this._lmImportCommandsLive()') && imp.includes('this._lmImportProfilesLive()'));
 check('import: anti-aliasing, gamepad, voice and HUD layouts offer Reload when they changed', imp.includes("need.push('glAntialias')") &&
     imp.includes("['lmGamepad', 'prefix', 'lang', 'lmHudLayouts'].forEach(function (k) { if (changed(k)) need.push(k); });"));
@@ -45,10 +45,12 @@ const ctx = {};
 vm.createContext(ctx);
 vm.runInContext(extrasSrc + '\nthis.lmImportExtras = lmImportExtras;', ctx);
 const wrote = {}, removed = [];
+/* lmPerfBackup: the copy of the removed Performance mode, not imported any more */
 const src = { 'lm-mobile-prefs': { a: 1 }, lmGamepad: { b: 1 }, prefix: '!', lmPerfBackup: { c: 1 } };
 ctx.lmImportExtras(src, (k, v) => { wrote[k] = v; }, k => removed.push(k), null, () => null);
 check('extras: the registered keys of the export are written, a cleared one without a value removed', wrote['lm-mobile-prefs'] === '{"a":1}' && wrote.lmGamepad === '{"b":1}' &&
-    wrote.lmPerfBackup === '{"c":1}' && wrote.prefix === '!' && removed.indexOf('lmPresetUndo') !== -1, { wrote: Object.keys(wrote), removed });
+    wrote.prefix === '!' && removed.indexOf('lmPresetUndo') !== -1, { wrote: Object.keys(wrote), removed });
+check('extras: a Performance mode copy in an export is ignored (neither written nor removed)', !('lmPerfBackup' in wrote) && removed.indexOf('lmPerfBackup') === -1);
 
 /* Legend Mod settings */
 const setSrc = cut(lmx, 'var _LM_IMPORT_LIVE_KEYS = ', '/* Imported user scripts (Userscript1-5 URLs');

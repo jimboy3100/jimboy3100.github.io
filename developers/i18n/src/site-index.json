@@ -4071,7 +4071,7 @@
     "it": "Caricamento più veloce: nessun reindirizzamento per ogni file, un jQuery UI molto più leggero, jQuery e Bootstrap aggiornati con correzioni di sicurezza."
   },
   "site.index.settingsSplitMacroDelays": {
-    "en": "Settings: split-macro delays, Performance mode, Anti-aliasing, Download/Load settings files, Copy debug info, last private server remembered.",
+    "en": "Settings: split-macro delays, Anti-aliasing, Download/Load settings files, Copy debug info, last private server remembered.",
     "el": "Ρυθμίσεις: καθυστερήσεις split-macro, Performance mode, Anti-aliasing, λήψη/φόρτωση αρχείων ρυθμίσεων, αντιγραφή πληροφοριών debug, απομνημόνευση του τελευταίου ιδιωτικού server.",
     "es": "Ajustes: retardos de las macros de split, Performance mode, Anti-aliasing, descarga/carga de archivos de ajustes, copiar información de depuración, se recuerda el último servidor privado.",
     "bg": "Настройки: забавяния на макросите за сплит, режим на производителност, изглаждане, изтегляне/зареждане на файлове с настройки, копиране на информация за отстраняване на грешки, запомняне на последния частен сървър.",
@@ -6607,7 +6607,7 @@
     "id": "LIVE",
     "ja": "ライブ",
     "it": "LIVE"
-  },
+  },
   "site.index.officialProjectFacts": {
     "en": "Official project facts",
     "el": "Επίσημα στοιχεία έργου",

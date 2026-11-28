@@ -315,36 +315,6 @@ var WasmQuadTree = (function () {
         return { nodes: cols * rows, points: count, cells: cellCount };
     }
 
-    /* Performance diagnostics only (at a freeze while recording, never per frame): how full the
-     * buckets are and how many indexed points one touches() question reads (all points in the
-     * buckets its 10x10 box covers, the cell's own included), averaged over up to `sample`
-     * points spread evenly over the index. Reads the index, changes nothing. */
-    function occupancy(sample) {
-        var buckets = count > 0 ? cols * rows : 0, used = 0, fullest = 0, b, m;
-        for (b = 0; b < buckets; b++) {
-            m = start[b + 1] - start[b];
-            if (m > 0) { used++; if (m > fullest) fullest = m; }
-        }
-        var n = 0, read = 0, most = 0;
-        var stride = sample > 0 && count > sample ? count / sample : 1;
-        for (var f = 0; buckets > 0 && f < count; f += stride) {
-            var k = (f | 0) * 3;
-            var ax = fround(packed[k] - 5), ay = fround(packed[k + 1] - 5);
-            var c0 = Math.floor((ax - originX) * inv), c1 = Math.floor((fround(ax + 10) - originX) * inv);
-            var r0 = Math.floor((ay - originY) * inv), r1 = Math.floor((fround(ay + 10) - originY) * inv);
-            if (c0 < 0) c0 = 0;
-            if (c1 >= cols) c1 = cols - 1;
-            if (r0 < 0) r0 = 0;
-            if (r1 >= rows) r1 = rows - 1;
-            var q = 0;
-            for (var row = r0; c0 <= c1 && row <= r1; row++) q += start[row * cols + c1 + 1] - start[row * cols + c0];
-            read += q; n++;
-            if (q > most) most = q;
-        }
-        return { points: count, cells: cellCount, buckets: buckets, used: used, step: buckets ? 1 / inv : 0, fullest: fullest,
-            perQuery: n ? read / n : 0, mostRead: most, sampled: n };
-    }
-
     /* Kept for the loader in ogario.v4.js; nothing to download any more. */
     function init() {
         return Promise.resolve();
@@ -361,7 +331,6 @@ var WasmQuadTree = (function () {
         some: some,
         query: query,
         stats: stats,
-        occupancy: occupancy,
         get size() { return count; },
         get ready() { return true; }
     };

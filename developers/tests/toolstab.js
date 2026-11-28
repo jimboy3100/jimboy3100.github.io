@@ -113,7 +113,7 @@ function load(stored, oldKey) {
         defaultmapsettings: ms, defaultSettings: {}, ogario: {},
         readLocalStorageJSON: readJSON(ls),
         lmSettingValue: (k, v) => (typeof v === typeof defs[k] ? v : undefined),
-        lmFoldVideoVolume: () => false, lmFoldLegacySettings: () => false, lmHudAdoptOld: () => false, lmSettingsUserView: () => ms, lmSettingsCommit: () => { }, _lmSettingsSeen: null
+        lmFoldVideoVolume: () => false, lmFoldLegacySettings: () => false, lmHudAdoptOld: () => false, lmEndPerfMode: () => false, lmSettingsUserView: () => ms, lmSettingsCommit: () => { }, _lmSettingsSeen: null
     };
     vm.createContext(ctx);
     const app = vm.runInContext('({\n' + cut('        loadSettings() {', '        exportSettings() {') + '\n})', ctx);

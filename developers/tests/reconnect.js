@@ -53,7 +53,7 @@ function world(opts) {
     const scope = new Proxy(base, { has: () => true, get: (t, k) => k === Symbol.unscopables ? undefined : (k in t ? t[k] : stub) });
     const noop = () => { };
     LM = Object.assign(new Function('scope', 'with (scope) { return ({' + methods + '}); }')(scope), {
-        flushCellsData() { w.flushes.push(w.now); }, _lmBorderTraceAdd: noop, replayfunctions: noop, flushMegaFFAscore: noop,
+        flushCellsData() { w.flushes.push(w.now); }, replayfunctions: noop, flushMegaFFAscore: noop,
         _lmResetFreezeDetector: noop, _lmNetDiagEnd: noop, createView: () => stub, sendMessage: noop, onOpen: noop, onMessage: noop,
         onError() { this.flushCellsData(); }, mapEvent: {}, decayInfo: {}
     });

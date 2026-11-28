@@ -1626,8 +1626,8 @@
     function accent() { return (window.defaultSettings && defaultSettings.menuMainColor) || '#01d9cc'; }
     /* window chrome follows the menu theme live (CSS variables set by the theme); canvas keeps accent() */
     function cssMc() { return 'var(--lm-mc,' + accent() + ')'; }
-    /* The window is moved by its title bar (mouse or touch) like the Performance diagnostics
-     * window: kept on screen, the place remembered. Buttons in the bar are not handles, and on a
+    /* The window is moved by its title bar (mouse or touch), like the other Legend
+     * windows: kept on screen, the place remembered. Buttons in the bar are not handles, and on a
      * phone the tab strip scrolls sideways instead of moving the window. */
     var POS_KEY = 'lmReplayStudioPos';
     function clampPos(x, y, w, h, vw, vh) {

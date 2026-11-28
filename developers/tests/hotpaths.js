@@ -155,10 +155,9 @@ const top5Src = slice('        displayTop5() {\n            if (defaultmapsettin
 check('skin rows no longer look up #hudMainColor per row', (top5Src.match(/\$\('#hudMainColor'\)/g) || []).length === 1 && /if \(totalMass === undefined\)/.test(top5Src));
 check('reversed time test is gone', !/lastUpdatedTime\) - tempTime < 6000/.test(top5Src));
 
-/* ---- Performance diagnostics off: the message handler of a multibox / spectator unit
- * (spect.js onmessage) reads one global, window._lmNetRec, and handles the message as before;
- * per message it costs about the same as without that check (printed, not judged: timings
- * flake on a busy machine) ---- */
+/* ---- the message handler of a multibox / spectator unit (spect.js onmessage) reads no
+ * global (the Performance diagnostics recorder it checked is gone) and handles the message
+ * as before ---- */
 {
     const spect = fs.readFileSync(path.join(root, 'ogario', 'spect.js'), 'utf8').replace(/\r\n/g, '\n');
     const om = spect.slice(spect.indexOf('\n    onmessage(message) {'), spect.indexOf('\n    onerror(socket, generation) {'));
@@ -170,61 +169,11 @@ check('reversed time test is gone', !/lastUpdatedTime\) - tempTime < 6000/.test(
     U.prototype.handleMessage = function (v) { handled = v; };
     const buf = new ArrayBuffer(8);
     new U().onmessage({ data: buf });
-    check('diagnostics off: a unit message reads window._lmNetRec once and is handled as before', om.length > 0 && reads.join() === '_lmNetRec' && handled instanceof DataView && handled.buffer === buf);
+    check('a unit message reads no window global and is handled as before', om.length > 0 && reads.length === 0 && handled instanceof DataView && handled.buffer === buf);
     U.prototype.handleMessage = function () { throw new RangeError('short'); };
     let thrown = false;
     try { new U().onmessage({ data: buf }); } catch (e) { thrown = true; }
-    check('diagnostics off: a truncated unit message is still swallowed', !thrown);
-    /* the same handler without the check, as before it */
-    const plain = om.replace(/\n\s*\/\* Performance diagnostics[\s\S]*?\*\/\n\s*const nr = [^\n]*\n\s*try \{/, '\n        {').replace(/\} finally \{\n\s*if \(nk >= 0\) nr\.e\(nk\);\n\s*\}/, '}');
-    /* timed in this realm (a vm context makes every global read slow, a page does not) */
-    const mk = (s) => new Function('window', 'console', 'return (class {' + s + '\n});')({ _lmNetRec: null }, console);
-    const A = mk(om), Bp = mk(plain);
-    A.prototype.handleMessage = Bp.prototype.handleMessage = function () { };
-    const a = new A(), b = new Bp(), msg = { data: buf }, N = 200000, ta = [], tb = [];
-    for (let k = 0; k < 6; k++) {
-        let t0 = process.hrtime.bigint(); for (let i = 0; i < N; i++) a.onmessage(msg); ta.push(Number(process.hrtime.bigint() - t0) / N);
-        t0 = process.hrtime.bigint(); for (let i = 0; i < N; i++) b.onmessage(msg); tb.push(Number(process.hrtime.bigint() - t0) / N);
-    }
-    const med = (x) => x.slice().sort((p, q) => p - q)[x.length >> 1];
-    check('the handler without the check still builds (for the timing)', plain !== om && !/_lmNetRec/.test(plain));
-    console.log('     unit message, diagnostics off: ' + med(ta).toFixed(1) + ' ns with the check, ' + med(tb).toFixed(1) + ' ns without (median of 6 alternating runs of ' + N + ')');
-}
-
-/* ---- Performance diagnostics off: the jelly index occupancy (a loop over its buckets) and the
- * skin queue times cost nothing. ogario/modules/perf.js in a page: with only the frame hook on
- * (Adaptive performance) a freeze reads no index and the skin queue methods are not wrapped;
- * while recording the index is read once per freeze, not on the slow frames under 250 ms ---- */
-{
-    const perfSrc = fs.readFileSync(path.join(root, 'ogario', 'modules', 'perf.js'), 'utf8');
-    let reads = 0, t = 1000;
-    const jobAdd = function () { }, jobRun = function () { }, upQ = function () { return true; }, upRun = function () { };
-    const ctx = {
-        performance: { now: () => t }, setInterval: () => 0, clearInterval() { }, setTimeout: () => 0, addEventListener() { }, devicePixelRatio: 1, innerWidth: 900, innerHeight: 500, navigator: {},
-        document: { hidden: false, addEventListener() { }, removeEventListener() { }, getElementById: () => null, createElement: () => ({ style: {} }), body: { appendChild() { } } },
-        localStorage: { getItem: () => null, setItem() { }, removeItem() { } },
-        legendmod5: { adaptivePerf: true, fpsLimit: 0 },
-        legendmod: { cells: [], isSocketOpen: () => false, quadtree: { occupancy() { reads++; return { points: 10, cells: 1, step: 10, used: 1, fullest: 10, perQuery: 10, mostRead: 10 }; } } },
-        application: { saveSettings() { }, setAnimatedRainbowColor() { }, _lmSkinJobAdd: jobAdd, _lmSkinJobRun: jobRun },
-        drawRender: { dpr: 1, resizeCanvas() { }, _lmQueueSkinUpload: upQ, _lmUploadSkinJob: upRun }
-    };
-    ctx.window = ctx;
-    vm.createContext(ctx);
-    vm.runInContext(perfSrc, ctx);
-    ctx.LMPerf.configChanged();
-    const frame = (dt) => { t += dt; ctx._lmPerfFrame.raf(t); ctx._lmPerfFrame(t, t + 2); t += 2; };
-    for (let i = 0; i < 20; i++) frame(16.7);
-    frame(400); frame(16.7);
-    const sameSkin = () => ctx.application._lmSkinJobAdd === jobAdd && ctx.application._lmSkinJobRun === jobRun && ctx.drawRender._lmQueueSkinUpload === upQ && ctx.drawRender._lmUploadSkinJob === upRun;
-    check('diagnostics not recording: a freeze reads no jelly index, skin queue methods not wrapped', typeof ctx._lmPerfFrame === 'function' && reads === 0 && sameSkin());
-    ctx.LMPerf.keepRecording(true);
-    for (let i = 0; i < 5; i++) frame(120);
-    const slow = reads;
-    frame(400); frame(16.7);
-    check('recording: the jelly index is read at a freeze only (not on slow frames)', slow === 0 && reads === 1);
-    ctx.LMPerf.keepRecording(false);
-    frame(400); frame(16.7);
-    check('recording stopped: no index read, skin queue methods put back', reads === 1 && sameSkin());
+    check('a truncated unit message is still swallowed', !thrown);
 }
 
 console.log(failed ? 'FAILED: ' + failed : 'all hotpaths checks passed');

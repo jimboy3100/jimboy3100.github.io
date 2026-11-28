@@ -33,8 +33,7 @@
     <schema:featureList>Replay tools</schema:featureList>
     <schema:featureList>Gamepad support</schema:featureList>
     <schema:featureList>Mobile touch controls</schema:featureList>
-    <schema:featureList>Performance diagnostics</schema:featureList>
-    <schema:featureList>Adaptive performance</schema:featureList>
+    <schema:featureList>WebGL rendering</schema:featureList>
     <schema:featureList>Chat system</schema:featureList>
     <schema:featureList>HUD helpers</schema:featureList>
     <schema:featureList>Accessibility features</schema:featureList>
@@ -181,8 +180,8 @@
   <rdf:Description rdf:about="https://www.legendmod.ml/knowledge/#feature-performance">
     <rdf:type rdf:resource="https://schema.org/DefinedTerm"/>
     <rdf:type rdf:resource="https://www.legendmod.ml/knowledge/vocabulary.ttl#Feature"/>
-    <schema:name>Performance diagnostics</schema:name>
-    <schema:description>WebGL2 acceleration, adaptive performance, FPS cap, diagnostics window.</schema:description>
+    <schema:name>WebGL rendering</schema:name>
+    <schema:description>WebGL2 acceleration, FPS cap.</schema:description>
   </rdf:Description>
   <rdf:Description rdf:about="https://www.legendmod.ml/knowledge/#feature-accessibility">
     <rdf:type rdf:resource="https://schema.org/DefinedTerm"/>

@@ -74,8 +74,7 @@
   $('#og-options input[type=checkbox][id], #og-options input[type=range][id]').each(function () { if (seen[this.id]) dup.push(this.id); seen[this.id] = 1; });
   if (dup.length) fail.push('options built twice: ' + dup.slice(0, 5).join(', '));
   // options in their section, and every heading has a text
-  var place = { recordReplays: 'replayGroup', 'lm-perf-diag-btn': 'perfGroup',
-    adaptivePerf: 'perfGroup', hudMergeSound: 'mergeGroup', mergeRings: 'mergeGroup', virusSound: 'soundsGroup',
+  var place = { recordReplays: 'replayGroup', showDevConsole: 'statsGroup', hudMergeSound: 'mergeGroup', mergeRings: 'mergeGroup', virusSound: 'soundsGroup',
     reducedMotion: 'expandingLandGroup', showStatsWorldSize: 'expandingLandGroup', showStatsDecayInfo: 'expandingLandGroup',
     showStatsServerHz: 'expandingLandGroup',
     'profileNumber-slider': 'profiles', showCellShadows: 'transparencyGroup' };
@@ -87,7 +86,10 @@
   /* no spectate options (the follows are always on), no Spectating and streaming section; the spectator director is gone */
   /* the instant replay is removed: no length slider */
   if ($('#og-options .spectateGroup').length) fail.push('Spectating and streaming section still in the menu');
-  ['clickSpectate', 'lbClickSpectate', 'minimapClickSpectate', 'lm-director-btn', 'instantReplaySecs-slider', 'hudMergeCountdown', 'lm-rec-clear', 'a11yTextScale-slider'].forEach(function (id) { if (document.getElementById(id)) fail.push('#' + id + ' still in the menu'); });
+  /* Performance and network is removed with its options (Performance mode, its automatic choice, the diagnostics window) */
+  if ($('#og-options .perfGroup').length) fail.push('Performance and network section still in the menu');
+  if (window.LMPerf || document.querySelector('script[src*="modules/perf.js"]')) fail.push('performance diagnostics still loaded');
+  ['clickSpectate', 'lbClickSpectate', 'minimapClickSpectate', 'lm-director-btn', 'instantReplaySecs-slider', 'hudMergeCountdown', 'lm-rec-clear', 'a11yTextScale-slider', 'performanceMode', 'adaptivePerf', 'lm-perf-diag-btn'].forEach(function (id) { if (document.getElementById(id)) fail.push('#' + id + ' still in the menu'); });
   /* the NEW badges with Show new options, the info notes and the Accessibility section are removed */
   if ($('.lm-new-toggle, .lm-new-badge, #og-options .lm-group-note, #og-options .accessibilityGroup').length) fail.push('NEW badges, Show new options, an info note or the Accessibility section still in the menu');
   if (window.LMDirector || document.querySelector('script[src*="modules/director.js"]')) fail.push('spectator director still loaded');

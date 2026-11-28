@@ -31,7 +31,7 @@ const src = fs.readFileSync(path.join(root, 'ogario', 'ogario.v4.js'), 'utf8').r
 /* The jelly passes of renderFrame, from the step decision to the profiler call. */
 const frameBlock = B.sliceBetween(src, '                    var _jellyStep =\n', '                    if (\n                        window\n                            .clientProfiler');
 function makeFrameRunner(J) {
-    /* window: the stand-in of bench-dense.js (the block reads window._lmScope, the diagnostics timers; off here) */
+    /* window: the stand-in of bench-dense.js (the block reads window._lmScope, the bench part timers; off here) */
     const fn = new Function('LM', '_jellyCells', 'performance', 'console', 'window', frameBlock + '\nreturn _jellyStep;');
     return function (scratch, rafTs) {
         J.drawRender._jellyFrameId++;

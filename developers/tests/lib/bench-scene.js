@@ -7,7 +7,7 @@
  * layout. Nothing is sent to any server. Camera position and zoom are fixed for every scene.
  *
  * Measured per scene: frame interval p50/p95/p99 and sustained FPS, renderFrame CPU, CPU self
- * time of the timed parts (the perf.js scope names plus jelly prepare / build, food, eligibility),
+ * time of the timed parts (the core part timers plus jelly prepare / build, food, eligibility),
  * the share of frames drawn by the WebGL scene (the others fell back to Canvas2D), then, in a
  * separate short pass that is not timed, WebGL draw calls / instances / vertices, time spent in
  * GL upload calls, label rasters, Canvas2D calls, jelly points submitted and indexed, the JS heap.
@@ -318,7 +318,7 @@
     }
     function r2(x) { return Math.round(x * 100) / 100; }
 
-    /* timed parts: self time between two frames, like perf.js createScopes (a part called
+    /* timed parts: self time between two frames (a part called
      * inside another counts only for itself) */
     /* 'jelly physics' is the inline marker of renderFrame around prepare + build + the
      * movePoints loop ('jelly move', a marker of its own): with the three timed on their own,

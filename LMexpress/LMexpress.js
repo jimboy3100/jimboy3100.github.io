@@ -7044,7 +7044,7 @@ function LMLegendFFAPromo() {
 
 
 
-/* Shared look of the Legend windows (Profiles, Performance, Custom Macros, ... and the
+/* Shared look of the Legend windows (Custom Macros, Replay Studio, ... and the
  * lm_extended_ui dialogs). Every window module calls lmUiKit() before it builds its window,
  * so the window never depends on another script having added these rules first.
  * The --lm-w-* sizes and surfaces below are read by the modules' own styles with their old
