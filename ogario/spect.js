@@ -447,6 +447,8 @@ window.lmPlayerViewScale = lmPlayerViewScale;
  * (the earlier centred 3 x 5 cut gave seams 357 / 143 and spent 178 / 72 past each map edge).
  */
 var LM_FULLMAP_EDGE = 8, LM_FULLMAP_MIN_SEAM = 64, LM_FULLMAP_MAX = 15;
+/* Full Map only on a server with at most 180 players, again at 170 or fewer (LM._lmFullMapCrowdCheck) */
+var LM_FULLMAP_MAX_PLAYERS = 180, LM_FULLMAP_REOPEN_PLAYERS = 170;
 /* a tile camera within 4 of its target has arrived (live: they settle within 0.5). At most half
  * LM_FULLMAP_EDGE, so an arrived corner tile still reaches 4 past the map edge: with 16 a corner
  * camera 16 inward counted as arrived and left 8 x 8 of the map edge unseen. One threshold for

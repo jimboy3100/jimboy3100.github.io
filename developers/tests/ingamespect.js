@@ -28,7 +28,7 @@ function block(start, from) {
     return null;
 }
 const appMethods = ['        setShowIngameSpectator() {', '        setShowFullSpectator() {', '        setIngameSpectator() {', '        setFullSpectator() {'].map((m) => [m, block(m)]);
-const lmMethods = ['        addSpect() {', '        _lmSpecSetMode(mode) {', '        _lmFullMapModeOff() {', '        _lmSpecLocal() {', '        _lmSpecReconcile() {', '        flushSpecsData() {'].map((m) => [m, block(m)]);
+const lmMethods = ['        addSpect() {', '        _lmSpecSetMode(mode) {', '        _lmFullMapModeOff() {', '        _lmFullMapCrowdCheck() {', '        _lmSpecLocal() {', '        _lmSpecReconcile() {', '        flushSpecsData() {'].map((m) => [m, block(m)]);
 /* sendNick up to the first server-specific join (everything after it only builds the spawn packet) */
 const nickStart = src.indexOf('        sendNick(nick) {'), nickEnd = src.indexOf('            // ===== Garix join', nickStart);
 /* the helpers are new: an older file without them still runs (and shows the old failures) */
@@ -63,7 +63,8 @@ function env(o) {
         lmSetMbUnit: (u) => { win.multiboxPlayerEnabled = +u || null; }
     };
     vm.createContext(ctx);
-    vm.runInContext('var LM = window.legendmod = { integrity: true, mapOffsetFixed: true,' + lmMethods.map((m) => m[1]).join(',\n') + ',\n' + sendNick + '\n};' +
+    /* _lmFullMapCrowd false: a leaderboard of few players arrived (_lmFullMapCrowdCheck) */
+    vm.runInContext('var LM = window.legendmod = { integrity: true, mapOffsetFixed: true, _lmFullMapCrowd: false,' + lmMethods.map((m) => m[1]).join(',\n') + ',\n' + sendNick + '\n};' +
         'var application = window.application = {' + appMethods.map((m) => m[1]).join(',\n') + '};', ctx);
     /* the global spects of the page is window.spects (top-level var in a classic script) */
     Object.defineProperty(ctx, 'spects', { get: () => win.spects, set: (v) => { win.spects = v; } });
@@ -281,7 +282,7 @@ function realEnv() {
         return s;
     };
     vm.createContext(ctx);
-    vm.runInContext('var legendmod = window.legendmod = { ws: "wss://test", integrity: true, mapOffsetFixed: true, mapMinX: -7071, mapMinY: -7071, mapMaxX: 7071, mapMaxY: 7071,' +
+    vm.runInContext('var legendmod = window.legendmod = { ws: "wss://test", integrity: true, mapOffsetFixed: true, _lmFullMapCrowd: false, mapMinX: -7071, mapMinY: -7071, mapMaxX: 7071, mapMaxY: 7071,' +
         ' mapOffsetX: 0, mapOffsetY: 0, vector: null, vnr: 0, playerCellsMulti: [], indexedCells: {}, cells: [], foodMulti: [],' +
         lmMethods.map((m) => m[1]).join(',\n') + '}; var LM = legendmod;' +
         'var application = Object.assign(window.application, {' + appMethods.map((m) => m[1]).join(',\n') + '});', ctx);
@@ -657,6 +658,38 @@ for (const withUnit of [false, true]) {
         check('    ... moved to ' + gm + ': the tiles close, the mode stays full quietly' + tag, f.tiles().length === 0 && f.ctx.lmSpecMode === 'full' && !(f.ctx.warnings || []).length && f.unitOk());
         f.LM.gameMode = ':ffa'; f.LM.addSpect();
         check('    ... back in FFA: the 15 tiles open again' + tag, f.tiles().length === 15 && f.unitOk());
+    }
+    /* (22) at most 180 players on the server (owner), counted as the whole leaderboard: over it no grid,
+     * quietly, the mode kept; opened again at 170 or fewer; tiles closed when it rises over 180 (units and
+     * the in-game spectator untouched); no count yet after a connect: nothing opened until the first one */
+    {
+        const e = mk();
+        const lb = (n) => { e.LM.leaderboard = Array.from({ length: n }, (_, i) => ({ nick: 'p' + i })); e.LM._lmFullMapCrowdCheck(); };
+        e.LM._lmFullMapCrowd = undefined;
+        e.app.setShowFullSpectator(); e.LM.addSpect();
+        check('(22) no leaderboard yet: Full Map on, nothing opened' + tag, e.ctx.lmSpecMode === 'full' && e.tiles().length === 0 && !e.ctx.toasts && !(e.ctx.warnings || []).length);
+        lb(0);
+        check('    ... an empty leaderboard decides nothing' + tag, e.LM._lmFullMapCrowd === undefined && e.tiles().length === 0);
+        lb(181); e.LM.addSpect();
+        check('    ... 181 players: no tile, no toast, mode full' + tag, e.tiles().length === 0 && e.ctx.lmSpecMode === 'full' && !e.ctx.toasts && !(e.ctx.warnings || []).length);
+        lb(175); e.LM.addSpect();
+        check('    ... down to 175: still none (opens at 170)' + tag, e.tiles().length === 0);
+        lb(170);
+        check('    ... down to 170: the 15 tiles open (from the leaderboard update)' + tag, e.tiles().length === 15 && e.unitOk());
+        const n0 = e.sockets.length;
+        lb(178); lb(180); e.LM.addSpect();
+        check('    ... 178 and 180: kept open, nothing reopened' + tag, e.tiles().length === 15 && e.sockets.length === n0);
+        const grid = e.tiles();
+        lb(181);
+        check('    ... up to 181: the tiles close, the mode stays, the unit kept, no toast' + tag, e.tiles().length === 0 && grid.every((t) => t.closedByUser) && e.ctx.lmSpecMode === 'full' &&
+            e.unitOk() && !(e.ctx.warnings || []).length);
+        /* the in-game spectator is not affected by the count */
+        const g = mk();
+        g.LM.leaderboard = Array.from({ length: 200 }, () => ({ nick: 'x' })); g.LM._lmFullMapCrowdCheck();
+        g.app.setShowIngameSpectator();
+        const ig = g.ingame()[0];
+        g.LM.leaderboard.push({ nick: 'y' }); g.LM._lmFullMapCrowdCheck(); g.LM.addSpect();
+        check('    ... 200 players: the in-game spectator opens and stays' + tag, !!ig && !ig.closedByUser && g.ingame().length === 1 && g.unitOk());
     }
 }
 

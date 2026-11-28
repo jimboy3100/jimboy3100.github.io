@@ -41105,6 +41105,8 @@ function thelegendmodproject() {
             ogario.elBotCount = null;
             ogario.serverHz = 0;
             this.leaderboard = [];
+            /* a new server: Full Map waits for its player count (_lmFullMapCrowdCheck) */
+            this._lmFullMapCrowd = undefined;
             /* Clear leaderboard/team-board DOM immediately so stale
              * Expanding Land "Players: X Bots: Y" text does not persist
              * in the HUD while the new server handshake completes. */
@@ -52038,6 +52040,7 @@ function thelegendmodproject() {
             var _tLb = performance.now();
             /* the bots panel's "On this server" count, only while that panel is open (no timer) */
             if (this === window.legendmod && window._lmBotsServerPlayersRefresh) window._lmBotsServerPlayersRefresh();
+            if (this === window.legendmod) this._lmFullMapCrowdCheck();
             if (window.LMEvents._has('leaderboard')) {
                 var _lmEvLb = [];
                 for (var _lmEvI = 0; _lmEvI < this.leaderboard.length && _lmEvI < 100; _lmEvI++) _lmEvLb.push({ nick: String(this.leaderboard[_lmEvI].nick || '').slice(0, 60), pos: _lmEvI + 1 });
@@ -52604,6 +52607,22 @@ function thelegendmodproject() {
             }
             if (mode !== 'off') this.addSpect();
         },
+        /* Full Map only on a server with at most LM_FULLMAP_MAX_PLAYERS players (owner: its 15 extra
+         * connections must not overload a crowded server), counted as the whole agar.io leaderboard
+         * (opcode 53 lists every player; the bots panel counts the same). Once over, it opens again at
+         * LM_FULLMAP_REOPEN_PLAYERS or fewer (no flapping at the limit). _lmFullMapCrowd: undefined
+         * until the first leaderboard of a server, then true / false; the grid is re-checked only when
+         * it changes. */
+        _lmFullMapCrowdCheck() {
+            var n = this.leaderboard ? this.leaderboard.length : 0;
+            if (!n) return;
+            var max = typeof LM_FULLMAP_MAX_PLAYERS === 'number' ? LM_FULLMAP_MAX_PLAYERS : 180;
+            var reopen = typeof LM_FULLMAP_REOPEN_PLAYERS === 'number' ? LM_FULLMAP_REOPEN_PLAYERS : 170;
+            var crowd = this._lmFullMapCrowd === true ? n > reopen : n > max;
+            if (crowd === this._lmFullMapCrowd) return;
+            this._lmFullMapCrowd = crowd;
+            if (window.lmSpecMode === 'full') this._lmSpecReconcile();
+        },
         /* Teams and Battle Royale: no Full Map grid until a recording shows it works there (owner) */
         _lmFullMapModeOff() {
             return this.gameMode === ':teams' || this.gameMode === ':battleroyale';
@@ -52634,9 +52653,10 @@ function thelegendmodproject() {
                 addSpectator();
                 return;
             }
-            /* Full Map on and the player moved to Teams / Battle Royale: its tiles close, the mode
-             * stays and the grid opens again back in FFA, Experimental or Party */
-            if (this._lmFullMapModeOff()) {
+            /* Full Map on and the player moved to Teams / Battle Royale, or the server has too many
+             * players or no count yet (_lmFullMapCrowdCheck): its tiles close, quietly, the mode stays
+             * and the grid opens again when it may (FFA, Experimental or Party; few enough players) */
+            if (this._lmFullMapModeOff() || (this.integrity && this._lmFullMapCrowd !== false)) {
                 var kept = [];
                 for (i = 0; i < sp.length; i++) {
                     s = sp[i];
