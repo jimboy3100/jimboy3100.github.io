@@ -60,6 +60,8 @@ function parts(src) {
     for (const k in p) if (!p[k]) { console.log('FAIL ' + k + ' not found in ' + srcFile); process.exit(1); }
     /* the spawn (opcode 32) ends every spectate mode through this method (versions before it: none) */
     p.sp = block('        _lmSpawnEndsSpectate() {');
+    /* a cut-short opcode 16 is counted and named in the console (versions before it: silent) */
+    p.wi = block('        _lmWuIncomplete(server) {');
     return p;
 }
 
@@ -98,7 +100,7 @@ function client(src) {
     vm.runInContext(p.helpers + '\n' + [...p.helpers.matchAll(/^ {4}function (\w+)\(/gm)].map(m => 'this.' + m[1] + ' = ' + m[1] + ';').join(' ') + '\n' + p.isEl + '\nthis._isExpandingLandClient = _isExpandingLandClient;', g);
     g.__h = null;
     g.__env = new Proxy({}, { has: (t, k) => typeof k === 'string' && !(k in g), get: (t, k) => k in t ? t[k] : noop });
-    vm.runInContext('with (__env) { __h = ({' + [p.dm, p.hm, p.sub, p.uc, p.fl].concat(p.sp ? [p.sp] : []).join(',\n') + '}); }', g);
+    vm.runInContext('with (__env) { __h = ({' + [p.dm, p.hm, p.sub, p.uc, p.fl].concat(p.sp ? [p.sp] : [], p.wi ? [p.wi] : []).join(',\n') + '}); }', g);
     const L = g.__h;
     L.pps = 0;
     Object.assign(L, {
@@ -312,7 +314,7 @@ function expectedCut(kind, pre, eats, recs, rems, legacy, marks, n) {
     if (!whole) L.pps = before; /* counted separately below */
     return state(L);
 }
-let cutN = 0, cutBad = [], cutThrew = 0, cutPps = [];
+let cutN = 0, cutBad = [], cutThrew = 0, cutPps = [], cutBadN = [];
 const truncSets = [
     ['agario', false, [AG[0]], [[11, 900], [12, 901]], [{ id: 11, x: 104, y: 204, size: 121 }, { id: 12, x: -296, y: 52, size: 91, acc: 7002, color: [5, 6, 7], skin: '%s', name: 'Bravo ★' }, { id: 16, x: 1, y: 2, size: 33, color: [4, 4, 4], acc: 9, friend: true }], [900, 13]],
     ['expandingland', false, [EL[0]], [[101, 950], [102, 951]], [{ id: 101, x: 1004, y: 1001, size: 121 }, { id: 102, x: 1201, y: 902, size: 91, skin: '', name: 'Bot B2' }, { id: 104, x: 7, y: 7, size: 60, color: [9, 8, 7], skin: 'https://jimboy3000.github.io/vanillaskins/b.png', name: 'Neu' }], [950, 102]],
@@ -326,12 +328,16 @@ for (const [kind, legacy, pre, eats, recs, rems] of truncSets) {
             const want = expectedCut(kind, pre, eats, recs, rems, legacy, marks, n);
             reset(L, kind);
             pre.forEach(feed);
-            const pps0 = L.pps;
+            const pps0 = L.pps, bad0 = L._lmWuBadN || 0;
             const cut = full.slice(0, n);
             try { feed(packed ? compressed(cut) : cut); } catch (e) { cutThrew++; }
             cutN++;
             const ppsAdded = L.pps - pps0;
             L.pps = pps0;
+            /* a raw opcode 16 cut short is counted as an incomplete update; a compressed one gets the
+             * handleMessage truncated-packet warning instead (not counted twice) */
+            const badAdded = (L._lmWuBadN || 0) - bad0;
+            if (badAdded !== (packed || n >= marks.end ? 0 : 1)) cutBadN.push(kind + (packed ? ' 255' : ' 16') + ' @' + n + ' +' + badAdded);
             if (state(L) !== want) cutBad.push(kind + (packed ? ' 255' : ' 16') + ' cut at ' + n + '/' + full.length);
             /* raw opcode 16 counts every packet (PPS as before), a compressed one only when it was read */
             if (ppsAdded !== (packed ? 0 : 1)) cutPps.push(kind + (packed ? ' 255' : ' 16') + ' @' + n + ' pps+' + ppsAdded);
@@ -340,6 +346,20 @@ for (const [kind, legacy, pre, eats, recs, rems] of truncSets) {
 }
 check('every truncation (' + cutN + ' cuts, plain and compressed): no throw out of handleMessage', cutThrew === 0);
 check('every truncation: only sections held whole are applied, no cut-short record, eat or remove list' + (cutBad.length ? ' (' + cutBad.length + ' wrong, e.g. ' + cutBad.slice(0, 4).join('; ') + ')' : ''), cutBad.length === 0);
+check('every truncation: a plain opcode 16 cut short counts one incomplete update, a compressed one none' + (cutBadN.length ? ' (' + cutBadN.slice(0, 3).join('; ') + ')' : ''), cutBadN.length === 0);
+{
+    /* the console line: named at most every 5 s, never the packet bytes; a whole update says nothing */
+    reset(L, 'agario');
+    L._lmWuBadN = 0; L._lmWuBadAt = 0; L.g.warns.length = 0;
+    const marks = {};
+    const full = world([[11, 900]], [{ id: 11, x: 104, y: 204, size: 121 }], [900], false, marks);
+    feed(full);
+    const quiet = L.g.warns.length === 0 && L._lmWuBadN === 0;
+    feed(full.slice(0, marks.end - 1)); feed(full.slice(0, 3));
+    const w = L.g.warns.filter(t => t.indexOf('Incomplete opcode 16 cell update') >= 0);
+    check('cut-short opcode 16: counted (2), one rate-limited console line, a whole update counts nothing',
+        quiet && L._lmWuBadN === 2 && w.length === 1 && L.g.warns.length === 1, [quiet, L._lmWuBadN, L.g.warns]);
+}
 check('every truncation: packets/s as before (plain opcode 16 counted, compressed not)' + (cutPps.length ? ' (' + cutPps.slice(0, 3).join('; ') + ')' : ''), cutPps.length === 0);
 
 /* ---- 3. malformed counts, flags and terminators ---- */

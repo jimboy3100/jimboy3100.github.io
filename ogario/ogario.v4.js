@@ -48140,7 +48140,9 @@ function thelegendmodproject() {
                         }
                     } catch (e) {
                         if (e instanceof RangeError) {
-                            // Buffer overread — malformed or unexpected cell data format; skip this packet
+                            /* cut short or malformed: skip the rest of this packet, but count it and say so
+                             * (rate-limited) like the Garix / Sigmally parsers do */
+                            this._lmWuIncomplete(this.serverType === 'garix' ? 'Garix' : 'opcode 16');
                         } else {
                             throw e;
                         }
@@ -55385,7 +55387,7 @@ function thelegendmodproject() {
             if (window.autoPlay && legendmod.play) calcTarget();
             return complete;
         },
-        /* A Garix / Sigmally cell update (opcode 16) that was cut short or did not end where
+        /* A Garix / Sigmally / agar.io / Expanding Land / private server cell update (opcode 16) that was cut short or did not end where
          * its counts and terminators say: counted in _lmWuBadN (the console line gives it) and named in
          * the console at most every 5 s. Only the server name and the count are logged, never
          * packet bytes. Rare: nothing runs for a complete update. */

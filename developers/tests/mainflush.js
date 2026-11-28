@@ -74,7 +74,7 @@ function client() {
         serverType: 'expandingland', isLegendWorld: true, connectionIntegrity: false, integrity: false, gameMode: ':ffa', playerNick: 'Me', leaderboard: [], fbOnline: [],
         cells: [], food: [], viruses: [], removedCells: [], playerCells: [], playerCellIDs: [], indexedCells: {}, cellcolors: {}, playerCellsMulti: [], foodMulti: [],
         vector: [[0, 0]], vnr: 0, play: false, time: 0, mapEvent: {}, decayInfo: {},
-        countPps: noop, megaFFAscore: noop, vanillaskins: noop, handleLeaderboard: noop, setMapOffset: noop, _lmOnServerBorder: noop, flushSpecsData: noop, _lmSpawnEndsSpectate: noop,
+        countPps: noop, megaFFAscore: noop, vanillaskins: noop, handleLeaderboard: noop, setMapOffset: noop, _lmOnServerBorder: noop, flushSpecsData: noop, _lmSpawnEndsSpectate: noop, _lmWuIncomplete: noop,
         rgb2Hex: (r, gg, b) => '#' + [r, gg, b].map(v => (v | 0).toString(16).padStart(2, '0')).join(''), _lmKeepMainSuppressed: () => false
     });
     g.legendmod = g.LM = L;

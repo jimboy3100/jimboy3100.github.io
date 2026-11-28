@@ -89,7 +89,7 @@ function reset(o) {
         serverType: 'agario', isLegendWorld: false, connectionIntegrity: true, integrity: true, gameMode: ':ffa', playerNick: 'Me', leaderboard: [], fbOnline: [],
         cells: [], food: [], viruses: [], removedCells: [], playerCells: [], playerCellIDs: [], indexedCells: {}, cellcolors: Object.create(null), playerCellsMulti: [],
         multiBoxPlayerExists: false, vector: [[0, 0]], vnr: 0, play: true, time: 0, mapEvent: {}, decayInfo: {}, _colorByRawMap: null,
-        countPps: noop, megaFFAscore: noop, vanillaskins: noop, handleLeaderboard: noop, setMapOffset: noop, _lmOnServerBorder: noop, flushSpecsData: noop,
+        countPps: noop, _lmWuIncomplete: noop, megaFFAscore: noop, vanillaskins: noop, handleLeaderboard: noop, setMapOffset: noop, _lmOnServerBorder: noop, flushSpecsData: noop,
         _lmKeepMainSuppressed: () => false
     }, o || {});
     g.application.teamPlayers = [];
