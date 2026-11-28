@@ -58239,57 +58239,6 @@ function thelegendmodproject() {
         }
     };
 
-    /*
-     * LM does not define switchToPrevLivingUnit() or
-     * switchToNextLivingUnit().
-     *
-     * The real previous/next multibox implementations are application:
-     *
-     *     multiboxback()
-     *     multiboxchange()
-     */
-    window.switchToPrevLivingUnit =
-        function () {
-            if (
-                window.application &&
-                typeof window.application
-                    .multiboxback ===
-                    'function'
-            ) {
-                window.application
-                    .multiboxback();
-
-                return true;
-            }
-
-            console.warn(
-                '[MULTIBOX] application.multiboxback is unavailable.'
-            );
-
-            return false;
-        };
-
-    window.switchToNextLivingUnit =
-        function () {
-            if (
-                window.application &&
-                typeof window.application
-                    .multiboxchange ===
-                    'function'
-            ) {
-                window.application
-                    .multiboxchange();
-
-                return true;
-            }
-
-            console.warn(
-                '[MULTIBOX] application.multiboxchange is unavailable.'
-            );
-
-            return false;
-        };
-
     /* ═══════════════════════════════════════════════════════════════════════════
      * §7.5 CLIENT-SIDE PROFILER SYSTEM
      *      Sub-millisecond performance tracking for Frame Rendering, WebGL2,
