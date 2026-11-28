@@ -97,7 +97,8 @@ var legendPage = 'https://www.legendmod.ml/play.html?' + pageVersion;
 var modes = {
     legendmod: { page: legendPage, legend: true },
     /* agar.io without the mod: agar.io serves its game only at "/" (/normal, like every other path, is
-     * its 404 page), so its front page is downloaded and written here */
+     * its 404 page). Its front page is downloaded and written here only where the tab cannot simply be
+     * sent to agar.io/ untouched (see vanilla below) */
     normal:    { page: 'https://agar.io/', base: 'https://agar.io/' },
     hslo:      { script: 'https://hslo.io/install.user.js' },
     agartool:  { script: 'https://www.agartool.io/agartool.user.js' },
@@ -114,6 +115,48 @@ var modes = {
 /* "/Normal/" and "/normal" are the same mode */
 var modeName = location.pathname.replace(/^\/+|\/+$/g, '').toLowerCase();
 var mode = Object.prototype.hasOwnProperty.call(modes, modeName) ? modes[modeName] : modes.legendmod;
+/*
+ * vanilla: agar.io/normal plays agar.io without the mod in agar.io's own page, not a copy downloaded and
+ * written over another one. /normal leaves a note in sessionStorage (VANILLA_KEY "go:<time>", 10 s) and sends
+ * the tab to agar.io/; that load sees the note, keeps it as "on" and leaves agar.io's page alone (this loader
+ * stays the owner, so the extension leaves it alone too). A reload of that page stays without the mod;
+ * any other visit to agar.io/ loads Legend Mod and drops the note. Where that cannot work, agar.io's front
+ * page is downloaded and written as before (modes.normal): with the Legend Express extension switched on,
+ * agar.io/ arrives as /legendmod/ (its redirect rule comes before any script), and without sessionStorage
+ * /normal does it itself. The extension (content.js) reads the same note.
+ */
+var VANILLA_KEY = 'lmx-vanilla';
+function vanillaWanted() {
+    var note = '', nav = '';
+    try { note = sessionStorage.getItem(VANILLA_KEY) || ''; } catch (e) { return false; }
+    var m = /^go:(\d+)$/.exec(note);
+    if (m) return Date.now() - Number(m[1]) < 10000;
+    if (note !== 'on') return false;
+    try {
+        var entry = performance.getEntriesByType('navigation')[0];
+        nav = entry ? entry.type : performance.navigation.type === 1 ? 'reload' : '';
+    } catch (e) { }
+    return nav === 'reload';
+}
+if (modeName === 'normal' && !vanillaWanted()) {
+    var noted = false;
+    try { sessionStorage.setItem(VANILLA_KEY, 'go:' + Date.now()); noted = /^go:/.test(sessionStorage.getItem(VANILLA_KEY) || ''); } catch (e) { }
+    if (noted) {
+        location.replace('https://agar.io/' + location.search + location.hash);
+        return;
+    }
+} else if (modeName === '' || modeName === 'legendmod') {
+    if (vanillaWanted()) {
+        try { sessionStorage.setItem(VANILLA_KEY, 'on'); } catch (e) { }
+        if (modeName === '') {
+            try { sessionStorage.setItem('lmx-boot', JSON.stringify({ loader: LOADER, mode: '/', states: [['ROUTING', 0], ['READY', 0]], info: 'vanilla' })); } catch (e) { }
+            return;
+        }
+        mode = modes.normal;
+    } else {
+        try { sessionStorage.removeItem(VANILLA_KEY); } catch (e) { }
+    }
+}
 /* early: none of agar.io's scripts ran yet; partial: its page is still being read, but its first scripts
  * ran (agar.io's game code is in its <head>, so it is running); late: its whole page and game ran (the
  * manager was slow). A partial or late start gets the same recovery. */

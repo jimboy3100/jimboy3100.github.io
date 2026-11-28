@@ -42,7 +42,7 @@ const sleep = ms => new Promise(r => setTimeout(r, ms));
 let fail = 0;
 const check = (n, c) => { console.log((c ? 'ok   ' : 'FAIL ') + n); if (!c) fail++; };
 
-async function runLoader(name) {
+async function runLoader(name, url) {
   const port = 9800 + Math.floor(Math.random() * 150);
   const profile = fs.mkdtempSync(path.join(os.tmpdir(), 'lm-agarloader-'));
   const proc = spawn(chrome, ['--headless=new', '--remote-debugging-port=' + port, '--user-data-dir=' + profile,
@@ -75,12 +75,15 @@ async function runLoader(name) {
     await send('Page.addScriptToEvaluateOnNewDocument', { source: 'if (location.hostname === "agar.io") { var __o = new MutationObserver(function () {' +
       ' if (!document.documentElement) return; __o.disconnect();' +
       ' (0, eval)(' + JSON.stringify(loaders[name]) + '); }); __o.observe(document, { childList: true }); }' });
-    await send('Page.navigate', { url: 'https://agar.io/' });
+    const state = async () => JSON.parse((await send('Runtime.evaluate', { returnByValue: true, expression:
+      'JSON.stringify({ legend: !!document.getElementById("lm-ok"), script: window.__lmScript || 0, init: window.__lmInit || "", vanilla: window.__vanilla || 0, at: location.href })' })).result.value);
+    await send('Page.navigate', { url: url || 'https://agar.io/' });
     await sleep(4000);
-    const r = await send('Runtime.evaluate', { returnByValue: true, expression:
-      'JSON.stringify({ legend: !!document.getElementById("lm-ok"), script: window.__lmScript || 0, init: window.__lmInit || "", vanilla: window.__vanilla || 0 })' });
+    const r = await state();
+    /* agar.io/normal: a reload of the agar.io/ it went to stays without the mod */
+    if (url) { await send('Page.reload'); await sleep(3000); r.reload = await state(); }
     ws.close();
-    return JSON.parse(r.result.value);
+    return r;
   } finally {
     proc.kill();
     await sleep(300);
@@ -95,6 +98,10 @@ async function runLoader(name) {
     check(name + ': its scripts run and get the init call', r.script === 1 && r.init === '9.9.9');
     check(name + ': agar.io\'s own scripts do not run', r.vanilla === 0);
   }
+  /* agar.io/normal: agar.io's own page at agar.io/, not written over by the loader */
+  const n = await runLoader('userscript', 'https://agar.io/normal');
+  check('userscript agar.io/normal: agar.io runs in its own page at agar.io/ (its scripts ran, nothing written)', n.at === 'https://agar.io/' && n.vanilla === 2 && !n.legend);
+  check('userscript agar.io/normal: a reload of it stays without the mod', n.reload.at === 'https://agar.io/' && n.reload.vanilla === 2 && !n.reload.legend);
   console.log(fail ? fail + ' agar.io loader checks FAILED' : 'all agar.io loader checks passed');
   process.exit(fail ? 1 : 0);
 })().catch(e => { console.log('FAIL harness', e && e.message); process.exit(1); });

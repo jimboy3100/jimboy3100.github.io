@@ -103,6 +103,10 @@ r = run('/legendmod', { lmExpressEnabled: '0' }, false);
 check('agar.io/legendmod with the switch off: the agar.io/ rule is switched off first, then back to agar.io', r.log.join() === 'syncRules' && r.ctx.location.href === 'https://agar.io/');
 r = run('/legendmod/', { lmExpressEnabled: '0' }, false, { search: '?sip=x', hash: '#h', session: { lmExpressLeft: String(Date.now()) } });
 check('...at most once in 10 s (a rule that could not be switched off makes no loop)', r.log.length === 0);
+r = run('/legendmod/', { lmExpressEnabled: '1' }, true, { session: { 'lmx-vanilla': 'go:' + Date.now() } });
+check('agar.io/normal of the userscript (its note): the extension leaves the page to it', r.log.length === 0 && !r.ss['lm-loader-owner'] && !r.written);
+r = run('/legendmod/', { lmExpressEnabled: '1' }, true, { session: { 'lmx-vanilla': 'go:' + (Date.now() - 60000) } });
+check('...an old note (over 10 s): Legend Mod as usual', /LEGEND/.test(r.written));
 r = run('/shop', {}, true);
 check('other agar.io pages: left alone', r.log.length === 0 && !r.ss['lm-loader-owner']);
 r = run('/hslo', {}, true);
@@ -193,28 +197,50 @@ if (usLang) {
 }
 /* the userscript run as written in a stand-in agar.io page: scripts (what agar.io's parser has put in
  * so far), the downloads it makes and the page it writes */
-function runUs(pathname, scripts) {
-    const ss = {}, gets = [], writes = [];
+/* opts: session (sessionStorage at the start), nav (the navigation type), noSession (sessionStorage throws) */
+function runUs(pathname, scripts, opts) {
+    opts = opts || {};
+    const ss = Object.assign({}, opts.session || {}), gets = [], writes = [];
     const storage = { getItem: (k) => (k in ss ? ss[k] : null), setItem: (k, v) => { ss[k] = String(v); }, removeItem: (k) => { delete ss[k]; } };
+    const blocked = () => { throw new Error('SecurityError'); };
+    const session = opts.noSession ? { getItem: blocked, setItem: blocked, removeItem: blocked } : storage;
     const html = { getAttribute: () => null, setAttribute: () => { }, nextSibling: null };
     const doc = { readyState: 'loading', documentElement: html, currentScript: null, getElementById: () => null,
         getElementsByTagName: () => (scripts || []).map((f) => f(html)), addEventListener() { },
         open() { }, write(h) { writes.push(h); }, close() { } };
     html.parentNode = doc;
     const agarPage = '<!doctype html><html><head><script>window.aiptag = {};</script><base href=""><script src="bundle_commons.js"></script></head><body></body></html>';
-    vm.runInNewContext(us, { document: doc, location: { pathname, href: 'https://agar.io' + pathname, origin: 'https://agar.io', hash: '', reload() { gets.push('reload'); } },
-        localStorage: storage, sessionStorage: storage, navigator: { language: 'en' }, performance: { timeOrigin: 1, now: () => 0 },
+    vm.runInNewContext(us, { document: doc, location: { pathname, href: 'https://agar.io' + pathname, origin: 'https://agar.io', search: '', hash: '',
+        reload() { gets.push('reload'); }, replace(u) { gets.push('replace ' + u); } },
+        localStorage: storage, sessionStorage: session, navigator: { language: 'en' },
+        performance: { timeOrigin: 1, now: () => 0, getEntriesByType: () => [{ type: opts.nav || 'navigate' }] },
         console: { log() { }, warn() { }, error() { } }, setTimeout: () => 0, clearTimeout() { }, JSON, Date, Math, String, Object, RegExp, parseInt,
         GM_info: { script: { version: '1.9' } }, GM_getValue: () => null, GM_setValue() { }, GM_deleteValue() { },
         GM_xmlhttpRequest: (o) => { gets.push(o.url); o.onload({ status: 200, finalUrl: o.url, responseText: o.url === 'https://agar.io/' ? agarPage : '' }); } });
-    return { gets, writes, boot: JSON.parse(ss['lmx-boot'] || '{}') };
+    return { gets, writes, ss, boot: JSON.parse(ss['lmx-boot'] || '{}') };
 }
-/* agar.io serves its game only at "/": /normal is its 404 page, so the game page is written there */
+/* agar.io serves its game only at "/" (/normal is its 404 page): /normal sends the tab there with a note,
+ * and that load leaves agar.io's own page alone (nothing downloaded or written) */
+const now = Date.now();
 for (const p of ['/normal', '/Normal/']) {
     const n = runUs(p);
+    check('userscript ' + p + ': sends the tab to agar.io/ with the note, nothing written', n.gets.join() === 'replace https://agar.io/' && !n.writes.length && /^go:\d+$/.test(n.ss['lmx-vanilla'] || ''));
+}
+const v = runUs('/', null, { session: { 'lmx-vanilla': 'go:' + now } });
+check('userscript /: with the note agar.io\'s page is left as it is (no takeover, no download)', !v.writes.length && !v.gets.length && v.ss['lmx-vanilla'] === 'on' && v.boot.info === 'vanilla');
+check('userscript /: a reload of that page stays without the mod', !runUs('/', null, { session: { 'lmx-vanilla': 'on' }, nav: 'reload' }).writes.length);
+const back = runUs('/', null, { session: { 'lmx-vanilla': 'on' } });
+check('userscript /: another visit loads Legend Mod and drops the note', back.writes.length > 0 && back.gets.indexOf('https://www.legendmod.ml/play.html?2') >= 0 && !('lmx-vanilla' in back.ss));
+const old = runUs('/', null, { session: { 'lmx-vanilla': 'go:' + (now - 60000) } });
+check('userscript /: an old note (over 10 s) loads Legend Mod', old.gets.indexOf('https://www.legendmod.ml/play.html?2') >= 0);
+/* where the tab cannot go to agar.io/ untouched, agar.io's game page is downloaded and written as before */
+const cases = [['/legendmod/ (the extension\'s redirect of agar.io/)', '/legendmod/', { session: { 'lmx-vanilla': 'go:' + now } }],
+    ['/normal without sessionStorage', '/normal', { noSession: true }], ['/normal again within 10 s', '/normal', { session: { 'lmx-vanilla': 'go:' + now } }]];
+for (const [name, p, o] of cases) {
+    const n = runUs(p, null, o);
     const page = n.writes[n.writes.length - 1] || '';
-    check('userscript ' + p + ': agar.io\'s game page is downloaded and written (not its 404 page left)', n.gets.join() === 'https://agar.io/' && page.indexOf('window.aiptag') > 0 && n.boot.states.map((x) => x[0]).pop() === 'READY');
-    check('userscript ' + p + ': its relative links resolve against agar.io/', page.indexOf('<head><base href="https://agar.io/"><script>window.aiptag') > 0);
+    check('userscript ' + name + ': agar.io\'s game page is downloaded and written (not its 404 page left)', n.gets.join() === 'https://agar.io/' && page.indexOf('window.aiptag') > 0 && (o.noSession || n.boot.states.map((x) => x[0]).pop() === 'READY'));
+    check('userscript ' + name + ': its relative links resolve against agar.io/', page.indexOf('<head><base href="https://agar.io/"><script>window.aiptag') > 0);
 }
 /* a start after agar.io's inline head scripts ran (they start its ad SDK and pixel) is not on time */
 const el = (props, parent) => (html) => {

@@ -55,7 +55,10 @@ const isCaptchaPath = path === '/captcha' || path === '/captcha/';
 let mirroredOn = true;
 try { mirroredOn = localStorage.getItem(ENABLED_KEY) !== '0'; } catch (e) { }
 let stopped = false;
-if (!otherLoaderOwned && (isLegendPath || isCaptchaPath) && mirroredOn) {
+/* agar.io without the mod, asked for at agar.io/normal by the Legend Express userscript: it writes agar.io's
+ * page here (the same note and rule as LMexpress.user.js vanillaWanted), so this page is left to it */
+const vanilla = isLegendPath && vanillaWanted();
+if (!otherLoaderOwned && !vanilla && (isLegendPath || isCaptchaPath) && mirroredOn) {
     claimOwner();
     stopAgario();
     if (isLegendPath) showLoading();
@@ -65,8 +68,8 @@ chrome.storage.local.get({ enabled: true }, (result) => {
     const isEnabled = result.enabled !== false;
     console.log('[Legend Express] Extension status:', isEnabled ? 'Enabled' : 'Disabled');
     try { localStorage.setItem(ENABLED_KEY, isEnabled ? '1' : '0'); } catch (e) { }
-    /* the userscript runs Legend Mod on this page: leave it alone, whatever the switch says */
-    if (!stopped && otherLoaderOwns()) return;
+    /* the userscript runs Legend Mod (or agar.io without the mod) on this page: leave it alone, whatever the switch says */
+    if (!stopped && (otherLoaderOwns() || vanilla)) return;
 
     if (!isEnabled) {
         // If we are on a mod-redirected page but extension is disabled, go back to vanilla agar.io
@@ -102,6 +105,18 @@ chrome.storage.local.get({ enabled: true }, (result) => {
         loadPage(captchaPage, false);
     }
 });
+
+/* True for a load the userscript's agar.io/normal sent here: its note "go:<time>" of the last 10 s, or "on"
+ * on a reload of that page */
+function vanillaWanted() {
+    let note = '', nav = '';
+    try { note = sessionStorage.getItem('lmx-vanilla') || ''; } catch (e) { return false; }
+    const m = /^go:(\d+)$/.exec(note);
+    if (m) return Date.now() - Number(m[1]) < 10000;
+    if (note !== 'on') return false;
+    try { const entry = performance.getEntriesByType('navigation')[0]; nav = entry ? entry.type : ''; } catch (e) { }
+    return nav === 'reload';
+}
 
 /* True when the other loader (the userscript) named itself owner of this page load */
 function otherLoaderOwns() {
