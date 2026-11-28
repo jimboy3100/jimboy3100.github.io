@@ -32,12 +32,10 @@
       "description": "Straight-line rapid multi-split (x8 with 3 splits, x16 with 4 splits). All fragments travel in a line toward the cursor for maximum distance coverage.",
       "difficulty": "advanced",
       "keys": "Configurable hotkey (no default)",
-      "tips": "Configure delay between splits (ms) and hold time. Use guide lines setting to visualize the split path. Very high risk — you are split into maximum fragments.",
+      "tips": "Set the splits per press (2-4) and how long the aim stays locked after the last split. The splits are as far apart as the split macros' (Settings > Macros), and a line shows the locked direction while the lock runs. Very high risk — you are split into maximum fragments.",
       "settings": {
-        "count": "3 (x8) or 4 (x16)",
-        "delay": "Configurable ms between splits",
-        "holdTime": "Lock duration in ms",
-        "guideLines": "Visual line showing split direction"
+        "count": "2, 3 (x8) or 4 (x16) splits per press",
+        "holdTime": "Lock duration in ms"
       }
     },
     {

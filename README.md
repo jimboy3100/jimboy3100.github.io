@@ -50,7 +50,7 @@
 | Quick Feed | `E` (hold) | Machine-gun mass ejection |
 | Quad Split | `Q` | 4 splits in one keypress |
 | Freeze Cell | `S` | Stop movement instantly |
-| Linesplit | `A` | Line + split combo |
+| Line split | *(no default key)* | Locks the aim on a straight line and splits 2-4 times |
 | *+ 50 more* | *Fully customizable* | *All keys remappable* |
 
 ### Custom Skins & Themes

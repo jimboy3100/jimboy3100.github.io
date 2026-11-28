@@ -20947,12 +20947,12 @@ var defaultmapsettings = {
      * distances are skipped on load like any unknown key). */
     /* scanTrickStatus and lineSplitStatus (a switch for each status line) are gone: the line
      * shows by itself while the technique is in use (saved values of them are skipped on load) */
-    /* Line split (hk-lineSplit): splits per press (3 = x8, 4 = x16), ms
-     * between splits, ms the aim stays locked after the last split. */
+    /* Line split (hk-lineSplit): splits per press (2-4; 3 = x8, 4 = x16) and ms the aim stays
+     * locked after the last split. The time between its splits is the split macros' one
+     * (macroSplitDelay) and its aim line always shows while the aim is locked: saved
+     * lineSplitDelay and lineSplitGuide values are skipped on load like any unknown key. */
     lineSplitCount: 3,
-    lineSplitDelay: 50,
     lineSplitHold: 1000,
-    lineSplitGuide: true,
 
     stickyCell: false,
     gamepadDeadzone: 0.2, /* stick dead zone (0.05-0.5); 0.2 was the fixed value before */
@@ -21108,8 +21108,8 @@ var LM_SETTINGS_SCHEMA = Object.freeze({
     fpsLimit: [0, 240, 10],
     /* its slider is gone; 3-4 from older versions are read as 2 (ensureMbSlots) */
     multiboxAmount: [2, 4, 1],
-    lineSplitCount: [1, 4, 1],
-    lineSplitDelay: [0, 200, 5],
+    /* a single split is just the split key: a saved 1 is read as 2 */
+    lineSplitCount: [2, 4, 1],
     lineSplitHold: [0, 3000, 100],
     gamepadDeadzone: [0.05, 0.5, 0.01],
     gamepadMoveRange: [0.15, 1, 0.01],
@@ -26522,9 +26522,8 @@ function thelegendmodproject() {
             this.addOptions(["recordReplays"], "replayGroup");
             this.addOptions(["oneColoredSpectator", "multiBoxShadow", "multiKeepMoving", "middleMultiViewWhenClose", "middleMultiView", "mbSwitchAfterDeath", "mbFreeze", "mbAutoRespawn", "cameraSmoothLerp"], "multiBox");
             /* Line split section; its key is set in Hotkeys ("Line split"). */
-            this.addOptions(["lineSplitGuide"], "lineSplitGroup");
-            this.addSliderBox(".lineSplitGroup", "lineSplitCount", 1, 4, 1);
-            this.addSliderBox(".lineSplitGroup", "lineSplitDelay", 0, 200, 5);
+            this.addOptions([], "lineSplitGroup");
+            this.addSliderBox(".lineSplitGroup", "lineSplitCount", 2, 4, 1);
             this.addSliderBox(".lineSplitGroup", "lineSplitHold", 0, 3000, 100);
             $(".lineSplitGroup").append(
                 '<div class="line-split-help" style="margin-top:8px;padding:8px 10px;font-size:11px;line-height:1.45;opacity:.82;border-left:3px solid #ff2fd6;background:rgba(0,0,0,.18);">' +
@@ -39833,7 +39832,6 @@ function thelegendmodproject() {
         lineSplitActive: false,
         lineSplitTarget: null,
         lineSplitUnit: 0,
-        lineSplitSplits: 0,
         lineSplitSeq: 0,
         _lineSplitStatusText: '',
 
@@ -55107,7 +55105,7 @@ function thelegendmodproject() {
          *
          * One key press locks the aim on one fixed spot on the map, on the
          * line from the unit's biggest cell through the cursor, splits
-         * lineSplitCount times lineSplitDelay ms apart, and keeps the aim
+         * lineSplitCount times macroSplitDelay ms apart, and keeps the aim
          * locked for lineSplitHold ms after the last split, so the pieces
          * fly out in one straight line. The same key again cancels.
          *
@@ -55126,8 +55124,9 @@ function thelegendmodproject() {
             }
             /* Settings can be imported: clamp them here. */
             return {
-                splits: Math.round(num(defaultmapsettings.lineSplitCount, 1, 4, 3)),
-                delay: num(defaultmapsettings.lineSplitDelay, 0, 500, 50),
+                splits: Math.round(num(defaultmapsettings.lineSplitCount, 2, 4, 3)),
+                /* the same time between splits as the double/triple/16 split macros */
+                delay: window._lmSplitDelay(1),
                 hold: num(defaultmapsettings.lineSplitHold, 0, 5000, 1000)
             };
         },
@@ -55240,7 +55239,6 @@ function thelegendmodproject() {
             this.lineSplitActive = true;
             this.lineSplitTarget = { x: Math.round(target.x), y: Math.round(target.y) };
             this.lineSplitUnit = unitNumber;
-            this.lineSplitSplits = settings.splits;
             this.getCursorPosition();
             this.updateLineSplitStatus();
 
@@ -55293,7 +55291,8 @@ function thelegendmodproject() {
         updateLineSplitStatus() {
             var text = '';
             if (this.lineSplitActive) {
-                text = lmT('settings.lineSplitGroup') + ' x' + Math.pow(2, this.lineSplitSplits);
+                /* no x8 / x16: how many pieces come out depends on the cells already split */
+                text = lmT('settings.hk-lineSplit');
             }
             if (text === this._lineSplitStatusText) return;
             this._lineSplitStatusText = text;
@@ -79626,7 +79625,7 @@ function pickPlayerCellBySize(players, selectBiggest) {
                     this.drawFBTracking(_fbCtx, LM.playerCells, LM.arrowFB[0].x, LM.arrowFB[0].y);
                 }
             }
-            if (LM.lineSplitActive && defaultmapsettings.lineSplitGuide) {
+            if (LM.lineSplitActive) {
                 this.drawLineSplitGuide(this.ctx);
             }
         },

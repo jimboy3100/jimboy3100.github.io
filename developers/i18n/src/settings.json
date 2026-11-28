@@ -8915,24 +8915,6 @@
     "ja": "1回の押下での分裂回数（3 = x8、4 = x16）",
     "it": "Split per pressione (3 = x8, 4 = x16)"
   },
-  "settings.lineSplitDelay": {
-    "en": "Delay between splits (ms)",
-    "el": "Καθυστέρηση μεταξύ split (ms)",
-    "es": "Retardo entre splits (ms)",
-    "bg": "Забавяне между сплитовете (ms)",
-    "fr": "Délai entre les splits (ms)",
-    "ar": "التأخير بين الانقسامات (ms)",
-    "zh": "分裂間隔（ms）",
-    "ru": "Задержка между сплитами (мс)",
-    "de": "Verzögerung zwischen Splits (ms)",
-    "tr": "Splitler arası gecikme (ms)",
-    "pl": "Opóźnienie między splitami (ms)",
-    "nl": "Vertraging tussen splits (ms)",
-    "pt": "Atraso entre splits (ms)",
-    "id": "Jeda antar split (ms)",
-    "ja": "分裂の間隔（ms）",
-    "it": "Ritardo tra gli split (ms)"
-  },
   "settings.lineSplitHold": {
     "en": "Aim lock after last split (ms)",
     "el": "Κλείδωμα στόχευσης μετά το τελευταίο split (ms)",
@@ -8950,24 +8932,6 @@
     "id": "Kunci bidikan setelah split terakhir (ms)",
     "ja": "最後の分裂後に照準を固定（ms）",
     "it": "Blocco della mira dopo l'ultimo split (ms)"
-  },
-  "settings.lineSplitGuide": {
-    "en": "Draw line split aim line",
-    "el": "Γραμμή στόχευσης line split",
-    "es": "Dibujar la línea de puntería del line split",
-    "bg": "Чертай линията на мерника за line split",
-    "fr": "Tracer la ligne de visée du line split",
-    "ar": "رسم خط تصويب الانقسام الخطي",
-    "zh": "繪製直線分裂瞄準線",
-    "ru": "Рисовать линию прицела линейного сплита",
-    "de": "Ziellinie für Line Split zeichnen",
-    "tr": "Line split nişan çizgisini çiz",
-    "pl": "Rysuj linię celowania line splitu",
-    "nl": "Richtlijn voor line split tekenen",
-    "pt": "Desenhar a linha de mira do line split",
-    "id": "Gambar garis bidik line split",
-    "ja": "ライン分裂の照準線を表示",
-    "it": "Disegna la linea di mira del line split"
   },
   "settings.hk-lineSplit": {
     "en": "Line split",

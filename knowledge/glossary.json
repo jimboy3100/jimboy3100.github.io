@@ -84,7 +84,7 @@
     },
     {
       "term": "Line split",
-      "definition": "A straight-line rapid multi-split (x8 or x16) in a straight line toward the cursor. Configurable timing (delay between splits) and lock duration.",
+      "definition": "A straight-line rapid multi-split (x8 or x16) in a straight line toward the cursor. Configurable splits per press and lock duration.",
       "category": "techniques"
     },
     {

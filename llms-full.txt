@@ -262,8 +262,8 @@ Drag and resize HUD elements with named layouts (the one place for HUD positions
 
 ### 16. Scan Trick and Line Split
 - **Scan trick**: Hold its key (Hold Scan Trick in the Hotkeys window): the cell heads far out toward the cursor at the exact angle; with the left mouse button held too, the direction snaps to one of 16 (22.5 degrees each). It has no settings.
-- **Line split**: Straight-line rapid split (3 = x8, 4 = x16) with configurable delay, hold time, and guide lines
-- **Guide**: Visual guide line showing the line split direction
+- **Line split**: Straight-line rapid split (2-4 splits per press; 3 = x8, 4 = x16) with a configurable aim lock time; the splits are as far apart as the split macros'
+- **Guide**: Visual guide line showing the line split direction while the aim is locked (always on)
 
 ### 18. Privacy and Streamer Mode
 - **Streamer preset**: One-click preset that hides country, chat, chat images/videos, dev console
@@ -315,7 +315,7 @@ Legend Mod organises its 300+ settings into the following categories accessible 
 - **Sounds**: Volume per sound and master volume, sound switches and files
 - **Leaderboard**: Limit, top 5 skins, centred, hide bots
 - **Multibox**: Amount (2-4), freeze, auto-respawn, switch after death, camera view, shadow
-- **Line Split**: Count, delay, hold time, guide lines
+- **Line Split**: Splits per press, aim lock time
 - **Mouse**: Button bindings (left, right, middle, mouse4, mouse5), invert
 - **Gamepad**: dead zone, move range, curve, zoom sensitivity, trigger (always on when a pad is connected)
 - **Privacy/Extras**: Streamer mode, hide skin URL, hide name, hide country, block popups
@@ -451,7 +451,7 @@ The Chrome extension does NOT collect, store or transmit personal data externall
 A movement technique: while its key is held the cell heads far out toward the cursor at the exact angle; with the left mouse button held too, the direction snaps to one of 16 (22.5 degrees each). This allows precise cell positioning for split tricks and other advanced gameplay. It has no settings.
 
 **What is line split?**
-A rapid multi-split technique (x8 or x16) in a straight line toward the cursor. Configurable timing (delay between splits) and lock duration.
+A rapid multi-split technique (x8 or x16) in a straight line toward the cursor. Configurable splits per press and lock duration.
 
 **What is the death recap?**
 A Game Over card feature showing the last 20 seconds of your life as 3-6 summarised steps with a mass sparkline, plus the killer's name and mass.

@@ -924,10 +924,11 @@ class Spect {
     }
 
     /* Cursor target for the controlled unit, in client space (like legendmod.cursorX/Y).
-     * Mirrors LM.sendPosition: line lock snaps to the nearest of 8 directions, dance spins. */
+     * Mirrors LM.sendPosition: line lock snaps to the nearest of 8 directions, dance spins;
+     * a running line split keeps its locked cursor (legendmod.cursorX/Y) over both. */
     _lmAimTarget() {
         var cx = legendmod.cursorX, cy = legendmod.cursorY;
-        if ((window.followStraight || legendmod.dance) && window.multiboxPlayerEnabled === this.number &&
+        if ((window.followStraight || legendmod.dance) && !legendmod.lineSplitActive && window.multiboxPlayerEnabled === this.number &&
             Number.isFinite(this.playerX) && Number.isFinite(this.playerY)) {
             var d;
             if (window.followStraight) {

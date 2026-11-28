@@ -59,7 +59,7 @@
     },
     {
       "question": "What is line split?",
-      "answer": "A rapid multi-split technique (x8 or x16) in a straight line toward the cursor with configurable timing and lock duration."
+      "answer": "A rapid multi-split technique (x8 or x16) in a straight line toward the cursor with configurable splits per press and lock duration."
     },
     {
       "question": "What is the Practice Arena?",
