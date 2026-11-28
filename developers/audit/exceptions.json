@@ -36,6 +36,7 @@
     "missingAllowed": [
         { "from": "agarscripts/goodoldlegendmod.user.js", "paths": ["legendmod.js", "legend.sniff.js", "legend.sniff2.js", "legend.sniff3.js"], "why": "the v3.1 userscript, kept for history; those files moved long ago" },
         { "from": "agarscripts/legendmod.user.js", "paths": ["old/oldskins.js", "AjaxData/accesstoken.html"], "why": "old userscript, kept for history" },
+        { "from": "extras/legendhelper.js", "paths": ["legend.github.io/banners/grey-08.jpg"], "why": "old helper script" },
         { "from": "ogario/protocols/MultiOgar.md", "paths": ["ogario/ogario.test.v4.js"], "why": "protocol notes linking a test build that was removed" },
         { "from": "lib/bootstrap-colorpicker.min.css", "paths": ["img/bootstrap-colorpicker/hue-horizontal.png", "img/bootstrap-colorpicker/alpha-horizontal.png"], "why": "vendor style sheet; these images are only requested by the horizontal colour picker, which is not used" },
         { "from": "developers/videoskins.html", "paths": ["banners/testragizeihkardiamou.mp4", "banners/testvideoafroman.mp4", "banners/testvideomama.mp4"], "why": "example video skins named on the developer page are no longer in banners/", "defect": true },
