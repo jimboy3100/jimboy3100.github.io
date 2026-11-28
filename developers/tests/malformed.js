@@ -391,6 +391,11 @@ function same(kind, pre, bad) {
     const noEnd = world([[11, 900]], [{ id: 11, x: 120, y: 220, size: 123 }], [], false).slice(0, -6);
     reset(L, 'agario'); feed(AG[0]); feed(noEnd);
     check('records without the closing id 0: eats and whole records applied, no removal', !L.indexedCells[900] && L.indexedCells[11].targetX === 120);
+    /* freeze detector: only an update read whole is a world update */
+    const stamp = (kind, pre, bytes) => { reset(L, kind); pre.forEach(feed); L._lmLastWorldUpdate = 0; feed(bytes); return L._lmLastWorldUpdate > 0; };
+    check('freeze detector: a cut-short eat list, record, remove list or missing id 0 is no world update; a whole one is',
+        [stamp('agario', [AG[0]], eatOne), stamp('agario', [], noTerm), stamp('agario', [AG[0]], remPartial), stamp('agario', [AG[0]], noEnd), stamp('private', [], own.slice(0, own.length - 6 - 1))].join() === 'false,false,false,false,false' &&
+        stamp('agario', [AG[0]], world([[11, 900]], [{ id: 11, x: 120, y: 220, size: 123 }], [12], false)));
     /* Expanding Land identity memory is not touched by a cut-short eat list or record */
     reset(L, 'expandingland'); feed(EL[0]);
     const idm0 = JSON.stringify([...L._lmCellIdentity.entries()]);

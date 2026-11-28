@@ -53631,7 +53631,6 @@ function thelegendmodproject() {
          * before it stay applied (no rollback). Returns true when every count and
          * terminator was there; otherwise the update is counted by _lmWuIncomplete. */
         garixUpdateCells(data, offset) {
-            this._lmLastWorldUpdate = Date.now(); /* freeze detector (drawRender.render) */
             this.megaFFAscore();
             var self = this;
             var len = data.byteLength, complete = true, cut = false;
@@ -53837,6 +53836,9 @@ function thelegendmodproject() {
             } else complete = false;
             /* bytes after the remove list (padding, extensions) are left as they are */
             if (!complete) this._lmWuIncomplete('Garix');
+            /* a world update for the freeze detector (drawRender.render) only once every
+             * section was there; a rejected or incomplete update does not count */
+            else this._lmLastWorldUpdate = Date.now();
 
             // Death check (eat / remove records already applied may have ended the life)
             if (this.removePlayerCell && !this.playerCells.length) {
@@ -53893,7 +53895,6 @@ function thelegendmodproject() {
          * with no RangeError catch around it).
          * ═══════════════════════════════════════════════════════════════ */
         _handleSigmallyCellUpdate(data) {
-            this._lmLastWorldUpdate = Date.now(); /* freeze detector (drawRender.render) */
             this.megaFFAscore();
             var offset = 1; // skip opcode byte
             var len = data.byteLength, complete = true, ended = false;
@@ -54125,6 +54126,9 @@ function thelegendmodproject() {
                 }
             } else complete = false;
             if (!complete) this._lmWuIncomplete('Sigmally');
+            /* a world update for the freeze detector (drawRender.render) only once every
+             * section was there; a rejected or incomplete update does not count */
+            else this._lmLastWorldUpdate = Date.now();
 
             // Death check (eat / remove records already applied may have ended the life)
             if (this.removePlayerCell && !this.playerCells.length) {
@@ -54283,10 +54287,10 @@ function thelegendmodproject() {
             /* A packet cut short must not leave half of a section applied (a caught RangeError
              * rolls nothing back): the eat list and the remove list are checked whole before
              * they are used, and each record is read whole before anything is changed. An eat
-             * list cut short changes nothing and is no world update for the freeze detector. */
+             * list cut short changes nothing. Only an update read to the end of its remove list
+             * is a world update for the freeze detector (set below). */
             var eatEventsLength = view.readUInt16LE(offset);
             if (offset + 2 + eatEventsLength * 8 > view.length) throw new RangeError('World update: eat list cut short');
-            this._lmLastWorldUpdate = Date.now(); /* freeze detector (drawRender.render) */
 
             //window.updateCellsClock=true;
             this.megaFFAscore();
@@ -55509,6 +55513,8 @@ function thelegendmodproject() {
                 cell.removeCell();
             }
 
+            /* every section read whole (a cut-short record or remove list threw above) */
+            this._lmLastWorldUpdate = Date.now(); /* freeze detector (drawRender.render) */
 
             this._lmDeathDue = false;
             this._lmOwnDeathCheck();

@@ -503,6 +503,23 @@ fuzz('sigmally', S, sig, sigSeq, 'Sigmally');
     check('a Sigmally incomplete update is counted and named Sigmally (no packet bytes)', v._lmWuBadN === 1 && v.warns.length === 1 && /^\[Protocol\] Incomplete Sigmally cell update: .*\(1 so far\)$/.test(v.warns[0]) && !/Alpha|cat/.test(v.warns[0]), v.warns.join());
 }
 
+/* ---- freeze detector: only a complete update is a world update ---- */
+{
+    const stamps = (proto, mk, P) => {
+        const w = world(NEW, false), out = [];
+        run(w, proto, mk(P.setup).bytes);
+        const full = mk(P.play).bytes;
+        for (const bytes of [full.slice(0, 40), full.slice(0, 3), full.slice(0, full.length - 3), full]) {
+            w._lmLastWorldUpdate = 0; clock += 10;
+            run(w, proto, bytes);
+            out.push(w._lmLastWorldUpdate === clock);
+        }
+        return out.join();
+    };
+    check('Garix: a cut record, a cut eat list or a cut remove list is no world update; a complete one is', stamps('garix', garix, G) === 'false,false,false,true', stamps('garix', garix, G));
+    check('Sigmally: a cut record, a cut eat list or a cut remove list is no world update; a complete one is', stamps('sigmally', sig, S) === 'false,false,false,true', stamps('sigmally', sig, S));
+}
+
 /* ---- cost on valid dense packets ---- */
 function bench(proto, mk, label) {
     const pk = mk();
