@@ -40,7 +40,7 @@ ctx.LMEvents = { _has: () => false };
 const LM = vm.runInContext('({\n' + cut('        calculatePlayerMassAndPosition() {', '        recalculatePlayerMass() {') +
   cut('        getCursorPosition() {', '        getLineSplitSettings() {') + '\n})', ctx);
 Object.assign(LM, { recalculatePlayerMass() { }, play: true, playerCells: [], canvasWidth: 1920, canvasHeight: 1080, viewScale: 0.5, autoZoom: false, zoomValue: 1, scale: 1, serverType: 'agario' });
-const R = vm.runInContext('({\n' + cut('        _lmSpectCenter(sp) {', '        renderFrame() {') + '\n})', ctx);
+const R = vm.runInContext('({\n' + cut('        setView() {', '        renderFrame() {') + '\n})', ctx);
 Object.assign(R, { canvasWidth: 1920, canvasHeight: 1080, scale: 0.5 });
 ctx.LM = ctx.legendmod = LM; ctx.drawRender = R;
 const S = ctx.defaultmapsettings;
