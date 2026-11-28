@@ -549,7 +549,11 @@
             'label.lm-us-tg{display:inline-flex;align-items:center;gap:4px;margin:0;font-weight:normal;cursor:pointer;min-height:28px;color:var(--lm-tc,#fff)}' +
             'label.lm-us-tg input{width:18px;height:18px;margin:0}' +
             '#lm-us-ext input[type=text],#lm-us-ext input[type=number]{width:100%;box-sizing:border-box;min-height:var(--lm-w-ctl,28px);color:var(--lm-tc,#fff);background:var(--lm-w-field,rgba(0,0,0,.25));border:1px solid var(--lm-pc2,#002f52);border-radius:var(--lm-radius-s,4px);padding:3px 5px;font-family:inherit}' +
-            '.lm-us-field{margin:6px 0}';
+            '.lm-us-field{margin:6px 0}' +
+            /* Lab experiments (lab.js): under the plugin that added them, or in the Experiments group */
+            '.lm-us-labs{flex-basis:100%;padding:0 4px 0 12px}' +
+            '.lm-us-lab{padding:2px 0}' +
+            '.lm-us-lab .lm-us-meta{display:block;padding-left:22px}';
         document.head.appendChild(st);
     }
     function statusOf(s) {
@@ -641,10 +645,31 @@
         return tg;
     }
 
+    /* the Lab experiments (lab.js), [] before it is loaded */
+    function experiments() {
+        var L = window.LMLab;
+        try { return L && typeof L.list === 'function' ? L.list() : []; } catch (e) { return []; }
+    }
+    /* one experiment: the window's own switch (as "Runs at start"), stored by the Lab in 'lmLab' */
+    function labRow(x, fromPlugin) {
+        var row = el('div', 'lm-us-lab'), tg = el('label', 'lm-us-tg'), cb = document.createElement('input');
+        cb.type = 'checkbox';
+        cb.id = 'lmLab-' + x.id;
+        cb.checked = !!x.enabled;
+        cb.setAttribute('data-lab-id', x.id);
+        tg.appendChild(cb);
+        tg.appendChild(document.createTextNode(x.name));
+        row.appendChild(tg);
+        var d = (x.description || '') + (fromPlugin ? (x.description ? ' \u00b7 ' : '') + lt('modules.lab.fromPlugin') : '');
+        if (d) row.appendChild(el('span', 'lm-us-meta', d));
+        return row;
+    }
+    function lt(k) { return typeof window.lmT === 'function' ? window.lmT(k) : k; }
     function renderPlugins(body) {
         body.appendChild(el('div', 'lm-us-warn', tx('warn')));
         body.appendChild(el('div', 'lm-us-note', tx('offNote')));
-        slots().forEach(function (s) {
+        var exps = experiments(), all = slots(), shown = {};
+        all.forEach(function (s) {
             var row = el('div', 'lm-us-item'), main = el('div', 'lm-us-main');
             row.setAttribute('data-slot', String(s.n));
             describe(main, s, true);
@@ -654,8 +679,35 @@
             if (rt[s.n] && rt[s.n].schema.length && s.enabled) acts.appendChild(btn(tx('settings'), 'settings', s.n));
             acts.appendChild(btn(tx('edit'), 'edit', s.n));
             row.appendChild(acts);
+            /* the experiments this plugin added */
+            var mine = s.empty ? [] : exps.filter(function (x) { return x.slot === s.n; });
+            if (mine.length) {
+                var labs = el('div', 'lm-us-labs');
+                mine.forEach(function (x) { shown[x.id] = 1; labs.appendChild(labRow(x, false)); });
+                row.appendChild(labs);
+            }
             body.appendChild(row);
         });
+        /* the others (Legend Mod's own, or added outside a slot's start) and the reset, while
+         * there is any experiment */
+        if (!exps.length) return;
+        var g = el('div', 'lm-us-item'), gm = el('div', 'lm-us-main');
+        g.id = 'lm-us-exps';
+        gm.appendChild(el('div', 'lm-us-name', lt('pkg.lb2.experiments')));
+        gm.appendChild(el('div', 'lm-us-meta', lt('modules.lab.intro')));
+        g.appendChild(gm);
+        var ga = el('div', 'lm-us-acts');
+        var rb = btn(lt('pkg.lb2.resetAll'), 'labReset', null, 'btn-danger');
+        rb.id = 'lm-lab-reset';
+        ga.appendChild(rb);
+        g.appendChild(ga);
+        var rest = exps.filter(function (x) { return !shown[x.id]; });
+        if (rest.length) {
+            var labs = el('div', 'lm-us-labs');
+            rest.forEach(function (x) { labs.appendChild(labRow(x, !x.builtIn)); });
+            g.appendChild(labs);
+        }
+        body.appendChild(g);
     }
     function renderSettings(body) {
         var n = settingsFor, r = rt[n], s = slot(n);
@@ -741,7 +793,7 @@
             toast('success', tx('saved'));
             settingsFor = 0;
             render();
-        }
+        } else if (act === 'labReset') { if (window.LMLab && typeof window.LMLab.reset === 'function') window.LMLab.reset(); }
     }
 
     /* adds the view switch, the header line and the Plugins area to the panel */
@@ -790,6 +842,7 @@
         panel.addEventListener('change', function (e) {
             var t = e.target;
             if (t && t.hasAttribute && t.hasAttribute('data-slot-toggle')) setSlotEnabled(+t.getAttribute('data-slot-toggle'), t.checked);
+            else if (t && t.hasAttribute && t.hasAttribute('data-lab-id')) { if (window.LMLab && typeof window.LMLab.set === 'function') window.LMLab.set(t.getAttribute('data-lab-id'), t.checked); }
             else if (t && (t.id === 'Userscriptpages3' || /^Userscript/.test(t.id || ''))) refresh();
         });
         /* the header line follows what is typed or erased in the editor */
@@ -809,7 +862,8 @@
         return true;
     }
 
-    /* opens the User Scripts panel */
+    /* opens the User Scripts panel (LMLab.open: 'experiments' shows the plugins view scrolled to
+     * the experiments) */
     function open(v) {
         var $ = jq();
         /* the list of slots unless a view is asked for */
@@ -824,6 +878,11 @@
         } finally { opening = false; }
         mount();
         render();
+        if (v === 'experiments') {
+            var ext = document.getElementById('lm-us-ext');
+            var at = document.querySelector('#lm-us-ext .lm-us-labs') || document.getElementById('lm-us-exps');
+            if (ext && at) ext.scrollTop += at.getBoundingClientRect().top - ext.getBoundingClientRect().top;
+        }
         /* in front of a window already open (it opened behind them) */
         if (window.LMWinStack) window.LMWinStack.front(document.getElementById('overlays'));
     }
@@ -848,7 +907,7 @@
             });
         },
         setEnabled: function (n, on, skipConfirm) { return setSlotEnabled(n, !!on, !!skipConfirm); },
-        /* redraws the window */
+        /* redraws the window (lab.js after an experiment was added or switched) */
         _refresh: refresh,
         _pure: pure
     };

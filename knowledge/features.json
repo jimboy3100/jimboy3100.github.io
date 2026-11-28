@@ -117,6 +117,12 @@
       "url": "https://www.legendmod.ml/features.html"
     },
     {
+      "id": "lab",
+      "name": "Lab (experimental features)",
+      "description": "Experimental features with on/off switches in the User Scripts window, next to the plugin that registered them (others in its Experiments group). Modules and plugins register experiments via LMLab.register(). Up to 100 experiments. Stored separately from settings (lmLab, not exported). A Turn all experiments off button while there is any. Independent of profiles.",
+      "url": "https://www.legendmod.ml/features.html"
+    },
+    {
       "id": "discovery",
       "name": "Discovery / Feature Guide",
       "description": "17 feature guide cards with one-tap option switches. Opened from the link in the \"What's new\" toast after an update (never by itself). Server compatibility table: 9 server types × 14 capabilities (replays, multibox, merge countdown, spectate, chat, etc.). Shows 'What works on this server' per connection.",

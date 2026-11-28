@@ -319,6 +319,13 @@ Extend Legend Mod with custom JavaScript. Features:
 - **Settings API**: `LMPlugins.ready({ settings, onSettingsChange, onEnable, onDisable })`
 - **Version compatibility checking**: minVersion/maxVersion enforcement
 
+### 25. Lab (Experimental Features)
+Toggle experimental features with on/off switches. Features:
+- Modules register experiments via `LMLab.register({ id, name, description, onEnable, onDisable })`
+- Stored separately from settings in localStorage `lmLab`
+- Reset Lab button to disable all experiments
+- Opens via hotkey (no default key)
+
 ### 26. Discovery / Feature Guide
 Feature guide cards that introduce Legend Mod features. Features:
 - **One-tap option switches**: Try features directly from guide cards
@@ -362,6 +369,7 @@ Legend Mod organises its 300+ settings into the following categories accessible 
 - **Mass**: Show mass, optimized, auto-hide, hide mine, hide enemies, mass format (exact / 12.3k / auto), virus spikes, virus mass shots, stroke, relative mass
 - **Macro**: Feeding speed, split delay, pop-split delay
 - **Config**: Profile count (player profiles), presets, export / import, restore default settings
+- **Lab**: Experimental features (in the User Scripts window)
 
 ## Supported Languages
 

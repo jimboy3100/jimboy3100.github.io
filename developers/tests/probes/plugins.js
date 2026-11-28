@@ -1,19 +1,19 @@
-// Plugins in the User Scripts panel: the Plugins view with the 5 slots and no catalogue; the version gate; a 'settingsChange' event; the Lab is
-// removed (no LMLab, no Lab hotkey, section or experiments group).
+// Plugins in the User Scripts panel: the Plugins view with the 5 slots and no catalogue; the version gate; a 'settingsChange' event; the Lab
+// experiments in this window (LMLab loaded; no Lab section in the Settings tab, no Lab hotkey of its own).
 (async () => {
   var fail = [], info = {};
   var wait = function (ms) { return new Promise(function (r) { setTimeout(r, ms); }); };
-  for (var i = 0; i < 40 && !(window.LMPlugins && document.getElementById('lm-us-bar')); i++) await wait(250);
+  for (var i = 0; i < 40 && !(window.LMPlugins && window.LMLab && document.getElementById('lm-us-bar')); i++) await wait(250);
   if (!window.LMPlugins) return { fail: ['LMPlugins missing (ogario/modules/plugins.js not loaded)'] };
-  if (window.LMLab) fail.push('the removed Lab (LMLab) is still loaded');
+  if (!window.LMLab) fail.push('LMLab missing (ogario/modules/lab.js not loaded)');
   if (!document.getElementById('lm-us-bar')) fail.push('no Plugins switch in the User Scripts panel');
   if (typeof window._lmUsGate !== 'function') fail.push('slot gate missing');
-  // the Lab is removed: no hotkey or Settings section of its own; User Scripts opens from the menu
+  // the Lab is part of the User Scripts window: no hotkey or Settings section of its own; User Scripts opens from the menu
   if (hotkeysCommand['hk-lmLab'] || hotkeysCommand['hk-lmPlugins']) fail.push('a Lab or User Scripts hotkey still exists');
   if (document.querySelector('#og-options .lmLabGroup')) fail.push('the Settings tab still has a Lab section');
   if (document.getElementById('lm-pl-overlay') || document.getElementById('lm-plugins-btn')) fail.push('a separate plugin manager window still exists');
   if (!$('#legend #OpenuserScripts').length) fail.push('User Scripts button missing in the Tools tab');
-  var keys = ['UserscriptEnabledInit'];
+  var keys = ['lmLab', 'UserscriptEnabledInit'];
   for (var k = 1; k <= 5; k++) keys.push('Userscript' + k, 'Userscripttexture' + k, 'Userscripttext1' + k, 'UserscriptEnabled' + k);
   var saved = {};
   keys.forEach(function (key) { saved[key] = localStorage.getItem(key); });
@@ -57,7 +57,23 @@
     if (document.getElementById('showStatsFrameTime')) fail.push('the old frame time switch still exists');
     LMPlugins.open('plugins');
     await wait(50);
-    if (document.querySelector('#lm-us-exps, .lm-us-labs, #lm-lab-reset')) fail.push('User Scripts still has a Lab experiments group');
+    var cb = document.getElementById('lmLab-probeDemo');
+    if (!cb || !$(cb).closest('#lm-us-ext #lm-us-exps').length) fail.push('Lab switch of a registered experiment missing in the Experiments group of User Scripts');
+    else {
+      if (cb.checked || LMLab.isEnabled('probeDemo')) fail.push('Lab experiment on by default');
+      cb.checked = true;
+      cb.dispatchEvent(new Event('change', { bubbles: true }));
+      if (probeOn !== 1) fail.push('Lab switch did not turn the experiment on');
+      if (!(JSON.parse(localStorage.getItem('lmLab') || '{}').on || {}).probeDemo) fail.push('Lab state not stored in lmLab');
+      var rb = document.getElementById('lm-lab-reset');
+      if (!rb || !$(rb).closest('#lm-us-exps').length) fail.push('"Turn all experiments off" missing in User Scripts');
+      else {
+        rb.click();
+        await wait(50);
+        cb = document.getElementById('lmLab-probeDemo');
+        if (probeOn !== 0 || !cb || cb.checked) fail.push('"Turn all experiments off" did not turn the experiment off');
+      }
+    }
     LMPlugins.close();
   } finally {
     window.confirm = origConfirm;

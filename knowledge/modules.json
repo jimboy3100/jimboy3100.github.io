@@ -92,6 +92,13 @@
       "feature": "User Scripts"
     },
     {
+      "id": "lab",
+      "file": "ogario/modules/lab.js",
+      "lines": 245,
+      "description": "Experimental features toggle. Modules and plugins register experiments with on/off switches stored separately from settings; plugins.js shows them in the User Scripts window.",
+      "feature": "Lab"
+    },
+    {
       "id": "discovery",
       "file": "ogario/modules/discovery.js",
       "lines": 613,
@@ -127,6 +134,6 @@
       "feature": "Extension"
     }
   ],
-  "totalModules": 21,
+  "totalModules": 18,
   "totalHotkeyBindings": "146+"
 }

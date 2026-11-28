@@ -1,11 +1,13 @@
-/* Plugin manager checks (ogario/modules/plugins.js): plugin header
+/* Plugin manager and Lab checks (ogario/modules/plugins.js, ogario/modules/lab.js): plugin header
  * parsing and validation, Legend Mod version compatibility, stored data checks, the catalogue
- * and its example plugins removed, the Lab removed, the old Lab hotkey moved to User Scripts, and that every new
+ * and its example plugins removed, the Lab storage, the slot of a plugin's experiment and the Lab
+ * opening the User Scripts window, the old Lab hotkey moved to User Scripts, and that every new
  * LMEvents emit point is guarded so it costs nothing while nobody listens.
  * node developers/tests/plugins.js */
 const fs = require('fs'), path = require('path'), vm = require('vm');
 const root = path.join(__dirname, '..', '..');
 const P = require(path.join(root, 'ogario', 'modules', 'plugins.js'));
+const L = require(path.join(root, 'ogario', 'modules', 'lab.js'));
 const i18n = require('./lib/i18n-env');
 let fail = 0;
 const check = (n, c) => { console.log((c ? 'ok   ' : 'FAIL ') + n); if (!c) fail++; };
@@ -133,8 +135,67 @@ check('number out of range clamped', P.cleanValues(schema, { n: 100 }).n === 5 &
     check('plugins: confirm text follows a language change', asked.indexOf(i18n.t('modules.plugins.confirmRun', ['Kill counter'], 'el')) === 0 && asked.indexOf(i18n.t('modules.plugins.permChatRead', null, 'el')) !== -1 && asked.indexOf(i18n.t('modules.plugins.confirmFull')) === -1);
 })();
 
-/* ---- the Lab is removed: no module of it, nothing loads it ---- */
-check('lab: lab.js gone and not loaded', !fs.existsSync(path.join(root, 'ogario', 'modules', 'lab.js')) && fs.readFileSync(path.join(root, 'ogario', 'ogario.v4.js'), 'utf8').indexOf('modules/lab.js') < 0);
+/* ---- Lab storage ---- */
+check('lab store: only valid ids that are on', JSON.stringify(L.validateStore('{"v":1,"on":{"a":true,"b":false,"c":"true","bad id":true,"__proto__":true,"x.y-z_1":true}}').on) === JSON.stringify({ a: true, 'x.y-z_1': true }));
+check('lab store: broken values give an empty store', Object.keys(L.validateStore('{').on).length === 0 && Object.keys(L.validateStore({ on: [] }).on).length === 0 && Object.keys(L.validateStore(null).on).length === 0);
+check('lab experiment checked', L.validateExperiment({ id: 'a', name: ' A\u0000 ', onEnable: 5 }).name === 'A' && L.validateExperiment({ id: 'a', name: 'A' }).onEnable === null);
+check('lab experiment needs an id and a name', !L.validateExperiment({ id: '1a', name: 'A' }) && !L.validateExperiment({ id: 'a' }) && !L.validateExperiment(null));
+
+/* ---- Lab in a page stub: off by default, on/off calls, stored apart, reset ---- */
+(function () {
+    const store = {};
+    const ctx = {
+        console, setTimeout: () => 0, JSON,
+        localStorage: { getItem: k => (k in store ? store[k] : null), setItem: (k, v) => { store[k] = String(v); }, removeItem: k => { delete store[k]; } },
+        document: { querySelector: () => null, getElementById: () => null },
+        confirm: () => true
+    };
+    ctx.window = ctx;
+    vm.createContext(ctx);
+    i18n(ctx);
+    vm.runInContext(fs.readFileSync(path.join(root, 'ogario', 'modules', 'lab.js'), 'utf8'), ctx);
+    const Lab = ctx.LMLab;
+    /* the frame time experiment is the stats option showStatsFrameTime now (developers/tests/frametime.js) */
+    check('lab: no built-in experiment left', Lab.list().length === 0 && !Lab.isEnabled('frameTime'));
+    let on = 0, off = 0;
+    check('lab: register', Lab.register({ id: 'demo', name: 'Demo', onEnable: () => on++, onDisable: () => off++ }) === true);
+    check('lab: same id twice is refused', Lab.register({ id: 'demo', name: 'Again' }) === false);
+    Lab.set('demo', true);
+    check('lab: on calls onEnable and is stored in its own key', on === 1 && JSON.parse(store.lmLab).on.demo === true && !('ogarioSettings' in store));
+    check('lab: an unknown id is not switched', Lab.set('frameTime', true) === false && !Lab.isEnabled('frameTime'));
+    Lab.set('demo', false);
+    check('lab: off calls onDisable', off === 1 && !JSON.parse(store.lmLab).on.demo);
+    Lab.register({ id: 'thrower', name: 'T', onEnable: () => { throw new Error('x'); } });
+    const ow = console.warn; console.warn = () => { };
+    Lab.set('thrower', true);
+    console.warn = ow;
+    check('lab: a throwing onEnable does not break it', Lab.isEnabled('thrower'));
+    Lab.reset(true);
+    check('lab: reset turns all off and clears the key', !Lab.isEnabled('demo') && !Lab.isEnabled('thrower') && !('lmLab' in store));
+    store.lmLab = JSON.stringify({ v: 1, on: { later: true } });
+    let late = 0;
+    Lab.register({ id: 'later', name: 'Later', onEnable: () => late++ });
+    check('lab: left on -> onEnable at registration', late === 1 && Lab.isEnabled('later'));
+    /* shown in the User Scripts window: under the plugin whose slot registered it at its top level */
+    const code = '/* slot 2 plugin */ LMLab.register(...)';
+    ctx._lmUsRan = { 2: code };
+    ctx.document.currentScript = { text: code };
+    let redraws = 0, opened = null;
+    ctx.LMPlugins = { _refresh: () => { redraws++; }, open: v => { opened = v; } };
+    Lab.register({ id: 'fromSlot', name: 'From slot 2' });
+    ctx.document.currentScript = { text: 'another script' };
+    Lab.register({ id: 'outside', name: 'Outside' });
+    ctx.document.currentScript = null;
+    const byId = {}; Lab.list().forEach(x => { byId[x.id] = x; });
+    check('lab: an experiment knows the slot of the plugin that added it', byId.fromSlot.slot === 2 && byId.outside.slot === 0 && byId.demo.slot === 0);
+    check('lab: a registration redraws the User Scripts window', redraws === 2);
+    Lab.set('outside', true);
+    check('lab: a switch redraws it', redraws === 3);
+    Lab.open();
+    check('lab: open() opens the User Scripts window at the experiments', opened === 'experiments');
+    check('lab: _mount kept for old scripts', Lab._mount() === true);
+    Lab.reset(true);
+})();
 
 /* ---- the old "Open the Lab" hotkey and the removed User Scripts hotkey: their keys are free again
  * (ogario.v4.js lmRenameOldHotkeys, which loadHotkeys uses) ---- */

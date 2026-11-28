@@ -46,6 +46,7 @@
     "ogario/modules/accessibility.js",
     "ogario/modules/hudhelpers.js",
     "ogario/modules/plugins.js",
+    "ogario/modules/lab.js",
     "ogario/modules/gamepad-ui.js",
     "LMexpress/LMexpress.js",
     "LMexpress/lm_extended_ui.js",

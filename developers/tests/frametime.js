@@ -1,6 +1,6 @@
 /* Frame time on the stats line: it replaces the FPS (e.g. 16.7 ms), shown by the stats switch
- * showStatsFPS; the old option "Frame time in the FPS counter" (showStatsFrameTime) is gone,
- * a saved value of it is ignored and the removed Lab's key lmLab is cleared on load. Uses the
+ * showStatsFPS; the old option "Frame time in the FPS counter" (showStatsFrameTime) is gone and
+ * a saved value of it is ignored; the Lab's key lmLab is left as it is. Uses the
  * real code of ogario/ogario.v4.js.
  * node developers/tests/frametime.js */
 const fs = require('fs'), vm = require('vm'), path = require('path');
@@ -38,7 +38,7 @@ function load(stored, lab) {
 }
 let r = load({ showStatsFrameTime: true, showStatsFPS: false }, { v: 1, on: { frameTime: true } });
 check('old saved frame time value ignored, other values load', !('showStatsFrameTime' in r.ms) && r.ms.showStatsFPS === false);
-check('the removed Lab key is cleared', r.ls.getItem('lmLab') === null);
+check('the Lab key is left as it is (the Lab is back)', r.ls.getItem('lmLab') === JSON.stringify({ v: 1, on: { frameTime: true } }));
 
 /* the stats line text where the FPS was (the real line) */
 const line = cut("                    t += drawRender.fps > 0", '                    var activeSpect');

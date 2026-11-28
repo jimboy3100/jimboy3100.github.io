@@ -25230,8 +25230,6 @@ function thelegendmodproject() {
                     }
                 }
             }
-            /* the key of the removed Lab (lmLab) is not used any more */
-            try { window.localStorage.removeItem('lmLab'); } catch (eLab) { }
             /* the key of the removed stopwatch (the old Tools tab button "Show Timer Calc.") is not used any more */
             try { window.localStorage.removeItem('TIMEcalBtn'); } catch (eTc) { }
             /* the loaded values are the ones later changes are compared with (settingsChange) */
@@ -88662,15 +88660,21 @@ Object.defineProperty(Array.prototype, 'stDev', {
     } catch (e) {
         console.warn('[LM] Error loading accessibility script:', e);
     }
-    /* Plugin manager (runs only the plugins the player turned on) */
+    /* Plugin manager (runs only the plugins the player turned on) and the Lab (every
+     * experiment off until turned on) */
     try {
         var pluginsScript = document.createElement('script');
         pluginsScript.type = 'text/javascript';
         pluginsScript.src = 'https://www.legendmod.ml/ogario/modules/plugins.js?v=' + (window.OgVer || '');
         pluginsScript.charset = 'utf-8';
         document.body.appendChild(pluginsScript);
+        var labScript = document.createElement('script');
+        labScript.type = 'text/javascript';
+        labScript.src = 'https://www.legendmod.ml/ogario/modules/lab.js?v=' + (window.OgVer || '');
+        labScript.charset = 'utf-8';
+        document.body.appendChild(labScript);
     } catch (e) {
-        console.warn('[LM] Error loading plugins script:', e);
+        console.warn('[LM] Error loading plugins / lab script:', e);
     }
     /* The custom macros are removed: the macros kept in this browser are deleted */
     try { localStorage.removeItem('lmCustomMacros'); } catch (e) { }
