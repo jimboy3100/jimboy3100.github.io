@@ -164,11 +164,12 @@
         var next = { nick: nick(), skin: skinUrl(), skinName: '', alive: alive, mass: 0, og: '{}' };
         if (alive && a && typeof a.getPlayerX === 'function') {
             /* where you are, as the Legend Mod team position (lmMyPosition: the player you
-             * control, not the camera); getPlayerX/Y with an older core */
+             * control, not the camera), and that player's mass; getPlayerX/Y and the main
+             * player's mass with an older core */
             var me = typeof root.lmMyPosition === 'function' ? root.lmMyPosition() : null;
             next.x = Math.round((me ? me.x + (+g.mapOffsetX || 0) : a.getPlayerX()) * scale(0));
             next.y = Math.round((me ? me.y + (+g.mapOffsetY || 0) : a.getPlayerY()) * scale(1));
-            next.mass = Math.max(0, Math.round(Number(g.playerMass) || 0));
+            next.mass = Math.max(0, Math.round(Number(me && typeof me.mass === 'number' ? me.mass : g.playerMass) || 0));
         }
         if (a && a.playerID) { var o = {}; o[RELAY_KEY] = a.playerID >>> 0; next.og = JSON.stringify(o); }
         var L = S.last, f = 0;

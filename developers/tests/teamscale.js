@@ -10,8 +10,8 @@
  * teammate marker and the wave within 2 units of the true spot; the op30 packet stays 17
  * bytes with the same fields; an older build's positions and waves placed exactly as before;
  * private servers and Expanding Land unchanged (scale 1); a Delta wave on such a border.
- * With multibox the position sent (and LMEvents.api.getPosition) is the player you control
- * (lmMyPosition), not the camera centre.
+ * With multibox the position sent (and LMEvents.api.getPosition, the Socket3 "pos" message) is the
+ * player you control (lmMyPosition), not the camera centre, with that player's mass.
  * node developers/tests/teamscale.js [ogario.v4.js] */
 'use strict';
 const fs = require('fs');
@@ -227,19 +227,43 @@ safe('Delta wave', () => {
 /* ---------- 6. multibox: the team position is where you are (the player you control), not the camera ---------- */
 safe('multibox position', () => {
     const A = page({ kind: 'private', s: [1, 1], w: 12000, h: 10000, cx: 3000, cy: -3000 }, { playerID: 41 });
-    const sent = () => { A.app.sendPlayerPosition(); const v = A.relay.sent[A.relay.sent.length - 1]; return [v.getInt32(5, true) - A.LM.mapOffsetX, v.getInt32(9, true) - A.LM.mapOffsetY]; };
+    const sent = () => { A.app.sendPlayerPosition(); const v = A.relay.sent[A.relay.sent.length - 1]; return [v.getInt32(5, true) - A.LM.mapOffsetX, v.getInt32(9, true) - A.LM.mapOffsetY, v.getUint32(13, true)]; };
     const near = (p, x, y) => Math.abs(p[0] - x) < 1.01 && Math.abs(p[1] - y) < 1.01;
     /* the camera between both players (middle view), the main player and a unit elsewhere */
     Object.assign(A.LM, { playerX: 0, playerY: 0, playerCells: [{}], viewXTrue: 1234.7, viewYTrue: -2345.2 });
-    A.ctx.spects = [{ number: 1, player: false }, { number: 2, player: true, playerCellIDs: [3], playerX: -4000.4, playerY: 3999.6 }];
+    A.ctx.spects = [{ number: 1, player: false }, { number: 2, player: true, playerCellIDs: [3], playerX: -4000.4, playerY: 3999.6, playerMass: 777 }];
     let p = sent();
     check('multibox: main player controlled: its own cells, not the camera', near(p, 1234.7, -2345.2), p);
+    check('multibox: main player controlled: its mass', p[2] === 1234, p);
     A.ctx.multiboxPlayerEnabled = 2;
     p = sent();
     check('multibox: a unit controlled: that unit', near(p, -4000.4, 3999.6), p);
+    check('multibox: a unit controlled: the unit\'s mass, not the main player\'s', p[2] === 777, p);
     A.ctx.spects[1].playerCellIDs = [];
     p = sent();
     check('multibox: the controlled unit dead: the main player', near(p, 1234.7, -2345.2), p);
+    check('multibox: the controlled unit dead: the main player\'s mass', p[2] === 1234, p);
+});
+
+/* ---------- 6b. Socket3 "pos": the same position and mass, in the getPlayerX/Y frame ---------- */
+safe('Socket3 position', () => {
+    const A = page({ kind: 'private', s: [1, 1], w: 12000, h: 10000, cx: 3000, cy: -3000 }, { playerID: 42 });
+    const s3 = need(method('sendSocket3Position()'), 'sendSocket3Position()');
+    const msgs = [];
+    Object.assign(A.ctx, { Socket3: { readyState: 1, send(t) { msgs.push(JSON.parse(t).msg); } }, unescape: (s) => s, encodeURIComponent: (s) => s });
+    const app = vm.runInContext('({' + [s3, need(method('getMass()'), 'getMass()')].join(',\n') + ', sendChatInvisibleData() { } })', A.ctx);
+    A.ctx.application = Object.assign(A.app, { lastSentNick: 'me', getMass: app.getMass });
+    const sent = () => { app.sendSocket3Position(); const m = msgs[msgs.length - 1]; return [m.x - A.LM.mapOffsetX, m.y - A.LM.mapOffsetY, m.mass].map(v => Math.round(v * 10) / 10); };
+    Object.assign(A.LM, { playerX: 10, playerY: 20, playerCells: [{}], viewXTrue: 1234.7, viewYTrue: -2345.2 });
+    A.ctx.spects = [{ number: 3, player: true, playerCellIDs: [3], playerX: -4000.4, playerY: 3999.6, playerMass: 555 }];
+    let p = sent();
+    check('Socket3 pos: main player: its own cells and mass, not the camera', p.join() === '1234.7,-2345.2,1234', p);
+    A.ctx.multiboxPlayerEnabled = 3;
+    p = sent();
+    check('Socket3 pos: a unit controlled: that unit and its mass', p.join() === '-4000.4,3999.6,555', p);
+    A.ctx.multiboxPlayerEnabled = null; A.LM.playerCells = [];
+    p = sent();
+    check('Socket3 pos: no own cells: the camera and the main player\'s mass, as before', p.join() === '10,20,1234', p);
 });
 
 /* ---------- 7. LMEvents.api.getPosition: the same position (map offset added as before) ---------- */

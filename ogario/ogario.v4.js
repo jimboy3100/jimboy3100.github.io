@@ -3449,20 +3449,21 @@ function lmUnitCellsInto(n, out) {
     return out;
 }
 /* "My position" for what says where you are (Analytics heatmap, LMEvents.api.getPosition, the
- * team position, Agar Tool): the centre of the own cells of the player you control while it is
- * alive, else the main player's, else the camera. LM.playerX/Y is the camera (setView), which
- * follows the focused unit or the middle of both players. Same frame as LM.playerX/Y (add
- * mapOffsetX/Y as before); a multibox unit counts only once it has a place on this map, as in
- * getMultiboxFrame. null when there is no client. */
+ * team position, Agar Tool, Socket3 "pos"): the centre of the own cells of the player you control
+ * while it is alive, else the main player's, else the camera. LM.playerX/Y is the camera
+ * (setView), which follows the focused unit or the middle of both players. Same frame as
+ * LM.playerX/Y (add mapOffsetX/Y as before); a multibox unit counts only once it has a place on
+ * this map, as in getMultiboxFrame. mass: the mass of that same player (the unit's while its
+ * position is sent, else the main player's). null when there is no client. */
 function lmMyPosition() {
     var LM = window.legendmod;
     if (!LM) return null;
     var n = window.multiboxPlayerEnabled || 0, sp = n ? getActiveSpect(n) : null;
     if (sp && sp.player && sp.playerCellIDs && sp.playerCellIDs.length && Number.isFinite(sp.playerX) && Number.isFinite(sp.playerY) &&
-        (typeof sp.transformReady !== 'function' || sp.transformReady())) return { x: sp.playerX, y: sp.playerY };
+        (typeof sp.transformReady !== 'function' || sp.transformReady())) return { x: sp.playerX, y: sp.playerY, mass: +sp.playerMass || 0 };
     if (LM.play && LM.playerCells && LM.playerCells.length && Number.isFinite(LM.viewXTrue) && Number.isFinite(LM.viewYTrue))
-        return { x: LM.viewXTrue, y: LM.viewYTrue };
-    return { x: LM.playerX, y: LM.playerY };
+        return { x: LM.viewXTrue, y: LM.viewYTrue, mass: +LM.playerMass || 0 };
+    return { x: LM.playerX, y: LM.playerY, mass: +LM.playerMass || 0 };
 }
 window.lmMyPosition = lmMyPosition;
 /* C2: what the page shows now: 'practice' (practice arena), 'replay' (a replay plays),
@@ -33070,7 +33071,8 @@ function thelegendmodproject() {
          * truncated up to 1). Older builds send this connection's own units with no such rule,
          * so the receiver can tell them apart (lmTeamWorldIn) without a change of the packet.
          * The position is where you are (lmMyPosition, the player you control), as getPlayerX()
-         * plus mapOffsetX: teammates put you there on their minimap, not at your camera. */
+         * plus mapOffsetX: teammates put you there on their minimap, not at your camera.
+         * Returns that position (its mass goes into the same packet). */
         lmTeamWorldOut(view) {
             var me = lmMyPosition();
             var wx = (me.x + ogario.mapOffsetX) * this.lmTeamScale(0);
@@ -33078,6 +33080,7 @@ function thelegendmodproject() {
             if ((x + y) & 1) x += wx >= x ? 1 : -1;
             view.setInt32(5, x, true);
             view.setInt32(9, y, true);
+            return me;
         },
         /* Does this teammate send world units? One odd sum marks an older build for good (its
          * positions stay as they always were); 6 even sums in a row from different positions
@@ -33593,10 +33596,13 @@ function thelegendmodproject() {
                 view.setUint8(0, 30);
                 view.setUint32(1, this.playerID, true);
 
-                /* x, y at 5 and 9: world units (lmTeamWorldOut) */
-                this.lmTeamWorldOut(view);
+                /* x, y at 5 and 9: world units (lmTeamWorldOut); the mass at 13 is the mass of
+                 * the player whose position that is (a multibox unit you control: its own) */
+                var me = this.lmTeamWorldOut(view);
 
-                if (typeof ogario.playerMass !== 'undefined') {
+                if (me && typeof me.mass === 'number') {
+                    view.setUint32(13, me.mass, true);
+                } else if (typeof ogario.playerMass !== 'undefined') {
                     view.setUint32(13, ogario.playerMass, true);
                 } else {
                     view.setUint32(13, this.playerMass, true);
@@ -33647,12 +33653,15 @@ function thelegendmodproject() {
         },
         sendSocket3Position() {
             if (ogario.play) {
+                /* where you are and that player's mass (lmMyPosition), not the camera; the
+                 * frame of getPlayerX/Y (mapOffsetX/Y added), as teammates set it on their minimap */
+                var me = lmMyPosition();
                 var temp = {
                     com: "pos",
                     id: window.unescape(window.encodeURIComponent(application.lastSentNick)),
-                    x: application.getPlayerX(),
-                    y: application.getPlayerY(),
-                    mass: application.getMass()
+                    x: me ? me.x + ogario.mapOffsetX : application.getPlayerX(),
+                    y: me ? me.y + ogario.mapOffsetY : application.getPlayerY(),
+                    mass: me ? me.mass : application.getMass()
                 };
                 if (Socket3 && Socket3.readyState === 1) {
                     try {
