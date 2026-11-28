@@ -1454,7 +1454,7 @@ window._lmRestoreWhenPurchaseSettled = function (purchaseId, restore) {
 
     window._normalizeLeagueAvatarUrl = function(value) {
         var fallback =
-            'https://jimboy3100.github.io/banners/profilepic_guest.png';
+            'https://www.legendmod.ml/banners/profilepic_guest.png';
 
         if (typeof value !== 'string') {
             return fallback;
@@ -2286,7 +2286,7 @@ window._lmRestoreWhenPurchaseSettled = function (purchaseId, restore) {
                     <div style="display: flex; align-items: center; justify-content: space-between; padding: 8px 14px; margin-bottom: 6px; border-radius:var(--lm-radius,6px); ${rowBg} transition: transform 0.15s;">
                         <div style="width: 70px;">${rankBadge}</div>
                         <div style="flex: 1; display: flex; align-items: center; gap: 10px;">
-                            <img src="${icon}" loading="lazy" decoding="async" referrerpolicy="no-referrer" style="width: 32px; height: 32px; border-radius: 50%; object-fit: cover; border: 1px solid rgba(255,255,255,0.2);" onerror="this.onerror=null; this.src='https://jimboy3100.github.io/banners/profilepic_guest.png';">
+                            <img src="${icon}" loading="lazy" decoding="async" referrerpolicy="no-referrer" style="width: 32px; height: 32px; border-radius: 50%; object-fit: cover; border: 1px solid rgba(255,255,255,0.2);" onerror="this.onerror=null; this.src='https://www.legendmod.ml/banners/profilepic_guest.png';">
                             <span style="background: #00e676; color: #000; font-size: 10px; font-weight: 900; border-radius: 50%; width: 22px; height: 22px; display: inline-flex; align-items: center; justify-content: center; border: 1px solid #fff;">${level}</span>
                             <span class="country-icon flag-icon flag-icon-${country}" style="border-radius:var(--lm-radius-s,4px);"></span>
                             <span style="font-weight: 700; color: ${isUser ? '#00e676' : t.tc}; font-size: 13px;">${isUser ? _lmUE('lmx.ui.nameYou', [name]) : window._escapeLeagueHtmlText(name)}</span>
@@ -2330,7 +2330,7 @@ window._lmRestoreWhenPurchaseSettled = function (purchaseId, restore) {
                         <div style="padding: 4px 8px; border-radius:var(--lm-radius,6px); background: #00e676; color: #000; font-weight: 900; font-size: 12px; text-align: center;">${currentUserRank}</div>
                     </div>
                     <div style="flex: 1; display: flex; align-items: center; gap: 10px;">
-                        <img src="${currentUserAvatar}" style="width: 32px; height: 32px; border-radius: 50%; object-fit: cover; border: 1px solid #00e676;" onerror="this.src='https://jimboy3100.github.io/banners/profilepic_guest.png'">
+                        <img src="${currentUserAvatar}" style="width: 32px; height: 32px; border-radius: 50%; object-fit: cover; border: 1px solid #00e676;" onerror="this.src='https://www.legendmod.ml/banners/profilepic_guest.png'">
                         <span style="background: #00e676; color: #000; font-size: 10px; font-weight: 900; border-radius: 50%; width: 22px; height: 22px; display: inline-flex; align-items: center; justify-content: center; border: 1px solid #fff;">${currentUserLevel}</span>
                         <span class="country-icon flag-icon flag-icon-${currentUserCountry.toLowerCase()}" style="border-radius:var(--lm-radius-s,4px);"></span>
                         <span style="font-weight: 800; color: #00e676; font-size: 14px;">${_lmUE('lmx.ui.nameYou', [currentUserName])}</span>
@@ -3630,7 +3630,7 @@ window._lmRestoreWhenPurchaseSettled = function (purchaseId, restore) {
                                 'string' &&
                             entry.avatarUrl.trim()
                                 ? entry.avatarUrl.trim()
-                                : 'https://jimboy3100.github.io/banners/profilepic_guest.png'
+                                : 'https://www.legendmod.ml/banners/profilepic_guest.png'
                         ),
 
                 rank:
@@ -3690,7 +3690,7 @@ window._lmRestoreWhenPurchaseSettled = function (purchaseId, restore) {
                     ? window._normalizeLeagueAvatarUrl(
                         entry.icon || entry.avatar
                     )
-                    : 'https://jimboy3100.github.io/banners/profilepic_guest.png';
+                    : 'https://www.legendmod.ml/banners/profilepic_guest.png';
             var country =
                 window._normalizeLeagueCountryCode(
                     entry.country ||
@@ -3714,7 +3714,7 @@ window._lmRestoreWhenPurchaseSettled = function (purchaseId, restore) {
             html += '<div style="display: flex; align-items: center; justify-content: space-between; padding: 8px 14px; margin-bottom: 6px; border-radius:var(--lm-radius,6px); ' + rowBg + '">';
             html += '<div style="width: 60px;">' + rankBadge + '</div>';
             html += '<div style="flex: 1; display: flex; align-items: center; gap: 10px;">';
-            html += '<img src="' + icon + '" loading="lazy" decoding="async" referrerpolicy="no-referrer" style="width: 30px; height: 30px; border-radius: 50%; object-fit: cover; border: 1px solid rgba(255,255,255,0.2);" onerror="this.onerror=null; this.src=\'https://jimboy3100.github.io/banners/profilepic_guest.png\';">';
+            html += '<img src="' + icon + '" loading="lazy" decoding="async" referrerpolicy="no-referrer" style="width: 30px; height: 30px; border-radius: 50%; object-fit: cover; border: 1px solid rgba(255,255,255,0.2);" onerror="this.onerror=null; this.src=\'https://www.legendmod.ml/banners/profilepic_guest.png\';">';
             html += '<span style="background: #00e676; color: #000; font-size: 10px; font-weight: 900; border-radius: 50%; width: 20px; height: 20px; display: inline-flex; align-items: center; justify-content: center;">' + level + '</span>';
             html += '<span class="country-icon flag-icon flag-icon-' + country + '" style="border-radius:var(--lm-radius-s,4px);"></span>';
             html += '<span style="font-weight: 700; color: ' + (isUser ? '#00e676' : t.tc) + '; font-size: 13px;">' + window._escapeLeagueHtmlText(name) + '</span>';
@@ -6478,7 +6478,7 @@ window._lmRestoreWhenPurchaseSettled = function (purchaseId, restore) {
                 var statusClass = isOnline ? 'lm-status-online' : 'lm-status-offline';
                 var name = friend.displayName || friend.name || _lmUR('lmx.ui.friend');
                 var partyToken = friend.partyToken || friend.partyCode || '';
-                var avatar = friend.avatar || friend.icon || 'https://jimboy3100.github.io/banners/profilepic_guest.png';
+                var avatar = friend.avatar || friend.icon || 'https://www.legendmod.ml/banners/profilepic_guest.png';
 
                 var card = document.createElement('div');
                 card.className = 'lm-friend-card';
@@ -6493,7 +6493,7 @@ window._lmRestoreWhenPurchaseSettled = function (purchaseId, restore) {
                 img.src = avatar;
                 img.style.cssText = 'width: 28px; height: 28px; border-radius: 50%; object-fit: cover;';
                 img.onerror = function() {
-                    this.src = 'https://jimboy3100.github.io/banners/profilepic_guest.png';
+                    this.src = 'https://www.legendmod.ml/banners/profilepic_guest.png';
                 };
 
                 var nameSpan = document.createElement('span');

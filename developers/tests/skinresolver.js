@@ -143,7 +143,7 @@ const enc = (p) => p.split('/').map(encodeURIComponent).join('/');
     check('a picture only the mirror has (' + j + '): only the mirror, also when asked on www.legendmod.ml', JSON.stringify(R.resolve(L + enc(j)).cands) === JSON.stringify([J + enc(j)]));
     check('a vanilla file both hold: the mirror first (the URL VanillaSkinUrlMap always used), then www.legendmod.ml',
         JSON.stringify(R.resolve(L + 'vanillaskins/doge.png').cands) === JSON.stringify([J + 'vanillaskins/doge.png', L + 'vanillaskins/doge.png']) || !exists('vanillaskins/doge.png'));
-    check('other files of the site (banners) only get the www spelling', R.key('https://jimboy3100.github.io/banners/iconMinions.png') === L + 'banners/iconMinions.png' && R.resolve(L + 'banners/iconMinions.png').cands.length === 1);
+    check('other files of the site (banners) only get the www spelling', R.key('https://jimboy3100.github.io/banners/iconSpecialSkinEffectsGladiator.png') === L + 'banners/iconSpecialSkinEffectsGladiator.png' && R.resolve(L + 'banners/iconSpecialSkinEffectsGladiator.png').cands.length === 1);
     check('third-party, agar.io, data, blob and video URLs are left as they are', ['https://i.imgur.com/AbC.png', 'https://example.com/a b.png', 'data:image/png;base64,AAAA', 'blob:https://x/1', L + 'banners/x.mp4', 'https://configs.agario.miniclippt.com/live/custom_skins/skin_custom_ab.png']
         .every((u) => R.key(u) === u));
     const ag = R.resolve('https://configs-web.agario.miniclippt.com/live/v15/10935/fungi_warlord.png');

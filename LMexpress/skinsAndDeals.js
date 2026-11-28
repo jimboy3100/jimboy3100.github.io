@@ -24,12 +24,12 @@ function lmShopMsg(tag, key, vars, html) {
 //OLD DEALS
 //v2.23
 
-//for agarioUID, agarioID, look at the case 102: on this file https://jimboy3100.github.io/ogario/ogario.v4.js?v=32
+//for agarioUID, agarioID, look at the case 102: on this file https://www.legendmod.ml/ogario/ogario.v4.js?v=32
 
 /* you will need this
 	var s = document.createElement("script");
         s.type = "text/javascript";
-        s.src = "https://jimboy3100.github.io/languages/LanguagePackEnglish.js";
+        s.src = "https://www.legendmod.ml/languages/LanguagePackEnglish.js";
         $("body").append(s);
 
 
@@ -354,7 +354,7 @@ function SpecialDeals(defaultTab) {
 
             // Active Skin Banner
             '<div class="active-skin-banner" id="activeSkinBanner">' +
-            '<img id="activeSkinImg" src=""' + lmShopAttr('alt', 'lmx.sd.activeSkin') + ' onerror="this.src=\'https://jimboy3100.github.io/banners/icondeal2.png\'">' +
+            '<img id="activeSkinImg" src=""' + lmShopAttr('alt', 'lmx.sd.activeSkin') + ' onerror="this.src=\'https://www.legendmod.ml/banners/icondeal2.png\'">' +
             '<div class="info">' +
             '<div class="title">&#x2714; ' + lmShopSpan('lmx.sd.equipped') + '</div>' +
             '<div class="name" id="activeSkinName">' + _lmsdE('lmx.sd.noneDefault') + '</div>' +
@@ -2560,10 +2560,10 @@ function SpecialDeals(defaultTab) {
         });
         $("#FAQSpecialDeals").off('click').on('click', function(e) {
             if (e) e.stopPropagation();
-            window.open(typeof lmThemeUrl === 'function' ? lmThemeUrl('https://jimboy3100.github.io/LMexpress/olddeals.html') : 'https://jimboy3100.github.io/LMexpress/olddeals.html', '_blank');
+            window.open(typeof lmThemeUrl === 'function' ? lmThemeUrl('https://www.legendmod.ml/LMexpress/olddeals.html') : 'https://www.legendmod.ml/LMexpress/olddeals.html', '_blank');
         });
         $(".xpmt-buy-content").click(function() {
-            toastr["warning"]('<div id="tutorial" style="background-image: url(https://jimboy3100.github.io/banners/v25toastricon.jpg); color:#018cf6; font-size:16px; text-align:center">' + Premadeletter90 + ' v0.5<br>' + _lmsdE('lmx.sd.betaWarnShort') + '<br><font color="red">' + Premadeletter91a + '</font>' + '</br> <button class="btn btn-sm btn-primary" style="width: 100%; margin-top: 10px;border-color: darkblue;">' + Premadeletter24 + '</button><br><button class="btn btn-sm btn-warning btn-spectate btn-nodo-hideall" style="width: 100%;margin-top: 10px;">' + Premadeletter25 + '</button></div>', "", {
+            toastr["warning"]('<div id="tutorial" style="background-image: url(https://www.legendmod.ml/banners/v25toastricon.jpg); color:#018cf6; font-size:16px; text-align:center">' + Premadeletter90 + ' v0.5<br>' + _lmsdE('lmx.sd.betaWarnShort') + '<br><font color="red">' + Premadeletter91a + '</font>' + '</br> <button class="btn btn-sm btn-primary" style="width: 100%; margin-top: 10px;border-color: darkblue;">' + Premadeletter24 + '</button><br><button class="btn btn-sm btn-warning btn-spectate btn-nodo-hideall" style="width: 100%;margin-top: 10px;">' + Premadeletter25 + '</button></div>', "", {
                 timeOut: 20000,
                 extendedTimeOut: 20000
             }).css("width", "300px");
@@ -5768,7 +5768,7 @@ function updateEquippedSkinUI() {
                 );
         }
         if (!imgSrc) {
-            imgSrc = 'https://jimboy3100.github.io/banners/icondeal2.png';
+            imgSrc = 'https://www.legendmod.ml/banners/icondeal2.png';
         }
 
         bannerImg.attr('src', imgSrc);
@@ -5798,7 +5798,7 @@ function updateEquippedSkinUI() {
         unequipBtn.show();
     } else {
         bannerName.text(_lmsdT('lmx.sd.noneDefaultSkin'));
-        bannerImg.attr('src', 'https://jimboy3100.github.io/banners/icondeal2.png');
+        bannerImg.attr('src', 'https://www.legendmod.ml/banners/icondeal2.png');
         bannerImg.css({
             'border-color': t.mc,
             'background-color': t.pc,
@@ -8190,7 +8190,7 @@ function buySkin(productId) {
 
     if (!skinImageUrl) {
         skinImageUrl =
-            'https://jimboy3100.github.io/banners/icondeal2.png';
+            'https://www.legendmod.ml/banners/icondeal2.png';
     }
 
     var cellColor =

@@ -867,7 +867,7 @@ window._lmBadgesOpen = _lmBadgesOpen;
  * in: nothing set it since the profile panel was rebuilt. It now shows the account's equipped skin: the
  * skin read at login (UserVanillaSkin), else the one the server confirmed (userSettings key 1), else the
  * last one equipped here; the guest picture when logged out or the skin's picture is unknown yet. */
-var _lmVsGuest = 'https://jimboy3100.github.io/banners/profilepic_guest.png';
+var _lmVsGuest = 'https://www.legendmod.ml/banners/profilepic_guest.png';
 function _lmVanillaPreviewUrl() {
     var hello = document.getElementById('helloContainer');
     if (!hello || hello.getAttribute('data-logged-in') !== '1') return '';
@@ -19418,7 +19418,7 @@ function userLeaguesInfoResponse() {
                     uid: players[i].uid || '',
                     level: players[i].level ? parseInt(players[i].level, 10) || 1 : 1,
                     country: (players[i].country || 'us').toLowerCase().replace(/[^a-z]/g, ''),
-                    icon: players[i].icon || 'https://jimboy3100.github.io/banners/profilepic_guest.png',
+                    icon: players[i].icon || 'https://www.legendmod.ml/banners/profilepic_guest.png',
                     socialid: players[i].socialid || '',
                     rank: entries.length + 1,
                     score: players[i].score || players[i].winnings || 0
@@ -20325,7 +20325,7 @@ var defaultSettings = {
     commanderImage3: "https://www.legendmod.ml/banners/drawCommander3.png",
     commanderImage4: "https://www.legendmod.ml/banners/drawCommander4.png",
     commanderImage5: "https://www.legendmod.ml/banners/drawCommander5.png",
-    commanderImage6: "https://www.legendmod.ml/banners/iconJustWatchPro.png",
+    commanderImage6: "https://www.legendmod.ml/banners/iconSpecialSkinEffectsGladiator.png", /* same picture as iconJustWatchPro.png: one download */
     commanderImageDyingLight: "https://www.legendmod.ml/banners/icondyinglightzombie.png",
     commanderImageDyingLightvirus: "https://www.legendmod.ml/banners/icondyinglightvirus.png",
 
@@ -41886,7 +41886,7 @@ function thelegendmodproject() {
                         console.log('%c[Senpa]%c Loading WASM module...', 'color:#fa3', 'color:inherit');
                         window._senpaModuleLoad = new Promise(function (resolve, reject) {
                             var script = document.createElement('script');
-                            script.src = 'https://jimboy3100.github.io/ogario/senpa_module.js';
+                            script.src = 'https://www.legendmod.ml/ogario/senpa_module.js';
                             script.onload = function() {
                                 // WASM module needs time to initialize (onRuntimeInitialized)
                                 var _waitStart = Date.now();
@@ -55308,7 +55308,7 @@ function thelegendmodproject() {
                 /* LW Potion detection: server sends name="$potion" instead of a
                  * skin URL (saves bandwidth). Client assigns the image locally. */
                 if (name === '$potion') {
-                    cellUpdateCells.skin = 'https://jimboy3100.github.io/img/skins/potion-blue.jpg';
+                    cellUpdateCells.skin = 'https://www.legendmod.ml/img/skins/potion-blue.jpg';
                     cellUpdateCells.nick = '';
                     cellUpdateCells.isPotion = true;
                     cellUpdateCells.isFood = false;
@@ -86782,7 +86782,7 @@ var stylesLegendModConsole2 = [
 ].join(';');
 
 function consoleNotice() {
-    console.groupCollapsed('%cLegend express%c  %chttps://jimboy3100.github.io', stylesLegendModConsole1, 'font-size: 48px; background: url(https://jimboy3100.github.io/banners/icon48.png) no-repeat', stylesLegendModConsole1);
+    console.groupCollapsed('%cLegend express%c  %chttps://jimboy3100.github.io', stylesLegendModConsole1, 'font-size: 48px; background: url(https://www.legendmod.ml/banners/icon48.png) no-repeat', stylesLegendModConsole1);
     console.groupCollapsed("Part of");
     console.log('%cThe Legend mod Project™', stylesLegendModConsole2);
     console.groupEnd();
@@ -87153,7 +87153,7 @@ function openhelper() {
         /* legendmod.ml may be blocked or slow: try the GitHub mirror */
         var s2 = document.createElement("script");
         s2.type = "text/javascript";
-        s2.src = "https://jimboy3100.github.io/extras/legendhelper.js?v=2";
+        s2.src = "https://www.legendmod.ml/extras/legendhelper.js?v=2";
         s2.onerror = function () {
             if (window.toastr) toastr.error(lmT('game2.helperFailed'));
         };

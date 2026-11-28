@@ -7870,7 +7870,7 @@ function LMLegendFFAPromo() {
 
         '<div id="LMadvertisementLegendFFA">' +
         '<iframe id="legendFFAIframe" ' +
-        'src="https://jimboy3100.github.io/extras/legendffa.html" ' +
+        'src="https://www.legendmod.ml/extras/legendffa.html" ' +
         'width="920" height="550" style="border:none;"></iframe>' +
         '</div>' +
 

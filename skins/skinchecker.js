@@ -202,7 +202,7 @@
 	                        _react2.default.createElement(
 	                            _MenuItem2.default,
 	                            { onTouchTap: function onTouchTap() {
-	                                    document.location.href = "https://jimboy3100.github.io/skins/";
+	                                    document.location.href = "https://www.legendmod.ml/skins/";
 	                                } },
 	                            "Custom Skins"
 	                        ),
@@ -445,7 +445,7 @@
 	        justifyContent: "center"
 	    },
 	    avatarBlob: {
-	        backgroundImage: "url(\"https://jimboy3100.github.io/banners/CropedImage128.gif\")",
+	        backgroundImage: "url(\"https://www.legendmod.ml/banners/CropedImage128.gif\")",
 	        height: "100px",
 	        width: "100px",
 	        backgroundSize: "contain",

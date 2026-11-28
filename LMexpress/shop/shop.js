@@ -3,66 +3,66 @@
 
 	window.tempModeratorSkin=""
 		if ($("#nick").val().includes('℄')){
-			window.tempModeratorSkin += '<div class="skin-box"><img class="lazy" name="LegendHeroes" data-original="https://jimboy3100.github.io/banners/iconSpecialSkinEffectsLegendclan.png"></div>'
-			window.tempModeratorSkin += '<div class="skin-box"><img class="lazy" name="LegendClan" data-original="https://jimboy3100.github.io/banners/iconSpecialSkinEffectsLegendclan2.png"></div>'
-			window.tempModeratorSkin += '<div class="skin-box"><img class="lazy" name="AbsolutVodka" data-original="https://jimboy3100.github.io/banners/iconSpecialSkinEffectsAbsolutVodka.png"></div>'
-			window.tempModeratorSkin += '<div class="skin-box"><img class="lazy" name="Chemistry" data-original="https://jimboy3100.github.io/banners/iconSpecialSkinEffectsChemistry.png"></div>'
-			window.tempModeratorSkin += '<div class="skin-box"><img class="lazy" name="Japan" data-original="https://jimboy3100.github.io/banners/iconSpecialSkinEffectsJapan.png"></div>'
-			window.tempModeratorSkin += '<div class="skin-box"><img class="lazy" name="Japan2" data-original="https://jimboy3100.github.io/banners/iconSpecialSkinEffectsJapan2.png"></div>'
-			window.tempModeratorSkin += '<div class="skin-box"><img class="lazy" name="Kebab" data-original="https://jimboy3100.github.io/banners/iconSpecialSkinEffectsKebab.png"></div>'
-			window.tempModeratorSkin += '<div class="skin-box"><img class="lazy" name="Meditation" data-original="https://jimboy3100.github.io/banners/iconSpecialSkinEffectsMeditation.png"></div>'
-			window.tempModeratorSkin += '<div class="skin-box"><img class="lazy" name="Splash" data-original="https://jimboy3100.github.io/banners/iconSpecialSkinEffectsSplash.png"></div>'	
-			window.tempModeratorSkin += '<div class="skin-box"><img class="lazy" name="PanicAtDisco" data-original="https://jimboy3100.github.io/banners/iconSpecialSkinEffectsPanicAtDisco.png"></div>'			
+			window.tempModeratorSkin += '<div class="skin-box"><img class="lazy" name="LegendHeroes" data-original="https://www.legendmod.ml/banners/iconSpecialSkinEffectsLegendclan.png"></div>'
+			window.tempModeratorSkin += '<div class="skin-box"><img class="lazy" name="LegendClan" data-original="https://www.legendmod.ml/banners/iconSpecialSkinEffectsLegendclan2.png"></div>'
+			window.tempModeratorSkin += '<div class="skin-box"><img class="lazy" name="AbsolutVodka" data-original="https://www.legendmod.ml/banners/iconSpecialSkinEffectsAbsolutVodka.png"></div>'
+			window.tempModeratorSkin += '<div class="skin-box"><img class="lazy" name="Chemistry" data-original="https://www.legendmod.ml/banners/iconSpecialSkinEffectsChemistry.png"></div>'
+			window.tempModeratorSkin += '<div class="skin-box"><img class="lazy" name="Japan" data-original="https://www.legendmod.ml/banners/iconSpecialSkinEffectsJapan.png"></div>'
+			window.tempModeratorSkin += '<div class="skin-box"><img class="lazy" name="Japan2" data-original="https://www.legendmod.ml/banners/iconSpecialSkinEffectsJapan2.png"></div>'
+			window.tempModeratorSkin += '<div class="skin-box"><img class="lazy" name="Kebab" data-original="https://www.legendmod.ml/banners/iconSpecialSkinEffectsKebab.png"></div>'
+			window.tempModeratorSkin += '<div class="skin-box"><img class="lazy" name="Meditation" data-original="https://www.legendmod.ml/banners/iconSpecialSkinEffectsMeditation.png"></div>'
+			window.tempModeratorSkin += '<div class="skin-box"><img class="lazy" name="Splash" data-original="https://www.legendmod.ml/banners/iconSpecialSkinEffectsSplash.png"></div>'	
+			window.tempModeratorSkin += '<div class="skin-box"><img class="lazy" name="PanicAtDisco" data-original="https://www.legendmod.ml/banners/iconSpecialSkinEffectsPanicAtDisco.png"></div>'			
 	}		
 	if (typeof ProLicenceUsersTable !== "undefined" && ProLicenceUsersTable.ProLicenceUsers[window.agarioUID]){		
 		//localStorage.setItem("ProLicenceUsersreason", ProLicenceUsersTable.ProLicenceUsers[window.agarioUID].reason);
 		if (ProLicenceUsersTable.ProLicenceUsers[window.agarioUID].reason == "Moderator"){
-			window.tempModeratorSkin += '<div class="skin-box"><img class="lazy" name="Moderator" data-original="https://jimboy3100.github.io/banners/iconSpecialSkinEffectsModerator.png"></div>'
-			window.tempModeratorSkin += '<div class="skin-box"><img class="lazy" name="Ddev" data-original="https://jimboy3100.github.io/banners/iconSpecialSkinEffectsDdev.png"></div>'
+			window.tempModeratorSkin += '<div class="skin-box"><img class="lazy" name="Moderator" data-original="https://www.legendmod.ml/banners/iconSpecialSkinEffectsModerator.png"></div>'
+			window.tempModeratorSkin += '<div class="skin-box"><img class="lazy" name="Ddev" data-original="https://www.legendmod.ml/banners/iconSpecialSkinEffectsDdev.png"></div>'
 		}
 		else if (ProLicenceUsersTable.ProLicenceUsers[window.agarioUID].reason == "LMauthor"){
-			window.tempModeratorSkin += '<div class="skin-box"><img class="lazy" name="RedArrow" data-original="https://jimboy3100.github.io/banners/drawCommander5.png"></div>'
-			window.tempModeratorSkin += '<div class="skin-box"><img class="lazy" name="WhiteArrow" data-original="https://jimboy3100.github.io/banners/drawCommander5.png"></div>'
-			window.tempModeratorSkin += '<div class="skin-box"><img class="lazy" name="BabyBoss" data-original="https://jimboy3100.github.io/banners/iconSpecialSkinEffectsBabyBoss.png"></div>'
-			window.tempModeratorSkin += '<div class="skin-box"><img class="lazy" name="Gladiator" data-original="https://jimboy3100.github.io/banners/iconSpecialSkinEffectsGladiator.png"></div>'
-			window.tempModeratorSkin += '<div class="skin-box"><img class="lazy" name="Hero" data-original="https://jimboy3100.github.io/banners/iconSpecialSkinEffectsHero.png"></div>'
-			window.tempModeratorSkin += '<div class="skin-box"><img class="lazy" name="Hero1" data-original="https://jimboy3100.github.io/banners/iconSpecialSkinEffectsHero1.png"></div>'
-			window.tempModeratorSkin += '<div class="skin-box"><img class="lazy" name="Hero2" data-original="https://jimboy3100.github.io/banners/iconSpecialSkinEffectsHero2.png"></div>'	
-			window.tempModeratorSkin += '<div class="skin-box"><img class="lazy" name="Key" data-original="https://jimboy3100.github.io/banners/iconSpecialSkinEffectsKey.png"></div>'
-			window.tempModeratorSkin += '<div class="skin-box"><img class="lazy" name="MetalOfHonor" data-original="https://jimboy3100.github.io/banners/iconSpecialSkinEffectsMetalOfHonor.png"></div>'
-			window.tempModeratorSkin += '<div class="skin-box"><img class="lazy" name="PeaceMaker" data-original="https://jimboy3100.github.io/banners/iconSpecialSkinEffectsPeaceMaker.png"></div>'
-			window.tempModeratorSkin += '<div class="skin-box"><img class="lazy" name="Survivor" data-original="https://jimboy3100.github.io/banners/iconSpecialSkinEffectsSurvivor.png"></div>'
-			window.tempModeratorSkin += '<div class="skin-box"><img class="lazy" name="Tiger" data-original="https://jimboy3100.github.io/banners/iconSpecialSkinEffectsTiger.png"></div>'						
+			window.tempModeratorSkin += '<div class="skin-box"><img class="lazy" name="RedArrow" data-original="https://www.legendmod.ml/banners/drawCommander5.png"></div>'
+			window.tempModeratorSkin += '<div class="skin-box"><img class="lazy" name="WhiteArrow" data-original="https://www.legendmod.ml/banners/drawCommander5.png"></div>'
+			window.tempModeratorSkin += '<div class="skin-box"><img class="lazy" name="BabyBoss" data-original="https://www.legendmod.ml/banners/iconSpecialSkinEffectsBabyBoss.png"></div>'
+			window.tempModeratorSkin += '<div class="skin-box"><img class="lazy" name="Gladiator" data-original="https://www.legendmod.ml/banners/iconSpecialSkinEffectsGladiator.png"></div>'
+			window.tempModeratorSkin += '<div class="skin-box"><img class="lazy" name="Hero" data-original="https://www.legendmod.ml/banners/iconSpecialSkinEffectsHero.png"></div>'
+			window.tempModeratorSkin += '<div class="skin-box"><img class="lazy" name="Hero1" data-original="https://www.legendmod.ml/banners/iconSpecialSkinEffectsHero1.png"></div>'
+			window.tempModeratorSkin += '<div class="skin-box"><img class="lazy" name="Hero2" data-original="https://www.legendmod.ml/banners/iconSpecialSkinEffectsHero2.png"></div>'	
+			window.tempModeratorSkin += '<div class="skin-box"><img class="lazy" name="Key" data-original="https://www.legendmod.ml/banners/iconSpecialSkinEffectsKey.png"></div>'
+			window.tempModeratorSkin += '<div class="skin-box"><img class="lazy" name="MetalOfHonor" data-original="https://www.legendmod.ml/banners/iconSpecialSkinEffectsMetalOfHonor.png"></div>'
+			window.tempModeratorSkin += '<div class="skin-box"><img class="lazy" name="PeaceMaker" data-original="https://www.legendmod.ml/banners/iconSpecialSkinEffectsPeaceMaker.png"></div>'
+			window.tempModeratorSkin += '<div class="skin-box"><img class="lazy" name="Survivor" data-original="https://www.legendmod.ml/banners/iconSpecialSkinEffectsSurvivor.png"></div>'
+			window.tempModeratorSkin += '<div class="skin-box"><img class="lazy" name="Tiger" data-original="https://www.legendmod.ml/banners/iconSpecialSkinEffectsTiger.png"></div>'						
 		}
 		else if (ProLicenceUsersTable.ProLicenceUsers[window.agarioUID].reason == "Hano"){
-			window.tempModeratorSkin += '<div class="skin-box"><img class="lazy" name="BabyBoss" data-original="https://jimboy3100.github.io/banners/iconSpecialSkinEffectsBabyBoss.png"></div>'
+			window.tempModeratorSkin += '<div class="skin-box"><img class="lazy" name="BabyBoss" data-original="https://www.legendmod.ml/banners/iconSpecialSkinEffectsBabyBoss.png"></div>'
 		}			
 		else if (ProLicenceUsersTable.ProLicenceUsers[window.agarioUID].reason == "Junky"){
-			window.tempModeratorSkin += '<div class="skin-box"><img class="lazy" name="Survivor" data-original="https://jimboy3100.github.io/banners/iconSpecialSkinEffectsSurvivor.png"></div>'
+			window.tempModeratorSkin += '<div class="skin-box"><img class="lazy" name="Survivor" data-original="https://www.legendmod.ml/banners/iconSpecialSkinEffectsSurvivor.png"></div>'
 		}		
 		else if (ProLicenceUsersTable.ProLicenceUsers[window.agarioUID].reason == "Hilde"){
-			window.tempModeratorSkin += '<div class="skin-box"><img class="lazy" name="PeaceMaker" data-original="https://jimboy3100.github.io/banners/iconSpecialSkinEffectsPeaceMaker.png"></div>'
+			window.tempModeratorSkin += '<div class="skin-box"><img class="lazy" name="PeaceMaker" data-original="https://www.legendmod.ml/banners/iconSpecialSkinEffectsPeaceMaker.png"></div>'
 		}		
 		else if (ProLicenceUsersTable.ProLicenceUsers[window.agarioUID].reason == "Dabous"){
-			window.tempModeratorSkin += '<div class="skin-box"><img class="lazy" name="Tiger" data-original="https://jimboy3100.github.io/banners/iconSpecialSkinEffectsTiger.png"></div>'
+			window.tempModeratorSkin += '<div class="skin-box"><img class="lazy" name="Tiger" data-original="https://www.legendmod.ml/banners/iconSpecialSkinEffectsTiger.png"></div>'
 		}				
 		else if (ProLicenceUsersTable.ProLicenceUsers[window.agarioUID].reason == "Shiro"){
-			window.tempModeratorSkin += '<div class="skin-box"><img class="lazy" name="Shiro" data-original="https://jimboy3100.github.io/banners/iconSpecialSkinEffectsShiro.png"></div>'
+			window.tempModeratorSkin += '<div class="skin-box"><img class="lazy" name="Shiro" data-original="https://www.legendmod.ml/banners/iconSpecialSkinEffectsShiro.png"></div>'
 		}	
 		else if (ProLicenceUsersTable.ProLicenceUsers[window.agarioUID].reason == "WinnerPrizeAccountAge"){
-			window.tempModeratorSkin += '<div class="skin-box"><img class="lazy" name="Hero1" data-original="https://jimboy3100.github.io/banners/iconSpecialSkinEffectsHero1.png"></div>'			
+			window.tempModeratorSkin += '<div class="skin-box"><img class="lazy" name="Hero1" data-original="https://www.legendmod.ml/banners/iconSpecialSkinEffectsHero1.png"></div>'			
 		}	
 		else if (ProLicenceUsersTable.ProLicenceUsers[window.agarioUID].reason == "WinnerPrizeQuestsCompleted"){
-			window.tempModeratorSkin += '<div class="skin-box"><img class="lazy" name="Key" data-original="https://jimboy3100.github.io/banners/iconSpecialSkinEffectsKey.png"></div>'
+			window.tempModeratorSkin += '<div class="skin-box"><img class="lazy" name="Key" data-original="https://www.legendmod.ml/banners/iconSpecialSkinEffectsKey.png"></div>'
 		}			
 		else if (ProLicenceUsersTable.ProLicenceUsers[window.agarioUID].reason == "WinnerPrizeLongestTimeAlive"){
-			window.tempModeratorSkin += '<div class="skin-box"><img class="lazy" name="Hero" data-original="https://jimboy3100.github.io/banners/iconSpecialSkinEffectsHero.png"></div>'
+			window.tempModeratorSkin += '<div class="skin-box"><img class="lazy" name="Hero" data-original="https://www.legendmod.ml/banners/iconSpecialSkinEffectsHero.png"></div>'
 		}	
 		else if (ProLicenceUsersTable.ProLicenceUsers[window.agarioUID].reason == "WinnerPrizeMassDisputeOverPrizes"){
-			window.tempModeratorSkin += '<div class="skin-box"><img class="lazy" name="Hero2" data-original="https://jimboy3100.github.io/banners/iconSpecialSkinEffectsHero2.png"></div>'
+			window.tempModeratorSkin += '<div class="skin-box"><img class="lazy" name="Hero2" data-original="https://www.legendmod.ml/banners/iconSpecialSkinEffectsHero2.png"></div>'
 		}
 		else if (ProLicenceUsersTable.ProLicenceUsers[window.agarioUID].reason == "WinnerPrizeMassConsumedMassCellsEaten"){
-			window.tempModeratorSkin += '<div class="skin-box"><img class="lazy" name="MetalOfHonor" data-original="https://jimboy3100.github.io/banners/iconSpecialSkinEffectsMetalOfHonor.png"></div>'
+			window.tempModeratorSkin += '<div class="skin-box"><img class="lazy" name="MetalOfHonor" data-original="https://www.legendmod.ml/banners/iconSpecialSkinEffectsMetalOfHonor.png"></div>'
 		}		
 	}	
 	window.tempAnimatedCool=""
@@ -88,21 +88,21 @@
 	}
 	window.freeSkinCelebrationDays=""
 	if (window.celebrationDay=="LcDay"){
-		window.freeSkinCelebrationDays += '<div class="skin-box"><img class="lazy" name="LegendHeroes" data-original="https://jimboy3100.github.io/banners/iconSpecialSkinEffectsLegendclan.png"></div>'		
-		window.freeSkinCelebrationDays += '<div class="skin-box"><img class="lazy" name="LegendClan" data-original="https://jimboy3100.github.io/banners/iconSpecialSkinEffectsLegendclan2.png"></div>'
+		window.freeSkinCelebrationDays += '<div class="skin-box"><img class="lazy" name="LegendHeroes" data-original="https://www.legendmod.ml/banners/iconSpecialSkinEffectsLegendclan.png"></div>'		
+		window.freeSkinCelebrationDays += '<div class="skin-box"><img class="lazy" name="LegendClan" data-original="https://www.legendmod.ml/banners/iconSpecialSkinEffectsLegendclan2.png"></div>'
 	}
 	else if (window.celebrationDay=="NewYear"){
-		window.freeSkinCelebrationDays += '<div class="skin-box"><img class="lazy" name="HappyNewYear" data-original="https://jimboy3100.github.io/banners/iconSpecialSkinEffectsHappyNewYear.png"></div>'		
+		window.freeSkinCelebrationDays += '<div class="skin-box"><img class="lazy" name="HappyNewYear" data-original="https://www.legendmod.ml/banners/iconSpecialSkinEffectsHappyNewYear.png"></div>'		
 	}
 	else if (window.celebrationDay=="ThanksGiving"){
-		window.freeSkinCelebrationDays += '<div class="skin-box"><img class="lazy" name="ThanksGivings" data-original="https://jimboy3100.github.io/banners/iconSpecialSkinEffectsThanksGivings.png"></div>'		
+		window.freeSkinCelebrationDays += '<div class="skin-box"><img class="lazy" name="ThanksGivings" data-original="https://www.legendmod.ml/banners/iconSpecialSkinEffectsThanksGivings.png"></div>'		
 	}
 	else if (window.celebrationDay=="Christmas"){
-		window.freeSkinCelebrationDays += '<div class="skin-box"><img class="lazy" name="ChristmasTree" data-original="https://jimboy3100.github.io/banners/iconSpecialSkinEffectsChristmasTree.png"></div>'		
-		window.freeSkinCelebrationDays += '<div class="skin-box"><img class="lazy" name="SantaHat" data-original="https://jimboy3100.github.io/banners/iconSpecialSkinEffectsSantaHat.png"></div>'			
+		window.freeSkinCelebrationDays += '<div class="skin-box"><img class="lazy" name="ChristmasTree" data-original="https://www.legendmod.ml/banners/iconSpecialSkinEffectsChristmasTree.png"></div>'		
+		window.freeSkinCelebrationDays += '<div class="skin-box"><img class="lazy" name="SantaHat" data-original="https://www.legendmod.ml/banners/iconSpecialSkinEffectsSantaHat.png"></div>'			
 	}	
 	else if (window.celebrationDay=="4July"){
-		window.freeSkinCelebrationDays += '<div class="skin-box"><img class="lazy" name="Flag4July" data-original="https://jimboy3100.github.io/banners/iconSpecialSkinEffectsUSAFlag4July.png"></div>'		
+		window.freeSkinCelebrationDays += '<div class="skin-box"><img class="lazy" name="Flag4July" data-original="https://www.legendmod.ml/banners/iconSpecialSkinEffectsUSAFlag4July.png"></div>'		
 	}		
 		
             /* shopscript.js reads this to tell its own window from a newer one */
@@ -112,9 +112,9 @@
             $('#LMShop').remove();
             $('.modal-backdrop').remove();
             $('#helloContainer').after('<div class="modal fade in" id="LMShop" aria-hidden="false" style="display: block;">' +
-				'<link rel="stylesheet" type="text/css" href="https://jimboy3100.github.io/css/specialeffects.css">' +
+				'<link rel="stylesheet" type="text/css" href="https://www.legendmod.ml/css/specialeffects.css">' +
 				/* the lazyload plugin stays on jQuery after the window is closed: load it once */
-				(window.jQuery && jQuery.fn.lazyload ? '' : '<script src="https://jimboy3100.github.io/skins/jquery.lazyload.min.js"></script>') +
+				(window.jQuery && jQuery.fn.lazyload ? '' : '<script src="https://www.legendmod.ml/skins/jquery.lazyload.min.js"></script>') +
 				'<style>' +
 				/* the shop follows the user theme (--lm-* colours) and has the standard Legend window header */
 				'#LMShop .modal-content { background: var(--lm-pc,#00243e) !important; color: var(--lm-tc,#fff) !important; border: 1px solid var(--lm-pc2,#002f52) !important; border-top: 3px solid var(--lm-mc,#01d9cc) !important; border-radius: var(--lm-radius,6px) !important; box-shadow: 0 8px 32px rgba(0,0,0,.5) !important; }' +
@@ -166,52 +166,52 @@
     '</div>' +
 
     '<div id="imgur" class="skins-wrapper">' +
-		'<div class="skin-box"><img class="lazy" name="Hat" data-original="https://jimboy3100.github.io/banners/iconSpecialSkinEffectsHat3.png"></div>' +
-        '<div class="skin-box"><img class="lazy" name="JellyFish" data-original="https://jimboy3100.github.io/banners/iconSpecialSkinEffectsJellyFish.png"></div>' +
-        '<div class="skin-box"><img class="lazy" name="King" data-original="https://jimboy3100.github.io/banners/iconSpecialSkinEffectsCrown.png"></div>' +
-		'<div class="skin-box"><img class="lazy" name="Smoke" data-original="https://jimboy3100.github.io/banners/iconSpecialSkinEffectsSmoke.png"></div>' +
-		'<div class="skin-box"><img class="lazy" name="USA" data-original="https://jimboy3100.github.io/banners/iconSpecialSkinEffectsUSA.png"></div>' +	
-        '<div class="skin-box"><img class="lazy" name="Sword" data-original="https://jimboy3100.github.io/banners/iconSpecialSkinEffectsSword.png"></div>' +
-        '<div class="skin-box"><img class="lazy" name="Mask" data-original="https://jimboy3100.github.io/banners/iconSpecialSkinEffectsMask.png"></div>' +
-		'<div class="skin-box"><img class="lazy" name="Heart" data-original="https://jimboy3100.github.io/banners/iconSpecialSkinEffectsHeart.png"></div>' +
-	    '<div class="skin-box"><img class="lazy" name="Vip" data-original="https://jimboy3100.github.io/banners/iconSpecialSkinEffectsVip.png"></div>' +
-	    '<div class="skin-box"><img class="lazy" name="Youtube" data-original="https://jimboy3100.github.io/banners/iconSpecialSkinEffectsYoutube.png"></div>' +
-	    '<div class="skin-box"><img class="lazy" name="SunGlasses" data-original="https://jimboy3100.github.io/banners/iconSpecialSkinEffectsSunGlasses.png"></div>' +
-	    '<div class="skin-box"><img class="lazy" name="Bird" data-original="https://jimboy3100.github.io/banners/iconSpecialSkinEffectsBird.png"></div>' +
-	    '<div class="skin-box"><img class="lazy" name="Butterfly" data-original="https://jimboy3100.github.io/banners/iconSpecialSkinEffectsButterfly.png"></div>' +
-	    '<div class="skin-box"><img class="lazy" name="Mouse" data-original="https://jimboy3100.github.io/banners/iconSpecialSkinEffectsMouse.png"></div>' +
-		'<div class="skin-box"><img class="lazy" name="Turtle" data-original="https://jimboy3100.github.io/banners/iconSpecialSkinEffectsTurtle.png"></div>' +		
-		'<div class="skin-box"><img class="lazy" name="Coffee" data-original="https://jimboy3100.github.io/banners/iconSpecialSkinEffectsCoffee.png"></div>' +
+		'<div class="skin-box"><img class="lazy" name="Hat" data-original="https://www.legendmod.ml/banners/iconSpecialSkinEffectsHat3.png"></div>' +
+        '<div class="skin-box"><img class="lazy" name="JellyFish" data-original="https://www.legendmod.ml/banners/iconSpecialSkinEffectsJellyFish.png"></div>' +
+        '<div class="skin-box"><img class="lazy" name="King" data-original="https://www.legendmod.ml/banners/iconSpecialSkinEffectsCrown.png"></div>' +
+		'<div class="skin-box"><img class="lazy" name="Smoke" data-original="https://www.legendmod.ml/banners/iconSpecialSkinEffectsSmoke.png"></div>' +
+		'<div class="skin-box"><img class="lazy" name="USA" data-original="https://www.legendmod.ml/banners/iconSpecialSkinEffectsUSA.png"></div>' +	
+        '<div class="skin-box"><img class="lazy" name="Sword" data-original="https://www.legendmod.ml/banners/iconSpecialSkinEffectsSword.png"></div>' +
+        '<div class="skin-box"><img class="lazy" name="Mask" data-original="https://www.legendmod.ml/banners/iconSpecialSkinEffectsMask.png"></div>' +
+		'<div class="skin-box"><img class="lazy" name="Heart" data-original="https://www.legendmod.ml/banners/iconSpecialSkinEffectsHeart.png"></div>' +
+	    '<div class="skin-box"><img class="lazy" name="Vip" data-original="https://www.legendmod.ml/banners/iconSpecialSkinEffectsVip.png"></div>' +
+	    '<div class="skin-box"><img class="lazy" name="Youtube" data-original="https://www.legendmod.ml/banners/iconSpecialSkinEffectsYoutube.png"></div>' +
+	    '<div class="skin-box"><img class="lazy" name="SunGlasses" data-original="https://www.legendmod.ml/banners/iconSpecialSkinEffectsSunGlasses.png"></div>' +
+	    '<div class="skin-box"><img class="lazy" name="Bird" data-original="https://www.legendmod.ml/banners/iconSpecialSkinEffectsBird.png"></div>' +
+	    '<div class="skin-box"><img class="lazy" name="Butterfly" data-original="https://www.legendmod.ml/banners/iconSpecialSkinEffectsButterfly.png"></div>' +
+	    '<div class="skin-box"><img class="lazy" name="Mouse" data-original="https://www.legendmod.ml/banners/iconSpecialSkinEffectsMouse.png"></div>' +
+		'<div class="skin-box"><img class="lazy" name="Turtle" data-original="https://www.legendmod.ml/banners/iconSpecialSkinEffectsTurtle.png"></div>' +		
+		'<div class="skin-box"><img class="lazy" name="Coffee" data-original="https://www.legendmod.ml/banners/iconSpecialSkinEffectsCoffee.png"></div>' +
 		window.tempModeratorSkin +
    '</div>' +
 	        '<div id="lowres" class="skins-wrapper">' +
-			//'<div class="skin-box"><img class="lazy" name="Byzantium" data-original="https://jimboy3100.github.io/banners/iconSpecialSkinEffectsByzantium.png"></div>' +
-			'<div class="skin-box"><img class="lazy" name="Close" data-original="https://jimboy3100.github.io/banners/iconSpecialSkinEffectsClose.png"></div>' +
-			'<div class="skin-box"><img class="lazy" name="Earth" data-original="https://jimboy3100.github.io/banners/iconSpecialSkinEffectsEarth.png"></div>' +
-			'<div class="skin-box"><img class="lazy" name="FootStep" data-original="https://jimboy3100.github.io/banners/iconSpecialSkinEffectsFootStep.png"></div>' +
-			'<div class="skin-box"><img class="lazy" name="Forward" data-original="https://jimboy3100.github.io/banners/iconSpecialSkinEffectsForward.png"></div>' +
-			'<div class="skin-box"><img class="lazy" name="Forever" data-original="https://jimboy3100.github.io/banners/iconSpecialSkinEffectsFriendsForever.png"></div>' +
-			'<div class="skin-box"><img class="lazy" name="Forever2" data-original="https://jimboy3100.github.io/banners/iconSpecialSkinEffectsFriendsForever2.png"></div>' +
-			'<div class="skin-box"><img class="lazy" name="Forever3" data-original="https://jimboy3100.github.io/banners/iconSpecialSkinEffectsFriendsForever3.png"></div>' +
-			'<div class="skin-box"><img class="lazy" name="Police" data-original="https://jimboy3100.github.io/banners/iconSpecialSkinEffectsPolice.png"></div>' +
-			'<div class="skin-box"><img class="lazy" name="Police2" data-original="https://jimboy3100.github.io/banners/iconSpecialSkinEffectsPolice2.png"></div>' +
-			'<div class="skin-box"><img class="lazy" name="Unrest" data-original="https://jimboy3100.github.io/banners/iconSpecialSkinEffectsUnrest.png"></div>' +
-			'<div class="skin-box"><img class="lazy" name="Eagle" data-original="https://jimboy3100.github.io/banners/iconSpecialSkinEffectsEagle.png"></div>' +
-			'<div class="skin-box"><img class="lazy" name="BobMarley" data-original="https://jimboy3100.github.io/banners/iconSpecialSkinEffectsBobMarley.png"></div>' +
-			'<div class="skin-box"><img class="lazy" name="Einstein" data-original="https://jimboy3100.github.io/banners/iconSpecialSkinEffectsEinstein.png"></div>' +
-			'<div class="skin-box"><img class="lazy" name="DeadTable" data-original="https://jimboy3100.github.io/banners/iconSpecialSkinEffectsDeadTable.png"></div>' +						
+			//'<div class="skin-box"><img class="lazy" name="Byzantium" data-original="https://www.legendmod.ml/banners/iconSpecialSkinEffectsByzantium.png"></div>' +
+			'<div class="skin-box"><img class="lazy" name="Close" data-original="https://www.legendmod.ml/banners/iconSpecialSkinEffectsClose.png"></div>' +
+			'<div class="skin-box"><img class="lazy" name="Earth" data-original="https://www.legendmod.ml/banners/iconSpecialSkinEffectsEarth.png"></div>' +
+			'<div class="skin-box"><img class="lazy" name="FootStep" data-original="https://www.legendmod.ml/banners/iconSpecialSkinEffectsFootStep.png"></div>' +
+			'<div class="skin-box"><img class="lazy" name="Forward" data-original="https://www.legendmod.ml/banners/iconSpecialSkinEffectsForward.png"></div>' +
+			'<div class="skin-box"><img class="lazy" name="Forever" data-original="https://www.legendmod.ml/banners/iconSpecialSkinEffectsFriendsForever.png"></div>' +
+			'<div class="skin-box"><img class="lazy" name="Forever2" data-original="https://www.legendmod.ml/banners/iconSpecialSkinEffectsFriendsForever2.png"></div>' +
+			'<div class="skin-box"><img class="lazy" name="Forever3" data-original="https://www.legendmod.ml/banners/iconSpecialSkinEffectsFriendsForever3.png"></div>' +
+			'<div class="skin-box"><img class="lazy" name="Police" data-original="https://www.legendmod.ml/banners/iconSpecialSkinEffectsPolice.png"></div>' +
+			'<div class="skin-box"><img class="lazy" name="Police2" data-original="https://www.legendmod.ml/banners/iconSpecialSkinEffectsPolice2.png"></div>' +
+			'<div class="skin-box"><img class="lazy" name="Unrest" data-original="https://www.legendmod.ml/banners/iconSpecialSkinEffectsUnrest.png"></div>' +
+			'<div class="skin-box"><img class="lazy" name="Eagle" data-original="https://www.legendmod.ml/banners/iconSpecialSkinEffectsEagle.png"></div>' +
+			'<div class="skin-box"><img class="lazy" name="BobMarley" data-original="https://www.legendmod.ml/banners/iconSpecialSkinEffectsBobMarley.png"></div>' +
+			'<div class="skin-box"><img class="lazy" name="Einstein" data-original="https://www.legendmod.ml/banners/iconSpecialSkinEffectsEinstein.png"></div>' +
+			'<div class="skin-box"><img class="lazy" name="DeadTable" data-original="https://www.legendmod.ml/banners/iconSpecialSkinEffectsDeadTable.png"></div>' +						
 	'</div>' +
 	        '<div id="animatedLikeGif" class="skins-wrapper">' +
 			window.tempAnimatedCool	+			
 	'</div>' +	
 	        '<div id="free" class="skins-wrapper">' +
-			'<div class="skin-box"><img class="lazy" name="Byzantium" data-original="https://jimboy3100.github.io/banners/iconSpecialSkinEffectsByzantium.png"></div>' +	
+			'<div class="skin-box"><img class="lazy" name="Byzantium" data-original="https://www.legendmod.ml/banners/iconSpecialSkinEffectsByzantium.png"></div>' +	
 			window.freeSkinCelebrationDays +		
 	'</div>' +	
         '<div id="vanillaskins" class="skins-wrapper">' +
 	'</div>' +
 	'</div>' +    
-    '<script src="https://jimboy3100.github.io/LMexpress/shop/shopscript.js"></script>' +				
+    '<script src="https://www.legendmod.ml/LMexpress/shop/shopscript.js"></script>' +				
                 '</div>' +
                 '</div>' +
                 '</div>' +

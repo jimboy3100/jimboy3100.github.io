@@ -4961,6 +4961,54 @@
         "external": "expandingland, legendworld-help, LegendWorld and deltav4 do not name it; no version in the git history of a userscript, of the two extension zips or of the Expanding Land APK (13 revisions) names it; not in sitemap.xml"
       },
       "approvedForDeletion": true
+    },
+    {
+      "oldPath": "banners/iconMinions.png",
+      "canonicalPath": "vanillaskins/iconMinions.png",
+      "reason": "Byte-identical copy of vanillaskins/iconMinions.png. Its only user ever, the skin rotator (skinrotator.html, and the removed skinrotator2 / skinrotator3 pages), now loads the vanillaskins/ file, so the picture has one address.",
+      "internalReferencesMigrated": true,
+      "legacyResolverSupported": false,
+      "externalUrlSupported": false,
+      "legacyResolverNeeded": false,
+      "externalUrlNeeded": false,
+      "verification": {
+        "on": "2026-11-28",
+        "legacy": "saved data cannot hold it: in the whole git history only the skin rotator pages name it (a small icon next to a text), never a theme, preset, setting default, skin list or picture list a player could have picked and saved",
+        "external": "expandingland, legendworld-help, LegendWorld and deltav4 do not name it; no version in the git history of a userscript, of the two extension zips or of the Expanding Land APK names it; not in sitemap.xml"
+      },
+      "approvedForDeletion": true
+    },
+    {
+      "oldPath": "banners/iconImageNotFound.png",
+      "canonicalPath": "vanillaskins/iconImageNotFound.png",
+      "reason": "Byte-identical copy of vanillaskins/iconImageNotFound.png. Its only user ever, the skin rotator's missing-picture fallback (skinrotator.html, and the removed skinrotator2 / skinrotator3 pages), now loads the vanillaskins/ file, so the picture has one address.",
+      "internalReferencesMigrated": true,
+      "legacyResolverSupported": false,
+      "externalUrlSupported": false,
+      "legacyResolverNeeded": false,
+      "externalUrlNeeded": false,
+      "verification": {
+        "on": "2026-11-28",
+        "legacy": "saved data cannot hold it: in the whole git history only the skin rotator pages name it (the picture shown when a skin does not load), never a theme, preset, setting default, skin list or picture list a player could have picked and saved",
+        "external": "expandingland, legendworld-help, LegendWorld and deltav4 do not name it; no version in the git history of a userscript, of the two extension zips or of the Expanding Land APK names it; not in sitemap.xml"
+      },
+      "approvedForDeletion": true
+    },
+    {
+      "oldPath": "banners/iconJustWatchPro.png",
+      "canonicalPath": "banners/iconSpecialSkinEffectsGladiator.png",
+      "reason": "Byte-identical copy of banners/iconSpecialSkinEffectsGladiator.png. Its only user, the engine's commanderImage6 default (ogario/ogario.v4.js), now loads the Gladiator file the engine and the shop already load, so the picture is downloaded once. The file stays published: older engine versions (56 commits name it, also spect.js and replay.js) and saved theme settings that copied the default may still ask for it.",
+      "internalReferencesMigrated": true,
+      "legacyResolverSupported": false,
+      "externalUrlSupported": true,
+      "legacyResolverNeeded": true,
+      "externalUrlNeeded": true,
+      "verification": {
+        "on": "2026-11-28",
+        "legacy": "kept published: the address was a setting default (defaultSettings.commanderImage6) for years",
+        "external": "kept published: named by older engine versions; expandingland, legendworld-help, LegendWorld and deltav4 do not name it"
+      },
+      "approvedForDeletion": false
     }
   ]
 }
