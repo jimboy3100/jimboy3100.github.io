@@ -41,6 +41,9 @@ vm.runInContext([
     slice('var _lmSrcObs = new Map();', 'var LM_MB_RING_MIN_SCREEN_PX'),
     /* the shared colours per connection (forgotten when one closes) */
     slice('var _lmMbLooks = new Map();', '/* Nearest copy to `cell` in idx'),
+    /* the views a steered unit's draw-only cells and pellets are left to (lmMbFrameHide) */
+    slice('var _lmMbDoCov = [], _lmMbDoRect', 'function lmMbFrameHide() {'),
+    slice('/* Does the main connection or a verified spectator (_lmMbDoCov) see this cell? */', 'var _lmMbPosC = '),
     'var _DEATH_SLOWMO_ANIM = 600;',
     'var defaultmapsettings = { virusesRange: true, animation: 120, shortMass: false, virMassShots: false, rainbowFood: true };',
     'var defaultSettings = { foodColor: "#5000ff", foodSize: 0 };',
@@ -1025,6 +1028,68 @@ reset();
     /* the copy drawn now is placed again: the pellet is grouped again, its colour stays */
     s1.updateCells(packet([], [{ id: 1, x: 100, y: 100, color: 0xf04040 }], []), 0);
     check('Rainbow food: a pellet grouped again keeps its colour', fills() === want && drawList().length === 1, fills());
+    /* the list built again (a spawn, ClearAll) and a Rotate Map flip (every pellet placed again) */
+    vm.runInContext('lmFoodRebuild()', g);
+    const afterRebuild = fills();
+    vm.runInContext('lmFoodReplaceAll()', g);
+    const afterFlip = fills();
+    check('Rainbow food: a pellet keeps its colour over a rebuild of the list and a Rotate Map flip (were the drawn copy\'s own colour)', afterRebuild === want && afterFlip === want && drawList().length === 1, afterRebuild + ' / ' + afterFlip);
+}
+/* 14. a steered multibox unit not verified yet (lmMbFrameHide marks it _lmMbDrawOnly): its pellets
+ *     outside the main server view and every verified spectator's fresh view are drawn once, from a
+ *     separate list in the same food pass, not in the reconciled list; once it is verified they are
+ *     in the list, once each (before: none of its pellets were drawn) */
+reset();
+{
+    const R = g.renderer, ids = (l) => (l || []).filter((c) => c.spectator === 3).map((c) => c._lmRawId).sort().join(',');
+    const u = spect(3);
+    u._testFeed = false;
+    u.player = true;
+    u._lmServerViewDisplay = () => null;
+    u._lmCoverageOk = () => false;
+    u.updateCells(packet([], [{ id: 1, x: 5000, y: 5000 }, { id: 2, x: 100, y: 100 }, { id: 3, x: 3000, y: 3000 }], []), 0);
+    const v = spect(1);
+    v.updateCells(packet([], [{ id: 9, x: 6000, y: 100 }], []), 0);
+    v._lmServerViewDisplay = (o) => { o[0] = 2500; o[1] = 2500; o[2] = 3500; o[3] = 3500; return o; };
+    v._lmCoverageOk = () => true;
+    v.time = Date.now();
+    Object.assign(LM, { srvViewMinX: 0, srvViewMinY: 0, srvViewMaxX: 1000, srvViewMaxY: 1000 });
+    const hide = (drawOnly) => vm.runInContext('_lmMbFeed.length = 0; _lmMbFeed[1] = true; _lmMbFeed[3] = ' + !drawOnly + '; _lmMbDrawOnly.length = 0;' + (drawOnly ? ' _lmMbDrawOnly[3] = true;' : '') + ' _lmMbDrawOnlyCover(window.spects, Date.now());', g);
+    hide(true);
+    R.got = []; R._el = false; R.drawFood();
+    check('unverified steered unit: its pellet outside every view drawn once, from its own list after the food list', R.got.length === 2 && ids(R.got[1][1]) === '1' && ids(R.got[0][1]) === '', R.got.map((x) => ids(x[1])).join(' | '));
+    check('unverified steered unit: its pellets inside the main view or a verified spectator\'s view are not drawn by it', R.got.length === 2 && !R.got[1][1].some((c) => c._lmRawId === 2 || c._lmRawId === 3));
+    vm.runInContext('_lmMbDrawOnly.length = 0;', g);
+    R.got = []; R.drawFood();
+    check('no draw-only unit: one food pass only', R.got.length === 1, R.got.length);
+    /* verified: its pellets join the list at the next frame (feed state rescan) */
+    u._testFeed = false;
+    hide(true);
+    u._testFeed = true;
+    hide(false);
+    R.got = []; R.drawFood();
+    check('the unit verified: its 3 pellets drawn once each, from the food list', R.got.length === 1 && ids(R.got[0][1]) === '1,2,3', R.got.map((x) => ids(x[1])).join(' | '));
+    Object.assign(LM, { srvViewMinX: NaN, srvViewMinY: NaN, srvViewMaxX: NaN, srvViewMaxY: NaN });
+    vm.runInContext('_lmMbFeed.length = 0; _lmMbDrawOnly.length = 0; _lmMbDoCov.length = 0;', g);
+}
+/* 15. the list built again (lmFoodRebuild) while a connection is not verified, verified again
+ *     before the next frame: its pellets are drawn (were left out: its feed state was kept) */
+reset();
+{
+    const a = spect(1), b = spect(2);
+    a.updateCells(packet([], [{ id: 1, x: 100, y: 100 }, { id: 2, x: 900, y: 900 }], []), 0);
+    b.updateCells(packet([], [{ id: 5, x: 3000, y: 3000 }], []), 0);
+    drawList();
+    a._testFeed = false;
+    vm.runInContext('lmFoodRebuild()', g);
+    a._testFeed = true;
+    check('rebuild while a connection is unverified, verified again before the frame: its pellets drawn', drawList().length === 3, drawList().length);
+    /* a copy that comes before the drawn one in the order (the main socket's): drawn from now
+     * on, the pellet's entry (slot, colour) kept */
+    const e0 = vm.runInContext('_lmFood.ents', g).find((e) => e.rep.spectator === 2);
+    const m = mainFood(7, 3001, 3000, hex(0x40a0f0));
+    const ents = vm.runInContext('_lmFood.ents', g), l = drawList();
+    check('a main copy coming after a spectator copy: drawn in the same entry', ents.length === 3 && m._lmFoodEnt === e0 && l[e0.slot] === m && e0.x === 3001 && e0.obs.length === 2, ents.length);
 }
 
 console.log(fail ? fail + ' check(s) failed' : 'all fullmapfood checks passed');
