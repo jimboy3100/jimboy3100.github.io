@@ -14,6 +14,8 @@
  *   for one mass; the opcode 87 token is sent only on the socket that asked (not after a reconnect).
  * - 1 to 6 playing clients x Full Map off / on (lib/mbplayers.js): deaths, focus, switch keys,
  *   profiles, enabling; what today's code can not do yet is listed as known (section 6).
+ * - A spectator with its active flag set is no living player (lmMbAlive): never focused, and the
+ *   last unit's death still shows the menu.
  * node developers/tests/mbdeath.js [ogario.v4.js] [spect.js] */
 'use strict';
 const fs = require('fs'), path = require('path'), vm = require('vm');
@@ -365,6 +367,44 @@ function death(o) {
         }
     }
     console.log('info 1 to 6 players x Full Map off / on: ' + (Date.now() - t0) + ' ms');
+}
+/* 6. a spectator (Full Map tile, in-game spectator) with its active flag set is never a living
+ * player (lmMbAlive): terminate and beforecalculation skip it for the focus and the last-death menu */
+{
+    const term = block(sp, '    terminate() {'), before = block(sp, '    beforecalculation() {');
+    const env = () => {
+        const ctx = { console: { log: noop, warn: noop }, toastr: {}, Date, Math, menuShown: 0, document: { addEventListener: noop } };
+        ctx.window = ctx;
+        vm.createContext(ctx);
+        vm.runInContext(v4.slice(a, b), ctx);
+        vm.runInContext('window.Unit = class Unit { constructor(n, player) { this.number = n; this.player = player; this.active = true; this.cells = []; }\n' +
+            'getOwnPlayerCells() { return this.cells; }\ncalculatePlayerMassAndPosition() { }\n' + term + '\n' + before + '\n}\n' +
+            'var application = window.application = { showMenu() { window.menuShown++; }, hideMenu() { } };\n' +
+            'var defaultmapsettings = window.defaultmapsettings = {};\n' +
+            'var legendmod = window.legendmod = { play: false }, LM = legendmod;', ctx);
+        ctx.spects.length = 0;
+        return ctx;
+    };
+    {
+        const ctx = env(), tile = new ctx.Unit(1, false), u = new ctx.Unit(2, true), w = new ctx.Unit(3, true);
+        ctx.spects.push(tile, u, w);
+        ctx.multiboxPlayerEnabled = 2;
+        u.terminate();
+        check('focused unit dies, main dead: the focus skips the spectator listed first and goes to the living unit',
+            ctx.multiboxPlayerEnabled === 3 && ctx.menuShown === 0, 'focus ' + ctx.multiboxPlayerEnabled + ' menu ' + ctx.menuShown);
+        ctx.multiboxPlayerEnabled = 3; w.active = true; w._lmWantFocusAt = 0;
+        u.active = false;
+        w.beforecalculation();
+        check('focused unit without cells (beforecalculation): never to the spectator', ctx.multiboxPlayerEnabled === null, 'focus ' + ctx.multiboxPlayerEnabled);
+    }
+    {
+        const ctx = env(), tile = new ctx.Unit(1, false), u = new ctx.Unit(2, true);
+        ctx.spects.push(tile, u);
+        ctx.multiboxPlayerEnabled = 2;
+        u.terminate();
+        check('the last unit dies, only a spectator left: no focus on it and the death menu shows',
+            !ctx.multiboxPlayerEnabled && ctx.menuShown === 1, 'focus ' + ctx.multiboxPlayerEnabled + ' menu ' + ctx.menuShown);
+    }
 }
 
 console.log(failed ? failed + ' failed' : 'all multibox death checks passed');

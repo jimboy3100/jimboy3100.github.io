@@ -158,6 +158,7 @@ function scene(o) {
         if (own && !src) LM.playerCells.push(c);
         else if (own) {
             so.unit.playerCellIDs.push(c.id);
+            so.unit.getOwnPlayerCells().push(c); /* spect.js: the unit's own-cell index (_lmAdoptOwn) */
             LM.playerCellsMulti.push(c);
             if (!so.unit.active) so.unit.active = true; /* spect.js: its first own cell */
         }
@@ -172,7 +173,11 @@ function scene(o) {
         delete LM.indexedCells[c.id];
         const drop = (k) => { const a = LM[k], i = a.indexOf(c); if (i >= 0) a.splice(i, 1); };
         if (c.isFood) drop(src ? 'foodMulti' : 'food');
-        else if (c.isPlayerCellMulti) drop('playerCellsMulti');
+        else if (c.isPlayerCellMulti) {
+            drop('playerCellsMulti');
+            const u = (ctx.spects || []).find((x) => x && x.number === src), own = u && u._lmOwn, i = own ? own.indexOf(c) : -1;
+            if (i >= 0) own.splice(i, 1);
+        }
         else if (c.isPlayerCell) drop('playerCells');
     }
     function entity(kind, o2, owner) {
@@ -205,7 +210,7 @@ function scene(o) {
         if (!p || !p.alive) return;
         for (const e of ownOf(p)) s.gone(e);
         p.alive = false;
-        if (p.unit) { p.unit.playerCellIDs = []; p.unit.terminate(); return; }
+        if (p.unit) { p.unit.playerCellIDs = []; if (p.unit._lmOwn) p.unit._lmOwn.length = 0; p.unit.terminate(); return; }
         LM.play = false;
         ctx.application.onPlayerDeath();
         /* the switch dropped the main socket's cells (it keeps adding none while a unit plays) */
@@ -234,6 +239,7 @@ function scene(o) {
         p.socketGeneration++;
         p.unit.connectionGeneration++;
         p.unit.playerCellIDs = [];
+        if (p.unit._lmOwn) p.unit._lmOwn.length = 0;
         if (p.unit.active) p.unit.terminate();
         p.alive = false;
         s.reobserve(p.src);

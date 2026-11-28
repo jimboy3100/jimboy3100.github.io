@@ -536,6 +536,22 @@ for (const raw of [false, true]) for (const order of ['own first', 'copy first']
     }
     console.log('info 1 to 6 players x Full Map off / on: ' + (Date.now() - t0) + ' ms');
 }
+/* Two units' own cells with the same name, size, colour and place: two cells (each has its own
+ * authoritative owner), never one drawn for the other; the main copies of them hide behind one each */
+{
+    const a = cell({ spectator: 1, isPlayerCellMulti: true, isPlayerCell: true, color: '#22ccee', _lmSrvName: 'Twin', targetNick: 'Twin' });
+    const b = cell({ spectator: 2, isPlayerCellMulti: true, isPlayerCell: true, x: 1001, color: '#22ccee', _lmSrvName: 'Twin', targetNick: 'Twin' });
+    run([a, b]);
+    check('two units\' own cells alike in every way: both drawn, neither hidden behind the other',
+        !a.invisible && !b.invisible && a._lmMbTwin !== b && b._lmMbTwin !== a);
+    const a2 = cell({ spectator: 1, isPlayerCellMulti: true, isPlayerCell: true, color: '#22ccee', _lmSrvName: 'Twin' });
+    const b2 = cell({ spectator: 2, isPlayerCellMulti: true, isPlayerCell: true, x: 1001, color: '#22ccee', _lmSrvName: 'Twin' });
+    const m1 = cell({ spectator: 0, x: 999, color: '#22ccee', _lmSrvName: 'Twin' });
+    const m2 = cell({ spectator: 0, x: 1002, color: '#22ccee', _lmSrvName: 'Twin' });
+    run([m1, m2, a2, b2]);
+    check('...with the main connection seeing both: both own cells drawn, the two main copies hidden',
+        !a2.invisible && !b2.invisible && m1.invisible && m2.invisible);
+}
 
 if (failed) {
     console.log(failed + ' check(s) failed');

@@ -6,7 +6,9 @@
  * handler from ogario/spect.js. Array.prototype.indexOf/includes are counted, so the checks
  * are on the work done, not only on the result: body, food, virus, own and multibox removals,
  * bulk disappearance, and lists after a sort, compaction, unit packets and pool reuse.
- * (Ids listed once, with no pass over the world for duplicates.)
+ * (Ids listed once, with no pass over the world for duplicates.) A unit's own-cell index
+ * (opcode 32 before or after the record, raw id reuse, eat, remove list, ClearAll, close) and
+ * socket generations that never repeat for a new Spect with a reused number.
  * node developers/tests/cellindex.js
  * (LM_SRC=<ogario.v4.js> LM_SPECT=<spect.js> runs it on other copies and prints their counts) */
 const fs = require('fs'), vm = require('vm'), path = require('path');
@@ -316,6 +318,140 @@ check('after the fade: visible and hidden cells dropped without a scan, slow-mot
 LM.time = 1700;
 g.removedLoop.call(frame);
 check('slow-motion deaths dropped after their 600 ms', LM.removedCells.length === 0);
+
+/* ---- a unit's own cells (spect.js _lmAdoptOwn / _lmOwnDrop): its own index, playerCellIDs and
+ * the aggregate playerCellsMulti, whichever of the opcode 32 and the record comes first ---- */
+reset();
+for (let i = 0; i < 50; i++) body();
+{
+    const mk = (n) => {
+        const u = Object.create(g.Spect.prototype);
+        Object.assign(u, { number: n, player: true, integrity: true, foodCalibrated: true, nick: 'U' + n, time: 0, connectionGeneration: 40 + n });
+        u.resetConnectionState();
+        u.sendCursor = function () { };
+        u._lmFeedOk = function () { return true; };
+        return u;
+    };
+    const u = mk(2), v = mk(3);
+    let drops = 0;
+    const realDrop = g.Spect.prototype._lmOwnDrop;
+    u._lmOwnDrop = function (c) { const r = realDrop.call(this, c); if (r) drops++; return r; };
+    const own32 = (sp, id) => { const d = new DataView(new ArrayBuffer(5)); d.setUint8(0, 32); d.setUint32(1, id, true); sp.handleMessage(d); };
+    const rec = (id) => ({ id, x: 100 + id % 7, y: 100, size: 60 });
+    const upd = (sp, eats, recs, removes) => sp.updateCells(packet(eats, recs, removes), 0);
+    const uc = (id, n) => LM.indexedCells[g.lmUnitCellId(id, n || 2)];
+    /* the unit's index, ids and the aggregate agree, every slot right */
+    const ownOk = (sp) => {
+        const o = sp.getOwnPlayerCells();
+        return o.every((c, i) => c._lmOwnIdx === i && c._lmOwner === sp && !c.removed && c.isPlayerCell && LM.playerCellsMulti[c._playerMultiIdx] === c) &&
+            sp.playerCellIDs.length === sp._lmOwnIds.size && sp.playerCellIDs.every((id) => sp._lmOwnIds.has(id)) && consistent() === '';
+    };
+    const ids = (sp) => sp.playerCellIDs.map((id) => id - sp.number * 4294967296).sort((a, b) => a - b).join(',');
+
+    own32(u, 1001);
+    const pending = u.getOwnPlayerCells().length === 0 && ids(u) === '1001' && u.active === null;
+    upd(u, [], [rec(1001)], []);
+    check('ownership before the record: pending until the record comes, then own (index, aggregate, life 1)',
+        pending && u.getOwnPlayerCells().length === 1 && uc(1001)._lmOwner === u && u.active === true && u._lmLife === 1 && ownOk(u));
+    upd(u, [], [rec(1002)], []);
+    const notYet = !uc(1002).isPlayerCell && uc(1002)._lmOwnIdx === -1;
+    own32(u, 1002);
+    own32(u, 1002);
+    check('record before ownership: the known cell is adopted by opcode 32, once (32 twice), same life',
+        notYet && uc(1002)._lmOwner === u && u.getOwnPlayerCells().length === 2 && ids(u) === '1001,1002' && u._lmLife === 1 && ownOk(u));
+    own32(v, 1001);
+    upd(v, [], [rec(1001)], []);
+    check('another unit with the same raw id: its own cell, apart from this unit\'s',
+        uc(1001, 3)._lmOwner === v && uc(1001, 2)._lmOwner === u && LM.playerCellsMulti.length === 3 && ownOk(u) && ownOk(v));
+
+    /* getOwnPlayerCells: the index itself (no new array, no pass over playerCellsMulti) */
+    const same = u.getOwnPlayerCells() === u.getOwnPlayerCells();
+    const agg = LM.playerCellsMulti;
+    LM.playerCellsMulti = null;
+    let noScan = false;
+    try { noScan = u.getOwnPlayerCells().length === 2; } catch (e) { noScan = false; }
+    LM.playerCellsMulti = agg;
+    check('getOwnPlayerCells: the same list every call, read without playerCellsMulti (O(own cells))', same && noScan);
+
+    for (const id of [1003, 1004, 1005, 1006]) own32(u, id);
+    upd(u, [], [1003, 1004, 1005, 1006].map(rec), []);
+    const old1003 = uc(1003), old1004 = uc(1004);
+    drops = 0;
+    upd(u, [], [], [1003]);
+    check('remove list: the own cell leaves the index, aggregate and playerCellIDs once',
+        drops === 1 && old1003._lmOwner === null && old1003._lmOwnIdx === -1 && old1003._playerMultiIdx === -1 &&
+        u.getOwnPlayerCells().length === 5 && ids(u) === '1001,1002,1004,1005,1006' && ownOk(u));
+    upd(u, [], [rec(1003)], []);
+    check('raw id reused after its removal: a new cell, not own without a new opcode 32',
+        uc(1003) !== old1003 && !uc(1003).isPlayerCell && uc(1003)._lmOwner === null && u.getOwnPlayerCells().length === 5 && ownOk(u));
+    own32(u, 1003);
+    check('...and own again (a new incarnation) once opcode 32 names it', uc(1003)._lmOwner === u && old1003._lmOwner === null && u.getOwnPlayerCells().length === 6 && ownOk(u));
+    upd(u, [], [], [1004]);
+    own32(u, 1004);
+    check('pending ownership does not bring back a removed record', old1004.removed && old1004._lmOwner === null && !uc(1004) &&
+        u.getOwnPlayerCells().indexOf(old1004) === -1 && u.getOwnPlayerCells().length === 5 && ownOk(u));
+    upd(u, [], [rec(1004)], []);
+    check('...the new record under that id is the own cell', uc(1004) !== old1004 && uc(1004)._lmOwner === u && u.getOwnPlayerCells().length === 6 && ownOk(u));
+    drops = 0;
+    u.removePlayerCell = false;
+    const eaten = uc(1005);
+    upd(u, [[1001, 1005]], [], []);
+    check('eat: the own victim leaves once (removeCell after it finds it gone)', drops === 1 && eaten.removed && eaten._lmOwner === null &&
+        u.removePlayerCell === true && u.getOwnPlayerCells().length === 5 && ids(u) === '1001,1002,1003,1004,1006' && ownOk(u));
+    own32(u, 1010);
+    upd(u, [], [], [1010]);
+    upd(u, [], [rec(1010)], []);
+    check('an own id removed before its record came: forgotten, the later record is no own cell',
+        !uc(1010).isPlayerCell && ids(u) === '1001,1002,1003,1004,1006' && ownOk(u));
+
+    /* ClearAll (opcode 18 of a playing unit): all its own cells and ids go, the other unit's stay */
+    const before = u.getOwnPlayerCells().slice(), aggN = LM.playerCellsMulti.length;
+    const op18 = new DataView(new ArrayBuffer(1)); op18.setUint8(0, 18);
+    u.handleMessage(op18);
+    check('ClearAll: the unit\'s own index, ids and aggregate entries go once, the other unit\'s cell stays',
+        u.getOwnPlayerCells().length === 0 && u.playerCellIDs.length === 0 && u._lmOwnIds.size === 0 &&
+        LM.playerCellsMulti.length === aggN - before.length && before.every((c) => c._lmOwner === null && c._lmOwnIdx === -1 && c._playerMultiIdx === -1) &&
+        uc(1001, 3)._lmOwner === v && ownOk(v) && consistent() === '');
+
+    /* a closed socket: the same, and the life counter stays (a new life only at a spawn) */
+    u.active = null;
+    for (const id of [2001, 2002]) own32(u, id);
+    upd(u, [], [rec(2001), rec(2002)], []);
+    const lives = u._lmLife, kept = u.getOwnPlayerCells().slice(), gen0 = u.connectionGeneration;
+    u.closeConnection();
+    check('close: own cells out of the index and the aggregate once, a new generation, the life count kept',
+        lives === 2 && u.getOwnPlayerCells().length === 0 && u.playerCellIDs.length === 0 && kept.every((c) => c._lmOwner === null && c.removed) &&
+        LM.playerCellsMulti.length === 1 && u.connectionGeneration > gen0 && u._lmLife === 2 && ownOk(v));
+
+    /* the main player's own cell removed twice leaves playerCells and playerCellIDs once */
+    const m1 = body({ own: true }), m2 = body({ own: true });
+    m1.removeCell(); m1.removeCell();
+    check('main player: an own cell removed twice leaves playerCells and playerCellIDs once',
+        LM.playerCells.length === 1 && LM.playerCells[0] === m2 && LM.playerCellIDs.length === 1 && LM.playerCellIDs[0] === m2.id && consistent() === '');
+}
+
+/* ---- socket generations: one counter for every Spect, so a new object that reuses a number
+ * never gets an older (number, generation); the old object's leftover cells are not its own ---- */
+reset();
+{
+    g.createLegendWebSocket = function () { return { readyState: 0, close() { } }; };
+    const gens = [];
+    const a = new g.Spect({ player: true });
+    gens.push(a.number + ':' + a.connectionGeneration);
+    a.connect();
+    gens.push(a.number + ':' + a.connectionGeneration);
+    a.updateCells(packet([], [{ id: 77, x: 5, y: 5, size: 50 }], []), 0);
+    const left = LM.indexedCells[g.lmUnitCellId(77, a.number)];
+    /* a dropped without its flush (the number is free again): b is made with the same number */
+    const b = new g.Spect({ player: true });
+    gens.push(b.number + ':' + b.connectionGeneration);
+    b.closeConnection();
+    gens.push(b.number + ':' + b.connectionGeneration);
+    check('a new Spect with the same number: its generations repeat none of the old object\'s',
+        a.number === b.number && new Set(gens).size === gens.length && b.connectionGeneration > a.connectionGeneration, gens.join(' '));
+    check('...and the old object\'s cell under the same key is dropped, not taken as the new one\'s', !!left && left.removed && !LM.indexedCells[g.lmUnitCellId(77, b.number)]);
+    delete g.createLegendWebSocket;
+}
 
 console.log('\nindexOf/includes calls on the indexed lists per step, and the list lengths they covered:');
 for (const c of counts) console.log('  ' + String(c.lists).padStart(6) + String(c.elems).padStart(10) + '  ' + c.name);

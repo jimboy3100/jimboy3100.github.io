@@ -37,6 +37,16 @@ var _lmIdxPlain = {
 };
 function lmSpectIdx() { return window.lmCellIdx || _lmIdxPlain; }
 
+/* Socket generations of every spect.js connection come from one counter: a new Spect that
+ * reuses a number (Full Map off / on, a removed unit) started at 1 again, so (number,
+ * generation) repeated and the old object's cells, anchors and colours passed as its own.
+ * Always above the connection's previous one. */
+var _lmSpectGenSeq = 0;
+function lmSpectNextGen(sp) {
+    _lmSpectGenSeq = Math.max(_lmSpectGenSeq, (sp && sp.connectionGeneration) || 0) + 1;
+    return _lmSpectGenSeq;
+}
+
 /* End offset of a whole agar.io world update (opcode 16 body at offset), or -1 when the packet
  * is cut short. updateCells applies each section as it reads it, so a short packet used to
  * apply its eats and first records and then throw. Same layout as updateCells reads:
@@ -590,6 +600,9 @@ class Spect {
         this._lmTileReason = ''
         if (!legendmod.playerCellsMulti) legendmod.playerCellsMulti = []
         this.integrity = null;
+        /* this unit's own cells (_lmAdoptOwn / _lmOwnDrop) and its lives (spawns), never reset */
+        this._lmOwn = [];
+        this._lmLife = 0;
         this.resetConnectionState();
         this.connect()
     }
@@ -650,7 +663,9 @@ class Spect {
         /* the last world packet (_lmWorldStamp) was the old socket's */
         this.time = 0
         this._lmWorldAt = 0
+        /* ownership is the socket's: none of the old one's ids is pending on the new one */
         this.playerCellIDs = []
+        if (!this._lmOwn) this._lmOwn = []
         this.playerScore = 0
         this.fix3x = 0
         this.fix3y = 0
@@ -709,7 +724,7 @@ class Spect {
             oldSocket.onopen = oldSocket.onmessage = oldSocket.onerror = oldSocket.onclose = null;
             try { oldSocket.close(); } catch (e) { }
         }
-        const generation = ++this.connectionGeneration;
+        const generation = this.connectionGeneration = lmSpectNextGen(this);
         /* cells of an earlier socket of this unit (a second connect() while connecting) are
          * not this socket's: its ids may name other cells */
         this._lmDropOtherGenerations(generation);
@@ -851,7 +866,7 @@ class Spect {
         /* A closed unit must not keep the multibox login slot. */
         if (window.MultiPending === this) window.MultiPending = null
         if (this._multiPendingTimer) { clearTimeout(this._multiPendingTimer); this._multiPendingTimer = null }
-        this.connectionGeneration++
+        this.connectionGeneration = lmSpectNextGen(this)
         this.clearAsyncState()
         if (this.socket) {
             this.socket.onopen = null;
@@ -879,11 +894,10 @@ class Spect {
         //this.deletefromObject("indexedCells")
         //this.cells = [];
         //this.deleteFromArray("cells")
-        // Only remove this unit's cells from playerCellsMulti, not all units'
-        legendmod.playerCellsMulti = lmSpectIdx().filter(legendmod.playerCellsMulti, '_playerMultiIdx', function(c) {
-            return c.spectator !== this.number;
-        }.bind(this));
-        this.playerCellIDs = [];
+        /* only this unit's own cells leave playerCellsMulti, from its own index (no scan of
+         * all units' cells); also when the world dropped them without removeCell() (main
+         * connection flush) */
+        this._lmOwnClear();
         //this.food = [];
         //this.viruses = [];
         //this.deleteFromArray("viruses")
@@ -1746,7 +1760,8 @@ class Spect {
                 break;
             case 32:
                 temp = view.getUint32(offset, true);
-                this.playerCellIDs.push(this.newID(temp));
+                /* the cell is adopted now when its record came first, else when it comes */
+                this._lmOwnAdd(this.newID(temp));
                 this._lmHasSpawned = true;
 
                 this.isSpectateEnabled = false
@@ -2666,7 +2681,7 @@ class Spect {
             var nextUnit = 0;
             if (!legendmod.play) {
                 for (var s = 0; s < spects.length; s++) {
-                    if (spects[s] && spects[s] !== this && spects[s].player && spects[s].active) {
+                    if (spects[s] && spects[s] !== this && lmMbAlive(spects[s])) {
                         nextUnit = spects[s].number;
                         break;
                     }
@@ -2679,7 +2694,7 @@ class Spect {
         var anyAlive = legendmod.play;
         if (!anyAlive) {
             for (var i = 0; i < spects.length; i++) {
-                if (spects[i] && spects[i].player && spects[i].active) { anyAlive = true; break; }
+                if (lmMbAlive(spects[i])) { anyAlive = true; break; }
             }
         }
 
@@ -2814,12 +2829,11 @@ class Spect {
             const victimKey = this.newID(view.readUInt32LE(offset + 4));
             const eaterCell = legendmod.indexedCells[eaterKey];
             const victimCell = legendmod.indexedCells[victimKey];
-            /* O(1) and keeps the other cells' stored slots right (splice shifted them) */
-            if (victimCell && lmSpectIdx().remove(legendmod.playerCellsMulti, victimCell, '_playerMultiIdx')) {
-                this.removePlayerCell = true;
-                const playerCellIndex = this.playerCellIDs.indexOf(victimKey);
-                if (playerCellIndex !== -1) this.playerCellIDs.splice(playerCellIndex, 1)
-            }
+            /* an own cell eaten leaves this unit's index, playerCellsMulti and playerCellIDs
+             * (once: removeCell() below finds it gone); an id still waiting for its record goes too */
+            if (victimCell) {
+                if (this._lmOwnDrop(victimCell)) this.removePlayerCell = true;
+            } else this._lmOwnForget(victimKey);
 
             //remove user cell id if victim was his cell
             //delete legendmod.indexedCells[victimID] //don't even wait for Legend mod, delete eaten cells here
@@ -2939,7 +2953,7 @@ class Spect {
             }
             if (!isVirus && !isFood && colName !== "") {
                 let ownCustom = false;
-                if (this.playerCellIDs.indexOf(id) !== -1) {
+                if (this._lmOwnsId(id)) {
                     if (!teamsMode && defaultmapsettings.myCustomColor && profiles[application.selectedProfile]) {
                         color = profiles[application.selectedProfile].color
                         ownOrTeamColor = ownCustom = true
@@ -3018,42 +3032,8 @@ class Spect {
                         _idx.push(legendmod.viruses, cell, '_virusIdx');
                     }
                     //legendmod.cells.push(cell);
-                    if (this.playerCellIDs.indexOf(id) !== -1 && _idx.of(legendmod.playerCellsMulti, cell, '_playerMultiIdx') === -1) {
-                        cell.isPlayerCell = true;
-                        var _mbPIdx = (application.mbSlots && this.number < application.mbSlots.length)
-                            ? application.mbSlots[this.number] : application.selectedOldProfile;
-                        var _mbProf = profiles[_mbPIdx];
-                        /* Teams: the server's team colour, like the main connection (not the
-                         * food colour of "one colour for spectator cells") */
-                        if (teamsMode) {
-                            if (rawColor) cell.color = rawColor;
-                            this.playerColor = cell.color;
-                        } else if (_mbProf) {
-                            this.playerColor = _mbProf.color || '#000000';
-                            cell.color = _mbProf.color || '#000000';
-                        }
-                        if (_mbProf) {
-                            if (_mbProf.nick) {
-                                this.nick = _mbProf.nick;
-                                cell.targetNick = _mbProf.nick;
-                            }
-                            if (_mbProf.skinURL) {
-                                cell.skin = _mbProf.skinURL;
-                                cell._lmProfileSkin = true;
-                                lmPreloadUnitSkin(_mbProf.skinURL);
-                            }
-                        }
-
-                        _idx.push(legendmod.playerCellsMulti, cell, '_playerMultiIdx');
-                        if (!this.active) {
-                            console.log('[SPECT] Player cell is active (unit ' + this.number + ')')
-                            this.active = true
-                            this._lmWantFocusAt = 0
-                            this.sendCursor()
-                            loadMultiCellSkin(this)
-
-                        }
-                    }
+                    /* an id the server gave this unit (opcode 32 came first): its own cell */
+                    if (this._lmOwnsId(id)) this._lmAdoptOwn(cell);
                 } else if (isFood) {
                     /* the connection's pellets (its debug viewport box, _lmConnFoodBoxes); drawn
                      * by the food pass from the reconciled list (lmFoodAdd below), not as cells: added to LM.cells too,
@@ -3148,12 +3128,15 @@ class Spect {
         eatEventsLength = view.readUInt16LE(offset);
         offset += 2;
         for (length = 0; length < eatEventsLength; length++) {
-            id = view.readUInt32LE(offset);
+            id = this.newID(view.readUInt32LE(offset));
             offset += 4;
-            cell = legendmod.indexedCells[this.newID(id)];
+            cell = legendmod.indexedCells[id];
+            /* an own cell leaves this unit's index and playerCellIDs once (removeCell() then
+             * finds it gone); an id still waiting for its record goes too */
             if (cell) {
+                this._lmOwnDrop(cell);
                 cell.removeCell();
-            }
+            } else this._lmOwnForget(id);
         }
         /* orientation and residual checks (each throttled; see the functions) */
         if (this.mapOffsetFixed && this._lmAnchors) {
@@ -3197,7 +3180,7 @@ class Spect {
             !(this._lmWantFocusAt && Date.now() - this._lmWantFocusAt < 25000)) {
             let nextUnit = 0;
             for (let i = 0; i < spects.length; i++) {
-                if (spects[i] && spects[i] !== this && spects[i].player && spects[i].active) {
+                if (spects[i] && spects[i] !== this && lmMbAlive(spects[i])) {
                     nextUnit = spects[i].number;
                     break;
                 }
@@ -3208,13 +3191,124 @@ class Spect {
         this.calculatePlayerMassAndPosition(ownCells);
     }
 
+    /* This unit's own cells: its own index, kept by _lmAdoptOwn / _lmOwnDrop (no scan of
+     * playerCellsMulti, no new array). Callers only read it. */
     getOwnPlayerCells() {
-        const all = legendmod.playerCellsMulti, n = this.number, out = [];
-        for (let i = 0; i < all.length; i++) {
-            const cell = all[i];
-            if (cell && !cell.removed && cell.spectator === n) out.push(cell);
+        return this._lmOwn || (this._lmOwn = []);
+    }
+
+    /* The cell ids the server gave this unit (opcode 32) on this socket: playerCellIDs, with
+     * _lmOwnIds as its lookup. A new list (a new socket, a death, a flush) replaces both. */
+    get playerCellIDs() {
+        return this._lmOwnIdList;
+    }
+    set playerCellIDs(list) {
+        this._lmOwnIdList = list;
+        const ids = this._lmOwnIds || (this._lmOwnIds = new Set());
+        ids.clear();
+        for (let i = 0; list && i < list.length; i++) ids.add(list[i]);
+    }
+
+    _lmOwnsId(id) {
+        return !!this._lmOwnIds && this._lmOwnIds.has(id);
+    }
+
+    /* Opcode 32: the id is this unit's on this socket. Its cell is adopted at once when its
+     * record came first; else updateCells adopts it when it comes. */
+    _lmOwnAdd(id) {
+        if (!this._lmOwnsId(id)) {
+            if (!this._lmOwnIdList) this.playerCellIDs = [];
+            this._lmOwnIds.add(id);
+            this._lmOwnIdList.push(id);
         }
-        return out;
+        const cell = legendmod.indexedCells['' + id];
+        if (cell) this._lmAdoptOwn(cell);
+    }
+
+    /* An own id gone before its cell came (eaten or removed while unknown here) */
+    _lmOwnForget(id) {
+        if (!this._lmOwnIds || !this._lmOwnIds.delete(id)) return;
+        const list = this._lmOwnIdList, i = list ? list.indexOf(id) : -1;
+        if (i !== -1) list.splice(i, 1);
+    }
+
+    /*
+     * One own cell joins this unit: its index, the aggregate playerCellsMulti, the profile look
+     * and, the first one, the life. From the new-cell record and from opcode 32 (whichever comes
+     * second). Only a live cell of this connection's current socket under an id it was given:
+     * an old socket's or a removed record is never taken, an adopted one is not taken twice.
+     */
+    _lmAdoptOwn(cell) {
+        if (!cell || cell.removed || cell._lmOwner || cell.isFood || cell.spectator !== this.number ||
+            cell._lmGen !== this.connectionGeneration || !this._lmOwnsId(cell.id)) return false;
+        const idx = lmSpectIdx();
+        cell._lmOwner = this;
+        idx.push(this.getOwnPlayerCells(), cell, '_lmOwnIdx');
+        cell.isPlayerCell = true;
+        cell.isPlayerCellMulti = true;
+        cell.invisible = false;
+        var _mbPIdx = (application.mbSlots && this.number < application.mbSlots.length)
+            ? application.mbSlots[this.number] : application.selectedOldProfile;
+        var _mbProf = profiles[_mbPIdx];
+        /* Teams: the server's team colour, like the main connection (not the
+         * food colour of "one colour for spectator cells") */
+        if (legendmod.gameMode === ':teams') {
+            if (cell._lmRawColor) cell.color = cell._lmRawColor;
+            this.playerColor = cell.color;
+        } else if (_mbProf) {
+            this.playerColor = _mbProf.color || '#000000';
+            cell.color = _mbProf.color || '#000000';
+        }
+        if (_mbProf) {
+            if (_mbProf.nick) {
+                this.nick = _mbProf.nick;
+                cell.targetNick = _mbProf.nick;
+            }
+            if (_mbProf.skinURL) {
+                cell.skin = _mbProf.skinURL;
+                cell._lmProfileSkin = true;
+                lmPreloadUnitSkin(_mbProf.skinURL);
+            }
+        }
+
+        idx.push(legendmod.playerCellsMulti, cell, '_playerMultiIdx');
+        if (!this.active) {
+            console.log('[SPECT] Player cell is active (unit ' + this.number + ')')
+            this.active = true
+            /* a new life of this unit (lifeGeneration) */
+            this._lmLife = (this._lmLife || 0) + 1
+            this._lmWantFocusAt = 0
+            this.sendCursor()
+            loadMultiCellSkin(this)
+        }
+        return true;
+    }
+
+    /* An own cell leaves: its index, playerCellsMulti and playerCellIDs, exactly once (every
+     * removal path comes here: eats, the remove list, removeCell() in ogario.v4.js). */
+    _lmOwnDrop(cell) {
+        if (!cell || cell._lmOwner !== this) return false;
+        const idx = lmSpectIdx();
+        cell._lmOwner = null;
+        idx.remove(this.getOwnPlayerCells(), cell, '_lmOwnIdx');
+        idx.remove(legendmod.playerCellsMulti, cell, '_playerMultiIdx');
+        this._lmOwnForget(cell.id);
+        return true;
+    }
+
+    /* All own cells and ids go (ClearAll, flush, closed socket): also cells the world dropped
+     * without removeCell() (the main connection's flush), O(own cells) */
+    _lmOwnClear() {
+        const own = this.getOwnPlayerCells(), idx = lmSpectIdx();
+        for (let i = own.length - 1; i >= 0; i--) {
+            const c = own[i];
+            if (!c) continue;
+            if (c._lmOwner === this) c._lmOwner = null;
+            c._lmOwnIdx = -1;
+            if (legendmod.playerCellsMulti) idx.remove(legendmod.playerCellsMulti, c, '_playerMultiIdx');
+        }
+        own.length = 0;
+        this.playerCellIDs = [];
     }
 
     newID(id) {

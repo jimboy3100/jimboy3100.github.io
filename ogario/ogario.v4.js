@@ -258,6 +258,15 @@ function lmDeathScope(unit) {
     return 'all';
 }
 window.lmDeathScope = lmDeathScope;
+/* A player of ours alive: the main client while it plays (LM.play); a spect.js connection only
+ * as a playing unit (player) with a life (active). A Full Map or in-game spectator never is,
+ * whatever its active flag. */
+function lmMbAlive(p) {
+    if (!p) return false;
+    if (p === window.legendmod) return !!p.play;
+    return p.player === true && p.active === true;
+}
+window.lmMbAlive = lmMbAlive;
 window.lmSetMbUnit = lmSetMbUnit;
 window.OgVer = 3.706;
 /* Failed soft purchases (boost, potion skip, timed event) only logged to the console, so the
@@ -29113,7 +29122,8 @@ function thelegendmodproject() {
             // Auto-switch to surviving multibox spect if any (only when "Auto-switch focus after death" is on)
             if (defaultmapsettings.mbSwitchAfterDeath && typeof spects !== 'undefined' && spects && spects.length > 0) {
                 for (var _i = 0; _i < spects.length; _i++) {
-                    if (spects[_i] && spects[_i].player && spects[_i].active) {
+                    /* a living unit, never a spectator */
+                    if (lmMbAlive(spects[_i])) {
                         /* multiboxPlayerEnabled is the unit number, not index + 1 (units can be spliced) */
                         lmSetMbUnit(spects[_i].number || (_i + 1));
                         console.log('[MB] Main player died, auto-switched to spect ' + window.multiboxPlayerEnabled);
@@ -37085,6 +37095,9 @@ function thelegendmodproject() {
         this._lmFoodInv = false;
         this._lmFoodCol = null;
         this._playerIdx = this._playerMultiIdx = this._removedIdx = -1;
+        /* a multibox unit's own cell: its slot in that unit's own list and the unit (spect.js) */
+        this._lmOwnIdx = -1;
+        this._lmOwner = null;
         //this.nHeight = 6;
     }
     /* Methods live on the prototype (they only use `this`), so creating a
@@ -37206,6 +37219,8 @@ function thelegendmodproject() {
             this._cellsIdx = this._virusIdx = this._foodIdx = this._foodMultiIdx = -1;
             this._lmFoodEnt = this._lmObsSet = this._lmFoodCol = null;
             this._playerIdx = this._playerMultiIdx = this._removedIdx = -1;
+            this._lmOwnIdx = -1;
+            this._lmOwner = null;
 
             return this;
         };
@@ -37843,6 +37858,9 @@ function thelegendmodproject() {
             lmIdxRemove(LM.food, this, '_foodIdx');
             lmIdxRemove(LM.foodMulti, this, '_foodMultiIdx');
             lmIdxRemove(LM.playerCellsMulti, this, '_playerMultiIdx');
+            /* a multibox unit's own cell leaves that unit's own index and ids (spect.js
+             * _lmOwnDrop; nothing when spect.js took it out already) */
+            if (this._lmOwner && typeof this._lmOwner._lmOwnDrop === 'function') this._lmOwner._lmOwnDrop(this);
             /* the reconciled food list (another connection's copy is drawn from now on) and
              * the per-connection index of spect.js cells */
             if (this._lmFoodEnt && typeof lmFoodRemove === 'function') lmFoodRemove(this);
@@ -42308,6 +42326,7 @@ function thelegendmodproject() {
                         this.playerCellIDs.push(cellId);
                         if (this._playerCellIDSet) this._playerCellIDSet.add(cellId);
                         if (!this.play) {
+                            this._lmLife = (this._lmLife || 0) + 1; /* a new life (lifeGeneration) */
                             this.play = true;
                             this._lmSpawnEndsSpectate();
                             application.hideMenu();
@@ -42700,6 +42719,7 @@ function thelegendmodproject() {
                                         if (self._playerCellIDSet) self._playerCellIDSet.add(cellID);
                                     }
                                     if (!self.play) {
+                                        self._lmLife = (self._lmLife || 0) + 1; /* a new life (lifeGeneration) */
                                         self.play = true;
                                         self._lmSpawnEndsSpectate();
                                         application.hideMenu();
@@ -44988,6 +45008,8 @@ function thelegendmodproject() {
                         /* Spawned: cancel a pending 1.8 s spawn retry (sendNick), so dying
                          * before it fires does not send an unrequested respawn. */
                         this._lmSpawnRetrySeq = (this._lmSpawnRetrySeq || 0) + 1;
+                        /* a new life (lifeGeneration), counted once per spawn */
+                        this._lmLife = (this._lmLife || 0) + 1;
                         this.play = true;
                         this._lmSpawnEndsSpectate();
                         application.hideMenu();
@@ -53927,6 +53949,7 @@ function thelegendmodproject() {
                         this.playerCellIDs.push(id);
                         if (this._playerCellIDSet) this._playerCellIDSet.add(id);
                         if (!this.play) {
+                            this._lmLife = (this._lmLife || 0) + 1; /* a new life (lifeGeneration) */
                             this.play = true;
                             this._lmSpawnEndsSpectate();
                             application.hideMenu();

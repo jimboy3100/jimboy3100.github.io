@@ -4,7 +4,8 @@
  * server still counts those cells as known and keeps sending plain updates, so they came back
  * with no nick, no skin and no colour (grey) until they left the view. The real handleMessage,
  * updateCells, _lmCellIdentityScan and flushCellsData of ogario/ogario.v4.js run in a vm with
- * stubs and are fed Expanding Land packets.
+ * stubs and are fed Expanding Land packets. Also the multibox death switch (a spectator is no
+ * living unit, lmMbAlive) and the main player's life count at opcode 32.
  * node developers/tests/elidentity.js [ogario.v4.js] */
 const fs = require('fs'), vm = require('vm'), path = require('path');
 const root = path.join(__dirname, '..', '..');
@@ -166,8 +167,20 @@ feed([], [
 ], []);
 const enemyColor = cell(301) && cell(301).color;
 g.defaultmapsettings.mbSwitchAfterDeath = true;
-g.spects = [{ number: 1, active: true }];
+/* the alive test it picks the unit with (lmMbAlive): a passive spectator, even with active set, never */
+const aliveFn = block('function lmMbAlive(');
+if (!aliveFn) { console.log('FAIL lmMbAlive not found'); process.exit(1); }
+vm.runInContext(aliveFn + '\nthis.lmMbAlive = lmMbAlive;', g);
 g.lmSetMbUnit = (n) => { g.multiboxPlayerEnabled = n; };
+g.spects = [{ number: 2, player: false, active: true }];
+g.multiboxPlayerEnabled = null; g.mainPlayerDeadMbActive = false;
+g.__death();
+check('death switch: a spectator with active set is no living unit (no focus, the main world stays)',
+    !g.multiboxPlayerEnabled && g.mainPlayerDeadMbActive === false && !!cell(301));
+check('lmMbAlive: the main client by play, a unit by player and active, a spectator never',
+    g.lmMbAlive(L) === true && g.lmMbAlive({ player: true, active: true }) === true && g.lmMbAlive({ player: true, active: false }) === false &&
+    g.lmMbAlive({ player: true, active: null }) === false && g.lmMbAlive({ player: false, active: true }) === false && g.lmMbAlive(null) === false);
+g.spects = [{ number: 2, player: false, active: true }, { number: 1, player: true, active: true }];
 const pellet = L.food[0];
 g.__death();
 check('death switch: the focus goes to the living unit', g.multiboxPlayerEnabled === 1 && g.mainPlayerDeadMbActive === true);
@@ -186,6 +199,21 @@ feed([], [], [951, 301]);
 check('the server removes it: gone (was a ghost that could not be removed)', L.food.length === 0 && !cell(301));
 L.flushCellsData();
 check('agar.io: another connection drops the identities', L._lmCellIdentity == null);
+/* opcode 32: each spawn of the main player is one life (_lmLife); more own ids of that life (a
+ * split) are not */
+{
+    const own = (id) => { const v = new DataView(new ArrayBuffer(5)); v.setUint8(0, 32); v.setUint32(1, id, true); L.handleMessage(v); };
+    L._lmSpawnEndsSpectate = noop;
+    L.play = false; L._lmLife = undefined;
+    own(501);
+    const first = L._lmLife;
+    own(502);
+    const split = L._lmLife;
+    L.play = false;
+    own(503);
+    check('main player: a spawn counts one life, an own id of the same life none, the next spawn the next life',
+        first === 1 && split === 1 && L._lmLife === 2 && L.play === true, [first, split, L._lmLife].join());
+}
 check('nothing logged as an error', g.errors.length === 0);
 
 console.log(fail ? fail + ' FAILED' : 'all passed');
