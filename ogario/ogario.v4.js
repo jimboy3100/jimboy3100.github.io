@@ -7181,7 +7181,7 @@ function lmMbShadowColor(cell) {
      * connection number (which grows past the slots with Full Map tiles) */
     var idx = !unit ? app.selectedProfile : (typeof lmMbProfileIdx === 'function' ?
         lmMbProfileIdx(cell._lmOwner || (typeof getActiveSpect === 'function' && getActiveSpect(cell.spectator)) || {}) :
-        app.selectedOldProfile);
+        (app.mbSlots && cell.spectator < app.mbSlots.length ? app.mbSlots[cell.spectator] : app.selectedOldProfile));
     var p = pr[idx];
     return (p && p.color) || null;
 }
