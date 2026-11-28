@@ -238,7 +238,7 @@ check('niceFloor keeps 2 digits, rounds down', C.niceFloor(3456) === 3400 && C.n
     const typesOf = (h, o) => { const t = {}; keys.forEach(k => C.generateDaily(h, k, null, o).forEach(g => { t[g.type] = g.mass ? g.target + 'x' + g.mass : g.target; })); return t; };
     /* modes: the recorded kind, else the server type, else the mode name (also translated, also old names) */
     check('mode kinds from old records', C.modeKind({ mode: 'FFA' }) === 'ffa' && C.modeKind({ mode: 'Teams' }) === 'teams' && C.modeKind({ mode: 'Ομάδες' }) === 'teams'
-        && C.modeKind({ mode: 'Tim' }) === 'teams' && C.modeKind({ mode: 'Королевская битва' }) === 'br' && C.modeKind({ mode: 'Experimentell' }) === 'exp'
+        && C.modeKind({ mode: 'Tim' }) === 'teams' && C.modeKind({ mode: 'Королевская битва' }) === 'br' && C.modeKind({ mode: 'Experimentell' }) === 'exp' && C.modeKind({ mode: 'Expérimental' }) === 'exp'
         && C.modeKind({ mode: 'Modo grupo' }) === 'party' && C.modeKind({ mode: '' }) === 'ffa' && C.modeKind({ mode: 'FFA', st: 'expandingland' }) === 'el'
         && C.modeKind({ mode: 'FFA', st: 'senpa' }) === 'senpa' && C.modeKind({ mode: 'FFA', st: 'private' }) === 'private' && C.modeKind({ mk: 'br', mode: 'FFA' }) === 'br');
     check('mode kind: kept by sanitize when valid, junk dropped; mode names', G({ mk: 'teams' }).mk === 'teams' && !('mk' in G({ mk: 'zz' })) && C.modeName('teams') === 'Teams' && C.modeName('el') === 'Expanding Land');
@@ -284,6 +284,8 @@ check('niceFloor keeps 2 digits, rounds down', C.niceFloor(3456) === 3400 && C.n
     for (let i = 0; i < 12; i++) early.push(G({ t: clock - (12 - i) * 5 * MIN, ms: i % 2 ? 40000 : 4 * MIN, peak: 900 }));
     const te = tipsOf(early, 11);
     check('repeated early deaths: one tip with the count, instead of "shorter than average"', te.some(x => x[0] === 'pkg.coachfit.early' && C.tipText(x).indexOf('6 of your last 12 lives in FFA') === 0) && !te.some(x => x[0] === 'sgShort'));
+    check('early deaths: the tip names the threshold, 60 s (30 s in Battle Royale)', te.some(x => x[0] === 'pkg.coachfit.early' && C.tipText(x).indexOf('first 60 seconds') !== -1)
+        && tipsOf(early.map(g => C.sanitizeGame(Object.assign({}, g, { mk: 'br', ms: g.ms < MIN ? 20000 : 2 * MIN }))), 11).some(x => x[0] === 'pkg.coachfit.early' && C.tipText(x).indexOf('first 30 seconds') !== -1));
     /* Teams lives are not compared with FFA lives */
     const mix2 = [];
     for (let i = 0; i < 10; i++) mix2.push(G({ t: clock - (30 - i) * MIN, ms: 15 * MIN, peak: 20000 }));

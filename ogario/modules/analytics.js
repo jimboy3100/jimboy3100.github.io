@@ -180,7 +180,7 @@
     /* parts of those names in the 16 languages (a record keeps the name in the language of its day) */
     var MODE_WORDS = [
         ['br', ['battle', 'royal', 'باتل', '大逃殺', 'королевская', 'バトル']],
-        ['exp', ['experim', 'πειραμ', 'експер', 'تجريب', '實驗', 'экспер', 'deney', 'eksper', '実験', 'speriment']],
+        ['exp', ['experim', 'expérim', 'πειραμ', 'експер', 'تجريب', '實驗', 'экспер', 'deney', 'eksper', '実験', 'speriment']],
         ['party', ['party', 'grupo', 'groupe', 'парти', 'пати', 'بارتي', '組隊', 'parti', 'パーティー']],
         ['teams', ['team', 'ομάδ', 'equip', 'équipe', 'отбор', 'فرق', '團隊', 'команд', 'takım', 'drużyn', 'squadr', 'チーム']]
     ];
@@ -499,9 +499,9 @@
         var finalLoss = lm && g.peak >= 200 && g.loss20 >= 0.25;
         if (finalLoss) bad.push(['sgFinal', [pct(g.loss20)]]);
         if (lm && g.spl >= 2 && g.splLoss >= 0.2) bad.push(['sgSplits', [g.splBad, g.spl, pct(g.splLoss)]]);
-        /* early deaths in 35 % or more of the last 8-20 lives of the mode, this one too */
+        /* early deaths (first minute, 30 s in Battle Royale) in 35 % or more of the last 8-20 lives of the mode, this one too */
         var early = cx && cx.early.n >= 8 && g.ms < cx.early.ms && cx.early.k / cx.early.n >= 0.35;
-        if (early) bad.push(['pkg.coachfit.early', [cx.early.k, cx.early.n, modeName(cx.mode)]]);
+        if (early) bad.push(['pkg.coachfit.early', [cx.early.k, cx.early.n, modeName(cx.mode), Math.round(cx.early.ms / 1000)]]);
         if (lm && g.n >= 20 && g.edge >= 0.35) bad.push(['sgEdge', [pct(g.edge)]]);
         if (lm && g.n >= 20 && min >= 3 && g.cov / Math.min(24, 3 + 3 * min) < 0.4) bad.push(['sgCoverage', [Math.round(g.cov / 64 * 100)]]);
         if (!early && rec.n >= 3 && rec.ms > 0 && g.ms < 0.6 * rec.ms) bad.push(['sgShort', [pct(1 - g.ms / rec.ms), fmtTime(rec.ms)]]);

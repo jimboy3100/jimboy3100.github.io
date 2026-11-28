@@ -2776,7 +2776,7 @@
 "pkg.bots.aiStartFirst": "Start the bots to switch their AI",
 "pkg.bots.serverFull": "This server has {0} players: bots are added only while players, bots and you stay at most {1}.",
 "pkg.bots.workerFailed": "The bots could not start in this browser. Reload the page and try again.",
-"pkg.coachfit.early": "{0} of your last {1} lives in {2} ended in the first minute. Spawn away from big cells and grow on food before you chase anyone.",
+"pkg.coachfit.early": "{0} of your last {1} lives in {2} ended in the first {3} seconds. Spawn away from big cells and grow on food before you chase anyone.",
 "pkg.coachfit.fatigue": "Your last {0} games averaged {1} mass, {2}% below the start of this session ({3} so far). Results often drop late in a long session: a short break helps.",
 "pkg.coachfit.holdTop": "You reached the top 3 in {0}% of your recent games but held 1st for only {1} on average. At the top, keep your mass together and let the others fight each other.",
 "pkg.coachfit.advSurvival": "Survival was your lowest score: at your level most deaths are lost trades with cells close to your size. Engage only with a clear mass lead or a virus between you.",

@@ -1,6 +1,6 @@
 {
   "pkg.coachfit.early": {
-    "en": "{0} of your last {1} lives in {2} ended in the first minute. Spawn away from big cells and grow on food before you chase anyone."
+    "en": "{0} of your last {1} lives in {2} ended in the first {3} seconds. Spawn away from big cells and grow on food before you chase anyone."
   },
   "pkg.coachfit.fatigue": {
     "en": "Your last {0} games averaged {1} mass, {2}% below the start of this session ({3} so far). Results often drop late in a long session: a short break helps."
