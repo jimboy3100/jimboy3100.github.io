@@ -57,8 +57,32 @@ function load(repo, opts) {
     const texts = readTexts(inv, textRels);
     const scan = R.scanFiles(repo, textRels, { cfg, inv }, readText);
     const ctx = { repo, inv, cfg, ex, readText, scan, textRels, cross: [] };
+    ctx.basesUnused = narrowBases(scan, ex.dynamicBases);
     if (opts.cross !== false) ctx.cross = loadCross(ctx);
     return ctx;
+}
+
+/* exceptions.json dynamicBases: a folder base the scan sees as 'dir/' + anything (var IMG = '.../banners/')
+   whose every use adds a known subfolder is narrowed to it (narrowTo), or dropped without narrowTo;
+   returns the entries that matched nothing (stale) */
+function narrowBases(scan, list) {
+    const unused = [];
+    for (const e of list || []) {
+        const from = globMatcher([e.from]);
+        let hit = 0;
+        for (const [rel, r] of scan) {
+            if (!from(rel)) continue;
+            r.patterns = r.patterns.filter((pt) => {
+                if (pt.prefix !== e.prefix || pt.suffix) return true;
+                hit++;
+                if (!e.narrowTo) return false;
+                pt.prefix = e.narrowTo;
+                return true;
+            });
+        }
+        if (!hit) unused.push(e.from + ' ' + e.prefix);
+    }
+    return unused;
 }
 
 function loadCross(ctx) {
@@ -334,7 +358,7 @@ function main(argv) {
     return { ctx, res, missing };
 }
 
-module.exports = { load, loadCross, missingRefs, allowedMatcher, classify, summarize, main, CLASSES, reposBase };
+module.exports = { load, loadCross, narrowBases, missingRefs, allowedMatcher, classify, summarize, main, CLASSES, reposBase };
 
 if (require.main === module) {
     const argv = process.argv.slice(2);

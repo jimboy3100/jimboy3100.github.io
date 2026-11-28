@@ -5,7 +5,8 @@
  * - re-encoded media keep what a player sees: the animated WebP that replaced a GIF has the GIF's
  *   size, frame count, total duration and loop.
  * - pictures re-encoded losslessly at their own address keep their size and bit depth;
- * - the audit's perceptual duplicates (PNG decoder) and runtime network recording (servedPaths).
+ * - the audit's perceptual duplicates (PNG decoder) and runtime network recording (servedPaths);
+ * - the audit's reference scan of inline handlers and its dynamicBases exceptions.
  * node developers/tests/auditmedia.js */
 'use strict';
 const fs = require('fs'), path = require('path');
@@ -145,6 +146,16 @@ Object.keys(PNG).forEach((f) => {
     const got = R.extract('Lc/Lc.html', page, { cfg: R.loadConfig(repo), inv }).refs.filter((r) => r.status === 'ok').map((r) => r.target).sort();
     check('references: onclick and javascript: handlers are read as script, a title is not (' + JSON.stringify(got) + ')',
         JSON.stringify(got) === JSON.stringify(['Lc/articles/a.html', 'Lc/articles/b.html']));
+    /* exceptions.json dynamicBases: var IMG = '.../banners/' (extras/dyinglight.js) no longer makes every
+       banners/ file a candidate; the entry narrows it to banners/dyinglight/, other patterns stay */
+    const A = require(path.join(repo, 'developers', 'audit', 'audit.js'));
+    const scan = new Map([['extras/dl.js', { patterns: [{ prefix: 'banners/', suffix: '' }, { prefix: 'banners/', suffix: '.png' }] }], ['x.js', { patterns: [{ prefix: 'banners/', suffix: '' }] }]]);
+    const unused = A.narrowBases(scan, [{ from: 'extras/dl.js', prefix: 'banners/', narrowTo: 'banners/dyinglight/' }, { from: 'gone.js', prefix: 'a/' }]);
+    check('audit: dynamicBases narrows the folder base of that file only and names the entry that matches nothing',
+        scan.get('extras/dl.js').patterns.map((p) => p.prefix + '*' + p.suffix).sort().join() === 'banners/*.png,banners/dyinglight/*' &&
+        scan.get('x.js').patterns[0].prefix === 'banners/' && unused.join() === 'gone.js a/');
+    const ex = JSON.parse(fs.readFileSync(path.join(repo, 'developers', 'audit', 'exceptions.json'), 'utf8'));
+    check('audit: extras/dyinglight.js has its banners/ base narrowed in exceptions.json', (ex.dynamicBases || []).some((e) => e.from === 'extras/dyinglight.js' && e.narrowTo === 'banners/dyinglight/'));
 }
 
 /* the audit's perceptual duplicates (developers/audit/perceptual.js, PNG decoder without Chrome):

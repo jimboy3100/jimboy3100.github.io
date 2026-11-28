@@ -45,6 +45,7 @@ for (const m of live) {
         ' (fix the reference, or list it with the reason in developers/audit/exceptions.json "missingAllowed")');
 }
 for (const s of allowed.stale()) console.log('note: exceptions.json missingAllowed ' + s + ' is not missing any more; the entry can go');
+for (const s of ctx.basesUnused || []) console.log('note: exceptions.json dynamicBases ' + s + ' matches no dynamic path any more; the entry can go');
 if (argv.indexOf('--comments') >= 0) {
     for (const m of missing.filter((x) => x.comment)) console.log('comment: ' + m.from + ':' + m.line + ' ' + m.raw);
 }

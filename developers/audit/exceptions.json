@@ -1,5 +1,5 @@
 {
-    "description": "Documented decisions for developers/audit/audit.js and developers/tests/repo-integrity.js. rules: class of files by glob from the repository root (** any depth, * inside one folder; first match wins); GENERATED, DEVELOPMENT and COMPATIBILITY always apply, HISTORICAL only when no active file uses the file. historicalRoots: old pages and snapshots kept for history (their own references make files HISTORICAL, not ACTIVE); developers/i18n/scan-config.json 'archived' is read as well. missingAllowed: references to missing files that are known, with the reason ('from' is a file or glob, 'repo:file' for another repository; 'paths' the missing site paths); defect: true marks a real broken link still to fix. repo-integrity.js fails on any other reference to a missing file. integrityIgnoreSources: files whose references are not checked at all.",
+    "description": "Documented decisions for developers/audit/audit.js and developers/tests/repo-integrity.js. rules: class of files by glob from the repository root (** any depth, * inside one folder; first match wins); GENERATED, DEVELOPMENT and COMPATIBILITY always apply, HISTORICAL only when no active file uses the file. historicalRoots: old pages and snapshots kept for history (their own references make files HISTORICAL, not ACTIVE); developers/i18n/scan-config.json 'archived' is read as well. missingAllowed: references to missing files that are known, with the reason ('from' is a file or glob, 'repo:file' for another repository; 'paths' the missing site paths); defect: true marks a real broken link still to fix. repo-integrity.js fails on any other reference to a missing file. integrityIgnoreSources: files whose references are not checked at all. dynamicBases: a folder base in a script that the scan reads as 'folder/' + any name, while every use adds a known subfolder: it is narrowed to narrowTo (dropped without it), so files of that folder are not all UNKNOWN; repo-integrity notes an entry that matches nothing.",
     "rules": [
         { "glob": "languages/lm-*.js", "class": "GENERATED", "why": "developers/i18n/build.js from developers/i18n/src" },
         { "glob": "lib/lm-i18n.js", "class": "GENERATED", "why": "developers/i18n/build.js (page runtime)" },
@@ -31,6 +31,10 @@
         { "glob": "ogario/*.c", "class": "DEVELOPMENT", "why": "source of a .wasm file" },
         { "glob": "agario/mc/**", "class": "HISTORICAL", "why": "old agar.io client snapshots" },
         { "glob": "agario/bundle_*.js", "class": "HISTORICAL", "why": "old agar.io client snapshots (LM does not load them)" }
+    ],
+    "dynamicBases": [
+        { "from": "extras/dyinglight.js", "prefix": "banners/", "narrowTo": "banners/dyinglight/", "why": "var IMG = 'https://www.legendmod.ml/banners/'; every use is IMG + 'dyinglight/...' (skins, backgrounds, interface; the files are named in banners/dyinglight/manifest.json)" },
+        { "from": "LMexpress/LMexpress.js", "prefix": "banners/", "narrowTo": "banners/dyinglight/interface/", "why": "the Dying Light banner: 'https://www.legendmod.ml/banners/' + (on ? 'dyinglight/interface/banner3-950.webp' : 'dyinglight/interface/banner2-950.webp'), both names are written there" }
     ],
     "historicalRoots": [],
     "missingAllowed": [
