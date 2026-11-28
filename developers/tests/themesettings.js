@@ -138,6 +138,23 @@ Settings.addSliderBox('#t2', 'hudScale', 0.5, 0.9, 0.01, 'cbTest');
 check('slider: hudScale shows 0.5 up to the screen top (0.9) in 0.01 steps', /min="0.5"/.test(el('#t2').html) && /max="0.9"/.test(el('#t2').html) && /step="0.01"/.test(el('#t2').html));
 Settings.addSliderBox('#t5', 'hudScale', 0.1, 9, 0.01);
 check('slider: a call cannot widen the hudScale range', /min="0.3"/.test(el('#t5').html) && /max="1.5"/.test(el('#t5').html));
+/* the Theme tab's own call (real line) starts where the phone's HUD pinch stops (LMmobile.js hudPinch) */
+{
+  const call = /this\.addSliderBox\('#theme-hud', 'hudScale'[^\n]*\);/.exec(main);
+  const mob = fs.readFileSync(path.join(root, 'LMmobile', 'LMmobile.js'), 'utf8').replace(/\r\n/g, '\n');
+  const a = mob.indexOf('        function hudPinch(delta) {'), b = mob.indexOf('\n        }\n', a);
+  if (!call || a < 0 || b < 0) throw new Error('HUD scale slider call or hudPinch not found');
+  const pc = { Math, String, clearTimeout() { }, setTimeout() { }, hudSaveT: 0, document: { getElementById: () => null }, zP: {}, T: k => k,
+    defaultSettings: { hudScale: 0.6 }, Settings: { setHudScale() { } } };
+  pc.window = pc;
+  vm.createContext(pc);
+  vm.runInContext(mob.slice(a, b + 10), pc);
+  pc.hudPinch(-1000);
+  /* the real line, its this = the Theme tab, on a 0.9 screen */
+  vm.runInContext('(function (hudScaleLimit) { ' + call[0] + ' })', ctx).call({ addSliderBox: (sel, ...r) => Settings.addSliderBox('#t7', ...r) }, 0.9);
+  const min = +/min="([\d.]+)"/.exec(el('#t7').html)[1];
+  check('Theme tab HUD scale slider starts at the phone pinch minimum (' + min + ' / ' + pc.defaultSettings.hudScale + '): a pinched value sits on the thumb', min === pc.defaultSettings.hudScale && min === 0.3);
+}
 Settings.addSliderBox('#t3', 'chatScale', 1, 9, 0.01, 'cbTest');
 check('slider: a call above the schema top gets the schema top', /max="2"/.test(el('#t3').html));
 Settings.addSliderBox('#t4', 'cellShadowBlur', 0, 100, 0);

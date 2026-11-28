@@ -23045,7 +23045,9 @@ function thelegendmodproject() {
             this.addColorBox('#theme-hud', 'lbTeammateColor2', 'setHudColors');
             this.addFontBox('#theme-hud', 'hudFont', 'setHudFont');
             var hudScaleLimit = _lmHudScaleLimit();
-            this.addSliderBox('#theme-hud', 'hudScale', 0.5, hudScaleLimit, 0.01, 'setHudScale');
+            /* from 0.3 like the phone's two-finger HUD zoom and the theme schema: from 0.5 a pinched
+             * 0.3 showed the thumb at 0.5 next to the label 0.3 */
+            this.addSliderBox('#theme-hud', 'hudScale', 0.3, hudScaleLimit, 0.01, 'setHudScale');
             /* HUD text size next to the HUD scale it multiplies: a gameplay setting (its key and
              * storage stay, ogario/modules/accessibility.js applies it), so the gameplay slider */
             if (window.application && typeof window.application.addSliderBox === 'function') window.application.addSliderBox('#theme-hud', 'a11yHudTextScale', 1, 1.6, 0.05);
