@@ -1950,11 +1950,18 @@ try {
     check('  a draw that throws: no error, the context restored', !threw && ctx.depth === 0 && ctx.globalAlpha === 1, threw + ' ' + ctx.depth);
     dl.bg = { img: night, alpha: 0.5 }; LMd.customMidPic = night; LMd._lmMidDl = true;
     R.drawCustomBackgrounds(bgCtx());
+    check('  the Theme image the scene replaced is kept loaded for the way back', LMd._lmMidPicTheme === themePic);
     dl.on = false; X.sync();
     ctx = bgCtx();
     R.drawCustomBackgrounds(ctx);
     const back = LMd._lmMidPicNext;
-    check('Dying Light off: the Theme image comes back (loaded again, the scene shown until then)', !!back && back._src === ds.customBackground && ctx.draws.join('|') === 'night@0.5 -500,-500,1000,1000', ctx.draws.join('|'));
+    check('Dying Light off: the Theme image shown before comes back at once (the kept one, no new download), its fade starts',
+        back === themePic && !LMd._lmMidPicTheme && ctx.draws.join('|') === 'night@0.5 -500,-500,1000,1000|theme@0 -500,-500,1000,1000', ctx.draws.join('|'));
+    LMd._lmMidFadeAt -= 400;
+    ctx = bgCtx();
+    R.drawCustomBackgrounds(ctx);
+    const backHalf = ctx.draws.map((d) => d.split(' ')[0]);
+    check('  a short fade: half way after 0.4 s', backHalf.length === 2 && /^night@0\.2[45]/.test(backHalf[0]) && /^theme@0\.[34]/.test(backHalf[1]), ctx.draws.join('|'));
     Object.assign(back, pic('theme2', true));
     R.drawCustomBackgrounds(bgCtx());
     LMd._lmMidFadeAt -= 5000;
@@ -1967,6 +1974,60 @@ try {
     ctx = bgCtx();
     R.drawCustomBackgrounds(ctx);
     check('  the Theme image failing to come back: nothing drawn, as without Dying Light (no scene left over)', ctx.draws.length === 0 && !LMd._lmMidDl && LMd.customMidPic && LMd.customMidPic._src === ds.customBackground, ctx.draws.join('|'));
+    /* a Theme image that stalls (changed while the scene was on, its server never answers): the
+     * scene ends after a bounded wait, the plain background until the image comes */
+    LMd.customMidPic = night; LMd._lmMidDl = true; LMd._lmMidPicNext = null; ds.customBackground = 'https://bg.test/slow.png';
+    ctx = bgCtx();
+    R.drawCustomBackgrounds(ctx);
+    const slow = LMd._lmMidPicNext;
+    check('Dying Light off, the Theme image stalls: the scene shown while it is asked for', !!slow && slow._src === ds.customBackground && ctx.draws.join('|') === 'night@0.5 -500,-500,1000,1000', ctx.draws.join('|'));
+    LMd._lmMidAskAt -= 2000;
+    ctx = bgCtx();
+    R.drawCustomBackgrounds(ctx);
+    check('  still the scene 2 s later', ctx.draws.join('|') === 'night@0.5 -500,-500,1000,1000' && LMd._lmMidDl, ctx.draws.join('|'));
+    LMd._lmMidAskAt -= 1000;
+    ctx = bgCtx();
+    R.drawCustomBackgrounds(ctx);
+    check('  after the wait (2.5 s): the plain background, no scene left over', ctx.draws.length === 0 && !LMd._lmMidDl && LMd.customMidPic === slow && !LMd._lmMidPicNext, ctx.draws.join('|'));
+    Object.assign(slow, pic('slow', true));
+    ctx = bgCtx();
+    R.drawCustomBackgrounds(ctx);
+    check('  the image drawn when it comes, at the Theme alpha', ctx.draws.join('|') === 'slow@0.8 -500,-500,1000,1000', ctx.draws.join('|'));
+    /* turned off while its scene fades in: the scene goes at once, the Theme image as before */
+    dl.on = true; dl.bg = { img: night, alpha: 0.5 }; X.sync();
+    R.drawCustomBackgrounds(bgCtx());
+    LMd._lmMidFadeAt -= 1500;
+    ctx = bgCtx();
+    R.drawCustomBackgrounds(ctx);
+    const fadingIn = ctx.draws.length;
+    dl.on = false; X.sync();
+    ctx = bgCtx();
+    R.drawCustomBackgrounds(ctx);
+    check('turned off while the scene fades in: only the Theme image, no scene kept', fadingIn === 2 && ctx.draws.join('|') === 'slow@0.8 -500,-500,1000,1000' &&
+        !LMd._lmMidPicNext && !LMd._lmMidDl && !LMd._lmMidPicTheme && LMd.customMidPic === slow, fadingIn + ' ' + ctx.draws.join('|'));
+    /* turned off while one scene fades into the next (a new phase): back to the Theme image, the
+     * scene that was coming is dropped */
+    dl.on = true; X.sync();
+    R.drawCustomBackgrounds(bgCtx());
+    LMd._lmMidFadeAt -= 5000;
+    R.drawCustomBackgrounds(bgCtx());
+    const night2 = pic('night2', true);
+    dl.bg = { img: night2, alpha: 0.5 };
+    R.drawCustomBackgrounds(bgCtx());
+    LMd._lmMidFadeAt -= 1500;
+    ctx = bgCtx();
+    R.drawCustomBackgrounds(ctx);
+    const sceneFade = ctx.draws.map((d) => d.split('@')[0]).join();
+    dl.on = false; X.sync();
+    ctx = bgCtx();
+    R.drawCustomBackgrounds(ctx);
+    check('turned off while one scene fades into the next: the Theme image comes back at once, the next scene dropped',
+        sceneFade === 'night,night2' && LMd._lmMidPicNext === slow && ctx.draws.join('|') === 'night@0.5 -500,-500,1000,1000|slow@0 -500,-500,1000,1000', sceneFade + ' ' + ctx.draws.join('|'));
+    LMd._lmMidFadeAt -= 1000;
+    ctx = bgCtx();
+    R.drawCustomBackgrounds(ctx);
+    check('  after the short fade: the Theme image alone, nothing of the theme kept', ctx.draws.join('|') === 'slow@0.8 -500,-500,1000,1000' &&
+        LMd.customMidPic === slow && !LMd._lmMidPicNext && !LMd._lmMidDl && !LMd._lmMidPicTheme, ctx.draws.join('|'));
 } finally {
     globalThis.legendmod = keepLm;
     globalThis.Image = keepImage;

@@ -7297,6 +7297,9 @@ function lmBgAlpha(v) {
 }
 /* How long a Dying Light scene and the background before or after it cross-fade. */
 var LM_BG_FADE_MS = 3000;
+/* Back to the Theme's background after Dying Light: a shorter fade, and a Theme image that has not
+ * come within LM_BG_BACK_WAIT_MS ends the scene anyway (the plain background until it comes). */
+var LM_BG_BACK_FADE_MS = 800, LM_BG_BACK_WAIT_MS = 2500;
 /* A map background image that can be drawn (loaded, not failed). */
 function lmBgReady(pic) {
     return !!(pic && !pic._failed && (
@@ -81824,8 +81827,8 @@ function pickPlayerCellBySize(players, selectBiggest) {
                 ) {
                     this._lmBgDirty = false;
                     /* a Dying Light scene that was shown is let go with it */
-                    if (legendmod._lmMidDl || legendmod._lmMidPicNext) {
-                        legendmod.customMidPic = legendmod._lmMidPicNext = null;
+                    if (legendmod._lmMidDl || legendmod._lmMidPicNext || legendmod._lmMidPicTheme) {
+                        legendmod.customMidPic = legendmod._lmMidPicNext = legendmod._lmMidPicTheme = null;
                         legendmod._lmMidDl = false;
                     }
                     this.backgroundCtx.clearRect(
@@ -83806,7 +83809,7 @@ function pickPlayerCellBySize(players, selectBiggest) {
 
                     cur._src = src;
                     cur.src = src;
-                    legendmod._lmMidPicNext = null;
+                    legendmod._lmMidPicNext = legendmod._lmMidPicTheme = null;
                 }
                 else {
                     /* to or from a Dying Light scene: the shown one stays until the next one has
@@ -83814,7 +83817,14 @@ function pickPlayerCellBySize(players, selectBiggest) {
                      * skipped and the shown one stays */
                     next = legendmod._lmMidPicNext;
                     if (!next || (next !== src && next._src !== src)) {
-                        if (typeof src === 'string') {
+                        /* back to the Theme: its image shown before the scene (kept loaded while
+                         * the scene was on) comes back at once; a scene there now is dropped */
+                        var kept = dlBg ? null : legendmod._lmMidPicTheme;
+                        if (!dlBg) legendmod._lmMidPicTheme = null;
+                        if (kept && kept._src === src && lmBgReady(kept)) {
+                            next = kept;
+                        }
+                        else if (typeof src === 'string') {
                             next = new Image();
                             next._src = src;
                             next.onerror = function () { this._failed = true; };
@@ -83825,16 +83835,21 @@ function pickPlayerCellBySize(players, selectBiggest) {
                         }
                         legendmod._lmMidPicNext = next;
                         legendmod._lmMidFadeAt = 0;
+                        legendmod._lmMidAskAt = performance.now();
                         legendmod._lmMidNextDl = !!dlBg;
                     }
-                    /* the Theme's image coming back failed: shown as failed, as without Dying
-                     * Light (no scene left over) */
-                    var nextGone = !legendmod._lmMidNextDl && next._failed;
+                    /* the Theme's image coming back failed, or has not come within
+                     * LM_BG_BACK_WAIT_MS: the plain background, as without Dying Light (no scene
+                     * left over; the image is drawn when it comes) */
+                    var nextGone = !legendmod._lmMidNextDl && !lmBgReady(next) &&
+                        (next._failed || !(performance.now() - legendmod._lmMidAskAt <= LM_BG_BACK_WAIT_MS));
                     if (lmBgReady(next) || nextGone) {
                         now = performance.now();
                         if (!legendmod._lmMidFadeAt) legendmod._lmMidFadeAt = now;
-                        fadeT = lmBgReady(cur) && !nextGone ? (now - legendmod._lmMidFadeAt) / LM_BG_FADE_MS : 1;
+                        fadeT = lmBgReady(cur) && !nextGone ? (now - legendmod._lmMidFadeAt) / (legendmod._lmMidNextDl ? LM_BG_FADE_MS : LM_BG_BACK_FADE_MS) : 1;
                         if (!(fadeT < 1)) {
+                            /* the Theme image the scene replaces is kept for the way back */
+                            if (legendmod._lmMidNextDl && !legendmod._lmMidDl) legendmod._lmMidPicTheme = lmBgReady(cur) && cur._src ? cur : null;
                             cur = legendmod.customMidPic = next;
                             legendmod._lmMidDl = legendmod._lmMidNextDl;
                             legendmod._lmMidPicNext = next = null;
