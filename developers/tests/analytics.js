@@ -189,12 +189,14 @@ check('niceFloor keeps 2 digits, rounds down', C.niceFloor(3456) === 3400 && C.n
     check('top target from the better quarter of places (1st)', types.top === 1);
     check('no beginner objectives (games, beat average) in the daily set', !('games' in types) && !('beatAvg' in types));
     check('different days rotate the other two', Object.keys(types).length === 5 && all.length === 3);
-    /* weak numbers never give trivially easy objectives */
+    /* a new player (peaks 500-1,080, 1-1.5 min alive): reachable steps above their own numbers, the
+     * new player's minimums (the good player's minimums, 3 x 2,500 / 5,000 / 5 min / 30 min, would be out of reach) */
     const weak = [];
     for (let i = 0; i < 30; i++) weak.push(G({ t: clock - (10 - Math.floor(i / 3)) * DAYMS, peak: 500 + i * 20, ms: MIN + i * 1000, bestPos: 0 }));
     const wt = {};
     ['a', 'b', 'c', 'd', 'e', 'f'].forEach(k => C.generateDaily(weak, k).forEach(g => { wt[g.type] = g.mass ? g.target + 'x' + g.mass : g.target; }));
-    check('minimums: 3 x 2,500, 5,000 mass, 5 min, 30 min in total, no top', wt.big === '3x2500' && wt.mass === 5000 && wt.survive === 5 && wt.playtime === 30 && !('top' in wt));
+    check('new player: 2 x median peak (790), 1,000 mass, 2 min, 10 min in total, no top', wt.big === '2x790' && wt.mass === 1000 && wt.survive === 2 && wt.playtime === 10 && !('top' in wt));
+    check('new player: a step up but reachable (their best games reach the mass)', weak.filter(g => g.peak >= wt.mass).length === 5 && weak.every(g => g.ms < wt.survive * MIN));
     /* a long session today */
     const sess = [];
     for (let i = 0; i < 6; i++) sess.push(G({ t: clock + i, peak: i < 5 ? 13000 : 9000, ms: 20 * MIN }));
@@ -227,6 +229,82 @@ check('niceFloor keeps 2 digits, rounds down', C.niceFloor(3456) === 3400 && C.n
     st1.day = '2020-01-01';
     check('a new day replaces them and forgets old marks', C.ensureDaily(st1, hist, clock) && !st1.done['old:games'] && st1.day === C.dayKey(clock));
     check('same day: kept', !C.ensureDaily(st1, hist, clock));
+}
+
+/* ---------- the Coach fitted to the player: mode baselines, tier, sessions, tips */
+{
+    const T3 = d => d.map(g => g.type + g.target + (g.mass ? 'x' + g.mass : ''));
+    const keys = ['a', 'b', 'c', 'd', 'e', 'f', 'g', 'h'];
+    const typesOf = (h, o) => { const t = {}; keys.forEach(k => C.generateDaily(h, k, null, o).forEach(g => { t[g.type] = g.mass ? g.target + 'x' + g.mass : g.target; })); return t; };
+    /* modes: the recorded kind, else the server type, else the mode name (also translated, also old names) */
+    check('mode kinds from old records', C.modeKind({ mode: 'FFA' }) === 'ffa' && C.modeKind({ mode: 'Teams' }) === 'teams' && C.modeKind({ mode: 'Ομάδες' }) === 'teams'
+        && C.modeKind({ mode: 'Tim' }) === 'teams' && C.modeKind({ mode: 'Королевская битва' }) === 'br' && C.modeKind({ mode: 'Experimentell' }) === 'exp'
+        && C.modeKind({ mode: 'Modo grupo' }) === 'party' && C.modeKind({ mode: '' }) === 'ffa' && C.modeKind({ mode: 'FFA', st: 'expandingland' }) === 'el'
+        && C.modeKind({ mode: 'FFA', st: 'senpa' }) === 'senpa' && C.modeKind({ mode: 'FFA', st: 'private' }) === 'private' && C.modeKind({ mk: 'br', mode: 'FFA' }) === 'br');
+    check('mode kind: kept by sanitize when valid, junk dropped; mode names', G({ mk: 'teams' }).mk === 'teams' && !('mk' in G({ mk: 'zz' })) && C.modeName('teams') === 'Teams' && C.modeName('el') === 'Expanding Land');
+    /* fresh player: the defaults, FFA by default, Teams and Battle Royale scaled */
+    check('fresh player: FFA defaults', JSON.stringify(T3(C.generateDaily([], 'x'))) === JSON.stringify(['big3x2500', 'survive5', 'mass5000']));
+    check('fresh player in Teams / Battle Royale: their scale', JSON.stringify(T3(C.generateDaily([], 'x', null, { mode: 'teams' }))) === JSON.stringify(['big3x3750', 'survive5', 'mass7500'])
+        && JSON.stringify(T3(C.generateDaily([], 'x', null, { mode: 'br' }))) === JSON.stringify(['big3x1250', 'survive3', 'mass2500']));
+    /* strong FFA player in short sessions: 2 games a day over 25 days, peaks 15,000-34,600, 8-17 min */
+    const strong = [];
+    for (let i = 0; i < 50; i++) strong.push(G({ t: clock - (25 - Math.floor(i / 2)) * DAYMS + (i % 2) * 3 * 3600000, peak: 15000 + i * 400, ms: (8 + i % 10) * MIN, bestPos: i % 2 ? 1 : 3, first: 15000 }));
+    const ps = C.playerProfile(strong);
+    check('strong FFA player: tier 4 (top), FFA, short sessions', ps.tier === 4 && ps.mode === 'ffa' && !ps.long && ps.session.games === 1 && C.profileText(ps).indexOf('Top player') !== -1);
+    const st = typesOf(strong);
+    check('strong player: demanding mass (1.35 x average, under the best), 16 min survival, 1st place', st.mass === 33000 && st.survive === 16 && st.top === 1 && st.big === '3x24000');
+    check('strong player: never under the top player minimums', st.playtime >= 60 && st.survive >= 8);
+    /* Teams-only player: Teams baselines, Teams objectives, an FFA game counts for none of them */
+    const teams = [];
+    for (let i = 0; i < 30; i++) teams.push(G({ t: clock - (10 - Math.floor(i / 3)) * DAYMS + (i % 3) * 20 * MIN, peak: 6000 + i * 100, ms: 6 * MIN, mode: 'Teams', bestPos: 0 }));
+    const pt = C.playerProfile(teams);
+    check('Teams-only player: Teams profile with the Teams scale (good player)', pt.mode === 'teams' && pt.tier === 2 && !pt.est);
+    const dt = C.generateDaily(teams, 'x');
+    check('Teams objectives carry the mode, from Teams numbers', dt.every(g => g.mk === 'teams') && typesOf(teams).mass === 8900 && typesOf(teams).big === '3x7400');
+    const ffaToday = [G({ t: clock + 1, peak: 50000, ms: 30 * MIN })];
+    const massGoal = { id: 'x', type: 'mass', target: 9000, mk: 'teams' };
+    check('an FFA game is never measured against a Teams objective', !C.goalProgress(massGoal, ffaToday, clock).done && C.goalProgress(massGoal, [G({ t: clock + 1, peak: 9500, mode: 'Teams' })], clock).done);
+    check('stored objectives: the mode is kept; an old one without it counts every game', C.sanitizeGoal(massGoal, false).mk === 'teams' && C.goalProgress({ id: 'y', type: 'mass', target: 9000 }, ffaToday, clock).done);
+    /* mixed modes: the strong FFA player tries Teams: the tier carries over (est), the numbers do not */
+    const mixed = strong.concat([G({ t: clock - DAYMS / 2, peak: 3000, ms: 2 * MIN, mode: 'Teams' })]);
+    const pm = C.playerProfile(mixed, 'teams');
+    check('mixed: Teams with 1 game takes the tier of FFA, the most played mode stays FFA', pm.mode === 'teams' && pm.tier === 4 && pm.est && pm.most === 'ffa');
+    check('mixed: Teams objectives from the top tier minimums x the Teams scale', JSON.stringify(T3(C.generateDaily(mixed, 'x', { m: 60000, t: 40 * MIN }, { mode: 'teams' }))) === JSON.stringify(['big3x9000', 'survive8', 'mass18000']));
+    check('mixed: without a mode now, the most played mode (FFA)', C.generateDaily(mixed, 'x').every(g => g.mk === 'ffa'));
+    /* long-session player: one session a day of 20 games over 3 h, playtime always among the three */
+    const long = [];
+    for (let i = 0; i < 60; i++) long.push(G({ t: clock - (3 - Math.floor(i / 20)) * DAYMS + (i % 20) * 9 * MIN, peak: 9000 + (i % 20) * 300, ms: 8 * MIN }));
+    const pl = C.playerProfile(long);
+    check('long-session player: long sessions of 20 games', pl.long && pl.session.games === 20 && pl.session.ms >= 170 * MIN && C.profileText(pl).indexOf('20 games') !== -1);
+    const dl = keys.map(k => C.generateDaily(long, k));
+    check('long sessions: big and playtime every day, more games (10 of 20)', dl.every(d => d[0].type === 'big' && d[0].target === 10 && d[1].type === 'playtime' && d[1].target === 160));
+    /* tips from the player's own weak points in that mode */
+    const tipsOf = (games, i) => { const cx = C.coachContext(games, i); return C.coachSuggestions(games[i], C.coachScores(games[i]), cx.rec, cx); };
+    const early = [];
+    for (let i = 0; i < 12; i++) early.push(G({ t: clock - (12 - i) * 5 * MIN, ms: i % 2 ? 40000 : 4 * MIN, peak: 900 }));
+    const te = tipsOf(early, 11);
+    check('repeated early deaths: one tip with the count, instead of "shorter than average"', te.some(x => x[0] === 'pkg.coachfit.early' && C.tipText(x).indexOf('6 of your last 12 lives in FFA') === 0) && !te.some(x => x[0] === 'sgShort'));
+    /* Teams lives are not compared with FFA lives */
+    const mix2 = [];
+    for (let i = 0; i < 10; i++) mix2.push(G({ t: clock - (30 - i) * MIN, ms: 15 * MIN, peak: 20000 }));
+    mix2.push(G({ t: clock, ms: 4 * MIN, peak: 4000, mode: 'Teams', end: 4000, n: 2, spl: 0 }));
+    const tm = tipsOf(mix2, 10);
+    check('a Teams game after FFA games: no "shorter / slower than your average"', !tm.some(x => x[0] === 'sgShort' || x[0] === 'sgGrowth') && tipsOf(mix2.slice(0, 10).concat([G({ t: clock, ms: 4 * MIN, peak: 4000 })]), 10).some(x => x[0] === 'sgShort'));
+    check('a Teams game after FFA games: the Teams tip or a Teams note', tm.some(x => x[0] === 'pkg.coachfit.tipTeams' || (x[0] === 'pkg.coachfit.keepMode' && C.tipText(x).indexOf('Teams') !== -1)));
+    /* fatigue: a 3 h session, the last 4 games far below its start */
+    const tired = [];
+    for (let i = 0; i < 16; i++) tired.push(G({ t: clock - (16 - i) * 12 * MIN, ms: 8 * MIN, peak: i < 12 ? 12000 : 5000 }));
+    const tf = tipsOf(tired, 15);
+    check('late in a long session: results dropping is named, with the drop', tf.some(x => x[0] === 'pkg.coachfit.fatigue' && C.tipText(x).indexOf('averaged 5,000 mass, 58% below') !== -1));
+    check('no fatigue tip early in the session', !tipsOf(tired.slice(0, 6), 5).some(x => x[0] === 'pkg.coachfit.fatigue'));
+    /* strong player who reaches the top 3 but hardly holds 1st: the advanced tip; a top game gets advanced tips */
+    const th = tipsOf(strong, 49);
+    check('strong player: top 3 often, little time in 1st', th.some(x => x[0] === 'pkg.coachfit.holdTop' && C.tipText(x).indexOf('top 3 in 100%') !== -1 && C.tipText(x).indexOf('0:15') !== -1));
+    const sg = strong.slice(0, 49).concat([G({ t: clock, peak: 40000, end: 40000, ms: 16 * MIN, first: 0, bestPos: 5, n: 900, cov: 24, edge: 0.05, spl: 0 })]);
+    const ta = tipsOf(sg, 49);
+    check('strong player: advanced tip instead of the beginner one', ta.some(x => /^pkg\.coachfit\.adv/.test(x[0])) && !ta.some(x => /^sgTip/.test(x[0])));
+    check('a new player keeps the beginner tips', tipsOf(early.slice(0, 3).concat([G({ t: clock, peak: 3000, end: 3000, ms: 6 * MIN, first: 0, n: 300, cov: 18, edge: 0.05, spl: 0 })]), 3).some(x => /^sgTip/.test(x[0])));
+    check('every new text exists in English', ['early', 'fatigue', 'holdTop', 'advSurvival', 'advGrowth', 'advSplits', 'advMovement', 'advRetention', 'tipTeams', 'keepMode', 'profile', 'tierNew', 'tierDeveloping', 'tierGood', 'tierStrong', 'tierTop'].every(k => C.tipText(['pkg.coachfit.' + k, ['a', 'b', 'c', 'd']]) !== 'pkg.coachfit.' + k));
 }
 
 /* ---------- practice / replay lives and a life cut by a server change or disconnect (audit A16) */
@@ -295,6 +373,7 @@ check('niceFloor keeps 2 digits, rounds down', C.niceFloor(3456) === 3400 && C.n
     check('one game stored with schema 1', games.length === 1 && g.v === 1 && g.src === 'lm');
     check('time alive and peak', g.ms === 60250 && g.peak === Math.max(...[2120, 1000 + 20 * 130]));
     check('server host only, no token', g.srv === 'live.example' && g.st === 'agario');
+    check('the game mode kind is recorded (agar.io, no mode list: FFA) and kept by the objectives', g.mk === 'ffa' && JSON.parse(store.get('lmAnalyticsGoals')).daily.every(x => x.mk === 'ffa'));
     check('grouped splits: one split', g.spl === 1);
     check('split loss measured within 5 s', g.splBad === 1 && g.splLoss > 0.4 && g.splLoss < 0.6);
     check('best and last place, time in 1st', g.bestPos === 1 && g.lastPos === 5 && g.first >= 9000 && g.first <= 11000);

@@ -1,0 +1,50 @@
+{
+  "pkg.coachfit.early": {
+    "en": "{0} of your last {1} lives in {2} ended in the first minute. Spawn away from big cells and grow on food before you chase anyone."
+  },
+  "pkg.coachfit.fatigue": {
+    "en": "Your last {0} games averaged {1} mass, {2}% below the start of this session ({3} so far). Results often drop late in a long session: a short break helps."
+  },
+  "pkg.coachfit.holdTop": {
+    "en": "You reached the top 3 in {0}% of your recent games but held 1st for only {1} on average. At the top, keep your mass together and let the others fight each other."
+  },
+  "pkg.coachfit.advSurvival": {
+    "en": "Survival was your lowest score: at your level most deaths are lost trades with cells close to your size. Engage only with a clear mass lead or a virus between you."
+  },
+  "pkg.coachfit.advGrowth": {
+    "en": "Mass growth was your lowest score: once you are big, push smaller players toward the border or viruses instead of chasing them across open space."
+  },
+  "pkg.coachfit.advSplits": {
+    "en": "Split efficiency was your lowest score: count the cells around a target first and keep one piece back, so a counter-split cannot take everything."
+  },
+  "pkg.coachfit.advMovement": {
+    "en": "Map movement was your lowest score: rotate between busy areas instead of farming one zone, and keep open space behind you."
+  },
+  "pkg.coachfit.advRetention": {
+    "en": "Mass retention was your lowest score: once you lead, stay merged and avoid even fights; the top place is kept by not losing mass."
+  },
+  "pkg.coachfit.tipTeams": {
+    "en": "In Teams, stay close to your teammates: feed one of them when you are caught, and attack together instead of alone."
+  },
+  "pkg.coachfit.keepMode": {
+    "en": "Play a few more {0} games to compare against your own {0} average."
+  },
+  "pkg.coachfit.profile": {
+    "en": "{0} · {1} · usual session {2}, {3} games"
+  },
+  "pkg.coachfit.tierNew": {
+    "en": "New player"
+  },
+  "pkg.coachfit.tierDeveloping": {
+    "en": "Developing"
+  },
+  "pkg.coachfit.tierGood": {
+    "en": "Good player"
+  },
+  "pkg.coachfit.tierStrong": {
+    "en": "Strong player"
+  },
+  "pkg.coachfit.tierTop": {
+    "en": "Top player"
+  }
+}

@@ -158,11 +158,65 @@
         }
         var sl = Math.floor(num(r.slot, 0, 99, 0));
         if (sl >= 2 && sl <= 6) g.slot = sl;
+        /* mk: the game mode kind (MODE_KEYS), recorded since the Coach keeps baselines per mode;
+         * older records have none and are read from st and mode (modeKind) */
+        if (MODE_KEYS.indexOf(r.mk) !== -1) g.mk = r.mk;
         return g;
     }
     /* a life recorded here with its whole trace (positions, splits, leaderboard, final mass): the
      * Coach, the top-10 share and the leaderboard objective use only these */
     function traced(g) { return g.src === 'lm' && !g.slot; }
+
+    /* ------------------------------------------------------------------ game modes
+     * The Coach and the daily objectives compare a game only with games of the same kind:
+     * agar.io FFA, Teams, Experimental, Party and Battle Royale, Expanding Land ('el'), a private
+     * server and each other supported server type (its serverType). */
+    var CLONES = { agar2: 'Agar2', deltio: 'Delt.io', garix: 'Garix', imsolo: 'Imsolo', senpa: 'Senpa', sigmally: 'Sigmally' };
+    var MODE_KEYS = ['ffa', 'teams', 'exp', 'party', 'br', 'el', 'private'].concat(Object.keys(CLONES));
+    var MODE_VALUE = { ffa: 'ffa', teams: 'teams', experimental: 'exp', party: 'party', battleroyale: 'br' };
+    /* the agar.io mode names of the language packs, read when an old record has only the name */
+    var MODE_TEXT = [['br', 'agario.page_gamemode_battle_royale'], ['exp', 'agario.page_gamemode_experimental'],
+        ['party', 'agario.page_party'], ['teams', 'agario.page_gamemode_teams'], ['ffa', 'agario.page_gamemode_ffa']];
+    /* parts of those names in the 16 languages (a record keeps the name in the language of its day) */
+    var MODE_WORDS = [
+        ['br', ['battle', 'royal', 'باتل', '大逃殺', 'королевская', 'バトル']],
+        ['exp', ['experim', 'πειραμ', 'експер', 'تجريب', '實驗', 'экспер', 'deney', 'eksper', '実験', 'speriment']],
+        ['party', ['party', 'grupo', 'groupe', 'парти', 'пати', 'بارتي', '組隊', 'parti', 'パーティー']],
+        ['teams', ['team', 'ομάδ', 'equip', 'équipe', 'отбор', 'فرق', '團隊', 'команд', 'takım', 'drużyn', 'squadr', 'チーム']]
+    ];
+    /* the mass and time scale of a mode against FFA: Teams and Experimental games grow bigger,
+     * Battle Royale rounds are short */
+    var MODE_MASS = { teams: 1.5, exp: 1.5, br: 0.5 }, MODE_TIME = { br: 0.5 };
+    function modeFromText(text) {
+        var s = String(text || '').trim().toLowerCase(), i, j;
+        if (!s) return 'ffa';
+        var v = s.replace(/^:/, '');
+        if (MODE_VALUE[v]) return MODE_VALUE[v];
+        if (typeof window.lmT === 'function') {
+            for (i = 0; i < MODE_TEXT.length; i++) {
+                var n = window.lmT(MODE_TEXT[i][1]);
+                if (typeof n === 'string' && n && n !== MODE_TEXT[i][1] && n.toLowerCase() === s) return MODE_TEXT[i][0];
+            }
+        }
+        if (s === 'tim') return 'teams';
+        for (i = 0; i < MODE_WORDS.length; i++) for (j = 0; j < MODE_WORDS[i][1].length; j++) if (s.indexOf(MODE_WORDS[i][1][j]) !== -1) return MODE_WORDS[i][0];
+        return 'ffa';
+    }
+    function modeKind(g) {
+        if (!g) return 'ffa';
+        if (MODE_KEYS.indexOf(g.mk) !== -1) return g.mk;
+        if (g.st === 'expandingland') return 'el';
+        if (g.st === 'private') return 'private';
+        if (CLONES.hasOwnProperty(g.st)) return g.st;
+        return modeFromText(g.mode);
+    }
+    function modeName(k) {
+        if (k === 'el') return 'Expanding Land';
+        if (k === 'private') return TF('misc.page.private');
+        if (CLONES.hasOwnProperty(k)) return CLONES[k];
+        for (var i = 0; i < MODE_TEXT.length; i++) if (MODE_TEXT[i][0] === k) return TF(MODE_TEXT[i][1]);
+        return k;
+    }
     function sanitizeTrack(r) {
         if (!r || typeof r !== 'object' || Array.isArray(r)) return null;
         var t = num(r.t, 0, 4102444800000, 0);
@@ -311,9 +365,12 @@
         return s;
     }
     /* averages of the up to 10 games before game index i (scores, time alive, growth rate) */
-    function recentAverages(games, i, count) {
+    function recentAverages(games, i, count, only) {
         count = count || 10;
-        var prev = games.slice(Math.max(0, i - count), i), out = { n: prev.length };
+        /* only: which earlier games count (the Coach passes the same mode's own lives) */
+        var prev = only ? games.slice(0, i).filter(only) : games.slice(0, i);
+        prev = prev.slice(Math.max(0, prev.length - count));
+        var out = { n: prev.length };
         var sc = prev.map(coachScores);
         PARTS.concat(['overall', 'rate']).forEach(function (k) {
             var v = sc.map(function (s) { return s[k]; }).filter(function (x) { return x !== null; });
@@ -329,17 +386,131 @@
     }
     function fmtNum(n) { n = Math.round(+n || 0); return n.toLocaleString ? n.toLocaleString('en-US') : String(n); }
     function pct(f) { return Math.round(f * 100); }
+
+    /* ------------------------------------------------------------------ player profile
+     * From the player's own stored games only (lives of the main player; a multibox unit's life is
+     * left out). Per game mode (modeKind): the last 50 lives give the median and better-quarter peak
+     * mass and the median minutes alive. The skill tier 0-4 (new, developing, good, strong, top)
+     * counts the anchors those three numbers reach (FFA scale; x MODE_MASS / MODE_TIME of the mode)
+     * and takes the rounded average: median peak 1,500 / 4,000 / 9,000 / 18,000, better quarter
+     * 3,000 / 8,000 / 15,000 / 30,000, median minutes 2 / 4 / 7 / 12. Under 5 lives in a mode it
+     * takes the tier of the most played mode with 5+ lives (est), with none it is null.
+     * Sessions: lives with less than 30 min between a death and the next spawn; a player whose
+     * median session (of the last 20) lasts 60 min or more, or holds 12+ lives, plays long sessions. */
+    var TIER_PEAK = [1500, 4000, 9000, 18000], TIER_TOP = [3000, 8000, 15000, 30000], TIER_MIN = [2, 4, 7, 12];
+    var MIN_MODE_N = 5, SESSION_GAP = 30 * 60000, LONG_SESSION = 60 * 60000, LONG_SESSION_N = 12;
+    function own(g) { return !g.slot; }
+    function modeStats(list) {
+        var r = list.slice(-DAILY_RECENT);
+        var peaks = sortNum(r.map(function (g) { return g.peak; })), mins = sortNum(r.map(function (g) { return g.ms / 60000; }));
+        return { n: r.length, medPeak: quantile(peaks, 0.5), topPeak: quantile(peaks, 0.75), medMin: quantile(mins, 0.5), maxPeak: peaks.length ? peaks[peaks.length - 1] : 0 };
+    }
+    function tierOf(st, mode) {
+        if (st.n < MIN_MODE_N) return null;
+        var fm = MODE_MASS[mode] || 1, ft = MODE_TIME[mode] || 1, p = 0;
+        for (var i = 0; i < 4; i++) {
+            if (st.medPeak >= TIER_PEAK[i] * fm) p++;
+            if (st.topPeak >= TIER_TOP[i] * fm) p++;
+            if (st.medMin >= TIER_MIN[i] * ft) p++;
+        }
+        return Math.round(p / 3);
+    }
+    /* sessions of the given lives (oldest first): { start, end, n } */
+    function sessionsOf(games) {
+        var out = [], cur = null;
+        games.forEach(function (g) {
+            var start = g.t - g.ms;
+            if (!cur || start - cur.end > SESSION_GAP) { cur = { start: start, end: g.t, n: 0 }; out.push(cur); }
+            cur.n++;
+            if (g.t > cur.end) cur.end = g.t;
+            if (start < cur.start) cur.start = start;
+        });
+        return out;
+    }
+    /* mode: the mode to fit (the one played now); without it the most played of the last 50 lives */
+    function playerProfile(games, mode) {
+        var mine = games.filter(own), by = {}, count = {}, most = '', i;
+        mine.forEach(function (g) { var k = modeKind(g); (by[k] = by[k] || []).push(g); });
+        mine.slice(-DAILY_RECENT).forEach(function (g) {
+            var k = modeKind(g);
+            count[k] = (count[k] || 0) + 1;
+            if (!most || count[k] > count[most]) most = k;
+        });
+        mode = MODE_KEYS.indexOf(mode) !== -1 ? mode : most || 'ffa';
+        var list = by[mode] || [], st = modeStats(list), tier = tierOf(st, mode), est = false;
+        if (tier === null) {
+            var order = Object.keys(by).sort(function (a, b) { return by[b].length - by[a].length; });
+            for (i = 0; i < order.length && tier === null; i++) {
+                if (order[i] === mode) continue;
+                tier = tierOf(modeStats(by[order[i]]), order[i]);
+                est = tier !== null;
+            }
+        }
+        var ss = sessionsOf(games).slice(-20);
+        var sMs = quantile(sortNum(ss.map(function (x) { return x.end - x.start; })), 0.5), sN = quantile(sortNum(ss.map(function (x) { return x.n; })), 0.5);
+        return {
+            mode: mode, most: most, tier: tier, est: est, list: list, stats: st, other: mine.length > list.length,
+            session: { n: ss.length, ms: Math.round(sMs), games: Math.round(sN) },
+            long: ss.length >= 2 && (sMs >= LONG_SESSION || sN >= LONG_SESSION_N)
+        };
+    }
+    /* What the Coach knows about game index i beside the game itself: its mode, the player's tier,
+     * the recent averages of the same mode, the pattern of early deaths and of time held in 1st
+     * place, and the current session (for results dropping late in a long session). */
+    function coachContext(games, i) {
+        var g = games[i], mode = modeKind(g), ft = MODE_TIME[mode] || 1;
+        var same = function (x) { return own(x) && modeKind(x) === mode; };
+        var prof = playerProfile(games.slice(0, i), mode);
+        var cx = { mode: mode, tier: prof.tier, prof: prof, rec: recentAverages(games, i, 10, same) };
+        var last = games.slice(0, i).filter(same).slice(-19).concat([g]);
+        cx.early = { n: last.length, k: last.filter(function (x) { return x.ms < 60000 * ft; }).length, ms: 60000 * ft };
+        var tr = last.filter(traced), reach = tr.filter(function (x) { return x.bestPos >= 1 && x.bestPos <= 3; });
+        var firstSum = 0;
+        reach.forEach(function (x) { firstSum += x.first; });
+        cx.top = { n: tr.length, k: reach.length, avgFirst: reach.length ? firstSum / reach.length : 0 };
+        /* the session that ends with this game (any mode), and its lives of this mode */
+        var j = i;
+        while (j > 0 && (games[j].t - games[j].ms) - games[j - 1].t <= SESSION_GAP) j--;
+        var sess = games.slice(j, i + 1).filter(same);
+        cx.session = { span: g.t - (games[j].t - games[j].ms), lives: sess };
+        return cx;
+    }
+    /* the line drops in the second half of a long session: the last 4 lives of the mode against its
+     * first half, peak mass or time alive 30 % lower, after 8+ lives and 60+ min */
+    function fatigue(cx) {
+        var L = cx && cx.session && cx.session.lives;
+        if (!L || L.length < 8 || cx.session.span < LONG_SESSION) return null;
+        var first = L.slice(0, Math.floor(L.length / 2)), last = L.slice(-4);
+        var pk = function (a) { return avg(a.map(function (x) { return x.peak; })); }, ms = function (a) { return avg(a.map(function (x) { return x.ms; })); };
+        var p0 = pk(first), p1 = pk(last), m0 = ms(first), m1 = ms(last);
+        if (!(p0 > 0) || !(m0 > 0)) return null;
+        var drop = Math.max(1 - p1 / p0, 1 - m1 / m0);
+        return drop >= 0.3 ? { n: last.length, peak: p1, drop: drop } : null;
+    }
     /* Suggestions, deterministic: problems in a fixed order (at most 3), then good news, then a tip for
-     * the lowest part, so a report has 2-4 lines. Each line is [key, values] for the text table. */
-    function coachSuggestions(g, s, rec) {
+     * the lowest part, so a report has 2-4 lines. Each line is [key, values] for the text table
+     * (tipText). cx (coachContext) fits them to the player: recent averages of the same mode only,
+     * early deaths that repeat, a late-session drop, time held in 1st for strong players, advanced
+     * tips for strong players and a Teams tip; without cx the lines compare with rec alone. */
+    function coachSuggestions(g, s, rec, cx) {
         var bad = [], good = [], min = g.ms / 60000, lm = traced(g);
+        if (cx) rec = cx.rec;
+        var strong = !!cx && cx.tier !== null && cx.tier >= 3;
         var finalLoss = lm && g.peak >= 200 && g.loss20 >= 0.25;
         if (finalLoss) bad.push(['sgFinal', [pct(g.loss20)]]);
         if (lm && g.spl >= 2 && g.splLoss >= 0.2) bad.push(['sgSplits', [g.splBad, g.spl, pct(g.splLoss)]]);
+        /* early deaths in 35 % or more of the last 8-20 lives of the mode, this one too */
+        var early = cx && cx.early.n >= 8 && g.ms < cx.early.ms && cx.early.k / cx.early.n >= 0.35;
+        if (early) bad.push(['pkg.coachfit.early', [cx.early.k, cx.early.n, modeName(cx.mode)]]);
         if (lm && g.n >= 20 && g.edge >= 0.35) bad.push(['sgEdge', [pct(g.edge)]]);
         if (lm && g.n >= 20 && min >= 3 && g.cov / Math.min(24, 3 + 3 * min) < 0.4) bad.push(['sgCoverage', [Math.round(g.cov / 64 * 100)]]);
-        if (rec.n >= 3 && rec.ms > 0 && g.ms < 0.6 * rec.ms) bad.push(['sgShort', [pct(1 - g.ms / rec.ms), fmtTime(rec.ms)]]);
+        if (!early && rec.n >= 3 && rec.ms > 0 && g.ms < 0.6 * rec.ms) bad.push(['sgShort', [pct(1 - g.ms / rec.ms), fmtTime(rec.ms)]]);
         if (rec.n >= 3 && rec.rate > 0 && s.rate < 0.7 * rec.rate) bad.push(['sgGrowth', [fmtNum(s.rate), fmtNum(rec.rate)]]);
+        var tired = fatigue(cx);
+        if (tired) bad.push(['pkg.coachfit.fatigue', [tired.n, fmtNum(tired.peak), pct(tired.drop), fmtTime(cx.session.span)]]);
+        /* strong players who often reach the top 3 but hold 1st only briefly */
+        if (strong && lm && g.bestPos >= 1 && g.bestPos <= 3 && g.first < 20000 && cx.top.n >= 8 && cx.top.k / cx.top.n >= 0.3 && cx.top.avgFirst < 20000)
+            bad.push(['pkg.coachfit.holdTop', [pct(cx.top.k / cx.top.n), fmtTime(cx.top.avgFirst)]]);
         if (lm && s.retention !== null && s.retention < 50 && !finalLoss) bad.push(['sgRetention', [s.retention]]);
         if (lm && g.first >= 30000) good.push(['sgFirst', [fmtTime(g.first)]]);
         if (rec.n >= 3 && rec.overall !== null && s.overall >= rec.overall + 10) good.push(['sgBetter', [s.overall - rec.overall]]);
@@ -347,11 +518,23 @@
         if (out.length < 2) {
             var low = null;
             PARTS.forEach(function (k) { if (s[k] !== null && (low === null || s[k] < s[low])) low = k; });
-            var tip = low && ('sgTip' + low.charAt(0).toUpperCase() + low.slice(1));
+            var part = low && low.charAt(0).toUpperCase() + low.slice(1);
+            var tip = low && (cx && cx.mode === 'teams' && (low === 'survival' || low === 'retention') ? 'pkg.coachfit.tipTeams'
+                : strong ? 'pkg.coachfit.adv' + part : 'sgTip' + part);
             if (tip && !out.some(function (x) { return x[0] === tip; })) out.push([tip, []]);
         }
-        if (out.length < 2) out.push(['sgKeep', []]);
+        if (out.length < 2) out.push(cx && rec.n < 3 && cx.prof.other ? ['pkg.coachfit.keepMode', [modeName(cx.mode)]] : ['sgKeep', []]);
         return out;
+    }
+    /* a suggestion line in the chosen language (keys of pkg-coachfit.json are full keys) */
+    function tipText(x) { return x[0].indexOf('pkg.') === 0 ? TF(x[0], x[1]) : T(x[0], x[1]); }
+    /* the profile line of the Coach: mode, tier and the usual session */
+    var TIER_KEYS = ['tierNew', 'tierDeveloping', 'tierGood', 'tierStrong', 'tierTop'];
+    function profileText(p) {
+        if (!p || p.tier === null) return '';
+        var t = TF('pkg.coachfit.' + TIER_KEYS[p.tier]);
+        if (p.session.n < 2) return modeName(p.mode) + ' · ' + t;
+        return TF('pkg.coachfit.profile', [modeName(p.mode), t, fmtTime(p.session.ms), p.session.games]);
     }
 
     /* ------------------------------------------------------------------ objectives
@@ -374,36 +557,60 @@
             if (!(g.mass >= 1)) return null;
         }
         if (custom) g.since = num(r.since, 0, 4102444800000, 0);
+        /* a daily objective of one game mode counts only that mode's games */
+        if (MODE_KEYS.indexOf(r.mk) !== -1) g.mk = r.mk;
         return g;
     }
-    /* Daily objectives for experienced players in long sessions, from their own last 50 games (and the
-     * all-time bests), so they are a real step up and never trivially easy:
-     *   big      = (median games per day) / 2 games, 3-10, each reaching the median peak mass (2,500+)
-     *   mass     = peak mass of the better quarter of games, at least 1.25 x the average peak, at most
-     *              the best peak so far, 5,000+
-     *   survive  = minutes alive of the better quarter of games, at least 5
-     *   playtime = median minutes alive per day (days with games), in steps of 5, at least 30
+    /* Daily objectives fitted to the player (playerProfile), from their own last 50 lives of one game
+     * mode (the mode played now, else the most played one; each objective keeps it in mk and counts
+     * only that mode's games), so they are a real step up for strong players and reachable for new ones:
+     *   big      = (median games per day) / 2 games, at most 10 (15 for long-session players), each
+     *              reaching the median peak mass
+     *   mass     = peak mass at the tier's quantile, at least the tier's factor x the average peak, at
+     *              most the best peak of the mode (or the all-time best when it is the most played mode)
+     *   survive  = minutes alive at the tier's quantile
+     *   playtime = median minutes alive per day (days with games), in steps of 5
      *   top      = smallest of 1/3/5 not below the better quarter of best places, only when 25 % or
      *              more of the recorded games reached the leaderboard
-     * "big" is always one of the three; the other two rotate with the date. Under 5 games the targets
-     * come from the all-time bests (pb { m, t }) with the same minimums. */
-    var DAILY_RECENT = 50, MIN_MASS = 5000, MIN_BIG_MASS = 2500, MIN_BIG_N = 3, MIN_SURVIVE = 5, MIN_PLAYTIME = 30;
-    function generateDaily(games, key, pb) {
-        var recent = games.slice(-DAILY_RECENT);
+     * Quantile / factor by tier 0-4: 0.6 / 1.1, 0.65 / 1.15, 0.75 / 1.25, 0.8 / 1.3, 0.85 / 1.35.
+     * Minimums by tier (FFA; mass x MODE_MASS, minutes x MODE_TIME of the mode): mass 1,000 / 2,500 /
+     * 5,000 / 8,000 / 12,000, big 2 x 500 / 2 x 1,200 / 3 x 2,500 / 3 x 4,000 / 3 x 6,000, survive
+     * 2 / 3 / 5 / 6 / 8 min, playtime 10 / 20 / 30 / 45 / 60 min.
+     * "big" is always one of the three; for long-session players "playtime" too; the others rotate
+     * with the date. Under 5 lives in the mode: the tier's minimums when the tier is known from another
+     * mode (never below 0.7 x the mode's best so far), else the all-time bests (pb { m, t }) with the good
+     * player's minimums. */
+    var DAILY_RECENT = 50;
+    var TIER_Q = [0.6, 0.65, 0.75, 0.8, 0.85], TIER_K = [1.1, 1.15, 1.25, 1.3, 1.35];
+    var FLOOR_MASS = [1000, 2500, 5000, 8000, 12000], FLOOR_BIG = [500, 1200, 2500, 4000, 6000], FLOOR_BIG_N = [2, 2, 3, 3, 3];
+    var FLOOR_SURVIVE = [2, 3, 5, 6, 8], FLOOR_PLAYTIME = [10, 20, 30, 45, 60];
+    /* opts: { mode } the mode played now */
+    function generateDaily(games, key, pb, opts) {
+        var prof = playerProfile(games, opts && opts.mode), mode = prof.mode;
+        var recent = prof.list.slice(-DAILY_RECENT);
+        var T0 = prof.tier === null ? 2 : prof.tier, fm = MODE_MASS[mode] || 1, ft = MODE_TIME[mode] || 1;
+        var fMass = FLOOR_MASS[T0] * fm, fBig = FLOOR_BIG[T0] * fm, fBigN = FLOOR_BIG_N[T0];
+        var fSurv = Math.max(1, Math.round(FLOOR_SURVIVE[T0] * ft)), fPlay = FLOOR_PLAYTIME[T0];
         pb = pb || {};
         var pbM = num(pb.m, 0, 1e9, 0), pbMin = num(pb.t, 0, 6 * 3600000, 0) / 60000;
         var mk = function (type, target, mass) {
-            var g = { id: key + ':' + type, type: type, target: Math.max(1, Math.round(Math.min(target, GOAL_MAX[type]))) };
+            var g = { id: key + ':' + type, type: type, target: Math.max(1, Math.round(Math.min(target, GOAL_MAX[type]))), mk: mode };
             if (type === 'big') g.mass = Math.max(1, Math.round(mass));
             return g;
         };
-        if (recent.length < 5) {
-            var best = Math.max(pbM, maxOf(recent.map(function (g) { return g.peak; })));
-            var longest = Math.max(pbMin, maxOf(recent.map(function (g) { return g.ms / 60000; })));
-            return [mk('big', MIN_BIG_N, Math.max(MIN_BIG_MASS, niceFloor(best * 0.35))),
-                mk('survive', Math.max(MIN_SURVIVE, Math.floor(longest * 0.6))),
-                mk('mass', Math.max(MIN_MASS, niceFloor(best * 0.7)))];
+        if (recent.length < MIN_MODE_N) {
+            var bestHere = maxOf(recent.map(function (g) { return g.peak; })), longHere = maxOf(recent.map(function (g) { return g.ms / 60000; }));
+            if (prof.tier !== null) {
+                return [mk('big', fBigN, Math.max(fBig, niceFloor(bestHere * 0.35))),
+                    mk('survive', Math.max(fSurv, Math.floor(longHere * 0.6))),
+                    mk('mass', Math.max(fMass, niceFloor(bestHere * 0.7)))];
+            }
+            var best = Math.max(pbM, bestHere), longest = Math.max(pbMin, longHere);
+            return [mk('big', fBigN, Math.max(fBig, niceFloor(best * 0.35))),
+                mk('survive', Math.max(fSurv, Math.floor(longest * 0.6))),
+                mk('mass', Math.max(fMass, niceFloor(best * 0.7)))];
         }
+        var q = TIER_Q[T0], kf = TIER_K[T0];
         var peaks = sortNum(recent.map(function (g) { return g.peak; }));
         var mins = sortNum(recent.map(function (g) { return g.ms / 60000; }));
         var perDay = {}, playDay = {}, days = [];
@@ -413,26 +620,28 @@
             perDay[k]++;
             playDay[k] += g.ms / 60000;
         });
-        var bigN = Math.max(MIN_BIG_N, Math.min(10, Math.round(quantile(sortNum(days.map(function (k) { return perDay[k]; })), 0.5) / 2)));
-        var bigMass = Math.max(MIN_BIG_MASS, niceFloor(quantile(peaks, 0.5)));
+        var bigN = Math.max(fBigN, Math.min(prof.long ? 15 : 10, Math.round(quantile(sortNum(days.map(function (k) { return perDay[k]; })), 0.5) / 2)));
+        var bigMass = Math.max(fBig, niceFloor(quantile(peaks, 0.5)));
         var cand = [];
-        var massCap = Math.max(pbM, peaks[peaks.length - 1]);
-        cand.push(mk('mass', Math.max(MIN_MASS, niceFloor(Math.min(massCap, Math.max(quantile(peaks, 0.75), avg(peaks) * 1.25))))));
-        cand.push(mk('survive', Math.max(MIN_SURVIVE, Math.floor(quantile(mins, 0.75)))));
-        cand.push(mk('playtime', Math.max(MIN_PLAYTIME, Math.floor(quantile(sortNum(days.map(function (k) { return playDay[k]; })), 0.5) / 5) * 5)));
+        var massCap = Math.max(prof.most === mode ? pbM : 0, peaks[peaks.length - 1]);
+        var play = mk('playtime', Math.max(fPlay, Math.floor(quantile(sortNum(days.map(function (k) { return playDay[k]; })), 0.5) / 5) * 5));
+        cand.push(mk('mass', Math.max(fMass, niceFloor(Math.min(massCap, Math.max(quantile(peaks, q), avg(peaks) * kf))))));
+        cand.push(mk('survive', Math.max(fSurv, Math.floor(quantile(mins, q)))));
+        if (!prof.long) cand.push(play);
         var lm = recent.filter(function (g) { return traced(g); });
         var pos = sortNum(lm.map(function (g) { return g.bestPos; }).filter(function (p) { return p > 0; }));
         if (lm.length && pos.length >= Math.max(2, lm.length * 0.25)) {
-            var q = quantile(pos, 0.25), t = 5;
-            [1, 3, 5].some(function (x) { if (x >= q) { t = x; return true; } return false; });
+            var qp = quantile(pos, 0.25), t = 5;
+            [1, 3, 5].some(function (x) { if (x >= qp) { t = x; return true; } return false; });
             cand.push(mk('top', t));
         }
         var rot = hashStr(key) % cand.length, out = [mk('big', bigN, bigMass)];
+        if (prof.long) out.push(play);
         for (var i = 0; i < cand.length && out.length < 3; i++) out.push(cand[(rot + i) % cand.length]);
         return out;
     }
     function goalProgress(goal, games, from) {
-        var list = games.filter(function (g) { return g.t >= from; }), v = 0, done = false, frac = 0;
+        var list = games.filter(function (g) { return g.t >= from && (!goal.mk || modeKind(g) === goal.mk); }), v = 0, done = false, frac = 0;
         if (goal.type === 'games') { v = list.length; frac = v / goal.target; done = v >= goal.target; }
         else if (goal.type === 'survive') { v = Math.floor(maxOf(list.map(function (g) { return g.ms; })) / 6000) / 10; frac = v / goal.target; done = v >= goal.target; }
         else if (goal.type === 'big') { v = list.filter(function (g) { return g.peak >= goal.mass; }).length; frac = v / goal.target; done = v >= goal.target; }
@@ -521,7 +730,7 @@
     function saveGoals(s) { try { window.localStorage.setItem(KEY_GOALS, JSON.stringify(s)); } catch (e) { } }
     /* a new day replaces the daily objectives and forgets their completion marks; they are made
      * from the games before today, so the first game of the day does not change them */
-    function ensureDaily(s, games, now) {
+    function ensureDaily(s, games, now, mode) {
         var key = dayKey(now);
         if (s.day === key && s.daily.length) return false;
         /* P1 fix #53: backward clock skew (e.g. NTP correction) could make
@@ -531,7 +740,7 @@
         s.daily.forEach(function (g) { delete s.done[g.id]; });
         s.day = key;
         var start = dayStart(now);
-        s.daily = generateDaily(games.filter(function (g) { return g.t < start; }), key, personalBests());
+        s.daily = generateDaily(games.filter(function (g) { return g.t < start; }), key, personalBests(), { mode: mode });
         return true;
     }
     function goalFrom(goal, custom, now) { return custom ? goal.since : dayStart(now); }
@@ -563,6 +772,21 @@
             return String((o && o.text || '').trim() || s.value || '').slice(0, 30);
         } catch (e) { return ''; }
     }
+    /* the game mode kind played now (MODE_KEYS): the server type, on agar.io the chosen mode */
+    function modeKindNow() {
+        var o = lm();
+        if (!o) return '';
+        var st = String(o.serverType || '');
+        if (o.isLegendWorld || st === 'expandingland') return 'el';
+        if (st === 'private') return 'private';
+        if (CLONES.hasOwnProperty(st)) return st;
+        try {
+            var s = typeof document !== 'undefined' && document.getElementById('gamemode');
+            var v = s ? String(s.value || '').replace(/^:/, '') : '';
+            if (MODE_VALUE[v]) return MODE_VALUE[v];
+        } catch (e) { }
+        return modeFromText(modeText());
+    }
     function beginLife(now) {
         var o = lm();
         life = {
@@ -570,7 +794,7 @@
             peak: 0, end: 0, log: [], bestPos: 0, lastPos: 0, prevPos: 0, lbAt: 0, first: 0,
             pending: [], splitLoss: [], lastSplit: 0,
             srv: typeof window._lmHostOnly === 'function' && o ? window._lmHostOnly(o.ws) : '',
-            st: o ? String(o.serverType || '').slice(0, 20) : '', mode: modeText(),
+            st: o ? String(o.serverType || '').slice(0, 20) : '', mode: modeText(), mk: modeKindNow(),
             seq: o ? o._connectSeq || 0 : 0
         };
     }
@@ -664,7 +888,7 @@
         var cells = decodeCells(L.pos.join(''));
         var f = trackFacts(cells, L.shape);
         var g = sanitizeGame({
-            src: 'lm', t: now, ms: ms, peak: peak, end: L.end, srv: L.srv, mode: L.mode, st: L.st, map: L.map,
+            src: 'lm', t: now, ms: ms, peak: peak, end: L.end, srv: L.srv, mode: L.mode, st: L.st, mk: L.mk, map: L.map,
             bestPos: L.bestPos, lastPos: L.lastPos, first: L.first,
             spl: L.splitLoss.length, splBad: L.splitLoss.filter(function (x) { return x > 0.2; }).length, splLoss: avg(L.splitLoss),
             cov: f.cov, edge: f.edge, n: f.n, loss20: peak > 0 ? clamp01((top20 - L.end) / peak) : 0
@@ -694,7 +918,7 @@
         if (peak <= 0 && ms < 1000) return;
         var o = lm();
         var g = sanitizeGame({
-            src: 'lm', t: now, ms: ms, peak: peak, slot: e.slot, mode: modeText(),
+            src: 'lm', t: now, ms: ms, peak: peak, slot: e.slot, mode: modeText(), mk: modeKindNow(),
             srv: typeof window._lmHostOnly === 'function' && o ? window._lmHostOnly(o.ws) : '',
             st: o ? String(o.serverType || '').slice(0, 20) : ''
         });
@@ -717,13 +941,14 @@
         for (var j = games.length - 1; j >= 0; j--) if (games[j].t === g.t && games[j].src === 'lm' && (games[j].slot || 1) === (g.slot || 1)) { i = j; break; }
         /* the Coach looks at traced lives only (a multibox unit's life: objectives only) */
         if (traced(g)) {
-            var s = coachScores(g), rec = recentAverages(games, i);
-            var tips = coachSuggestions(g, s, rec);
-            toast('info', '<b>📊</b> ' + esc(T('coachToast', [s.overall, T(tips[0][0], tips[0][1])])) + ' <i>' + esc(T('coachToastMore')) + '</i>',
+            var s = coachScores(g), cx = coachContext(games, i);
+            var tips = coachSuggestions(g, s, cx.rec, cx);
+            toast('info', '<b>📊</b> ' + esc(T('coachToast', [s.overall, tipText(tips[0])])) + ' <i>' + esc(T('coachToastMore')) + '</i>',
                 function () { open('coach'); });
         }
         var st = loadGoals(), now = Date.now();
-        ensureDaily(st, games, now);
+        /* a new day's objectives fit the mode of the game that just ended */
+        ensureDaily(st, games, now, modeKind(g));
         st.daily.concat(st.custom).forEach(function (goal) {
             var custom = st.custom.indexOf(goal) !== -1;
             if (st.done[goal.id]) return;
@@ -1014,7 +1239,7 @@
         if (!idxs.length) { note(body, T('coachNoneYet')); return; }
         idxs = idxs.slice(-50);
         if (coachIdx < 0 || coachIdx >= idxs.length) coachIdx = idxs.length - 1;
-        var gi = idxs[coachIdx], g = games[gi], s = coachScores(g), rec = recentAverages(games, gi);
+        var gi = idxs[coachIdx], g = games[gi], s = coachScores(g), cx = coachContext(games, gi), rec = cx.rec;
         var nav = el('div', 'display:flex;align-items:center;gap:6px;flex-wrap:wrap;');
         var pv = btn('◀', 'min-width:36px;', function () { coachIdx = Math.max(0, coachIdx - 1); paint(); });
         pv.title = T('prev'); pv.setAttribute('aria-label', T('prev')); pv.disabled = coachIdx === 0;
@@ -1026,6 +1251,9 @@
         nav.appendChild(el('div', 'flex:1 1 auto;min-width:0;color:' + t.tc2 + ';overflow:hidden;text-overflow:ellipsis;white-space:nowrap;',
             d.toLocaleString(locale()) + ' · ' + fmtNum(g.peak) + ' · ' + fmtTime(g.ms) + (g.srv ? ' · ' + g.srv : '')));
         body.appendChild(nav);
+        /* who the report is fitted to: the game's mode, the player's tier there, the usual session */
+        var pl = profileText(cx.prof);
+        if (pl) { var pe = el('div', 'margin-top:2px;font-size:11px;color:' + t.tc2 + ';', pl); pe.id = 'lm-analytics-profile'; body.appendChild(pe); }
         var wrap = el('div', 'display:flex;flex-wrap:wrap;gap:12px;margin-top:6px;');
         var left = el('div', 'flex:1 1 260px;min-width:0;');
         var big = el('div', 'display:flex;align-items:baseline;gap:8px;margin-bottom:4px;');
@@ -1053,7 +1281,7 @@
         section(right, T('suggestions'));
         var ul = el('ul', 'margin:0;padding-left:18px;');
         ul.id = 'lm-analytics-tips';
-        coachSuggestions(g, s, rec).forEach(function (x) { ul.appendChild(el('li', 'margin:2px 0;', T(x[0], x[1]))); });
+        coachSuggestions(g, s, rec, cx).forEach(function (x) { ul.appendChild(el('li', 'margin:2px 0;', tipText(x))); });
         right.appendChild(ul);
         wrap.appendChild(right);
         body.appendChild(wrap);
@@ -1083,9 +1311,11 @@
         list.appendChild(row);
     }
     function paintGoals(body) {
-        var t = theme(), games = allGames(), now = Date.now(), st = loadGoals();
-        if (ensureDaily(st, games, now)) saveGoals(st);
-        section(body, T('today'));
+        var t = theme(), games = allGames(), now = Date.now(), st = loadGoals(), o = lm();
+        /* a new day's objectives fit the mode connected to now, else the most played one */
+        var live = o && (typeof o.isSocketOpen !== 'function' || o.isSocketOpen()) ? modeKindNow() : '';
+        if (ensureDaily(st, games, now, live || undefined)) saveGoals(st);
+        section(body, T('today') + (st.daily.length && st.daily[0].mk ? ' · ' + modeName(st.daily[0].mk) : ''));
         var daily = el('div');
         daily.id = 'lm-analytics-daily';
         st.daily.forEach(function (goal) { goalRow(daily, goal, goalProgress(goal, games, goalFrom(goal, false, now))); });
@@ -1157,7 +1387,9 @@
             sanitizeGame: sanitizeGame, sanitizeTrack: sanitizeTrack, parseStore: parseStore, fromMatchHistory: fromMatchHistory, traced: traced,
             mergeGames: mergeGames, aggregate: aggregate, weekStart: weekStart, coachScores: coachScores, recentAverages: recentAverages,
             coachSuggestions: coachSuggestions, generateDaily: generateDaily, goalProgress: goalProgress, sanitizeGoal: sanitizeGoal,
-            niceFloor: niceFloor, quantile: quantile, dayKey: dayKey, ensureDaily: ensureDaily, goalText: goalText, text: T
+            niceFloor: niceFloor, quantile: quantile, dayKey: dayKey, ensureDaily: ensureDaily, goalText: goalText, text: T,
+            modeKind: modeKind, modeName: modeName, playerProfile: playerProfile, sessionsOf: sessionsOf, coachContext: coachContext,
+            tipText: tipText, profileText: profileText
         })
     });
     tick();
