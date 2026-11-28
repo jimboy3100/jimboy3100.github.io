@@ -52569,9 +52569,22 @@ function thelegendmodproject() {
          * in-game on then Full Map on opened no grid, and in-game off then closed the grid).
          * A change closes only the spectators of another role (tile set: Full Map tile; no tile:
          * the in-game spectator), never a multibox unit, and leaves the main connection's own
-         * spectate state alone (it went through flushSpecsData when no unit was open). */
+         * spectate state alone (it went through flushSpecsData when no unit was open). Full Map is
+         * checked before anything closes: refused (a private server: the toast; a replay or
+         * Practice: quietly), the previous mode stays (the in-game spectator was closed first). */
         _lmSpecSetMode(mode) {
             if (mode !== 'ingame' && mode !== 'full') mode = 'off';
+            if (mode === 'full' && window.lmSpecMode !== 'full') {
+                if (this._lmSpecLocal()) return;
+                if (this._lmFullMapModeOff()) {
+                    toastr.warning(lmT('pkg.fmg4w.fullMapModeOff'));
+                    return;
+                }
+                if (!this.integrity || !(typeof lmFullMapTilePlan === 'function' && lmFullMapTilePlan())) {
+                    toastr.error(lmT('game2.spPrivateNoFull'));
+                    return;
+                }
+            }
             window.lmSpecMode = mode;
             window.fullSpectator = mode === 'full';
             window.ingameSpectator = mode === 'ingame';
@@ -52591,6 +52604,16 @@ function thelegendmodproject() {
             }
             if (mode !== 'off') this.addSpect();
         },
+        /* Teams and Battle Royale: no Full Map grid until a recording shows it works there (owner) */
+        _lmFullMapModeOff() {
+            return this.gameMode === ':teams' || this.gameMode === ':battleroyale';
+        },
+        /* a replay or Practice session (no game server to spectate) */
+        _lmSpecLocal() {
+            var ws = typeof this.ws === 'string' ? this.ws : '';
+            return !!((window.LMPractice && window.LMPractice.on) || window._lmEvReplayOn ||
+                ws.indexOf('replay') >= 0 || ws.indexOf('lm-practice:') === 0);
+        },
         /* Opens what the spectator mode lacks (LM.addSpect: every main border packet and mode
          * change). In-game: one in-game spectator if there is none. Full Map: once the main border
          * is fixed, a tile for every planned index without a spectator, at most LM_FULLMAP_MAX
@@ -52601,18 +52624,29 @@ function thelegendmodproject() {
          * removed (captcha) the grid stayed one short. */
         _lmSpecReconcile() {
             var mode = window.lmSpecMode, sp = window.spects || [], i, s;
+            if (mode !== 'ingame' && mode !== 'full') return;
+            /* a replay or Practice is no game server: open nothing and keep the mode quietly (the
+             * "private server" toast turned Full Map off, so it stayed off back on agar.io; an
+             * in-game spectator threw on every Practice border or connected to the replay URL) */
+            if (this._lmSpecLocal()) return;
             if (mode === 'ingame') {
                 for (i = 0; i < sp.length; i++) if (sp[i] && !sp[i].player && sp[i].tile == null) return;
                 addSpectator();
                 return;
             }
-            if (mode !== 'full') return;
+            /* Full Map on and the player moved to Teams / Battle Royale: its tiles close, the mode
+             * stays and the grid opens again back in FFA, Experimental or Party */
+            if (this._lmFullMapModeOff()) {
+                var kept = [];
+                for (i = 0; i < sp.length; i++) {
+                    s = sp[i];
+                    if (s && !s.player && s.tile != null) { if (typeof s.closeConnection === 'function') s.closeConnection(); }
+                    else if (s) kept.push(s);
+                }
+                if (kept.length !== sp.length) window.spects = kept;
+                return;
+            }
             if (!this.integrity) {
-                /* a replay or Practice is no private server: wait quietly with the mode kept (the
-                 * "private server" toast turned Full Map off, so it stayed off back on agar.io) */
-                var ws = typeof this.ws === 'string' ? this.ws : '';
-                if ((window.LMPractice && window.LMPractice.on) || window._lmEvReplayOn ||
-                    ws.indexOf('replay') >= 0 || ws.indexOf('lm-practice:') === 0) return;
                 toastr.error(lmT('game2.spPrivateNoFull'));
                 this._lmSpecSetMode('off');
                 return;

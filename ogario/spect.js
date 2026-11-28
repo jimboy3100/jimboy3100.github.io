@@ -535,14 +535,15 @@ window.lmFullMapHealth = function () {
     h.perTile.sort(function (a, b) { return a.tile - b.tile; });
     return h;
 };
-/* Reconnects the Full Map tiles that gave up (8 failed reconnects), on the same spectator
- * objects: no new tile, no second socket. Refused (114) and captcha (85) tiles wait for Full Map
- * off / on. Returns how many were restarted. */
+/* Reconnects the spectators that gave up (8 failed reconnects): the Full Map tiles and the
+ * in-game spectator (it held the in-game mode with nothing open), on the same objects: no new
+ * spectator, no second socket. Refused (114) and captcha (85) ones wait for their mode off / on.
+ * Returns how many were restarted. */
 window.lmFullMapRetry = function () {
     var list = window.spects || [], n = 0;
     for (var i = 0; i < list.length; i++) {
         var s = list[i];
-        if (!s || s.player || s.tile == null || s._lmTileState !== 'failed' || s.socket) continue;
+        if (!s || s.player || s._lmTileState !== 'failed' || s.socket) continue;
         s._reconnectAttempts = 0;
         s.connect();
         n++;
@@ -593,6 +594,8 @@ class Spect {
         if (this.socketErrorTimer) clearTimeout(this.socketErrorTimer);
         if (this.reconnectTimer) clearTimeout(this.reconnectTimer);
         if (this.pingInterval) clearInterval(this.pingInterval);
+        if (this._lmRefuseTimer) clearTimeout(this._lmRefuseTimer);
+        this._lmRefuseTimer = null;
         this.positionController = null;
         this.staticPositionController = null;
         this.socketErrorTimer = null;
@@ -1157,6 +1160,7 @@ class Spect {
         this.staticPositionController = null;
         if (this.staticX == null || this.staticY == null) return;
         this._lmTileSentAt = 0;
+        this._lmTileChangedAt = 0;
         this._lmTileSentX = this._lmTileSentY = NaN;
         this.staticPositionController = setInterval(() => this._lmTileTick(), 100);
     }
@@ -1215,9 +1219,20 @@ class Spect {
             Math.abs(this.viewX - raw[0]) <= LM_TILE_SETTLED && Math.abs(this.viewY - raw[1]) <= LM_TILE_SETTLED);
     }
 
-    /* the server camera (opcode 17) is at most LM_CAM_FRESH_MS old */
+    /* Is the server camera (opcode 17) current? It is at most LM_CAM_FRESH_MS old, or it is a
+     * Full Map tile camera that sits on the last target sent, reported after that target was
+     * set, while the socket is open and world updates keep coming (LM_TILE_STALE_MS). How often
+     * agar.io sends 17 to a camera that does not move is not measured (live, settled cameras sit
+     * exactly on their integer target): if only on change, the age alone made every settled tile
+     * stalled after a second. */
     _lmCamFresh(now) {
-        return this._lmCamAt > 0 && (now || Date.now()) - this._lmCamAt <= LM_CAM_FRESH_MS;
+        if (!(this._lmCamAt > 0)) return false;
+        now = now || Date.now();
+        if (now - this._lmCamAt <= LM_CAM_FRESH_MS) return true;
+        if (this.tile == null || !(this._lmCamAt > (this._lmTileChangedAt || 0)) || !this.isSocketOpen()) return false;
+        var w = this._lmWorldStamp();
+        return w > 0 && now - w <= LM_TILE_STALE_MS &&
+            Math.abs(this.viewX - this._lmTileSentX) <= LM_TILE_SETTLED && Math.abs(this.viewY - this._lmTileSentY) <= LM_TILE_SETTLED;
     }
 
     /* time of the last world packet: _lmWorldAt (a parsed update), or the time updateCells
@@ -1267,14 +1282,29 @@ class Spect {
         if (first) toastr.warning("<b>[" + Premadeletter123 + "]:</b> " + lmT(text));
     }
 
+    /* opcode 114: refused unless this spectator is served anyway (a fresh view, _lmFresh) within
+     * LM_TILE_STALE_MS; the mark goes with the socket (clearAsyncState) */
+    _lmRefusePending() {
+        if (this._lmRefuseTimer) return;
+        var gen = this.connectionGeneration;
+        this._lmRefuseTimer = setTimeout(() => {
+            this._lmRefuseTimer = null;
+            if (this.closedByUser || this.connectionGeneration !== gen || this._lmFresh()) return;
+            this._lmSpectStop('refused', 'spectate mode is full (opcode 114)', 'pkg.fmg4w.spRefused');
+        }, LM_TILE_STALE_MS);
+    }
+
     _lmTileTick(now) {
         now = now || Date.now();
         var raw = this._lmTileRaw(now);
         if (!raw) return;
         var changed = raw[0] !== this._lmTileSentX || raw[1] !== this._lmTileSentY;
-        var settled = !changed && this._lmCamAt > this._lmTileSentAt && this._lmTileArrived(raw, now);
+        /* a camera reported after the target was set (a refresh of the same target does not count:
+         * with 17 only on change, comparing with the last send made a settled tile unsettled) */
+        var settled = !changed && this._lmCamAt > (this._lmTileChangedAt || 0) && this._lmTileArrived(raw, now);
         if (!changed && now - this._lmTileSentAt < (settled ? LM_TILE_REFRESH_MS : LM_TILE_MOVING_MS)) return;
         if (this.sendPosition(raw[0], raw[1])) {
+            if (changed) this._lmTileChangedAt = now;
             this._lmTileSentAt = now;
             this._lmTileSentX = raw[0];
             this._lmTileSentY = raw[1];
@@ -1693,18 +1723,17 @@ class Spect {
                 else {
                     /* A spectator is still (free) spectating on the server: only its entities go.
                      * Its flags were cleared (the in-game spectator's cursor then stopped following
-                     * while the server stayed in free spectate), and its old camera and world kept
-                     * counting as coverage. Coverage waits for a new camera and world, and the
-                     * tile target goes out again at the next tick. */
+                     * while the server stayed in free spectate), and its old world kept counting
+                     * as coverage. The camera stays (a settled camera may get no new 17), coverage
+                     * waits for the next world update and the tile target goes out again at the
+                     * next tick (as a refresh: the target itself did not change). */
                     var spOn = this.isSpectateEnabled, freeOn = this.isFreeSpectate;
                     this.flushCellsData();
                     this.isSpectateEnabled = spOn;
                     this.isFreeSpectate = freeOn;
-                    this._lmCamAt = 0;
                     this.time = 0;
                     if (this._lmWorldAt !== undefined) this._lmWorldAt = 0;
                     this._lmTileSentAt = 0;
-                    this._lmTileSentX = this._lmTileSentY = NaN;
                 }
                 console.log('[SPECT] case 18');
 
@@ -1911,8 +1940,10 @@ class Spect {
                 console.error('[Agario] Spectate mode is full')
                 console.log('[SPECT] case 114');
                 /* the server takes no more spectators: the socket stayed open (and counted
-                 * toward the per-IP limit) with a tile sender that reached nobody */
-                if (!this.player) this._lmSpectStop('refused', 'spectate mode is full (opcode 114)', 'pkg.fmg4w.spRefused');
+                 * toward the per-IP limit) with a tile sender that reached nobody. Whether agar.io
+                 * still serves a spectator after a 114 is not known: it is closed only if it gets
+                 * no fresh view within LM_TILE_STALE_MS. */
+                if (!this.player) this._lmRefusePending();
 
                 break;
             case 160:

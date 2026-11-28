@@ -28,7 +28,7 @@ function block(start, from) {
     return null;
 }
 const appMethods = ['        setShowIngameSpectator() {', '        setShowFullSpectator() {', '        setIngameSpectator() {', '        setFullSpectator() {'].map((m) => [m, block(m)]);
-const lmMethods = ['        addSpect() {', '        _lmSpecSetMode(mode) {', '        _lmSpecReconcile() {', '        flushSpecsData() {'].map((m) => [m, block(m)]);
+const lmMethods = ['        addSpect() {', '        _lmSpecSetMode(mode) {', '        _lmFullMapModeOff() {', '        _lmSpecLocal() {', '        _lmSpecReconcile() {', '        flushSpecsData() {'].map((m) => [m, block(m)]);
 /* sendNick up to the first server-specific join (everything after it only builds the spawn packet) */
 const nickStart = src.indexOf('        sendNick(nick) {'), nickEnd = src.indexOf('            // ===== Garix join', nickStart);
 /* the helpers are new: an older file without them still runs (and shows the old failures) */
@@ -479,17 +479,30 @@ for (const withUnit of [false, true]) {
         check('    ... Full Map off: no tile socket, no tile timer, no tile state left' + tag, e.tiles().length === 0 && e.open() === (withUnit ? 1 : 0) && e.ctx.lmFullMapHealth().perTile.length === 0 &&
             [...e.timers.values()].every((x) => x.ms !== 100));
     }
-    /* (11) opcode 114 (spectate mode full): refused, closed with no retry, kept, one toast for the grid */
+    /* (11) opcode 114 (spectate mode full): refused only if no fresh view follows within LM_TILE_STALE_MS
+     * (whether agar.io still serves it is not known); then closed with no retry, kept, one toast for the grid */
     {
         const e = mk();
         e.app.setShowFullSpectator();
         e.tiles().forEach(e.handshake);
-        const a = e.tiles()[2], b = e.tiles()[3], n0 = e.sockets.length;
-        a.handleMessage(e.op(114)); b.handleMessage(e.op(114));
+        const a = e.tiles()[2], b = e.tiles()[3], c = e.tiles()[4], n0 = e.sockets.length;
+        a.handleMessage(e.op(114)); b.handleMessage(e.op(114)); c.handleMessage(e.op(114)); a.handleMessage(e.op(114));
+        check('(11) opcode 114: only marked at first (socket open, no toast, one pending check per tile)' + tag, a._lmTileState !== 'refused' && a.isSocketOpen() && !(e.ctx.warnings || []).length &&
+            e.timers.has(a._lmRefuseTimer) && e.timers.get(a._lmRefuseTimer).ms === 3000 && [...e.timers.values()].filter((x) => x.ms === 3000 && !x.repeat).length === 3);
+        /* c is served anyway: a fresh camera and world before the check */
+        const now = Date.now();
+        c._lmCamAt = now; c.time = now; c.viewX = c.viewY = 0;
+        [a, b, c].forEach((s) => { const id = s._lmRefuseTimer, t = e.timers.get(id); e.timers.delete(id); t.fn(); });
         e.LM.addSpect();
-        check('(11) opcode 114 on two tiles: refused, sockets closed, no reconnect or tile sender, kept in their slots, one toast' + tag, a._lmTileState === 'refused' && b._lmTileState === 'refused' &&
+        check('    ... no fresh view 3 s later: refused, sockets closed, no reconnect or tile sender, kept in their slots, one toast' + tag, a._lmTileState === 'refused' && b._lmTileState === 'refused' &&
             a.socket === null && b.socket === null && !a.reconnectTimer && !a.staticPositionController && e.tiles().length === 15 && e.sockets.length === n0 &&
             (e.ctx.warnings || []).length === 1 && /spRefused/.test(e.ctx.warnings[0]) && e.ctx.lmFullMapHealth().refused === 2 && e.ctx.lmFullMapRetry() === 0 && e.unitOk(), (e.ctx.warnings || []).join());
+        check('    ... a tile served after its 114 (fresh view): the mark cleared, it stays open' + tag, c._lmTileState !== 'refused' && c.isSocketOpen() && !c._lmRefuseTimer && !c.closedByUser);
+        const d = e.tiles()[5];
+        d.handleMessage(e.op(114));
+        const id = d._lmRefuseTimer;
+        e.app.setShowFullSpectator();
+        check('    ... Full Map off with a 114 pending: its check goes with the socket' + tag, !e.timers.has(id) && !d._lmRefuseTimer);
     }
     /* (12) opcode 85 (captcha) on a tile: kept (it was spliced out and opened again on the next border packet), no menu, units untouched */
     {
@@ -505,26 +518,51 @@ for (const withUnit of [false, true]) {
         e.app.setShowFullSpectator(); e.app.setShowFullSpectator();
         check('    ... Full Map off / on: a new grid of 15, every tile connecting again' + tag, e.tiles().length === 15 && !e.tiles().includes(t) && e.tiles().every((s) => s._lmTileState === 'connecting'));
     }
-    /* (13) opcode 18 on a tile: still spectating, coverage waits for a new camera and world, the target goes out again */
+    /* (13) opcode 18 on a settled tile: still spectating, camera kept, coverage waits for the next world
+     * update (no new 17 needed), the target goes out again as a refresh */
     {
         const e = mk();
         e.app.setShowFullSpectator();
         e.tiles().forEach(e.handshake);
         const t = e.tiles()[0], now = Date.now();
         e.live(t, now);
-        t._lmTileTick(now); t._lmTileTick(now + 50);
-        const sent = t.socket.sent;
-        check('    a settled tile with a fresh camera and world: live, coverage' + tag, t._lmCoverageOk(now) && t._lmTileStateNow(now) === 'live');
+        t._lmTileTick(now); t._lmCamAt = now + 40; t._lmTileTick(now + 50);
+        const sent = t.socket.sent, cam = [t.viewX, t.viewY];
+        check('    a settled tile with a fresh camera and world: live, coverage' + tag, t._lmCoverageOk(now + 50) && t._lmTileStateNow(now + 50) === 'live');
         t.handleMessage(e.op(18));
-        check('(13) opcode 18 on a tile: spectate / free spectate kept, no coverage until a new camera and world' + tag, t.isSpectateEnabled && t.isFreeSpectate && !t._lmCoverageOk(now) &&
-            t._lmCamAt === 0 && !t._lmServerViewWorld() && e.timers.has(t.staticPositionController));
+        check('(13) opcode 18 on a tile: spectate / free spectate and the camera kept, no coverage until the next world update' + tag, t.isSpectateEnabled && t.isFreeSpectate &&
+            t._lmCamAt === now + 40 && t.viewX === cam[0] && t.viewY === cam[1] && !t._lmCoverageOk(now + 60) && e.timers.has(t.staticPositionController));
         t._lmTileTick(now + 60);
         check('    ... the tile target is sent again at once' + tag, t.socket.sent === sent + 1, t.socket.sent - sent);
-        t._lmCamAt = now; t.time = now;
-        check('    ... camera and world again: coverage back' + tag, t._lmCoverageOk(now));
-        t._lmCamAt = now - 60000; t._openedAt = now - 10000;
-        check('    a camera a minute old: not arrived, no server view, no coverage, stalled' + tag, !t._lmTileArrived(null, now) && !t._lmServerViewWorld() && !t._lmCoverageOk(now) &&
+        t.time = now + 3000;
+        check('    ... the next world update, no further 17 (camera 3 s old, on its target): live again' + tag, t._lmCoverageOk(now + 3010) && t._lmTileStateNow(now + 3010) === 'live');
+        t.time = now - 60000; t._lmCamAt = now - 60000; t._openedAt = now - 70000;
+        check('    camera and world updates a minute old: not arrived, no server view, no coverage, stalled' + tag, !t._lmTileArrived(null, now) && !t._lmServerViewWorld() && !t._lmCoverageOk(now) &&
             t._lmTileStateNow(now) === 'stalled');
+    }
+    /* (17) whatever agar.io's opcode 17 cadence: 17 every tick or only on change (world updates flowing)
+     * keep a settled tile live at the settled send cadence; world updates stopping make it stalled */
+    for (const every of [true, false]) {
+        const e = mk();
+        e.app.setShowFullSpectator();
+        e.tiles().forEach(e.handshake);
+        const t = e.tiles()[0], now = 1e12;
+        e.live(t, now); t._openedAt = now - 20000;
+        t._lmTileTick(now); t._lmCamAt = now + 40; t.time = now + 40;
+        const s0 = t.socket.sent, states = {};
+        for (let ms = 100; ms <= 10000; ms += 100) {
+            const n = now + ms;
+            t.time = n - 20; /* opcode 16 every tick */
+            if (every) t._lmCamAt = n - 20;
+            t._lmTileTick(n);
+            const st = t._lmTileStateNow(n); states[st] = (states[st] || 0) + 1;
+        }
+        const sends = t.socket.sent - s0;
+        check('(17) opcode 17 ' + (every ? 'every tick' : 'only on change') + ': live for 10 s, coverage, refreshed once a second (not every 500 ms)' + tag,
+            states.live === 100 && t._lmCoverageOk(now + 10000) && sends >= 9 && sends <= 11, JSON.stringify(states) + ' sends ' + sends);
+        let n = now + 10000;
+        for (let k = 0; k < 40; k++) { n += 100; if (every) t._lmCamAt = n; t._lmTileTick(n); }
+        check('    ... world updates stop for 4 s: stalled, no coverage' + tag, t._lmTileStateNow(n) === (every ? 'stalled' : 'stalled') && !t._lmCoverageOk(n), t._lmTileStateNow(n));
     }
     /* (14) opcode 18 on the in-game spectator in free mode: it keeps following the cursor */
     {
@@ -562,6 +600,63 @@ for (const withUnit of [false, true]) {
         Object.assign(e.LM, { ws: 'wss://private:443', integrity: false });
         e.app.setShowFullSpectator(); e.app.setShowFullSpectator();
         check('    ... a real private server: the toast, Full Map off', e.ctx.toasts === 1 && e.ctx.lmSpecMode === 'off');
+    }
+    /* (18) Full Map refused is checked before anything closes: the in-game spectator stays */
+    {
+        const e = mk();
+        e.app.setShowIngameSpectator();
+        const ig = e.ingame()[0];
+        Object.assign(e.LM, { ws: 'wss://private:443', integrity: false });
+        e.app.setShowFullSpectator();
+        check('(18) private server, in-game on, Full Map pressed: refused with the toast, in-game kept, mode in-game' + tag, e.ctx.toasts === 1 && e.ctx.lmSpecMode === 'ingame' &&
+            e.ctx.ingameSpectator === true && !e.ctx.fullSpectator && !ig.closedByUser && e.ingame()[0] === ig && e.tiles().length === 0 && e.unitOk());
+        Object.assign(e.LM, { ws: 'wss://imsolo.pro.replay:2000' });
+        e.app.setFullSpectator();
+        check('    ... a replay: refused quietly, in-game kept' + tag, e.ctx.toasts === 1 && e.ctx.lmSpecMode === 'ingame' && !ig.closedByUser);
+    }
+    /* (19) an in-game spectator that gave up: lmFullMapRetry reconnects it on the same object */
+    {
+        const e = mk();
+        e.app.setShowIngameSpectator();
+        const s = e.ingame()[0];
+        s.socket.readyState = 1; s.socket.onopen();
+        s._reconnectAttempts = 8; e.drop(s);
+        e.LM.addSpect();
+        check('(19) in-game spectator gave up: failed, kept, no second one opened' + tag, s._lmTileState === 'failed' && !s.socket && e.ingame().length === 1 && e.ingame()[0] === s);
+        const n0 = e.sockets.length;
+        check('    ... lmFullMapRetry reconnects it on the same object' + tag, e.ctx.lmFullMapRetry() === 1 && e.sockets.length === n0 + 1 && !!s.socket && s._lmTileState === 'connecting' &&
+            e.ingame().length === 1 && e.unitOk());
+    }
+    /* (20) in-game mode in Practice or a replay: nothing opened (new WebSocket('lm-practice://local') threw
+     * on every Practice border; a replay got a socket to the replay URL), the mode kept quietly */
+    {
+        const e = mk();
+        Object.assign(e.LM, { ws: 'lm-practice://local', integrity: false });
+        const n0 = e.sockets.length;
+        e.app.setShowIngameSpectator(); e.LM.addSpect();
+        check('(20) Practice, in-game pressed: mode in-game, no socket opened' + tag, e.ctx.lmSpecMode === 'ingame' && e.sockets.length === n0 && e.ingame().length === 0);
+        e.LM.ws = 'wss://imsolo.pro.replay:2000'; e.LM.addSpect();
+        check('    ... a replay: still nothing opened' + tag, e.sockets.length === n0 && !e.ctx.toasts);
+        Object.assign(e.LM, { ws: 'wss://test', integrity: true }); e.LM.addSpect();
+        check('    ... back on a game server: the in-game spectator opens' + tag, e.ingame().length === 1);
+    }
+    /* (21) Teams and Battle Royale: no Full Map grid (owner, until a recording shows it works there) */
+    for (const gm of [':teams', ':battleroyale']) {
+        const e = mk();
+        e.LM.gameMode = gm;
+        e.app.setShowIngameSpectator();
+        const ig = e.ingame()[0];
+        e.app.setShowFullSpectator(); e.LM.addSpect();
+        check('(21) ' + gm + ': Full Map pressed: no tile, one toast, in-game kept, mode in-game' + tag, e.tiles().length === 0 && (e.ctx.warnings || []).length === 1 &&
+            /fullMapModeOff/.test(e.ctx.warnings[0]) && e.ctx.lmSpecMode === 'ingame' && !ig.closedByUser && e.unitOk());
+        /* Full Map on in FFA, then the player moves to this mode (reconnect: border packets again) */
+        const f = mk();
+        f.app.setShowFullSpectator();
+        check('    ... FFA: Full Map on, 15 tiles' + tag, f.tiles().length === 15);
+        f.LM.gameMode = gm; f.LM.addSpect();
+        check('    ... moved to ' + gm + ': the tiles close, the mode stays full quietly' + tag, f.tiles().length === 0 && f.ctx.lmSpecMode === 'full' && !(f.ctx.warnings || []).length && f.unitOk());
+        f.LM.gameMode = ':ffa'; f.LM.addSpect();
+        check('    ... back in FFA: the 15 tiles open again' + tag, f.tiles().length === 15 && f.unitOk());
     }
 }
 
