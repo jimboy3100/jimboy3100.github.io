@@ -2609,19 +2609,24 @@ class Spect {
             }
             return text;
         };
-        /* a packet cut short changes nothing (it used to apply its first sections and throw);
-         * three in a row drop a spectator's / Full Map tile's cells (only the cells: the server
-         * did not change its spectate mode); a playing unit keeps its world (a flush would
-         * forget its own cells and end it), its next whole update goes on. Only for the
-         * agar.io / Expanding Land layout the pass knows (legacy MultiOgar / Garix: as before). */
+        /* a packet cut short changes nothing (it used to apply its first sections and throw).
+         * Three in a row renew a spectator's / Full Map tile's socket: the server sends only
+         * what is new or changed (a pellet once, when it comes into view), so a local flush
+         * lost the food and still cells until they changed. Closed as a dropped socket closes:
+         * onclose drops this generation's cells, counts the attempt (backoff, gives up after 8)
+         * and reconnects; the login reply spectates and sets the tile target again. A playing
+         * unit keeps its socket and world (it would lose its cells), its next whole update goes
+         * on. Only for the agar.io / Expanding Land layout the pass knows (legacy MultiOgar /
+         * Garix: as before). */
         if (lmSpectAgarLayout(this.integrity) && lmWorldUpdateEnd(view, offset) < 0) {
             this._lmBadUpdates = (this._lmBadUpdates || 0) + 1;
             this._lmBadRun = (this._lmBadRun || 0) + 1;
-            if (this._lmBadRun === 3 && !this.player) {
-                const spectating = this.isSpectateEnabled, free = this.isFreeSpectate;
-                this.flushCellsData();
-                this.isSpectateEnabled = spectating;
-                this.isFreeSpectate = free;
+            const s = this.socket;
+            if (this._lmBadRun === 3 && !this.player && s && !(s.readyState > 1)) {
+                /* every renewal counts: no reset of the budget for a socket open > 60 s, so a
+                 * server sending garbage after a minute backs off and gives up too */
+                this._openedAt = 0;
+                try { s.close(); } catch (e) { }
             }
             return;
         }

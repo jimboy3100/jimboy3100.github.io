@@ -686,18 +686,58 @@ reset();
         check('the whole update is applied (eat, move, account id, new pellet, removals) and stamps _lmWorldAt',
             A && A.targetX === 1300 && !LM.indexedCells[g.lmUnitCellId(101, 1)] && C && C.accID === 777 && LM.indexedCells[g.lmUnitCellId(202, 1)] &&
             !LM.indexedCells[g.lmUnitCellId(200, 1)] && !LM.indexedCells[g.lmUnitCellId(201, 1)] && sp._lmWorldAt > 1 && sp.time > 1 && !sp._lmBadUpdates);
-        /* two bad, one good: no flush; then three bad in a row: this connection's cells dropped */
+        /* two bad, one good: nothing; then three bad in a row: the socket is renewed (the server
+         * sends only what changed, so a local flush lost the food and still cells for good) */
+        const sock = { readyState: 1, closes: 0, close() { this.closes++; this.readyState = 2; } };
+        sp.socket = sock;
+        Object.assign(sp, { isSpectateEnabled: true, isFreeSpectate: true, _openedAt: Date.now() - 5000, _reconnectAttempts: 2 });
         const cut = msg(16, P.slice(0, 35));
         sp.onmessage({ data: cut }); sp.onmessage({ data: cut });
         sp.onmessage({ data: msg(16, packet([], [{ id: 100, x: 1310, y: 1000, size: 64, name: 'alice', food: false }], [])) });
-        check('two bad updates then a whole one: kept, the run counter reset', LM.indexedCells[g.lmUnitCellId(100, 1)] && sp._lmBadRun === 0 && sp._lmBadUpdates === 2);
+        check('two bad updates then a whole one: kept, the run counter reset, socket left open',
+            LM.indexedCells[g.lmUnitCellId(100, 1)] && sp._lmBadRun === 0 && sp._lmBadUpdates === 2 && sock.closes === 0);
         let flushes = 0;
         sp.flushCellsData = function () { flushes++; return g.Spect.prototype.flushCellsData.call(this); };
         sp.onmessage({ data: cut }); sp.onmessage({ data: cut });
-        const kept = !!LM.indexedCells[g.lmUnitCellId(100, 1)];
+        const kept = !!LM.indexedCells[g.lmUnitCellId(100, 1)] && sock.closes === 0;
         sp.onmessage({ data: cut }); sp.onmessage({ data: cut });
-        check('spectator / Full Map tile, bad updates in a row: its cells flushed once, after the third', kept && !LM.indexedCells[g.lmUnitCellId(100, 1)] &&
-            !LM.indexedCells[g.lmUnitCellId(202, 1)] && flushes === 1 && sp._lmBadUpdates === 6, flushes + ' flushes, ' + sp._lmBadUpdates + ' bad');
+        check('spectator / Full Map tile, bad updates in a row: the socket closed once, after the third; no local flush, spectate flags not reset',
+            kept && sock.closes === 1 && flushes === 0 && sp.socket === sock && LM.indexedCells[g.lmUnitCellId(100, 1)] &&
+            sp.isSpectateEnabled === true && sp.isFreeSpectate === true && sp._lmBadUpdates === 6,
+            sock.closes + ' closes, ' + flushes + ' flushes, ' + sp._lmBadUpdates + ' bad');
+        /* the close event takes the dropped-socket path (onclose: flush, reset, backoff, reconnect) */
+        const timers = [], st = g.setTimeout, made = [];
+        g.setTimeout = (f, ms) => { timers.push([f, ms]); return 9; };
+        g.createLegendWebSocket = () => { const w = { readyState: 0, closes: 0, _lwIntegrity: true, close() { this.closes++; this.readyState = 2; } }; made.push(w); return w; };
+        sock.readyState = 3;
+        sp.onclose(sock, sp.connectionGeneration);
+        const ic = LM.indexedCells;
+        check('renewal: onclose drops the old generation\'s cells and counts the attempt in the reconnect budget (3rd attempt, 4 s backoff)',
+            flushes === 1 && !Object.keys(ic).some((k) => ic[k].spectator === 1) && sp.socket === null &&
+            sp._reconnectAttempts === 3 && timers.length === 1 && timers[0][1] === 4000, [flushes, sp._reconnectAttempts, timers.map((t) => t[1])].join());
+        timers[0][0]();
+        check('renewal: the backoff timer opens a new socket of a new generation, the bad run starts again',
+            made.length === 1 && sp.socket === made[0] && sp.connectionGeneration === 2 && sp._lmBadRun === 0 && typeof made[0].onclose === 'function');
+        /* a socket open for more than 60 s: a dropped one would reset the budget, a renewal still
+         * counts (garbage after a minute must not renew once a minute for ever) */
+        sp._openedAt = Date.now() - 70000;
+        made[0].readyState = 1;
+        for (let k = 0; k < 3; k++) sp.onmessage({ data: cut });
+        const renewedLong = made[0].closes === 1;
+        made[0].readyState = 3;
+        made[0].onclose();
+        check('renewal of a connection open > 60 s: the attempt count still goes up (3 -> 4, 8 s backoff), no reset',
+            renewedLong && sp._reconnectAttempts === 4 && timers.length === 2 && timers[1][1] === 8000, [sp._reconnectAttempts, timers.map((t) => t[1])].join());
+        timers[1][0]();
+        /* the budget: a server that keeps sending garbage cannot loop, it ends as a dropped socket does */
+        sp._reconnectAttempts = 8; sp._openedAt = Date.now() - 70000;
+        made[1].readyState = 1;
+        for (let k = 0; k < 3; k++) sp.onmessage({ data: cut });
+        const renewed = made.length === 2 && made[1].closes === 1;
+        made[1].readyState = 3;
+        made[1].onclose();
+        check('renewal with the reconnect budget used up (even after > 60 s open): closed, but no further reconnect', renewed && timers.length === 2 && sp.socket === null && made.length === 2, timers.length);
+        g.setTimeout = st; delete g.createLegendWebSocket;
     }
     /* a playing multibox unit with its own cells: bad updates never flush or end it */
     {
@@ -709,19 +749,22 @@ reset();
         sp.terminate = () => { ended++; };
         sp.beforecalculation = () => { };
         sp.flushCellsData = function () { flushes++; return g.Spect.prototype.flushCellsData.call(this); };
+        const sock = { readyState: 1, closes: 0, close() { this.closes++; } };
+        sp.socket = sock;
         sp.onmessage({ data: msg(16, packet([], [{ id: 100, x: 1000, y: 1000, size: 60, name: 'alice', food: false }, { id: 200, x: 2000, y: 2000 }], [])) });
         const mine = LM.indexedCells[own];
         const cut = msg(16, P.slice(0, 35));
         for (let k = 0; k < 4; k++) sp.onmessage({ data: cut });
-        check('playing unit, 4 bad updates in a row: still alive (no flush, no terminate), own cells and playerCellIDs kept, counted',
+        check('playing unit, 4 bad updates in a row: still alive (no flush, no terminate, no reconnect), own cells and playerCellIDs kept, counted',
             mine && !mine.removed && LM.indexedCells[own] === mine && LM.playerCellsMulti.includes(mine) && sp.getOwnPlayerCells().length === 1 &&
-            sp.playerCellIDs.length === 1 && sp.playerCellIDs[0] === own && ended === 0 && flushes === 0 && sp._lmBadUpdates === 4 && sp._lmBadRun === 4,
-            ended + ' ended, ' + flushes + ' flushes');
+            sp.playerCellIDs.length === 1 && sp.playerCellIDs[0] === own && ended === 0 && flushes === 0 && sock.closes === 0 && sp.socket === sock &&
+            sp._lmBadUpdates === 4 && sp._lmBadRun === 4,
+            ended + ' ended, ' + flushes + ' flushes, ' + sock.closes + ' closes');
         sp.onmessage({ data: msg(16, packet([], [{ id: 100, x: 1020, y: 1000, size: 60, name: 'alice', food: false }], [])) });
         check('playing unit: its next whole update goes on', mine.targetX === 1020 && sp._lmBadRun === 0 && ended === 0);
     }
-    /* an in-game spectator in free spectate: the resync after bad updates drops only its cells,
-     * it keeps its spectate mode and keeps following the cursor */
+    /* an in-game spectator in free spectate: bad updates renew its socket; nothing is dropped or
+     * reset locally before the close event (it keeps following the cursor until then) */
     {
         reset();
         const sp = spect(1);
@@ -733,13 +776,15 @@ reset();
         LM.cursorX = 100; LM.cursorY = 200;
         sp.sendFreeSpectate();
         sp.updateCells(packet([], [{ id: 100, x: 1000, y: 1000, size: 60, name: 'alice', food: false }], []), 0);
+        const sock = { readyState: 1, closes: 0, close() { this.closes++; this.readyState = 2; } };
+        sp.socket = sock;
         const cut = msg(16, P.slice(0, 35));
         for (let k = 0; k < 3; k++) sp.onmessage({ data: cut });
         tick();
         g.setInterval = si; g.clearInterval = ci;
-        check('in-game spectator in free spectate, 3 cut updates: cells dropped, spectate flags kept, cursor still followed',
-            !LM.indexedCells[g.lmUnitCellId(100, 1)] && sp.isFreeSpectate === true && sp.isSpectateEnabled === true && sp.positionController === 7 && sent === 1,
-            [sp.isFreeSpectate, sp.isSpectateEnabled, sent].join());
+        check('in-game spectator in free spectate, 3 cut updates: socket closed once, cells and spectate flags untouched until the close event, cursor still followed',
+            sock.closes === 1 && LM.indexedCells[g.lmUnitCellId(100, 1)] && sp.isFreeSpectate === true && sp.isSpectateEnabled === true && sp.positionController === 7 && sent === 1,
+            [sock.closes, sp.isFreeSpectate, sp.isSpectateEnabled, sent].join());
     }
     /* legacy MultiOgar (imsolo, agar2, private, no integrity) and Garix records are not the layout
      * the pass reads: their updates go through updateCells as before */
