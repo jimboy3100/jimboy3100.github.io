@@ -212,13 +212,18 @@ var realmode2 = "";
 var mode = ""; //just in case
 var token = "";
 var messageone = 1; //If legendmod is being used
+var troll1;
 var seticon = "YES";
+var setmessagecom = "YES";
 var setyt = "YES";
 var searching;
 var timerId;
 var MSGCOMMANDS = "";
 var MSGCOMMANDS2;
 var MSGNICK;
+var playerMsg = "";
+var commandMsg = "";
+var otherMsg = "";
 var rotateminimap = 0;
 var rotateminimapfirst = 0;
 var openthecommunication = "NO";
@@ -2146,10 +2151,71 @@ function MsgCommands1(MSGCOMMANDS, MSGNICK, MSGEL) {
                 window.open(MSGCOMMANDS, '_blank');
             });
         }
-    } else if (MSGCOMMANDS.includes("Legend.Mod&?player=")) {
-        /* the team message commands (Hello, Team5, NamePerm, dTroll2, HideAll) are removed:
-         * a line sent by an older version is only taken out of the chat */
+    } else if (MSGCOMMANDS.includes("Legend.Mod&?player=")) { /* the format dosendmsgcommand sends; a sentence naming Legend.Mod was deleted */
+
+        playerMsg = getParameterByName("player", MSGCOMMANDS);
+        commandMsg = getParameterByName("com", MSGCOMMANDS);
+        otherMsg = getParameterByName("do", MSGCOMMANDS);
+        //		$( ".toast.toast-success" ).text("");
+        //		$(".message-text").text();.hide();
         _lmRemoveCmdMsg();
+        //without confirmation
+        if (commandMsg == "Team5") {
+            $("#top5-hud").css('background-image', 'url(" https://www.legendmod.ml/banners/icogeneral.gif ")').css({
+                opacity: 0.8
+            });
+            setTimeout(function () {
+                /* put back the player's own team-board image (it was wiped until reload) */
+                lmHudBgImage("#top5-hud", lmHudBgSaved("teambimg"));
+            }, 12000);
+        } else if (commandMsg == "Hello") {
+            if ($('#message-box').css('display') == 'none') {
+                if ($("#clantag").val() != "") {
+                    /* a second Hello within 5 s saved "Hello Team" as the nick to restore */
+                    if (window._lmHelloNick == null) window._lmHelloNick = $("#nick").val();
+                    clearTimeout(window._lmHelloT);
+                    $("#nick").val("Hello Team");
+                    $("#helloContainer").show();
+                    newsubmit();
+                    window._lmHelloT = setTimeout(function () {
+                        $("#nick").val(window._lmHelloNick);
+                        window._lmHelloNick = null;
+                        $("#helloContainer").show();
+                        newsubmit();
+                    }, 5000);
+                }
+            }
+        }
+
+        //with confirmation
+        else if (commandMsg == "HideAll") {
+            var _lmToast = toastr.warning(Premadeletter22 + ' ' + _lmEscHtml(playerMsg) + ' ' + Premadeletter23 + '</br> <button class="btn btn-sm btn-primary btn-play btn-do-hideall" style="margin-top: 10px;border-color: darkblue;">' + Premadeletter24 + '</button><br><button class="btn btn-sm btn-warning btn-spectate btn-nodo-hideall" style="width: 100%;margin-top: 10px;">' + Premadeletter25 + '</button>', "", {
+                timeOut: 20000,
+                extendedTimeOut: 20000
+            }).css("width", "210px");
+            _lmToast.find(".btn.btn-sm.btn-primary.btn-play.btn-do-hideall").click(function () {
+                $("#HideAllBthn").click();
+            });
+        } else if (commandMsg == "NamePerm") {
+            var _lmToast = toastr.warning(Premadeletter22 + ' ' + _lmEscHtml(playerMsg) + ' ' + Premadeletter26 + ': ' + _lmEscHtml(playerMsg) + ' </br> <button class="btn btn-sm btn-primary btn-play btn-do-NamePerm" style="margin-top: 10px;border-color: darkblue;">' + Premadeletter24 + '</button><br><button class="btn btn-sm btn-warning btn-spectate btn-nodo-NamePerm" style="width: 100%;margin-top: 10px;">' + Premadeletter25 + '</button>', "", {
+                timeOut: 20000,
+                extendedTimeOut: 20000
+            }).css("width", "210px");
+            _lmToast.find(".btn.btn-sm.btn-primary.btn-play.btn-do-NamePerm").click(function () {
+                $("#nick").val(playerMsg);
+                $("#helloContainer").show();
+                newsubmit();
+            });
+        } else if (commandMsg == "dTroll2") {
+            var _lmToast = toastr.warning(Premadeletter22 + ' ' + _lmEscHtml(playerMsg) + ' ' + Premadeletter27 + '</br> <button class="btn btn-sm btn-primary btn-play btn-do-troll" style="margin-top: 10px;border-color: darkblue;">' + Premadeletter24 + '</button><br><button class="btn btn-sm btn-warning btn-spectate btn-nodo-troll" style="width: 100%;margin-top: 10px;">' + Premadeletter25 + '</button>', "", {
+                timeOut: 20000,
+                extendedTimeOut: 20000
+            }).css("width", "210px");
+            _lmToast.find(".btn.btn-sm.btn-primary.btn-play.btn-do-troll").click(function () {
+                settrolling();
+            });
+        }
+
     } else if (MSGCOMMANDS.includes("https://agar.io/sip=151.80.91.73:1511")) {
         /* the admin "disconnect enemies" command is removed: a line sent by an older version is only taken out of the chat */
         _lmRemoveCmdMsg();
@@ -2881,6 +2947,9 @@ function setyt6url() {
 
 
 function seticonfunction() {
+    if (setmessagecom == "NO") {
+        YessetMsgComReturn();
+    }
     if (setyt == "NO") {
         YessetytReturn();
     }
@@ -2894,7 +2963,27 @@ function seticonfunction() {
     }
 }
 
+function setmessagecomfunction() {
+    if (seticon == "NO") {
+        YesseticonReturn();
+    }
+    if (setyt == "NO") {
+        YessetytReturn();
+    }
+    if (setscriptingcom == "NO") {
+        YessetScriptingComReturn();
+    }
+    if (setmessagecom == "YES") {
+        NosetMsgComReturn();
+    } else if (setmessagecom == "NO") {
+        YessetMsgComReturn();
+    }
+}
+
 function setytfunction() {
+    if (setmessagecom == "NO") {
+        YessetMsgComReturn();
+    }
     if (seticon == "NO") {
         YesseticonReturn();
     }
@@ -2915,6 +3004,9 @@ function setscriptingfunction() {
     if (setyt == "NO") {
         YessetytReturn();
     }
+    if (setmessagecom == "NO") {
+        YessetMsgComReturn();
+    }
     if (setscriptingcom == "YES") {
         NosetScriptingComReturn();
     } else if (setscriptingcom == "NO") {
@@ -2930,6 +3022,16 @@ function NoseticonReturn() {
 function YesseticonReturn() {
     $("#images-hud").hide();
     return seticon = "YES";
+}
+
+function NosetMsgComReturn() {
+    $("#msgcommands-hud").show();
+    return setmessagecom = "NO";
+}
+
+function YessetMsgComReturn() {
+    $("#msgcommands-hud").hide();
+    return setmessagecom = "YES";
 }
 
 function NosetytReturn() {
@@ -3034,6 +3136,64 @@ function changePhotoFun() {
 
 
 
+function msgcommand1f() {
+
+    commandMsg = "Hello";
+    otherMsg = "";
+    dosendmsgcommand();
+
+}
+
+function msgcommand2f() {
+    commandMsg = "Team5";
+    otherMsg = "";
+    dosendmsgcommand();
+}
+
+function msgcommand3f() {
+    commandMsg = "NamePerm";
+    otherMsg = "";
+    dosendmsgcommand();
+
+}
+
+function msgcommand4f() {
+    commandMsg = "dTroll2";
+    otherMsg = "";
+    dosendmsgcommand();
+
+}
+
+
+function msgcommand6f() {
+    commandMsg = "HideAll";
+    otherMsg = "";
+    dosendmsgcommand();
+
+}
+
+function dosendmsgcommand() {
+    if (application.lastSentClanTag == "" || $("#clantag").val() == "") {
+        toastr.warning("<b>[" + Premadeletter123 + "]:</b> " + Premadeletter39);
+    } else {
+        application.sendChatMessage(101, "Legend.Mod&?player=" + encodeURIComponent($("#nick").val()) + "&?com=" + commandMsg + "&?do=" + otherMsg)
+        /*
+        if ($('#message-box').css('display') == 'none') {
+            KeyEvent.simulate(13, 13);
+        };
+        setTimeout(function() {
+            $("#message").val("Legend.Mod&?player=" + encodeURIComponent($("#nick").val()) + "&?com=" + commandMsg + "&?do=" + otherMsg);
+            KeyEvent.simulate(13, 13);
+            if ($('#message').css('display') == 'block') {
+                KeyEvent.simulate(13, 13);
+            };
+            if ($('#message-box').css('display') == 'block') {
+                KeyEvent.simulate(13, 13);
+            }
+        }, 100);
+        */
+    }
+}
 
 function CutNameConflictwithMessageFunction() {
     return CutNameConflictwithMessage = true;
@@ -3765,6 +3925,12 @@ function bluebtns() {
         .mouseleave(function () {
             $('#MiniScripts').css('background-color', "transparent");
         });
+    $('#SendCommands').mouseenter(function () {
+        $('#SendCommands').css('background-color', Top5MassColor);
+    })
+        .mouseleave(function () {
+            $('#SendCommands').css('background-color', "transparent");
+        });
     $('#shortcuts-hud>#Images').mouseenter(function () {
         $('#shortcuts-hud>#Images').css('background-color', Top5MassColor);
     })
@@ -3798,6 +3964,37 @@ function bluebtns() {
             $('#Ultimouse').css('background-color', "transparent");
         });
 */
+    $('#msgcommand1').mouseenter(function () {
+        $('#msgcommand1').css('background-color', Top5MassColor);
+    })
+        .mouseleave(function () {
+            $('#msgcommand1').css('background-color', "transparent");
+        });
+    $('#msgcommand2').mouseenter(function () {
+        $('#msgcommand2').css('background-color', Top5MassColor);
+    })
+        .mouseleave(function () {
+            $('#msgcommand2').css('background-color', "transparent");
+        });
+    $('#msgcommand3').mouseenter(function () {
+        $('#msgcommand3').css('background-color', Top5MassColor);
+    })
+        .mouseleave(function () {
+            $('#msgcommand3').css('background-color', "transparent");
+        });
+    $('#msgcommand4').mouseenter(function () {
+        $('#msgcommand4').css('background-color', Top5MassColor);
+    })
+        .mouseleave(function () {
+            $('#msgcommand4').css('background-color', "transparent");
+        });
+    $('#msgcommand6').mouseenter(function () {
+        $('#msgcommand6').css('background-color', Top5MassColor);
+    })
+        .mouseleave(function () {
+            $('#msgcommand6').css('background-color', "transparent");
+        });
+
     $('#sendicon1').mouseenter(function () {
         $('#sendicon1').css('background-color', Top5MassColor);
     })
@@ -3882,6 +4079,38 @@ function bluebtns() {
 
 
 
+
+function settrolling() {
+
+    //afterdeathtonormalmode();
+    /* playSound was defined only by the Dying Light theme script: play the sound here */
+    try { var _lmTrollAudio = new Audio("https://www.legendmod.ml/banners/troll1.mp3"); var _lmTp = _lmTrollAudio.play(); if (_lmTp && _lmTp.catch) _lmTp.catch(function () { }); } catch (e) { }
+    $("#canvas").css('background-image', 'url(" https://media.giphy.com/media/eVy46EWyclTIA/giphy.gif ")').css({
+        opacity: 0.8
+    });
+    $("#minimap-hud").css('background-image', 'url(" https://www.legendmod.ml/banners/icoeucid.gif ")').css({
+        opacity: 1
+    });
+    $("#leaderboard-hud").css('background-image', 'url(" https://media.giphy.com/media/VSuWfl1qCiRsk/giphy.gif ")').css({
+        opacity: 0.8
+    });
+    setTimeout(function () {
+        $("#canvas").css('background-image', 'url(" https://media.giphy.com/media/aw9WgvgNd1bQk/giphy.gif ")').css({
+            opacity: 0.8
+        });
+    }, 4000);
+    setTimeout(function () {
+        /* put back the player's own canvas image (it was wiped until reload) */
+        $("#canvas").css('background-image', 'url("' + (canvasbimg || ' ') + '")').css({
+            opacity: 1
+        });
+        lmHudBgImage("#leaderboard-hud", lmHudBgSaved("leadbimg"));
+    }, 8000);
+    setTimeout(function () {
+        lmHudBgImage("#minimap-hud", lmHudBgSaved("minimapbckimg"));
+    }, 27000);
+
+}
 
 function preventcanvasimagecrash() {
     CanvasRenderingContext2D.prototype._drawImage = CanvasRenderingContext2D.prototype.drawImage;
@@ -5395,6 +5624,7 @@ function initializeLM(modVersion) {
     $("#minimap-hud").prepend('<div id="shortcuts-hud" class="hud" style="width: 70%; height: 30px; padding: 0px; pointer-events: auto; position: absolute; right: 0px; top: -30px; display: block;">' +
         '<button id="VoiceBtn" class="btn-link" style="padding: 0px; color: #d6d3d3; width: 16%; height: 100%;" data-toggle="tooltip" data-original-title="' + _lmxE('pack.voiceCameraChat') + '"><i id="VoiceBtn1" class="fa fa-microphone" style="padding-left: 0px;"></i></button>' +
         '<button id="MiniScripts" class="btn-link" style="padding: 0px; color: #d6d3d3; width: 16%; height: 100%;" onclick="setscriptingfunction();" data-toggle="tooltip" data-original-title="' + _lmxE('pack.miniScripts') + '"><i id="MiniScripts1" class="fa fa-linode" style="padding-left: 0px;"></i></button>' +
+        '<button id="SendCommands" class="btn-link" style="padding: 0px; color: #d6d3d3; width: 16%; height: 100%;" onclick="setmessagecomfunction();" data-toggle="tooltip" data-original-title="' + _lmxE('pack.messageScriptCommands') + '"><i id="SendCommands1" class="fa fa-sitemap" style="padding-left: 0px;"></i></button>' +
         '<button id="Images" class="btn-link" style="padding: 0px; color: #d6d3d3; width: 16%; height: 100%;" onclick="seticonfunction();" data-toggle="tooltip" data-original-title="' + _lmxE('pack.messageImgurIcons') + '"><i id="Images1" class="fa fa-picture-o" style="padding-left: 0px;"></i></button>' +
         '<button id="yout" class="btn-link" style="padding: 0px; color: #d6d3d3; width: 16%; height: 100%;" onclick="setytfunction();" data-toggle="tooltip" data-original-title="' + _lmxE('pack.messageYoutubeVideos') + '"><i id="yout1" class="fa fa-youtube" style="padding-left: 0px;"></i></button>' +
         '</div>');
@@ -5415,6 +5645,13 @@ function initializeLM(modVersion) {
         '<button id="sendyt4" class="btn-link" style="padding: 0px; color: #d6d3d3; width: 16%; height: 100%;" onclick="sendyt4();" data-toggle="tooltip" data-original-title="Agario - Jumbo Solo vs Teams"><i id="sendyt41" class="fa fa-video-camera" style="padding-center: 0px;"></i></button>' + // i18n-ok: video title (proper name), the player can change it
         '<button id="sendyt5" class="btn-link" style="padding: 0px; color: #d6d3d3; width: 16%; height: 100%;" onclick="sendyt5();" data-toggle="tooltip" data-original-title="Agario - Kill3r vs Teams"><i id="sendyt51" class="fa fa-video-camera" style="padding-left: 0px;"></i></button>' + // i18n-ok: video title (proper name), the player can change it
         '<button id="sendyt6" class="btn-link" style="padding: 0px; color: #d6d3d3; width: 16%; height: 100%;" onclick="sendyt6();" data-toggle="tooltip" data-original-title="' + _lmxE('lmx.ex.promoVideo') + '"><i id="sendyt61" class="fa fa-telegram" style="padding-left: 0px;"></i></button></div>');
+
+    $("#minimap-hud").prepend('<div id="msgcommands-hud" class="hud" style="width: 70%; height: 30px; padding: 0px; pointer-events: auto; position: absolute; right: 0px; top: -60px; display: none;">' +
+        '<button id="msgcommand1" class="btn-link" style="padding: 0px; color: #d6d3d3; width: 16%; height: 100%;" onclick="msgcommand1f();" data-toggle="tooltip" data-original-title="' + _lmxE('pack.helloTeam') + '"><i id="msgcommand11" class="fa fa-coffee" style="padding-left: 0px;"></i></button>' +
+        '<button id="msgcommand2" class="btn-link" style="padding: 0px; color: #d6d3d3; width: 16%; height: 100%;" onclick="msgcommand2f();" data-toggle="tooltip" data-original-title="' + _lmxE('pack.laughToTeam') + '"><i id="msgcommand21" class="fa fa-smile-o" style="padding-left: 0px;"></i></button>' +
+        '<button id="msgcommand3" class="btn-link" style="padding: 0px; color: #d6d3d3; width: 16%; height: 100%;" onclick="msgcommand3f();" data-toggle="tooltip" data-original-title="' + _lmxE('pack.teamChangeNameTo') + '"><i id="msgcommand31" class="fa fa-magic" style="padding-center: 0px;"></i></button>' +
+        '<button id="msgcommand4" class="btn-link" style="padding: 0px; color: #d6d3d3; width: 16%; height: 100%;" onclick="msgcommand4f();" data-toggle="tooltip" data-original-title="' + _lmxE('pack.trollOnDeath') + '"><i id="msgcommand41" class="fa fa-bath" style="padding-center: 0px;"></i></button>' +
+        '<button id="msgcommand6" class="btn-link" style="padding: 0px; color: #d6d3d3; width: 16%; height: 100%;" onclick="msgcommand6f();" data-toggle="tooltip" data-original-title="' + _lmxE('pack.insaneModeHideEverything') + '"><i id="msgcommand" class="fa fa-exclamation-triangle" style="padding-left: 0px;"></i></button></div>');
 
     $("#minimap-hud").prepend('<div id="scripting-hud" class="hud" style="width: 12.5%; height: 30px; padding: 0px; pointer-events: auto; position: absolute; right: 0px; top: -60px; display: none;">' +
         '<button id="Cutnames" class="btn-link" style="padding: 0px; color: #d6d3d3; width: 100%; height: 100%;" data-toggle="tooltip" data-original-title="' + _lmxE('pack.editNames') + '"><i id="Cutnames1" class="fa fa-scissors" style="padding-left: 0px;"></i></button>' +
@@ -5809,6 +6046,7 @@ function initializeLM(modVersion) {
             //$("#rotate-hud").hide();
             $("#images-hud").hide();
             $("#scripting-hud").hide();
+            $("#msgcommands-hud").hide();
             $("#yt-hud").hide();
             $("#images-hud").hide();
             $(this).html('<i class="fa fa-puzzle-piece"></i>' + Premadeletter42);
