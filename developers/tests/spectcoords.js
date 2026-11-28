@@ -547,6 +547,64 @@ for (const [d, vnr] of [[0, 0], [3, 2]]) {
         for (let k = 1; k <= 6; k++) sp._lmCalibrate(t0 + k * 3100);
         check('11f shared pellets older than the newest 128: d verified within 6 checks', sp.foodCalibrated, sp._lmCalibSnaps.length);
     }
+    /* 11g. d is verified across neighbouring tiles, not only on the main view: a verified
+     *      neighbour can verify d (|median| <= 1), only the main food and tiles whose d is verified
+     *      can correct it. Live fixture (main + 3 tiles), pellets in 4 packets 1 s apart, simulated
+     *      clock: all 3 within a few seconds (were never in 120 s with main / verified-d only) */
+    {
+        const L = JSON.parse(fs.readFileSync(path.join(__dirname, 'lib', 'fullmap-food-live.json'), 'utf8'));
+        const m = L.conns.find((c) => c.n === 0), tiles = L.conns.filter((c) => c.n > 0);
+        const LM = mainClient(m.minX, m.minY, m.maxX - m.minX, m.maxY - m.minY), ctx = load(LM);
+        LM.food = m.food.map((p) => ({ x: p[0], y: p[1], targetX: p[0], targetY: p[1], _lmRawX: p[0], _lmRawY: p[1], size: p[2], targetSize: p[2] }));
+        const sps = tiles.map((c) => { const sp = unitB(ctx, [c.minX, c.minY, c.maxX, c.maxY], { number: c.n }); sp.setOrientation(c.o[0], c.o[1]); return sp; });
+        const t0 = T(), at = sps.map(() => -1);
+        for (let sec = 0; sec <= 8; sec++) {
+            if (sec < 4) tiles.forEach((c, i) => { const q = Math.ceil(c.food.length / 4); sps[i].updateCells(packet(c.food.slice(sec * q, (sec + 1) * q).map((p, j) => ({ id: 10 + sec * q + j, x: p[0], y: p[1], size: p[2], food: true }))), 0); });
+            sps.forEach((sp, i) => { sp._lmCalibrate(t0 + sec * 1000); if (sp.foodCalibrated && at[i] < 0) at[i] = sec; });
+        }
+        check('11g live fixture: the 3 tiles verify d within 8 simulated s (at ' + at.join(', ') + ' s), d 0',
+            at.every((s) => s >= 0) && sps.every((sp) => sp.fix3x === 0 && sp.fix3y === 0), at.join(','));
+    }
+    /* 11h. 3 x 5 tiles (own border, scale and mirror each, views 100 beyond their cell), the main
+     *      view (4250 x 2560) in a corner: every tile verifies d within 10 simulated s */
+    {
+        let seed = 7932; const rnd = () => (seed = (seed * 1103515245 + 12345) % 2147483648) / 2147483648;
+        const h = W / 2, pel = Array.from({ length: 6000 }, () => [-h + rnd() * W, -h + rnd() * W, 10 + Math.floor(rnd() * 3)]);
+        const mw = W + (rnd() - 0.5) * 80, mh = W + (rnd() - 0.5) * 80, mcx = (rnd() - 0.5) * 6000, mcy = (rnd() - 0.5) * 6000;
+        const LM = mainClient(mcx - mw / 2, mcy - mh / 2, mw, mh), ctx = load(LM);
+        const inV = (p, r) => p[0] >= r[0] && p[0] <= r[2] && p[1] >= r[1] && p[1] <= r[3];
+        const mv = [-h + 2200 - 2125, -h + 1400 - 1280, -h + 2200 + 2125, -h + 1400 + 1280];
+        LM.food = pel.filter((p) => inV(p, mv)).map((p) => { const rx = Math.round(LM._lmBorderCX + p[0] / LM._lmBorderKX), ry = Math.round(LM._lmBorderCY + p[1] / LM._lmBorderKY);
+            return { x: rx, y: ry, targetX: rx, targetY: ry, _lmRawX: rx, _lmRawY: ry, size: p[2], targetSize: p[2] }; });
+        const tiles = [], tw = W / 3, th = W / 5;
+        for (let r = 0; r < 5; r++) for (let c = 0; c < 3; c++) {
+            const w = W + (rnd() - 0.5) * 100, hh = W + (rnd() - 0.5) * 100, cx = (rnd() - 0.5) * 8000, cy = (rnd() - 0.5) * 8000, o = [rnd() < 0.5 ? -1 : 1, rnd() < 0.5 ? -1 : 1];
+            const sp = unitB(ctx, [cx - w / 2, cy - hh / 2, cx + w / 2, cy + hh / 2], { number: tiles.length + 1 });
+            sp.setOrientation(o[0], o[1]);
+            const view = [-h + c * tw - 100, -h + r * th - 100, -h + (c + 1) * tw + 100, -h + (r + 1) * th + 100];
+            tiles.push({ sp, mine: pel.filter((p) => inV(p, view)).map((p) => [Math.round(cx + o[0] * p[0] * w / W), Math.round(cy + o[1] * p[1] * hh / W), p[2]]), at: -1 });
+        }
+        for (const t of tiles) t.sp.updateCells(packet(t.mine.map((p, i) => ({ id: 10 + i, x: p[0], y: p[1], size: p[2], food: true }))), 0);
+        const t0 = T();
+        for (let sec = 0; sec <= 10; sec++) for (const t of tiles) { t.sp._lmCalibrate(t0 + sec * 1000); if (t.sp.foodCalibrated && t.at < 0) t.at = sec; }
+        const done = tiles.filter((t) => t.at >= 0).length;
+        check('11h 3 x 5 tiles, main view in a corner: ' + done + ' / 15 verify d within 10 simulated s (latest ' + Math.max(...tiles.map((t) => t.at)) + ' s), d 0',
+            done === 15 && tiles.every((t) => t.sp.fix3x === 0 && t.sp.fix3y === 0), tiles.map((t) => t.at).join(','));
+    }
+    /* 11i. a verified neighbour with a wrong d (6) and no verified d, sharing 40 pellets and
+     *      nothing shared with the main view: d is neither verified nor moved */
+    {
+        const LM = mainClient(-W / 2, -W / 2), ctx = load(LM);
+        const bad = unit(ctx, 0, 0, { number: 2 }); bad.setOrientation(1, 1); bad._lmApplyTransform(1, 1, 6, 6);
+        const sp = unit(ctx, 0, 0, { number: 3 }); sp.setOrientation(1, 1);
+        const P = (i) => [-3000 + (i % 10) * 150, 1000 + Math.floor(i / 10) * 150];
+        LM.food = Array.from({ length: 20 }, (_, i) => food([4000 + i * 150, -4000]));
+        bad.updateCells(packet(Array.from({ length: 40 }, (_, j) => ({ id: 100 + j, x: P(j)[0], y: P(j)[1], size: 10, food: true }))), 0);
+        sp.updateCells(packet(Array.from({ length: 40 }, (_, j) => ({ id: 300 + j, x: P(j)[0], y: P(j)[1], size: 10, food: true }))), 0);
+        const t0 = T();
+        for (let k = 1; k <= 4; k++) sp._lmCalibrate(t0 + k * 3100);
+        check('11i a wrong-d neighbour (40 shared pellets) neither verifies nor moves d (fix3 ' + sp.fix3x + ', ' + sp.fix3y + ')', !sp.foodCalibrated && sp.fix3x === 0 && sp.fix3y === 0);
+    }
 }
 
 console.log(failed ? 'FAILED ' + failed : 'all spectcoords checks passed');

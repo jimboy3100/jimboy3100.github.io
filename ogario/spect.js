@@ -2225,39 +2225,37 @@ class Spect {
      * units and compared only with the main connection. Food is matched here by its
      * authoritative position (raw -> world) and size, one-to-one. For each of the 4
      * candidates: the inliers around the median residual; a clear winner with >= 8 is one
-     * orientation vote (against any verified connection). With the orientation verified,
-     * against the main food and the connections whose d is verified only: >= 8 inliers
-     * (within 2 units of the median residual), at least half the matches, and no second
-     * cluster of half their support; the median of such checks >= 1 s apart under the same
-     * transform and main frame (a change drops the pending one) that agree within 1 unit
-     * either verifies d (|median| <= 1: agar.io's case, d stays 0) or corrects it and
-     * reprojects the cells from raw. Every second until the orientation is verified, every 3
-     * s until d is, then every 15 s as a watch, on 128 pellets taken through the whole ring
-     * (those not checked yet first); one odd pellet moves nothing.
+     * orientation vote (against any verified connection). With the orientation verified, on
+     * every live anchor: >= 8 inliers (within 2 units of the median residual), at least half
+     * the matches, and no second cluster of half their support; the median of two such checks
+     * >= 1 s apart under the same transform and main frame (a change drops the pending one)
+     * that agree within 1 unit either verifies d (|median| <= 1: agar.io's case, d stays 0)
+     * or corrects it and reprojects the cells from raw. Only the main food and connections
+     * whose d is verified can correct d; any verified connection can verify it (|median| <= 1
+     * against it), so d is verified across the thin overlaps of neighbouring tiles, but a
+     * neighbour with a wrong d neither sets nor moves it. Every second until the orientation
+     * is verified, every 3 s until d is, then every 15 s as a watch; one odd pellet moves
+     * nothing.
      */
     _lmCalibrate(now) {
         if (!this.mapOffsetFixed || this._lmSameFrame || !this._lmAnchors || this._lmAnchors.length < 8) return;
         var every = this._lmOri !== 'VERIFIED' ? 1000 : this.foodCalibrated ? 15000 : 3000;
         if (now - (this._lmCalibAt || 0) < every) return;
         this._lmCalibAt = now;
-        /* 128 live anchors, newest first (the ring is in arrival order: no sort), those no d
-         * check used yet before the others (every pellet of the ring is reached; all used:
-         * start over); those no orientation vote used yet are the evidence for the next vote */
+        /* every live anchor (at most LM_ANCHOR_MAX), newest first (the ring is in arrival
+         * order: no sort); the newest 128 no orientation vote used yet are the evidence for the
+         * next vote. A d check on a slice of them split the thin overlap with a neighbour
+         * (~13-26 shared pellets) below 8 matches per check. */
         var A = this._lmAnchors, len = A.length, gen = this.connectionGeneration;
         var raw = this._lmCalRaw || (this._lmCalRaw = []), fresh = this._lmCalFresh || (this._lmCalFresh = []);
         raw.length = 0;
         fresh.length = 0;
         var start = len < LM_ANCHOR_MAX ? len - 1 : (this._lmAnchorNext - 1 + len) % len;
-        var unchecked = 0;
-        for (var i = 0; i < len; i++) { var a0 = A[i]; if (a0 && a0.alive && !a0.dChk) unchecked++; }
-        if (unchecked < 8) for (var i0 = 0; i0 < len; i0++) if (A[i0]) A[i0].dChk = false;
-        for (var pass = 0; pass < 2 && raw.length < 128; pass++) {
-            for (var i = 0; i < len && raw.length < 128; i++) {
-                var a = A[(start - i + len) % len];
-                if (!lmAnchorLive(a, gen) || (pass === 0) === !!a.dChk) continue;
-                raw.push(a);
-                if (!a.voted && fresh.length < 128) fresh.push(a);
-            }
+        for (var i = 0; i < len; i++) {
+            var a = A[(start - i + len) % len];
+            if (!lmAnchorLive(a, gen)) continue;
+            raw.push(a);
+            if (!a.voted && fresh.length < 128) fresh.push(a);
         }
         if (raw.length < 8) return;
         var ref = lmFoodReference(now);
@@ -2282,13 +2280,19 @@ class Spect {
             }
         }
         if (this._lmOri !== 'VERIFIED') return;
-        var cur = this._lmCalStats(ref, raw, this._lmOriIndex(), true);
-        for (var rc = 0; rc < raw.length; rc++) raw[rc].dChk = true;
-        if (!cur || cur.inl < 8 || cur.inl < cur.n * 0.5 || cur.alt >= Math.max(4, cur.inl / 2)) return;
+        var ok = function (st) { return st.inl >= 8 && st.inl >= st.n * 0.5 && st.alt < Math.max(4, st.inl / 2); };
+        /* against the main food and the connections whose d is verified: may correct d; else
+         * against every verified connection: may only verify it (vonly) */
+        var cur = this._lmCalStats(ref, raw, this._lmOriIndex(), true), vonly = false;
+        if (!ok(cur)) {
+            cur = this._lmCalStats(ref, raw, this._lmOriIndex(), false);
+            if (!ok(cur) || Math.abs(cur.mx) > 1 || Math.abs(cur.my) > 1) return;
+            vonly = true;
+        }
         /* a snap pairs only with one of the same transform revision and main frame */
         var rev = this._lmXfRev || 0, m0 = lmMainCentre(0), m1 = lmMainCentre(1), k0 = lmMainScale(0), k1 = lmMainScale(1);
         var snaps = this._lmCalibSnaps = this._lmCalibSnaps.filter(function (q) { return q.rev === rev && q.m0 === m0 && q.m1 === m1 && q.k0 === k0 && q.k1 === k1; });
-        snaps.push({ x: cur.mx, y: cur.my, n: cur.inl, rev: rev, m0: m0, m1: m1, k0: k0, k1: k1 });
+        snaps.push({ x: cur.mx, y: cur.my, n: cur.inl, vonly: vonly, rev: rev, m0: m0, m1: m1, k0: k0, k1: k1 });
         if (snaps.length > 2) snaps.shift();
         if (snaps.length < 2) return;
         if (Math.abs(snaps[0].x - snaps[1].x) > 1 || Math.abs(snaps[0].y - snaps[1].y) > 1) {
@@ -2296,6 +2300,10 @@ class Spect {
             return;
         }
         var mx = (snaps[0].x + snaps[1].x) / 2, my = (snaps[0].y + snaps[1].y) / 2;
+        if ((snaps[0].vonly || snaps[1].vonly) && (Math.abs(mx) > 1 || Math.abs(my) > 1)) {
+            snaps.shift();
+            return;
+        }
         this._lmCalibSnaps = [];
         if (Math.abs(mx) <= 1 && Math.abs(my) <= 1) {
             if (!this.foodCalibrated) {
