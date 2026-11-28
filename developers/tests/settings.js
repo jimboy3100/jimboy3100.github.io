@@ -762,7 +762,7 @@ const wrap = it => ({ length: 1, hasClass: c => it.cls.has(c), addClass(c) { it.
 const fake$ = x => (x && x._row ? { closest: s => (s === '#og-options' ? { length: 1 } : wrap(x._row)) } : { on() { }, length: 0 });
 const fakeDoc = { getElementById: id => (id === 'lm-dep-style' ? {} : { _row: row(id.replace(/-slider$/, '')) }), createElement: () => ({}), head: { appendChild() { } } };
 const depRefresh = vm.runInContext('(function (app, $, document, lmT) {' + depSrc + 'return refresh; })', ctx)(
-  { _lmMenuText: k => (k === 'lmDepNeeds' ? 'Needs' : '<b>' + k + '</b>') }, fake$, fakeDoc, k => k);
+  { _lmMenuText: k => (k === 'lmDepNeeds' ? 'Needs' : '<b>' + k + '</b>') }, fake$, fakeDoc, (k, v) => (v ? k + ' ' + v.join(',') : k));
 const dmsDep = vm.runInContext('defaultmapsettings', ctx);
 const depWhy = k => (rows[k] && rows[k].cls.has('lm-dep-off') ? rows[k].at['data-lm-why'] : '');
 const depRun = set => { Object.assign(dmsDep, D, set); depRefresh(); };
@@ -782,6 +782,19 @@ check('Multibox rings category removed: no ring setting left (the ring on the pl
   vm.runInNewContext(fn.slice(a, b + 2) + '\nlmRenameOldHotkeys(hotkeys);', { hotkeys: hk });
   check('stored key on the removed multibox rings hotkey dropped', !('R' in hk) && !('' in hk) && hk.W === 'hk-feed');
 }
+/* No skins on: the custom / agar.io / own agar.io skin switches do nothing (the real lmSkinsShown
+ * with LM.showCustomSkins off, as setSettings sets it), so they are dimmed and name it; off: not */
+depRun({ noSkins: true });
+check('No skins on: custom, vanilla and own vanilla skins dimmed, naming No skins',
+  ['customSkins', 'vanillaSkins', 'ownVanillaSkin'].every(k => depWhy(k) === 'pkg.hor0w.depOffWhile noSkins') && depWhy('videoSkins') === '',
+  ['customSkins', 'vanillaSkins', 'ownVanillaSkin'].map(depWhy).join('|'));
+{
+  const shown = vm.runInNewContext(cut('function lmSkinsShown() {', '/* Dying Light in the world renderers.') + '\n[lmSkinsShown(), (window.legendmod.showCustomSkins = false, lmSkinsShown())]',
+    { defaultmapsettings: { customSkins: true, vanillaSkins: true, ownVanillaSkin: true }, window: { legendmod: { showCustomSkins: true } } });
+  check('No skins on (LM.showCustomSkins false): no cell draws a skin whatever the three switches say', shown[0] === true && shown[1] === false);
+}
+depRun({ noSkins: false });
+check('No skins off: the skin switches are not dimmed', ['customSkins', 'vanillaSkins', 'ownVanillaSkin'].every(k => depWhy(k) === ''));
 depRun({});
 check('defaults: none of these dimmed, and every switch of the list is a real setting',
   ['rainbowMapBorders'].every(k => depWhy(k) === '') &&

@@ -1,5 +1,8 @@
 {
   "pkg.hor0w.stickyMouse": {
     "en": "<b>{0}</b> is set, but Sticky cells (Settings) use that button while they are on: its command runs only with Sticky cells off."
+  },
+  "pkg.hor0w.depOffWhile": {
+    "en": "No effect while {0} is on"
   }
 }

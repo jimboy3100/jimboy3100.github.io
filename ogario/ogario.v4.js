@@ -28806,6 +28806,12 @@ function thelegendmodproject() {
                     /* the rainbow colour is used only where the map border is drawn */
                     showMapBorders: ['rainbowMapBorders']
                 };
+                /* the other way round: options that do nothing while this switch is ON. No skins
+                 * hides every custom, agar.io and own agar.io skin (lmSkinsShown, the core's skins
+                 * off); the Dying Light skins are not these options and still draw */
+                var DEPS_ON = {
+                    noSkins: ['customSkins', 'vanillaSkins', 'ownVanillaSkin']
+                };
                 /* option -> the server types it works on (checked against the code): the merge sound
                  * needs agar.io's merge times (LM.integrity && !LM.isLegendWorld) */
                 var SRV_AGARIO = ['agario'];
@@ -28813,9 +28819,12 @@ function thelegendmodproject() {
                 /* server type (window.legendmod.serverType) -> its name; private servers: pkg.n56.protoPriv */
                 // i18n-ok: server proper names
                 var SRV_NAMES = { agario: 'agar.io', expandingland: 'Expanding Land', senpa: 'Senpa', garix: 'Garix', sigmally: 'Sigmally', imsolo: 'Imsolo', agar2: 'Agar2', deltio: 'delt.io', private: '' };
-                var parentOf = {}, keys = [];
+                var parentOf = {}, onParentOf = {}, keys = [];
                 Object.keys(DEPS).forEach(function (p) {
                     DEPS[p].forEach(function (c) { parentOf[c] = p; if (keys.indexOf(c) < 0) keys.push(c); });
+                });
+                Object.keys(DEPS_ON).forEach(function (p) {
+                    DEPS_ON[p].forEach(function (c) { onParentOf[c] = p; if (keys.indexOf(c) < 0) keys.push(c); });
                 });
                 Object.keys(SRV).forEach(function (k) { if (keys.indexOf(k) < 0) keys.push(k); });
                 var plain = function (s) { return String(s == null ? '' : s).replace(/<[^>]*>/g, '').trim(); };
@@ -28861,6 +28870,7 @@ function thelegendmodproject() {
                             if (defaultmapsettings.hasOwnProperty(p) && !defaultmapsettings[p]) off = p;
                         }
                         if (off) why = app._lmMenuText('lmDepNeeds') + ': ' + plain(app._lmMenuText(off));
+                        else if (onParentOf[k] && defaultmapsettings[onParentOf[k]]) why = lmT('pkg.hor0w.depOffWhile', [plain(app._lmMenuText(onParentOf[k]))]);
                         else if (SRV[k]) why = srvNote(SRV[k]);
                         mark(it, why);
                     });
