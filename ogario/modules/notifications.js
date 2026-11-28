@@ -380,11 +380,20 @@
         return channelVolume(channel);
     }
 
-    /* for scripts: play an Audio element on a mixer channel */
-    function play(audio, channel) {
+    /* gain of one sound inside its channel (0..1, default 1): a quiet effect stays below the
+     * channel volume, never above it, so the channel / master sliders and a muted channel still win */
+    function gainOf(g) {
+        if (g == null) return 1;
+        var n = Number(g);
+        return Number.isFinite(n) ? (n < 0 ? 0 : n > 1 ? 1 : n) : 1;
+    }
+
+    /* for scripts: play an Audio element on a mixer channel; gain (optional, 0..1) lowers it inside
+     * the channel (soundVolume(channel) x gain) */
+    function play(audio, channel, gain) {
         if (!audio || typeof audio.play !== 'function') return;
         try {
-            var ch = channel || 'notifications', v = soundVolume(ch);
+            var ch = channel || 'notifications', v = soundVolume(ch) * gainOf(gain);
             if (audio.volume !== v) audio.volume = v;
             audio.currentTime = 0;
             var p = audio.play();
@@ -836,7 +845,7 @@
             sanitizeItems: sanitizeItems, parseStore: parseStore, serializeStore: serializeStore, parsePrefs: parsePrefs,
             unreadCount: unreadCount, filterItems: filterItems, mixVolume: mixVolume, vol: vol, candidateSpots: candidateSpots,
             wrapToastr: wrapToastr, saveNow: saveNow, catLabel: catLabel, typeLabel: typeLabel, MAX_ITEMS: MAX_ITEMS, MAX_TEXT: MAX_TEXT, MAX_BYTES: MAX_BYTES,
-            DUCK_LEVEL: DUCK_LEVEL, DUCK_MS: DUCK_MS, DUCK_MAX_MS: DUCK_MAX_MS
+            DUCK_LEVEL: DUCK_LEVEL, DUCK_MS: DUCK_MS, DUCK_MAX_MS: DUCK_MAX_MS, gainOf: gainOf
         }
     };
     root.LMNotifications = api;

@@ -372,6 +372,24 @@ function boot(opts) {
   s4.volume = b.api.soundVolume('chat');
   if (typeof b.api.duckPlayback === 'function') b.api.duckPlayback(s4, 'chat', s4.play()); await tick();
   check('ducking: duckPlayback for the core sounds', typeof b.api.duckPlayback === 'function' && low());
+  /* optional gain (third argument): channel x gain, clamped 0..1; old two-argument calls unchanged */
+  {
+    const g = boot({ settings: { volMaster: 0.5, volChat: 0.4, volGameplay: 1, audioDucking: false } });
+    const a = sound(); g.api.play(a, 'gameplay');
+    check('gain: omitted = channel volume', a.volume === 0.5);
+    const a2 = sound(); g.api.play(a2, 'gameplay', 0.4);
+    check('gain: channel x gain', Math.abs(a2.volume - 0.2) < 1e-12);
+    const a3 = sound(); g.api.play(a3, 'chat', 5);
+    check('gain: above 1 clamped (never louder than the channel)', Math.abs(a3.volume - 0.2) < 1e-12);
+    const a4 = sound(); g.api.play(a4, 'chat', -1);
+    check('gain: below 0 = silent', a4.volume === 0);
+    const a5 = sound(); g.api.play(a5, 'chat', 'x');
+    check('gain: not a number = 1', Math.abs(a5.volume - 0.2) < 1e-12);
+    g.ctx.legendmod5.volChat = 0;
+    const a6 = sound(); g.api.play(a6, 'chat', 1);
+    check('gain: a muted channel stays silent', a6.volume === 0);
+    check('gain: play returns nothing as before', g.api.play(sound(), 'chat', 0.5) === undefined);
+  }
   const d = boot();
   check('defaults: every channel 1, video unchanged', ['chat', 'commands', 'gameplay', 'video', 'notifications'].every(c => d.api.channelVolume(c) === 1) && d.api.videoVolume(0.42) === 0.42);
 
