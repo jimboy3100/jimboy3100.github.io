@@ -1655,6 +1655,24 @@
     "ja": "次に入るサーバーから、リプレイの録画を再開します。",
     "it": "I replay verranno registrati di nuovo dal prossimo server in cui entri."
   },
+  "game1.notif.blocked": {
+    "en": "Notifications are blocked in this browser for this site.",
+    "el": "Οι ειδοποιήσεις είναι μπλοκαρισμένες σε αυτόν τον φυλλομετρητή για αυτόν τον ιστότοπο.",
+    "es": "Las notificaciones están bloqueadas en este navegador para este sitio.",
+    "bg": "Известията са блокирани в този браузър за този сайт.",
+    "fr": "Les notifications sont bloquées dans ce navigateur pour ce site.",
+    "ar": "الإشعارات محظورة في هذا المتصفح لهذا الموقع.",
+    "zh": "此瀏覽器已封鎖本網站的通知。",
+    "ru": "Уведомления для этого сайта заблокированы в браузере.",
+    "de": "Benachrichtigungen sind in diesem Browser für diese Seite blockiert.",
+    "tr": "Bu tarayıcıda bu site için bildirimler engelli.",
+    "pl": "Powiadomienia dla tej strony są zablokowane w tej przeglądarce.",
+    "nl": "Meldingen zijn in deze browser geblokkeerd voor deze site.",
+    "pt": "As notificações estão bloqueadas neste navegador para este site.",
+    "id": "Notifikasi untuk situs ini diblokir di browser ini.",
+    "ja": "このブラウザーでは、このサイトの通知がブロックされています。",
+    "it": "Le notifiche per questo sito sono bloccate in questo browser."
+  },
   "game1.perf.aaReload": {
     "en": "Reload the page to apply anti-aliasing.",
     "el": "Φορτώστε ξανά τη σελίδα για να εφαρμοστεί η εξομάλυνση.",

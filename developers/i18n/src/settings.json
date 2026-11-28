@@ -3188,6 +3188,24 @@
     "ja": "自分のセルに合体の進行リング",
     "it": "Anelli di avanzamento fusione sulle mie cellule"
   },
+  "settings.mentionNotify": {
+    "en": "Desktop notification when someone mentions your nick (tab in background)",
+    "el": "Ειδοποίηση επιφάνειας εργασίας όταν κάποιος αναφέρει το nick σου (καρτέλα στο παρασκήνιο)",
+    "es": "Notificación de escritorio cuando alguien menciona tu nick (pestaña en segundo plano)",
+    "bg": "Известие на работния плот, когато някой спомене ника ти (раздел във фонов режим)",
+    "fr": "Notification de bureau quand quelqu'un mentionne ton pseudo (onglet en arrière-plan)",
+    "ar": "إشعار سطح المكتب عندما يذكر أحدهم اسمك (التبويب في الخلفية)",
+    "zh": "有人提到你的暱稱時顯示桌面通知（分頁在背景時）",
+    "ru": "Уведомление на рабочем столе, когда кто-то упоминает твой ник (вкладка в фоне)",
+    "de": "Desktop-Benachrichtigung, wenn jemand deinen Nick erwähnt (Tab im Hintergrund)",
+    "tr": "Biri nickini andığında masaüstü bildirimi (sekme arka plandayken)",
+    "pl": "Powiadomienie na pulpicie, gdy ktoś wspomni twój nick (karta w tle)",
+    "nl": "Bureaubladmelding als iemand je nick noemt (tabblad op de achtergrond)",
+    "pt": "Notificação na área de trabalho quando alguém mencionar seu nick (aba em segundo plano)",
+    "id": "Notifikasi desktop saat seseorang menyebut nick kamu (tab di latar belakang)",
+    "ja": "誰かが自分の名前に言及したらデスクトップ通知（タブが背景のとき）",
+    "it": "Notifica desktop quando qualcuno menziona il tuo nick (scheda in background)"
+  },
   "settings.rainbowMapBorders": {
     "en": "Rainbow map borders",
     "el": "Όρια χάρτη ουράνιου τόξου",

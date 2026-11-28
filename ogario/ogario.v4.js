@@ -21071,7 +21071,7 @@ var defaultmapsettings = {
     showStatsFPS: true,
     showStatsAlive: false,        /* stats HUD: time alive in this life */
     mergeRings: true,             /* merge progress rings on own cells (shown before this setting existed) */
-    /* mentionNotify (desktop notification on a nick mention) is gone: a saved value is skipped on load */
+    mentionNotify: false,         /* desktop notification for chat mentions while the tab is hidden */
     rainbowMapBorders: false,     /* map border colour cycles through the rainbow */
     hudBlur: 0,                   /* frosted-glass blur behind HUD panels, px (0 = off) */
     /* timeFormat (clock format) is gone: the clock always shows the browser's date and time; saved values are skipped on load */
@@ -25217,6 +25217,24 @@ function thelegendmodproject() {
                             ogario.foodIsHidden = false;
                         }
                         break;
+                    case 'mentionNotify':
+                        if (checked && typeof Notification !== 'undefined' && Notification.permission === 'default') {
+                            /* asked only right after a click or key of the player: a profile applied by
+                             * its auto rule (or a script) asks nothing, the next switch-on asks. Blocked
+                             * in the browser's prompt: told so. */
+                            var _lmUa = window.navigator && navigator.userActivation;
+                            if (!_lmUa || _lmUa.isActive) {
+                                try {
+                                    var _lmPerm = Notification.requestPermission();
+                                    if (_lmPerm && typeof _lmPerm.then === 'function') _lmPerm.then(function (r) {
+                                        if (r === 'denied' && window.toastr) toastr.warning(lmT('game1.notif.blocked'));
+                                    }, function () { });
+                                } catch (eP) { }
+                            }
+                        } else if (checked && (typeof Notification === 'undefined' || Notification.permission === 'denied') && window.toastr) {
+                            toastr.warning(lmT('game1.notif.blocked'));
+                        }
+                        break;
                     case 'chatSounds':
                         this.setChatSoundsBtn();
                         break;
@@ -26466,7 +26484,7 @@ function thelegendmodproject() {
             this.addOptions(["autoHideFood", "autoHideFoodOnZoom", "rainbowFood"], "foodGroup");
             this.addOptions(["noColors", "myCustomColor", "myTransparentSkin", "transparentSkins", "transparentCells", "transparentViruses", "virusGlow", 'cellContours', "showCellShadows", "animatedRainbowColor"], "transparencyGroup");
             this.addOptions(["showGrid", "showBgSectors", "showMapBorders", "borderGlow", "rainbowMapBorders"], "gridGroup");
-            this.addOptions(["disableChat", "chatSounds", "chatEmoticons", "showChatImages", "showChatVideos", "showChatBox", "showChat", "showChatMyOwn", "showChatTranslation", "coloredNicks", "hidecountry", "agarToolTeam"], "chatGroup");
+            this.addOptions(["disableChat", "chatSounds", "chatEmoticons", "showChatImages", "showChatVideos", "showChatBox", "showChat", "showChatMyOwn", "showChatTranslation", "coloredNicks", "hidecountry", "agarToolTeam", "mentionNotify"], "chatGroup");
             //this.addOptions(["disableChat", "chatSounds", "chatEmoticons", "showChatImages", "showChatVideos", "showChatBox", "showChat", "showChatMyOwn", "showChatTranslation", "coloredNicks", "hidecountry"], "chatGroup"); // OLD: without universalChat
             /* Sounds: each sound's switch, file and volume, and the master volume, applied where each
              * sound plays (playSound, lmSoundVolume; the video skin volume timer); all 1 = unchanged.
@@ -33811,6 +33829,12 @@ function thelegendmodproject() {
                          * text stays escaped as before) */
                         var _lmOwnNick = String($('#nick').val() || '').trim().toLowerCase();
                         var _lmMention = _lmOwnNick.length >= 3 && plId != this.playerID && String(rawText).toLowerCase().indexOf(_lmOwnNick) !== -1;
+                        /* optional desktop notification while the tab is in the background */
+                        if (_lmMention && defaultmapsettings.mentionNotify && document.hidden && typeof Notification !== 'undefined' && !window._lmReplayQuiet &&
+                            Notification.permission === 'granted' && Date.now() - (this._lmMentionNotifAt || 0) > 5000) {
+                            this._lmMentionNotifAt = Date.now();
+                            try { new Notification(String(rawNick).slice(0, 40), { body: String(rawText).slice(0, 120), tag: 'lm-mention' }); } catch (eN) { }
+                        }
                         if (_lmMention && !document.getElementById('lm-mention-css')) {
                             var _lmMcss = document.createElement('style');
                             _lmMcss.id = 'lm-mention-css';

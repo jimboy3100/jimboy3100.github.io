@@ -1460,6 +1460,24 @@
     "ja": "チャットのニックネームをクリックすると、メッセージに挿入されます",
     "it": "Clicca su un nick nella chat per inserirlo nel tuo messaggio"
   },
+  "site.features.optionalDesktopNotificationWhen": {
+    "en": "Optional desktop notification when someone mentions you",
+    "el": "Προαιρετική ειδοποίηση επιφάνειας εργασίας όταν κάποιος σας αναφέρει",
+    "es": "Notificación de escritorio opcional cuando alguien te menciona",
+    "bg": "Незадължително известие на работния плот, когато някой ви спомене",
+    "fr": "Notification de bureau optionnelle quand quelqu'un vous mentionne",
+    "ar": "إشعار اختياري على سطح المكتب عندما يذكرك أحد",
+    "zh": "有人提到你時可選擇顯示桌面通知",
+    "ru": "Уведомление на рабочем столе, когда вас упоминают, по желанию",
+    "de": "Optionale Desktop-Benachrichtigung, wenn dich jemand erwähnt",
+    "tr": "Biri sizden bahsettiğinde isteğe bağlı masaüstü bildirimi",
+    "pl": "Opcjonalne powiadomienie na pulpicie, gdy ktoś cię wspomni",
+    "nl": "Optionele bureaubladmelding als iemand je noemt",
+    "pt": "Notificação opcional na área de trabalho quando alguém te menciona",
+    "id": "Notifikasi desktop opsional saat ada yang menyebut namamu",
+    "ja": "誰かにメンションされたときのデスクトップ通知（任意）",
+    "it": "Notifica desktop opzionale quando qualcuno ti menziona"
+  },
   "site.features.smartSettingsNew": {
     "en": "Smart Settings <span class=\"badge badge-new\">New</span>",
     "el": "Έξυπνες ρυθμίσεις <span class=\"badge badge-new\">Νέο</span>",
