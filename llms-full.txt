@@ -318,7 +318,7 @@ Automatic camera system for spectating. Features:
 Hold-point-release radial command menu. Features:
 - **Up to 8 slots**: Assign any hotkey command to a slot
 - **Quick access**: Hold radial menu key, point to slot, release to activate
-- **Radial editor**: Customize slot assignments (opens when the ring is empty)
+- **Radial editor**: Customize slot assignments (opens from the Command Centre, or when the ring is empty)
 - Opens via hotkey (no default key)
 
 ### 25. User Scripts / Plugins

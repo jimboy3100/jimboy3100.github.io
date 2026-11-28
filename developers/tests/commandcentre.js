@@ -191,5 +191,26 @@ check('bar: row wider than the screen -> column', p.dir === 'col');
   }
 }
 
+// the radial menu editor and the screenshot window: no hotkey of their own, opened from here
+{
+  /* the Command Centre's window list as it is in the source (the module stops before it without a document) */
+  const m = /\n    var WINDOWS = (\[[\s\S]*?\n    \]);/.exec(src.replace(/\r\n/g, '\n'));
+  const W = { LMSmallTools: undefined };
+  const list = m ? new Function('W', 'D', 'clickEl', 'openTab', 'return ' + m[1] + ';')(W, {}, () => false, () => {}) : [];
+  const win = (id) => list.filter((w) => w.id === id)[0];
+  const re = win('radialEditor'), sh = win('screenshotTool');
+  check('windows: radial editor and screenshot window entries', !!re && !!sh);
+  if (re && sh) {
+    const opened = [];
+    check('windows: not offered before the small tools load', !re.avail() && !sh.avail());
+    W.LMSmallTools = { open: (n) => opened.push(n) };
+    re.run(); sh.run();
+    check('windows: they open the radial editor and the screenshot window', re.avail() && sh.avail() && opened.join() === 'radial,screenshot');
+    check('windows: labels are the window titles', ctx.lmT(re.key) === 'Radial menu' && ctx.lmT(sh.key) === 'Screenshot');
+  }
+  const g = C.parseStore({ fav: ['hk:hk-radialEditor', 'hk:hk-screenshotTool', 'hk:hk-notifCentre', 'win:serverCaps'] });
+  check('store: a star on the removed window hotkeys goes to the window, the others are dropped', g.fav.join() === 'win:radialEditor,win:screenshotTool');
+}
+
 console.log(fail ? fail + ' failed' : 'all command centre checks passed');
 process.exit(fail ? 1 : 0);

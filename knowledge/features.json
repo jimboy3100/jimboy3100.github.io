@@ -113,7 +113,7 @@
     {
       "id": "radialmenu",
       "name": "Radial menu",
-      "description": "Hold-point-release radial command menu with up to 8 slots. Assign any hotkey command to a slot. Radial editor (opens when the ring is empty) for customization. Quick access to frequent commands without memorising keys.",
+      "description": "Hold-point-release radial command menu with up to 8 slots. Assign any hotkey command to a slot. Radial editor (opens from the Command Centre, or when the ring is empty) for customization. Quick access to frequent commands without memorising keys.",
       "url": "https://www.legendmod.ml/features.html"
     },
     {

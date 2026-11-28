@@ -169,8 +169,9 @@
      * switch, the Scan Trick status switch -> its key (Scan Trick has no settings any more), the
      * line split status switch -> its section, Ghost cells info -> Ghost cells); without this the star was dropped silently. '' = gone
      * with nothing in its place (the Skin collections window and its Collections button switch: the
-     * skin links it kept became player profiles; What works on this server; the hotkeys Open the
- * notification centre, Radial menu: choose commands and Screenshot window), the star is dropped quietly */
+     * skin links it kept became player profiles; What works on this server; the hotkey Open the
+     * notification centre), the star is dropped quietly. The hotkeys Radial menu: choose commands and
+     * Screenshot window -> their windows, which stay */
     var RENAMED = {
         'opt:shortMass': 'set:massFormat', 'opt:fpsAtTop': 'win:hudEditor', 'opt:statsAtCenter': 'win:hudEditor', 'set:statsPosition': 'win:hudEditor',
         'hk:hk-screenshotMode': 'hk:hk-showHUD', 'hk:hk-zoomRecall1': 'hk:hk-zoom1', 'hk:hk-zoomRecall2': 'hk:hk-zoom2', 'hk:hk-zoomRecall3': 'hk:hk-zoom3',
@@ -181,7 +182,7 @@
         'opt:gamepadEnabled': 'sec:lmHkGamepad', 'set:gamepadDeadzone': 'sec:lmHkGamepad',
         'opt:massGraph': 'opt:gameOverStats', 'opt:showKiller': 'opt:gameOverStats', 'opt:deathRecap': 'opt:gameOverStats',
         'opt:skinCollections': '', 'hk:hk-skinCollections': '',
-        'win:serverCaps': '', 'hk:hk-notifCentre': '', 'hk:hk-radialEditor': '', 'hk:hk-screenshotTool': '',
+        'win:serverCaps': '', 'hk:hk-notifCentre': '', 'hk:hk-radialEditor': 'win:radialEditor', 'hk:hk-screenshotTool': 'win:screenshotTool',
         'opt:scanTrickStatus': 'hk:hk-scanTrick', 'opt:lineSplitStatus': 'sec:lineSplitGroup',
         'opt:showGhostCellsInfo': 'opt:showGhostCells'
     };
@@ -493,6 +494,10 @@
         /* the Lab experiments are in this window too (no Lab entry of their own) */
         { id: 'plugins', key: 'pkg.lb2.ccPlugins', avail: function () { return !!(W.LMPlugins && typeof W.LMPlugins.open === 'function'); }, run: function () { W.LMPlugins.open('plugins'); } },
         { id: 'discover', avail: function () { return !!(W.LMDiscovery && W.LMDiscovery.open); }, run: function () { W.LMDiscovery.open(); } },
+        /* the radial menu's editor and the screenshot window (ogario/modules/smalltools.js): they have
+         * no hotkey of their own, so this is where they open (the editor also opens on an empty ring) */
+        { id: 'radialEditor', key: 'modules.smalltools.radialTitle', avail: function () { return !!(W.LMSmallTools && typeof W.LMSmallTools.open === 'function'); }, run: function () { W.LMSmallTools.open('radial'); } },
+        { id: 'screenshotTool', key: 'modules.smalltools.shotTitle', avail: function () { return !!(W.LMSmallTools && typeof W.LMSmallTools.open === 'function'); }, run: function () { W.LMSmallTools.open('screenshot'); } },
         { id: 'themeWorkshop', avail: function () { return !!(W.LMThemeWorkshop && typeof W.LMThemeWorkshop.open === 'function'); }, run: function () { W.LMThemeWorkshop.open(); } }
     ];
 
