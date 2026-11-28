@@ -91,7 +91,6 @@
     "ogario/hotkeysCommand.js",
     "ogario/spect.js",
     "ogario/gamepad.js",
-    "ogario/fullzoom.js",
     "ogario/mergetimer.js",
     "ogario/autoplay.js",
     "ogario/captcha.js",

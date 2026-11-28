@@ -5057,6 +5057,22 @@
         "external": "expandingland, legendworld-help, LegendWorld and deltav4 do not name it; no version in the git history of a userscript, of the two extension zips or of the Expanding Land APK names it; not in sitemap.xml"
       },
       "approvedForDeletion": true
+    },
+    {
+      "oldPath": "ogario/fullzoom.js",
+      "canonicalPath": null,
+      "reason": "Old spectator code (header \"SPECS v1.6\", uploaded 2020-05-25) with its own addBox (unshift), newID and flushCellsData; ogario/spect.js and the multibox player registry (lmMbPlayers) are the live ones. No page, script, test, userscript, extension or tool ever loaded it, also not by a built path; only the i18n scan list named it.",
+      "internalReferencesMigrated": true,
+      "legacyResolverSupported": false,
+      "externalUrlSupported": false,
+      "legacyResolverNeeded": false,
+      "externalUrlNeeded": false,
+      "verification": {
+        "on": "2026-11-28",
+        "legacy": "saved data cannot hold it: a development copy, never loaded by the game, a page or a setting",
+        "external": "expandingland, legendworld-help, LegendWorld and deltav4 do not name it (also not in their git history); no version in the git history of a page, a userscript or the two extension zips (18 revisions) names it; not in sitemap.xml"
+      },
+      "approvedForDeletion": true
     }
   ]
 }
