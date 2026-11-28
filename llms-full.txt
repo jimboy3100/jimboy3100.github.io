@@ -181,7 +181,6 @@ Record and replay game sessions. Features:
 - **Death particles**: Particle burst when cells are eaten (configurable)
 - **Eat pulse**: Brief size pulse on the eating cell
 - **Camera smoothing**: Lerp-based smooth camera following
-- **Mass-weighted camera**: Camera target at mass-weighted centre of own cells (Delta-style)
 - **Zoom speed and smoothness**: Configurable zoom speed and glide rate
 
 ### 9. Chat System
@@ -325,7 +324,7 @@ Legend Mod organises its 300+ settings into the following categories accessible 
 - **Expanding Land**: Reduced motion (no Expanding Land death shake, death particles or entrance spin)
 - **Grid/Borders**: Grid, sectors, map borders, border glow, rainbow borders
 - **Effects**: No colours, custom colour, transparent skins/cells/viruses, virus glow, cell contours, cell shadows, animated rainbow, death particles, eat pulse
-- **Zoom**: Auto zoom, mass-weighted camera
+- **Zoom**: Auto zoom
 - **Respawn**: Quick respawn, auto respawn, spawn effects
 - **Names**: No names, optimized, auto-hide, hide mine, hide teammates, stroke
 - **Mass**: Show mass, optimized, auto-hide, hide mine, hide enemies, mass format (exact / 12.3k / auto), virus spikes, virus mass shots, stroke, relative mass

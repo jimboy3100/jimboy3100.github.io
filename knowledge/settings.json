@@ -229,11 +229,9 @@
         "virusColours",
         "splitRangeSingle",
         "splitRangeDouble",
-        "splitRangeTriple",
         "splitRangeQuad",
         "virusRange",
         "cursorTracking",
-        "splitPrediction",
         "bubbleIndicators",
         "teammatesIndicators"
       ]
@@ -290,8 +288,7 @@
       "name": "Zoom",
       "description": "Camera zoom settings.",
       "settings": [
-        "autoZoom",
-        "massWeightedCamera"
+        "autoZoom"
       ]
     },
     {
