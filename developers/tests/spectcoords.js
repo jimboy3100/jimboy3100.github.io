@@ -14,7 +14,10 @@
  * evidence (top-player lists 1.5 s apart, other pellets); a CONFLICTED source is not fed to the
  * reconciliation (_lmFeedOk); anchors die with their pellet or socket; live pellet pairs of FFA,
  * Experimental, Party and FFA with Rotate Map agree per mode; ClearAll and later borders keep a
- * connection's transform; "Keep moving" keeps the world direction across a reconnect on a mirrored socket.
+ * connection's transform; "Keep moving" keeps the world direction across a reconnect on a mirrored socket;
+ * the calibration evidence (section 11: one entity per pellet, second
+ * clusters, d only from verified d, liveness in the cached reference, per-transform snaps, the
+ * whole anchor ring).
  * node developers/tests/spectcoords.js [spect.js] */
 'use strict';
 const fs = require('fs'), path = require('path'), vm = require('vm');
@@ -442,6 +445,108 @@ for (const [d, vnr] of [[0, 0], [3, 2]]) {
     check('mirror in x: velocity x turned round, y kept', near(v1[0], 0.5) && near(v1[1], 0.25), v1.join());
     check('mirror in y as well: velocity y turned round', near(v2[0], 0.5) && near(v2[1], -0.25), v2.join());
     check('offset only (d): velocity unchanged', near(v3[0], 0.5) && near(v3[1], -0.25), v3.join());
+}
+
+/* 11. Calibration evidence: one pellet seen by several connections is one reference entity
+ *     (never two votes), a second cluster or unverified d is not evidence, a cached reference
+ *     never counts a pellet that is gone, residual evidence belongs to one transform, and the
+ *     check reaches the whole anchor ring. updateCells runs a throttled check at Date.now():
+ *     the checks below run at later times. */
+{
+    const food = (p, size) => ({ x: p[0], y: p[1], _lmRawX: p[0], _lmRawY: p[1], size: size || 10, targetSize: size || 10 });
+    const T = () => Date.now() + 100000;
+    /* 11a. one reference pellet seen by two connections is one anchor: two observations near it are
+     *      ambiguous (no vote twice); copies up to the quantization reach are one pellet; no arrival order */
+    {
+        const ctx = load(mainClient(-W / 2, -W / 2)), put = vm.runInContext('lmAnchorPut', ctx), res = vm.runInContext('lmAnchorResiduals', ctx), G = vm.runInContext('lmAnchorGrid', ctx);
+        let g = G(); put(g, 0, 0, 10, 1); put(g, 1, 0, 10, 2);
+        const r1 = res(g, [{ x: 0, y: 0, size: 10 }, { x: 1, y: 0, size: 10 }], 24, 3);
+        check('11a one pellet, 2 copies, 2 observations: at most one match (got ' + r1.length + ')', r1.length <= 1, JSON.stringify(r1));
+        g = G(); put(g, 0, 0, 10, 0); put(g, 2.5, 1.5, 10, 1);
+        const r2 = res(g, [{ x: 1, y: 1, size: 10 }], 24, 3);
+        check('11a copies 2.5 / 1.5 apart (2 x the live per-axis max): one pellet, matched', r2.length === 1, r2.length);
+        g = G(); put(g, 0, 0, 10, 1); put(g, 3, 0, 10, 1);
+        check('11a two pellets of one connection 3 apart stay two (observation ambiguous)', res(g, [{ x: 0, y: 0, size: 10 }], 24, 3).length === 0);
+        const ord = [[{ x: 20, y: 0, size: 10 }, { x: 0, y: 0, size: 10 }], [{ x: 0, y: 0, size: 10 }, { x: 20, y: 0, size: 10 }]].map((o) => {
+            const gg = G(); put(gg, 0, 0, 10, 0); return res(gg, o, 24, 3).map((r) => r[0] + ',' + r[1]).join(';');
+        });
+        check('11a two observations in reach of one pellet: the same result in both orders, no 20-unit residual', ord[0] === ord[1] && ord[0].indexOf('-20') < 0, ord.join(' | '));
+        /* the flat grid grows past its first arrays and its hashed buckets keep pellets apart */
+        g = G();
+        const many = Array.from({ length: 3000 }, (_, i) => ({ x: -7000 + (i % 60) * 233 + 0.5, y: -7000 + Math.floor(i / 60) * 280 + 0.5, size: 10 }));
+        many.forEach((p) => put(g, p.x + 1, p.y - 1, 10, 0));
+        const rm = res(g, many, 24, 3);
+        check('11a 3000 pellets: every observation matched once, residual (1, -1)', g.n === 3000 && rm.length === 3000 && rm.every((r, i) => r[0] === 1 && r[1] === -1 && r[2] === i), g.n + ' / ' + rm.length);
+    }
+    /* 11b. lmRobustOffset: a second cluster of nearly the same support is not one offset */
+    {
+        const ctx = load(mainClient(-W / 2, -W / 2)), rob = vm.runInContext('lmRobustOffset', ctx);
+        const R = (a, n) => Array.from({ length: n }, () => [a[0], a[1], 0]);
+        const a = rob(R([0, 0], 5).concat(R([23, 23], 3)));
+        check('11b 5 at 0 + 3 at 23: all-match p95 reported (' + a.p95All + '), inlier p95 ' + a.p95, a.inl === 5 && a.p95All >= 23, JSON.stringify(a));
+        const b = rob(R([0, 0], 8).concat(R([6, 6], 7)));
+        check('11b 8 at 0 + 7 at 6: second cluster reported (alt ' + b.alt + ')', b.alt === 7, JSON.stringify(b));
+    }
+    /* 11c. d is only taken from verified d: a tile whose orientation is verified but whose d is not
+     *      (wrong by 6) does not move another connection's d */
+    {
+        const LM = mainClient(-W / 2, -W / 2), ctx = load(LM);
+        const bad = unit(ctx, 0, 0, { number: 2 }); bad.setOrientation(1, 1); bad._lmApplyTransform(1, 1, 6, 6);
+        const sp = unit(ctx, 0, 0, { number: 3 }); sp.setOrientation(1, 1);
+        const P = (i) => [-3000 + i * 150, 1000 + (i % 4) * 150];
+        LM.food = Array.from({ length: 7 }, (_, i) => food(P(i)));
+        bad.updateCells(packet(Array.from({ length: 9 }, (_, j) => ({ id: 100 + j, x: P(7 + j)[0], y: P(7 + j)[1], size: 10, food: true }))), 0);
+        sp.updateCells(packet(Array.from({ length: 16 }, (_, j) => ({ id: 300 + j, x: P(j)[0], y: P(j)[1], size: 10, food: true }))), 0);
+        const t0 = T();
+        for (let k = 1; k <= 3; k++) sp._lmCalibrate(t0 + k * 3100);
+        check('11c 7 pellets shared with main (d 0) + 9 with an unverified-d tile (d 6): d stays 0 (fix3 ' + sp.fix3x + ', ' + sp.fix3y + ')', sp.fix3x === 0 && sp.fix3y === 0);
+    }
+    /* 11d. the cached reference never counts a pellet that is gone */
+    {
+        const LM = mainClient(-W / 2, -W / 2), ctx = load(LM);
+        const tile = unit(ctx, 0, 0, { number: 2 }); tile.setOrientation(1, 1);
+        tile.updateCells(packet(Array.from({ length: 20 }, (_, j) => ({ id: 100 + j, x: -3000 + j * 150, y: 1000, size: 10, food: true }))), 0);
+        LM.food = [food([10, 10])];
+        const FR = vm.runInContext('lmFoodReference', ctx), res = vm.runInContext('lmAnchorResiduals', ctx), t = T();
+        vm.runInContext('lmFoodRefInvalidate', ctx)();
+        FR(t);
+        for (let j = 0; j < 10; j++) LM.indexedCells[100 + j + 2 * STEP].removeCell();
+        LM.food[0].removed = true;
+        const r = FR(t + 300);
+        const m = res(r.grid, [{ x: -3000, y: 1000, size: 10 }, { x: 10, y: 10, size: 10 }, { x: -1500, y: 1000, size: 10 }], 24, 3);
+        check('11d reference cached 300 ms: an eaten tile pellet and a removed main pellet match nothing, a live one does', m.length === 1 && m[0][2] === 2, JSON.stringify(m));
+    }
+    /* 11e. residual evidence belongs to one transform: a pending snap is dropped by a transform change;
+     *      leaving VERIFIED or a new orientation makes d unverified again */
+    {
+        const LM = mainClient(-W / 2, -W / 2), ctx = load(LM);
+        const sp = unit(ctx, 0, 0, { number: 3 }); sp.setOrientation(1, 1);
+        const pts = Array.from({ length: 12 }, (_, i) => [-3000 + i * 150, 1000 + (i % 3) * 170]);
+        LM.food = pts.map((p) => food(p));
+        sp.updateCells(packet(pts.map((p, j) => ({ id: 400 + j, x: p[0], y: p[1], size: 10, food: true }))), 0);
+        const pend = sp._lmCalibSnaps.length;
+        sp._lmApplyTransform(1, 1, 0.9, 0.9);
+        const t0 = T();
+        sp._lmCalibrate(t0);
+        check('11e a snap from before a transform change is not paired with one after it (pending ' + pend + ')', pend === 1 && !sp.foodCalibrated, [sp.foodCalibrated, JSON.stringify(sp._lmCalibSnaps)].join(' '));
+        sp._lmCalibrate(t0 + 3100);
+        check('11e two snaps of the new transform: d verified from them alone (fix3 ' + sp.fix3x + ', residual within the 1-unit rule)', sp.foodCalibrated && Math.abs(sp.fix3x) <= 1 && Math.abs(sp.fix3y) <= 1);
+        sp._lmOriVote(1, 'test');
+        check('11e contrary vote: CONFLICTED and d no longer verified', sp._lmOri === 'CONFLICTED' && !sp.foodCalibrated);
+    }
+    /* 11f. the check reaches every anchor, not only the newest 128: 256 older shared pellets, 128 newest unshared */
+    {
+        const LM = mainClient(-W / 2, -W / 2), ctx = load(LM);
+        const sp = unit(ctx, 0, 0, { number: 3 }); sp.setOrientation(1, 1);
+        const old = Array.from({ length: 256 }, (_, i) => [-6000 + (i % 32) * 150, -6000 + Math.floor(i / 32) * 150]);
+        LM.food = old.map((p) => food(p));
+        sp.updateCells(packet(Array.from({ length: 128 }, (_, j) => ({ id: 2000 + j, x: 3000 + (j % 16) * 150, y: 3000 + Math.floor(j / 16) * 150, size: 10, food: true }))), 0);
+        sp.updateCells(packet(old.map((p, j) => ({ id: 1000 + j, x: p[0], y: p[1], size: 10, food: true }))), 0);
+        sp.updateCells(packet(Array.from({ length: 128 }, (_, j) => ({ id: 3000 + j, x: 4000 + (j % 16) * 150, y: -3000 + Math.floor(j / 16) * 150, size: 10, food: true }))), 0);
+        const t0 = T();
+        for (let k = 1; k <= 6; k++) sp._lmCalibrate(t0 + k * 3100);
+        check('11f shared pellets older than the newest 128: d verified within 6 checks', sp.foodCalibrated, sp._lmCalibSnaps.length);
+    }
 }
 
 console.log(failed ? 'FAILED ' + failed : 'all spectcoords checks passed');

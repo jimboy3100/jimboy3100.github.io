@@ -568,6 +568,24 @@ reset();
     const look = (s) => vm.runInContext('lmMbLookOf(' + s + ', 1, "#40a0f0", "x")', g);
     check('a closed connection\'s shared colours are forgotten, the others\' kept', !look(2) && !!look(12) && !!look(0));
 }
+/* a round trip VERIFIED -> CONFLICTED -> VERIFIED with no frame in between (hidden tab, food
+ * hidden): the pellets that came while CONFLICTED are drawn once it is verified again (the
+ * real _lmFeedOk / _lmOriSet; the list only added them when a frame saw the CONFLICTED state) */
+reset();
+{
+    const pel = (base, n, x0) => Array.from({ length: n }, (_, i) => ({ id: base + i, x: x0 + i * 40, y: 300 }));
+    const sp = spect(3);
+    delete sp._lmFeedOk;
+    Object.assign(sp, { mapOffsetFixed: true, _lmSameFrame: false, mapOffsetX: 0, mapOffsetY: 0, fixX: 1, fixY: 1, fix3x: 0, fix3y: 0, _lmKX: 1, _lmKY: 1 });
+    sp._lmOriSet('VERIFIED');
+    sp.updateCells(packet([], pel(700, 50, 0), []), 0);
+    const n0 = drawList().length;
+    sp._lmOriSet('CONFLICTED');
+    sp.updateCells(packet([], pel(800, 30, 3000), []), 0);
+    sp._lmOriSet('VERIFIED');
+    const n1 = drawList().length;
+    check('CONFLICTED and verified again with no frame between: 50 + 30 pellets drawn (were 50)', n0 === 50 && n1 === 80, n0 + ' / ' + n1);
+}
 
 /* The Canvas2D food pass (drawCachedFood) on the Full Map list: the same pellets drawn, but a
  * pellet far off screen is culled by its entry (same slot), not read as a cell: each of the

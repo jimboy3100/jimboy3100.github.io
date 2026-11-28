@@ -191,49 +191,102 @@ function lmDecideOrientation(counts, minBest, minMargin, ratio) {
 
 /* Food anchors: a spatial index (32-unit buckets: a 24-unit search reads 3 x 3) of
  * stationary food in world coordinates. A bucket is only an index: two pellets in one
- * bucket stay two pellets. */
+ * bucket stay two pellets. One record per pellet as one source saw it (main: 0); the
+ * copies of one pellet from other sources (same size +-1, within LM_ANCHOR_COPY per axis)
+ * are one entity, two pellets of one source never are. Flat arrays reused between
+ * rebuilds (no object per pellet): bucket chains hashed into LM_ANCHOR_SLOTS heads (a
+ * record keeps its bucket, so a hash collision is skipped), an entity is the index of its
+ * first record with its records chained (entNext). */
 var LM_ANCHOR_CELL = 32;
 /* anchors kept per connection (the newest; see Spect._lmAnchorPush) */
 var LM_ANCHOR_MAX = 384;
-function lmAnchorKey(gx, gy) { return gx * 1048576 + gy; }
-function lmAnchorGrid() { return { map: new Map(), n: 0 }; }
-function lmAnchorPut(grid, x, y, size, src) {
-    var k = lmAnchorKey(Math.floor(x / LM_ANCHOR_CELL), Math.floor(y / LM_ANCHOR_CELL));
-    var b = grid.map.get(k);
-    if (!b) grid.map.set(k, b = []);
-    b.push({ x: x, y: y, size: size, src: src, used: 0 });
-    grid.n++;
+/* copies of one pellet: integer positions and per-axis scales (live max 1.8 apart) */
+var LM_ANCHOR_COPY = 4;
+var LM_ANCHOR_SLOTS = 16384;
+function lmAnchorSlot(gx, gy) { return (Math.imul(gx, 73856093) ^ Math.imul(gy, 19349663)) & (LM_ANCHOR_SLOTS - 1); }
+function lmAnchorGrid() {
+    var g = { n: 0, cap: 0, q: 0, head: new Int32Array(LM_ANCHOR_SLOTS).fill(-1), pick: new Int32Array(128), a: [], u: [], f: [] };
+    lmAnchorGrow(g, 1024);
+    return g;
+}
+function lmAnchorGrow(g, cap) {
+    var F = ['x', 'y', 'size', 'gen'], I = ['next', 'gx', 'gy', 'src', 'ent', 'entNext', 'claimQ', 'claimN'], k, v;
+    for (k = 0; k < F.length; k++) { v = new Float64Array(cap); if (g[F[k]]) v.set(g[F[k]]); g[F[k]] = v; }
+    for (k = 0; k < I.length; k++) { v = new Int32Array(cap); if (g[I[k]]) v.set(g[I[k]]); g[I[k]] = v; }
+    g.cap = cap;
+}
+/* empty for a rebuild: the arrays stay, the pellets and anchors are let go */
+function lmAnchorReset(g) {
+    g.head.fill(-1);
+    for (var i = 0; i < g.n; i++) { g.a[i] = null; g.u[i] = null; g.f[i] = null; }
+    g.n = 0;
+}
+/* one record: a = the anchor and u = the connection (another connection's pellet), f = the main food cell */
+function lmAnchorPut(grid, x, y, size, src, a, u, f) {
+    if (grid.n === grid.cap) lmAnchorGrow(grid, grid.cap * 2);
+    var gx = Math.floor(x / LM_ANCHOR_CELL), gy = Math.floor(y / LM_ANCHOR_CELL), ent = -1;
+    for (var ix = gx - 1; ix <= gx + 1 && ent < 0; ix++) {
+        for (var iy = gy - 1; iy <= gy + 1 && ent < 0; iy++) {
+            for (var j = grid.head[lmAnchorSlot(ix, iy)]; j >= 0; j = grid.next[j]) {
+                if (grid.gx[j] !== ix || grid.gy[j] !== iy || Math.abs(grid.size[j] - size) > 1 ||
+                    Math.abs(grid.x[j] - x) > LM_ANCHOR_COPY || Math.abs(grid.y[j] - y) > LM_ANCHOR_COPY) continue;
+                /* a source is in an entity at most once */
+                var e = grid.ent[j], k = e;
+                while (k >= 0 && grid.src[k] !== src) k = grid.entNext[k];
+                if (k < 0) { ent = e; break; }
+            }
+        }
+    }
+    var i = grid.n++, h = lmAnchorSlot(gx, gy);
+    grid.x[i] = x; grid.y[i] = y; grid.size[i] = size; grid.src[i] = src; grid.gx[i] = gx; grid.gy[i] = gy;
+    grid.a[i] = a || null; grid.u[i] = u || null; grid.f[i] = f || null; grid.gen[i] = a ? a.generation : 0;
+    grid.claimQ[i] = 0;
+    if (ent < 0) { grid.ent[i] = i; grid.entNext[i] = -1; } else { grid.ent[i] = ent; grid.entNext[i] = grid.entNext[ent]; grid.entNext[ent] = i; }
+    grid.next[i] = grid.head[h];
+    grid.head[h] = i;
+}
+/* a record counts while its pellet is there: checked at use, the reference is cached */
+function lmAnchorRecLive(grid, i) {
+    var f = grid.f[i];
+    if (f) return !f.removed;
+    var a = grid.a[i];
+    return !a || lmAnchorLive(a, grid.gen[i]);
 }
 /*
  * Residuals (reference - observation) of observed food (world, {x, y, size}) against the
- * reference: each observation takes the nearest unused reference pellet of the same size
- * (+-1) within R from another connection, one-to-one; an observation with a second,
- * different pellet of that size within R is ambiguous and skipped. stamp marks the
- * pellets used by this call.
+ * reference: per observation the live reference records of the same size (+-1) within R
+ * from another connection (needD: only the main food and connections whose d is verified);
+ * all of one entity: a candidate match, more than one entity: ambiguous, skipped. An entity
+ * claimed by two observations is skipped for both (one-to-one, whatever their order).
  */
-function lmAnchorResiduals(grid, obs, R, skipSrc, stamp) {
-    var out = [], R2 = R * R, reach = Math.ceil(R / LM_ANCHOR_CELL);
+function lmAnchorResiduals(grid, obs, R, skipSrc, needD) {
+    var out = [], R2 = R * R, reach = Math.ceil(R / LM_ANCHOR_CELL), q = ++grid.q;
+    var X = grid.x, Y = grid.y, S = grid.size, GX = grid.gx, GY = grid.gy, SRC = grid.src, ENT = grid.ent, NX = grid.next, U = grid.u;
+    var pick = grid.pick.length >= obs.length ? grid.pick : (grid.pick = new Int32Array(obs.length));
     for (var i = 0; i < obs.length; i++) {
         var o = obs[i], gx = Math.floor(o.x / LM_ANCHOR_CELL), gy = Math.floor(o.y / LM_ANCHOR_CELL);
-        var best = null, bestD = R2, other = false;
+        var best = -1, bestD = Infinity, amb = false;
         for (var ix = gx - reach; ix <= gx + reach; ix++) {
             for (var iy = gy - reach; iy <= gy + reach; iy++) {
-                var b = grid.map.get(lmAnchorKey(ix, iy));
-                if (!b) continue;
-                for (var j = 0; j < b.length; j++) {
-                    var p = b[j];
-                    if (p.src === skipSrc || p.used === stamp || Math.abs(p.size - o.size) > 1) continue;
-                    var dx = p.x - o.x, dy = p.y - o.y, dd = dx * dx + dy * dy;
-                    if (dd > R2) continue;
-                    /* another connection's copy of the same pellet is not a second pellet */
-                    if (best && Math.abs(p.x - best.x) + Math.abs(p.y - best.y) > 3) other = true;
-                    if (!best || dd < bestD) { best = p; bestD = dd; }
+                for (var j = grid.head[lmAnchorSlot(ix, iy)]; j >= 0; j = NX[j]) {
+                    if (GX[j] !== ix || GY[j] !== iy || SRC[j] === skipSrc || Math.abs(S[j] - o.size) > 1) continue;
+                    var dx = X[j] - o.x, dy = Y[j] - o.y, dd = dx * dx + dy * dy;
+                    if (dd > R2 || !lmAnchorRecLive(grid, j) || (needD && U[j] && !U[j].foodCalibrated)) continue;
+                    if (best >= 0 && ENT[j] !== ENT[best]) amb = true;
+                    if (dd < bestD) { best = j; bestD = dd; }
                 }
             }
         }
-        if (!best || other) continue;
-        best.used = stamp;
-        out.push([best.x - o.x, best.y - o.y, i]);
+        pick[i] = amb ? -1 : best;
+        if (pick[i] >= 0) {
+            var e = ENT[best];
+            if (grid.claimQ[e] !== q) { grid.claimQ[e] = q; grid.claimN[e] = 0; }
+            grid.claimN[e]++;
+        }
+    }
+    for (var m = 0; m < obs.length; m++) {
+        var p = pick[m];
+        if (p >= 0 && grid.claimN[ENT[p]] === 1) out.push([X[p] - obs[m].x, Y[p] - obs[m].y, m]);
     }
     return out;
 }
@@ -245,13 +298,19 @@ function lmMedian(a) {
 /* median residual, the matches within 2 units of it (inliers) and their p95 distance */
 function lmRobustOffset(res) {
     var mx = lmMedian(res.map(function (r) { return r[0]; })), my = lmMedian(res.map(function (r) { return r[1]; }));
-    var dev = [];
+    var dev = [], all = [], rest = [];
     for (var i = 0; i < res.length; i++) {
         var e = Math.max(Math.abs(res[i][0] - mx), Math.abs(res[i][1] - my));
-        if (e <= 2) dev.push(e);
+        all.push(e);
+        if (e <= 2) dev.push(e); else rest.push(res[i]);
     }
-    dev.sort(function (p, q) { return p - q; });
-    return { n: res.length, inl: dev.length, mx: mx, my: my, p95: dev.length ? dev[Math.min(dev.length - 1, Math.floor(dev.length * 0.95))] : Infinity };
+    var q95 = function (a) { a.sort(function (p, q) { return p - q; }); return a.length ? a[Math.min(a.length - 1, Math.floor(a.length * 0.95))] : Infinity; };
+    var alt = 0;
+    if (rest.length) {
+        var ax = lmMedian(rest.map(function (r) { return r[0]; })), ay = lmMedian(rest.map(function (r) { return r[1]; }));
+        for (var k = 0; k < rest.length; k++) if (Math.max(Math.abs(rest[k][0] - ax), Math.abs(rest[k][1] - ay)) <= 2) alt++;
+    }
+    return { n: res.length, inl: dev.length, mx: mx, my: my, p95: q95(dev), p95All: q95(all), alt: alt };
 }
 /*
  * A food anchor: one pellet as one connection saw it, for the orientation and residual
@@ -275,27 +334,32 @@ function lmAnchorLive(a, gen) {
  * built with changes (the main border; a verified connection's socket, orientation, d or
  * k) and after a connection closes (lmFoodRefInvalidate).
  */
-var _lmFoodRef = { t: -Infinity, grid: null, stamp: 0, sig: '' };
+var _lmFoodRef = { t: -Infinity, grid: null, sig: [], sigN: -1, cur: [] };
 function lmFoodRefInvalidate() {
-    /* rebuilt on its next use; a check holding it keeps a valid grid */
+    /* rebuilt on its next use (in place: a check holding it sees the new one) */
     _lmFoodRef.t = -Infinity;
-    _lmFoodRef.sig = '';
+    _lmFoodRef.sigN = -1;
 }
-function lmFoodRefSig() {
-    var sig = lmMainCentre(0) + ',' + lmMainCentre(1) + ',' + lmMainScale(0) + ',' + lmMainScale(1);
+/* the transforms the reference is built with, as numbers into out; their count */
+function lmFoodRefSig(out) {
+    var n = 0;
+    out[n++] = lmMainCentre(0); out[n++] = lmMainCentre(1); out[n++] = lmMainScale(0); out[n++] = lmMainScale(1);
     var sp = window.spects || [];
     for (var s = 0; s < sp.length; s++) {
         var u = sp[s];
         if (!u || u._lmOri !== 'VERIFIED' || !u.mapOffsetFixed || u._lmSameFrame) continue;
-        sig += '|' + u.number + ':' + u.connectionGeneration + ':' + u.mapOffsetX + ':' + u.mapOffsetY + ':' +
-            u.fixX + ':' + u.fixY + ':' + u.fix3x + ':' + u.fix3y + ':' + u._lmKX + ':' + u._lmKY;
+        out[n++] = u.number; out[n++] = u.connectionGeneration; out[n++] = u.mapOffsetX; out[n++] = u.mapOffsetY;
+        out[n++] = u.fixX; out[n++] = u.fixY; out[n++] = u.fix3x; out[n++] = u.fix3y; out[n++] = u._lmKX; out[n++] = u._lmKY;
     }
-    return sig;
+    return n;
 }
 function lmFoodReference(now) {
-    var sig = lmFoodRefSig();
-    if (_lmFoodRef.grid && now - _lmFoodRef.t < 1000 && sig === _lmFoodRef.sig) return _lmFoodRef;
-    var grid = lmAnchorGrid(), lm = window.legendmod, food = lm.food || [];
+    /* fresh: the same transforms, built less than 1 s before now (a clock gone back is not fresh) */
+    var R = _lmFoodRef, n = lmFoodRefSig(R.cur), age = now - R.t, same = !!R.grid && n === R.sigN && age >= 0 && age < 1000;
+    for (var q = 0; same && q < n; q++) same = R.cur[q] === R.sig[q] || (R.cur[q] !== R.cur[q] && R.sig[q] !== R.sig[q]);
+    if (same) return R;
+    var grid = R.grid || (R.grid = lmAnchorGrid()), lm = window.legendmod, food = lm.food || [];
+    lmAnchorReset(grid);
     var cmx = lmMainCentre(0), cmy = lmMainCentre(1), mkx = lmMainScale(0), mky = lmMainScale(1);
     for (var i = 0; i < food.length; i++) {
         var f = food[i];
@@ -305,7 +369,7 @@ function lmFoodReference(now) {
         var y = Number.isFinite(f._lmRawY) ? f._lmRawY : lmDisplayFlip(Number.isFinite(f.targetY) ? f.targetY : f.y, 1);
         var size = Number.isFinite(f.targetSize) ? f.targetSize : f.size;
         if (!Number.isFinite(x) || !Number.isFinite(y)) continue;
-        lmAnchorPut(grid, (x - cmx) * mkx, (y - cmy) * mky, size, 0);
+        lmAnchorPut(grid, (x - cmx) * mkx, (y - cmy) * mky, size, 0, null, null, f);
     }
     var sp = window.spects || [];
     for (var s = 0; s < sp.length; s++) {
@@ -313,13 +377,15 @@ function lmFoodReference(now) {
         if (!u || !u._lmAnchors || u._lmOri !== 'VERIFIED' || !u.mapOffsetFixed || u._lmSameFrame) continue;
         for (var a = 0; a < u._lmAnchors.length; a++) {
             var o = u._lmAnchors[a];
-            if (lmAnchorLive(o, u.connectionGeneration)) lmAnchorPut(grid, u.rawToWorldX(o.rawX), u.rawToWorldY(o.rawY), o.size, u.number);
+            if (lmAnchorLive(o, u.connectionGeneration)) lmAnchorPut(grid, u.rawToWorldX(o.rawX), u.rawToWorldY(o.rawY), o.size, u.number, o, u);
         }
     }
-    _lmFoodRef.t = now;
-    _lmFoodRef.grid = grid;
-    _lmFoodRef.sig = sig;
-    return _lmFoodRef;
+    R.t = now;
+    var t = R.sig;
+    R.sig = R.cur;
+    R.cur = t;
+    R.sigN = n;
+    return R;
 }
 
 function addBox() {
@@ -1893,7 +1959,17 @@ class Spect {
     }
 
     _lmOriSet(state) {
-        if (state !== this._lmOri && typeof lmFoodRefInvalidate === 'function') lmFoodRefInvalidate();
+        if (state !== this._lmOri) {
+            /* residual evidence is per transform state; d is verified again after a new orientation or a conflict (d itself stays) */
+            this._lmXfRev = (this._lmXfRev || 0) + 1;
+            this._lmCalibSnaps = [];
+            if (state !== 'VERIFIED') this.foodCalibrated = false;
+            if (typeof lmFoodRefInvalidate === 'function') lmFoodRefInvalidate();
+            /* the food list adds the pellets kept out while not fed when it sees the feed state
+             * change (ogario.v4.js lmFoodFrame), but that runs only from drawFood: with no frame
+             * between (hidden tab, food hidden) a round trip through CONFLICTED lost them for good */
+            if (typeof _lmFood !== 'undefined' && _lmFood) _lmFood.feed.delete(this.number);
+        }
         this._lmOri = state;
         this.ghostFixed = state === 'VERIFIED';
     }
@@ -1999,6 +2075,10 @@ class Spect {
     _lmApplyTransform(sx, sy, dx, dy) {
         if (sx === this.fixX && sy === this.fixY && dx === this.fix3x && dy === this.fix3y) return;
         var old = this._lmXf();
+        /* pending residual evidence was measured under the old transform; a new orientation needs d verified again */
+        this._lmXfRev = (this._lmXfRev || 0) + 1;
+        this._lmCalibSnaps = [];
+        if (sx !== this.fixX || sy !== this.fixY) this.foodCalibrated = false;
         this.fixX = sx;
         this.fixY = sy;
         this.fix3x = dx;
@@ -2145,29 +2225,39 @@ class Spect {
      * units and compared only with the main connection. Food is matched here by its
      * authoritative position (raw -> world) and size, one-to-one. For each of the 4
      * candidates: the inliers around the median residual; a clear winner with >= 8 is one
-     * orientation vote. With the orientation verified, the median residual of >= 8
-     * inliers (p95 <= 2) seen in 2 checks >= 1 s apart that agree within 1 unit either
-     * verifies d (|median| <= 1: agar.io's case, d stays 0) or corrects it and reprojects
-     * the cells from raw. Every second until the orientation is verified, every 3 s until d
-     * is, then every 15 s as a watch, on the newest 128 pellets; one odd pellet moves nothing.
+     * orientation vote (against any verified connection). With the orientation verified,
+     * against the main food and the connections whose d is verified only: >= 8 inliers
+     * (within 2 units of the median residual), at least half the matches, and no second
+     * cluster of half their support; the median of such checks >= 1 s apart under the same
+     * transform and main frame (a change drops the pending one) that agree within 1 unit
+     * either verifies d (|median| <= 1: agar.io's case, d stays 0) or corrects it and
+     * reprojects the cells from raw. Every second until the orientation is verified, every 3
+     * s until d is, then every 15 s as a watch, on 128 pellets taken through the whole ring
+     * (those not checked yet first); one odd pellet moves nothing.
      */
     _lmCalibrate(now) {
         if (!this.mapOffsetFixed || this._lmSameFrame || !this._lmAnchors || this._lmAnchors.length < 8) return;
         var every = this._lmOri !== 'VERIFIED' ? 1000 : this.foodCalibrated ? 15000 : 3000;
         if (now - (this._lmCalibAt || 0) < every) return;
         this._lmCalibAt = now;
-        /* the newest 128 live anchors, newest first (the ring is in arrival order: no sort);
-         * those no orientation vote used yet are the evidence for the next vote */
+        /* 128 live anchors, newest first (the ring is in arrival order: no sort), those no d
+         * check used yet before the others (every pellet of the ring is reached; all used:
+         * start over); those no orientation vote used yet are the evidence for the next vote */
         var A = this._lmAnchors, len = A.length, gen = this.connectionGeneration;
         var raw = this._lmCalRaw || (this._lmCalRaw = []), fresh = this._lmCalFresh || (this._lmCalFresh = []);
         raw.length = 0;
         fresh.length = 0;
         var start = len < LM_ANCHOR_MAX ? len - 1 : (this._lmAnchorNext - 1 + len) % len;
-        for (var i = 0; i < len && raw.length < 128; i++) {
-            var a = A[(start - i + len) % len];
-            if (!lmAnchorLive(a, gen)) continue;
-            raw.push(a);
-            if (!a.voted) fresh.push(a);
+        var unchecked = 0;
+        for (var i = 0; i < len; i++) { var a0 = A[i]; if (a0 && a0.alive && !a0.dChk) unchecked++; }
+        if (unchecked < 8) for (var i0 = 0; i0 < len; i0++) if (A[i0]) A[i0].dChk = false;
+        for (var pass = 0; pass < 2 && raw.length < 128; pass++) {
+            for (var i = 0; i < len && raw.length < 128; i++) {
+                var a = A[(start - i + len) % len];
+                if (!lmAnchorLive(a, gen) || (pass === 0) === !!a.dChk) continue;
+                raw.push(a);
+                if (!a.voted && fresh.length < 128) fresh.push(a);
+            }
         }
         if (raw.length < 8) return;
         var ref = lmFoodReference(now);
@@ -2192,10 +2282,13 @@ class Spect {
             }
         }
         if (this._lmOri !== 'VERIFIED') return;
-        var cur = this._lmCalStats(ref, raw, this._lmOriIndex());
-        if (!cur || cur.inl < 8 || cur.p95 > 2 || cur.inl < cur.n * 0.5) return;
-        var snaps = this._lmCalibSnaps;
-        snaps.push({ x: cur.mx, y: cur.my, n: cur.inl });
+        var cur = this._lmCalStats(ref, raw, this._lmOriIndex(), true);
+        for (var rc = 0; rc < raw.length; rc++) raw[rc].dChk = true;
+        if (!cur || cur.inl < 8 || cur.inl < cur.n * 0.5 || cur.alt >= Math.max(4, cur.inl / 2)) return;
+        /* a snap pairs only with one of the same transform revision and main frame */
+        var rev = this._lmXfRev || 0, m0 = lmMainCentre(0), m1 = lmMainCentre(1), k0 = lmMainScale(0), k1 = lmMainScale(1);
+        var snaps = this._lmCalibSnaps = this._lmCalibSnaps.filter(function (q) { return q.rev === rev && q.m0 === m0 && q.m1 === m1 && q.k0 === k0 && q.k1 === k1; });
+        snaps.push({ x: cur.mx, y: cur.my, n: cur.inl, rev: rev, m0: m0, m1: m1, k0: k0, k1: k1 });
         if (snaps.length > 2) snaps.shift();
         if (snaps.length < 2) return;
         if (Math.abs(snaps[0].x - snaps[1].x) > 1 || Math.abs(snaps[0].y - snaps[1].y) > 1) {
@@ -2218,7 +2311,7 @@ class Spect {
 
     /* Residuals of anchors (world under orientation candidate c) against the reference;
      * the observation objects are reused between calls. */
-    _lmCalStats(ref, anchors, c) {
+    _lmCalStats(ref, anchors, c, needD) {
         var cx = -this.mapOffsetX, cy = -this.mapOffsetY, sx = LM_ORI[c][0], sy = LM_ORI[c][1];
         var kx = this._lmKX || 1, ky = this._lmKY || 1;
         var pool = this._lmCalPool || (this._lmCalPool = []), obs = this._lmCalObs || (this._lmCalObs = []);
@@ -2230,7 +2323,7 @@ class Spect {
             o.size = anchors[j].size;
             obs.push(o);
         }
-        var res = lmAnchorResiduals(ref.grid, obs, 24, this.number, ++ref.stamp);
+        var res = lmAnchorResiduals(ref.grid, obs, 24, this.number, needD);
         var st = lmRobustOffset(res);
         st.res = res;
         return st;
