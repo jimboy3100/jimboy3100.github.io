@@ -175,5 +175,90 @@ check('unpremultiply table: rounds half to even in 32-bit floats (p 5 at alpha 6
 }
 check('getCustomSkin goes through customSkinKey', /getCustomSkin\(nick, color, skinKey, nameOnly, own\) \{\s*var key = this\.customSkinKey\(nick, color, skinKey, nameOnly, own\);/.test(src));
 
-console.log(failed ? failed + ' check(s) failed' : 'all skin cache checks passed');
-process.exit(failed ? 1 : 0);
+
+/* the second frame of an animated skin ('url_cached3', drawn for 30 s of every minute) and the
+ * GPU upload queue, with the real renderer on a stub context: cacheSkin3 queues its upload at
+ * once, but no draw asks for it while the first frame shows, so a decode that takes longer than
+ * 60 frames is closed as stale (_lmSkinPurge / _lmSkinStale). When the frame switches, the draw
+ * asks for it again and shows the first frame's layer until the second one is up: never
+ * body-only. Also: the upload frame callback is the same function every time (no new closures
+ * per frame while uploads wait). */
+async function secondFrame() {
+    const { rendererFactory } = require('./glbatch.js');
+    const F = rendererFactory(src), D = new Function('return ' + F.defaults)();
+    const LMs = { cells: [], playerCells: [], playerCellsMulti: [], play: false, showCustomSkins: true, gameMode: ':ffa' };
+    const app = {
+        gameMode: ':ffa', customSkinsCache: { 'key:anim': { width: 64 } }, customSkinsMap: {},
+        customSkinKey(nick) { return nick === 'anim' ? 'key:anim' : null; },
+        loadSkin() { }, _lmTouchSkin() { }, _lmSkinCacheKey(u) { return u; },
+        setVirusColor() { return '#33ff33'; }, setVirusStrokeColor() { return '#33ff33'; }, playSound() { }
+    };
+    const env = { window: { legendmod: LMs, application: app }, LM: LMs, application: app, defaultSettings: Object.assign({}, D.defaultSettings),
+        defaultmapsettings: Object.assign({}, D.defaultmapsettings, { jellyPhisycs: false, customSkins: true }),
+        ogarcopythelb: { color: '#01d9cc' }, ogario: { viewScale: 1 } };
+    class HTMLImageElement { }
+    class HTMLCanvasElement { }
+    const raf = [], rafFns = new Set(), decodes = [], saved = {};
+    const globals = {
+        HTMLImageElement, HTMLCanvasElement,
+        requestAnimationFrame(f) { raf.push(f); rafFns.add(f); return raf.length; },
+        createImageBitmap() {
+            let res;
+            const p = new Promise((r) => { res = r; });
+            const bmp = { closed: false, close() { this.closed = true; } };
+            decodes.push({ bmp, done: () => res(bmp) });
+            return p;
+        }
+    };
+    for (const k in globals) { saved[k] = globalThis[k]; globalThis[k] = globals[k]; }
+    try {
+        const R = new Function('return (' + F.factory + ')')()(env);
+        R.gl = new Proxy({}, { get: (t, k) => typeof k === 'string' && /^[A-Z0-9_]+$/.test(k) ? 1 : function () { return {}; } });
+        R.glCellProgram = {}; R.glCellInstanceData = new Float32Array(64 * 32); R.glCellMaxInstances = 64;
+        R.glSkinArray = {}; R.glSkinMap = { 'key:anim': 3 };
+        R.scale = 1; R.camX = 0; R.camY = 0; R.canvasWidth = 1920; R.canvasHeight = 1080;
+        /* the GL upload itself is not what is checked here: the job gets layer 9 */
+        R._lmUploadSkinJob = function (job, bmp) { this._lmDropSkinJob(job); for (const k of job.keys) this.glSkinMap[k] = 9; if (bmp) bmp.close(); };
+        const used = [], realUsed = R._lmSkinLayerUsed;
+        R._lmSkinLayerUsed = function (l) { used.push(l); return realUsed.call(this, l); };
+        const src3 = Object.assign(new HTMLImageElement(), { complete: true, naturalWidth: 128, naturalHeight: 64 });
+        const c3 = Object.assign(new HTMLCanvasElement(), { width: 512, height: 512, _lmSrc: src3, _lmSrcRect: [64, 0, 64, 64], _lmCircle: true });
+        app.customSkinsCache['key:anim_cached3'] = c3;
+        const cell = { x: 0, y: 0, size: 60, color: '#3388ff', targetNick: 'anim', skin: '', isPlayerCell: false, isPlayerCellMulti: false,
+            isFood: false, isEjected: false, isVirus: false, removed: false, invisible: false, isInView() { return true; } };
+        const flush = () => new Promise((r) => setImmediate(r));
+        const runRaf = () => { for (const f of raf.splice(0)) f(16); };
+        /* frame 1: cacheSkin3 made the second frame and queues its upload (window.drawRender.uploadSkinTexture) */
+        R._glSkinFrame = 1; R._skinHalf = false;
+        const q0 = R.uploadSkinTexture('key:anim_cached3', c3);
+        const layers = [];
+        for (let f = 2; f <= 80; f++) { R._glSkinFrame = f; layers.push(R._resolveWebGLJellySkin(cell, false, R.glSkinArray).layer); }
+        check('second frame queued by cacheSkin3; the first frame is drawn while the first half shows', q0 === -1 && decodes.length === 1 && layers.every((l) => l === 3));
+        decodes[0].done(); await flush(); runRaf();
+        check('  its decode, done 79 frames later with no draw asking for it, is closed as stale',
+            decodes[0].bmp.closed && !R._lmSkinPend.keys['key:anim_cached3'] && R.glSkinMap['key:anim_cached3'] === undefined);
+        /* frame 100: the 30 s switch to the second frame */
+        R._glSkinFrame = 100; R._skinHalf = true; used.length = 0;
+        const atSwitch = R._resolveWebGLJellySkin(cell, false, R.glSkinArray).layer;
+        const batch = R.drawWebGLCellBatch([cell]);
+        check('  at the switch: the jelly resolver and the cell batch draw the first frame\'s layer while the second decodes, not body-only',
+            atSwitch === 3 && batch === true && used.length === 2 && used.every((l) => l === 3) && decodes.length === 2, JSON.stringify([atSwitch, batch, used, decodes.length]));
+        decodes[1].done(); await flush(); runRaf();
+        R._glSkinFrame = 101;
+        const after = R._resolveWebGLJellySkin(cell, false, R.glSkinArray).layer;
+        check('  the frame after its upload: the second frame\'s layer', after === 9 && R.glSkinMap['key:anim_cached3'] === 9);
+        /* uploads in later frames: the same frame callback each time */
+        for (let i = 0; i < 3; i++) {
+            R._glSkinFrame = 102 + i;
+            R.uploadSkinTexture('key:c' + i, Object.assign(new HTMLCanvasElement(), { width: 64, height: 64 }));
+            runRaf();
+        }
+        check('upload frame callback: one function for every frame (no closures made per frame)', rafFns.size === 1 && R.glSkinMap['key:c2'] === 9, rafFns.size);
+    } finally {
+        for (const k in saved) { if (saved[k] === undefined) delete globalThis[k]; else globalThis[k] = saved[k]; }
+    }
+}
+secondFrame().catch((e) => { console.log('FAIL second frame: ' + (e && e.stack || e)); failed++; }).then(() => {
+    console.log(failed ? failed + ' check(s) failed' : 'all skin cache checks passed');
+    process.exit(failed ? 1 : 0);
+});

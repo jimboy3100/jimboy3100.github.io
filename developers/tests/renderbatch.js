@@ -320,8 +320,8 @@ const A = new Function('env', F.factory.replace(/^function \(env\) \{/, '').repl
     check('labels keep their order: queued atlas labels are drawn before a label with its own texture', log.filter((l) => /^(inst|one)/.test(l)).join() === 'inst 2,one,inst 1');
     const d = T.glTextAtlasData;
     check('instance data: world position, half size, offset, depth, texel rectangle and page', d[0] === 9 && d[5] === Math.fround(0.3) && d[6] === e1.slot.x && d[8] === e1.w && d[9] === e1.h && d[10] === e1.slot.page);
-    /* the text pass stops: everything is freed, the atlas texture too */
-    T._lmTextPassAt = 0;
+    /* the text pass stops: everything is freed, the atlas texture too (its last pass long ago) */
+    T._lmTextPassAt = -1e9;
     for (let k = 0; k < 20 && (T.glTextCache.size || (T._lmMassTex && T._lmMassTex.size)); k++) T._lmTextIdle();
     check('idle: every label freed and the atlas texture deleted', !T.glTextCache.size && !T._lmMassTex.size && T._lmTextAtlas === null && T._lmTextBytes === 0 && T._lmMassBytes === 0);
 
@@ -410,9 +410,11 @@ const A = new Function('env', F.factory.replace(/^function \(env\) \{/, '').repl
     const T = new Function('return (' + F.factory + ')')()(env3);
     Object.assign(T, { gl: tg, glTextProgram: {}, glTextVAO: {} });
     T.initWebGLTextAtlas(tg, () => ({}), {});
-    let clock = 1e6;
-    const realNow = Date.now;
-    Date.now = () => clock;
+    /* the system clock (Date.now) and the monotonic one the text pass holds use (performance.now) */
+    let clock = 1e6, sys = 1e12;
+    const realNow = Date.now, realPerf = performance.now;
+    Date.now = () => sys;
+    performance.now = () => clock;
     try {
         Object.assign(T, { glTextCache: new Map(), glTextCacheMaxSize: 100000, _lmTextBytes: 0, _lmMassTex: null, _lmMassBytes: 0, _lmTextFrame: 0, _lmTextIdleTimer: 1,
             _lmTextBudget: 1 << 30, _textCanvas: { width: 0, height: 0 }, scale: 1, camX: 0, camY: 0, canvasWidth: 1920, canvasHeight: 1080,
@@ -451,11 +453,13 @@ const A = new Function('env', F.factory.replace(/^function \(env\) \{/, '').repl
         const toCheck = () => { do T._lmTextFrameBegin(); while (T._lmTextFrame % 60); };
         toCheck();
         clock += 5000;
+        /* the system clock set back an hour meanwhile: the 10 s still run out */
+        sys -= 3600e3;
         toCheck();
         check('atlas banks: banks without labels are kept for 10 s (no make-and-delete while the scene keeps changing)', a.banks.length === 5 && !log.some((l) => /^del/.test(l)));
         clock += 5000;
         toCheck();
-        check('atlas banks: after 10 s the last empty bank is given back, nothing copied', a.banks.length === 4 && a.layers === 8 && log.join() === 'del ' + lastTex && a.code.length === 8 && a.alloc.pages.length <= 8);
+        check('atlas banks: after 10 s the last empty bank is given back (also with the system clock set back), nothing copied', a.banks.length === 4 && a.layers === 8 && log.join() === 'del ' + lastTex && a.code.length === 8 && a.alloc.pages.length <= 8);
         toCheck();
         check('atlas banks: one bank per check; the next empty one follows', a.banks.length === 3 && a.layers === 4 && a.alloc.pages.length <= 4);
         /* a label on the last bank (pages 2..3) again: it is kept */
@@ -476,7 +480,7 @@ const A = new Function('env', F.factory.replace(/^function \(env\) \{/, '').repl
         T._lmTextPassAt = 0;
         for (let k = 0; k < 20 && T.glTextCache.size; k++) T._lmTextIdle();
         check('atlas banks: the text pass stops: the atlas and its banks are deleted', T._lmTextAtlas === null && log.indexOf('del ' + a.banks[0].tex.id) >= 0);
-    } finally { Date.now = realNow; }
+    } finally { Date.now = realNow; performance.now = realPerf; }
 }
 
 /* ---- full atlas, every label on screen: the reclaim search looks at a bounded number of entries

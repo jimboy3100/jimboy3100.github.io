@@ -24807,6 +24807,11 @@ function thelegendmodproject() {
         if (lane) lane.starved = !n && jobs.length > 0;
         return avg;
     }
+    /* a monotonic clock in ms (performance.now; Date.now without it): the skin queues' budget
+     * (lmSkinJobsRun) and the text pass hold times */
+    function lmClockMs() {
+        return typeof performance !== 'undefined' && performance.now ? performance.now() : Date.now();
+    }
     /* the skin work done so far in the current frame by both skin queues (lmSkinJobsRun) */
     function lmSkinSlack() {
         return lmSkinSlack.s || (lmSkinSlack.s = { stamp: null, used: 0 });
@@ -31661,18 +31666,19 @@ function thelegendmodproject() {
         _lmSkinJobsSchedule() {
             if (this._lmSkinJobRaf) return;
             var self = this;
-            var tick = function (stamp) {
+            /* made once (no new functions in every frame while canvases wait) */
+            var run = this._lmSkinJobRunFn || (this._lmSkinJobRunFn = function (job) {
+                self._lmSkinJobRun(job);
+            });
+            var tick = this._lmSkinJobTick || (this._lmSkinJobTick = function (stamp) {
                 self._lmSkinJobRaf = 0;
                 /* jobs age while they wait: the cap is applied again here, not only on new jobs */
                 self._lmSkinJobTrim();
                 var jobs = self._lmSkinJobs || [];
-                var clock = typeof performance !== 'undefined' && performance.now ? function () { return performance.now(); } : Date.now;
                 var lane = self._lmSkinJobLane || (self._lmSkinJobLane = { starved: false });
-                self._lmSkinJobMs = lmSkinJobsRun(jobs, 4, self._lmSkinJobMs || 0, clock, Date.now(), 1000, function (job) {
-                    self._lmSkinJobRun(job);
-                }, lmSkinSlack(), stamp, lane);
+                self._lmSkinJobMs = lmSkinJobsRun(jobs, 4, self._lmSkinJobMs || 0, lmClockMs, Date.now(), 1000, run, lmSkinSlack(), stamp, lane);
                 if (jobs.length) self._lmSkinJobsSchedule();
-            };
+            });
             /* a hidden tab gets no animation frames: skins still finish there (timers). A frame
              * asked for just before the tab was hidden is swapped for a timer (visibilitychange). */
             var hidden = typeof document !== 'undefined' && document.hidden;
@@ -67808,18 +67814,22 @@ function pickPlayerCellBySize(players, selectBiggest) {
         _lmScheduleSkinUploads() {
             if (this._lmSkinRaf) return;
             var self = this;
-            this._lmSkinRaf = requestAnimationFrame(function (stamp) {
+            /* the frame callback and the upload callback are made once: no new functions in
+             * every frame while uploads wait */
+            var run = this._lmSkinUpRun || (this._lmSkinUpRun = function (job) {
+                var bmp = job.bmp;
+                job.bmp = null;
+                self._lmUploadSkinJob(job, bmp);
+            });
+            var tick = this._lmSkinUpTick || (this._lmSkinUpTick = function (stamp) {
                 self._lmSkinRaf = 0;
                 var q = self._lmSkinReady || [];
                 self._lmSkinPurge(q);
                 var lane = self._lmSkinLane || (self._lmSkinLane = { starved: false });
-                self._lmSkinJobMs = lmSkinJobsRun(q, 4, self._lmSkinJobMs || 0, function () { return performance.now(); }, self._glSkinFrame || 0, 2, function (job) {
-                    var bmp = job.bmp;
-                    job.bmp = null;
-                    self._lmUploadSkinJob(job, bmp);
-                }, lmSkinSlack(), stamp, lane);
+                self._lmSkinJobMs = lmSkinJobsRun(q, 4, self._lmSkinJobMs || 0, lmClockMs, self._glSkinFrame || 0, 2, run, lmSkinSlack(), stamp, lane);
                 if (q.length) self._lmScheduleSkinUploads();
             });
+            this._lmSkinRaf = requestAnimationFrame(tick);
         },
         _lmUploadSkinJob(job, bmp) {
             this._lmDropSkinJob(job);
@@ -75172,7 +75182,7 @@ function pickPlayerCellBySize(players, selectBiggest) {
             this._lmMassLag = lmMassLag(this._lmMassDeferred || 0, this._lmMassDrawn || 0, 16, 100);
             this._lmMassDeferred = 0;
             this._lmMassDrawn = 0;
-            this._lmTextPassAt = Date.now();
+            this._lmTextPassAt = lmClockMs();
             /* how many textures the last frame drew (_lmTextTouched / _lmMassTouched) */
             var textDrawn = this._lmTextTouched || 0, massDrawn = this._lmMassTouched || 0;
             this._lmTextTouched = 0;
@@ -75217,7 +75227,8 @@ function pickPlayerCellBySize(players, selectBiggest) {
             }
             /* every 60 frames: a bank above the last page in use is given back once it has held no
              * label for 10 s (one bank per check), so a scene that keeps changing does not make
-             * and delete the same bank again and again */
+             * and delete the same bank again and again (a monotonic clock: setting the system clock
+             * back does not keep them) */
             var atl = this._lmTextAtlas;
             if (atl && atl.gl === gl && atl.banks.length && frame % 60 === 0) {
                 var used = lmTextAtlasLayers(atl.alloc), at = this._lmTextPassAt;
@@ -75248,7 +75259,7 @@ function pickPlayerCellBySize(players, selectBiggest) {
             this._lmTextIdleTimer = 0;
             var self = this;
             var pool = this._lmMassTex, cache = this.glTextCache;
-            if (Date.now() - (this._lmTextPassAt || 0) < 2000) {
+            if (lmClockMs() - (this._lmTextPassAt || 0) < 2000) {
                 this._lmTextIdleDraining = false;
                 if ((pool && pool.size) || (cache && cache.size)) {
                     this._lmTextIdleTimer = setTimeout(function () { self._lmTextIdle(); }, 2000);

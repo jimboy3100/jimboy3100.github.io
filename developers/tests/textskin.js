@@ -141,6 +141,8 @@ async function skinMethods() {
         setTimeout: (f) => { timers.push(f); return 1000 + timers.length; },
         lmSkinJobsRun: C.lmSkinJobsRun, lmSkinJobPick: C.lmSkinJobPick, lmSkinJobDrop: C.lmSkinJobDrop, lmSkinSlack: C.lmSkinSlack };
     vm.createContext(sb);
+    /* the skin queues' clock (lmClockMs), on this sandbox's performance.now */
+    vm.runInContext(grab('lmClockMs'), sb);
     vm.runInContext('Object.assign(app, {' + ['_lmSkinJobAdd', '_lmSkinJobTrim', '_lmSkinJobDropOne', '_lmSkinDecodeNext', '_lmSkinJobsSchedule', '_lmSkinJobRun', '_lmSkinCanvases'].map(method).join(',\n') + '});', sb);
     const made = [];
     Object.assign(app, {
@@ -258,12 +260,14 @@ function textMethods() {
     const tctx = { font: '', measureText: (t) => { now += rasterCost; return { width: t.length * 50 }; }, setTransform() { }, clearRect() { }, scale() { }, strokeText() { }, fillText() { } };
     const timers = [];
     let dnow = 100000;
+    /* the text pass hold times run on performance.now (lmClockMs), not on Date.now */
+    const later = (ms) => { dnow += ms; now += ms; };
     const fakeMath = Object.create(Math);
     fakeMath.random = () => rnd;
     const sb = { r: null, Map, Date: { now: () => dnow }, Math: fakeMath, parseInt, Infinity, window: { navigator: {} }, performance: { now: () => now },
         setTimeout: (f) => { const t = () => { if (!t.dead) f(); }; timers.push(t); return t; }, clearTimeout: (t) => { if (t) t.dead = true; } };
     vm.createContext(sb);
-    vm.runInContext(['lmTextTexBudget', 'lmTextCacheEvict', 'lmMassTexDue', 'lmMassDue', 'lmMassLag', 'lmMassPoolTrim', 'lmTextAtlasNew', 'lmTextAtlasAlloc', 'lmTextAtlasFree', 'lmTextAtlasLayers', 'lmTextAtlasStep', 'lmTextAtlasMaxPages'].map(grab).join('\n'), sb);
+    vm.runInContext(['lmClockMs', 'lmTextTexBudget', 'lmTextCacheEvict', 'lmMassTexDue', 'lmMassDue', 'lmMassLag', 'lmMassPoolTrim', 'lmTextAtlasNew', 'lmTextAtlasAlloc', 'lmTextAtlasFree', 'lmTextAtlasLayers', 'lmTextAtlasStep', 'lmTextAtlasMaxPages'].map(grab).join('\n'), sb);
     vm.runInContext('r = {' + ['getOrCreateTextTexture', '_lmTextCached', '_lmRasterImage', '_lmRasterText', '_lmMassTexture', '_lmTextFrameBegin', '_lmTextIdle', '_lmTextStore', '_lmTextRelease', '_lmTextAtlasGet', '_lmTextAtlasSlot', '_lmTextAtlasReclaim', '_lmTextAdopt'].map(method).join(',\n') + '};', sb);
     const r = sb.r;
     const reset = () => Object.assign(r, { gl, glTextProgram: {}, glTextCache: new Map(), glTextCacheMaxSize: 500, _lmTextBytes: 0, _lmMassTex: null, _lmMassBytes: 0,
@@ -388,12 +392,12 @@ function textMethods() {
     r._lmMassTexture(cell, '1234', F, '#fff', '#000', 10);
     r._lmTextFrameBegin();
     check('idle: a check is scheduled while text textures exist', timers.length === 1);
-    dnow += 1000;
+    later(1000);
     r._lmTextFrameBegin();
-    dnow += 1500;
+    later(1500);
     timers.shift()();
     check('idle: still in use (a pass 1.5 s ago): kept, checked again', r.glTextCache.size === 1 && r._lmMassTex.size === 1 && timers.length === 1);
-    dnow += 2500;
+    later(2500);
     timers.shift()();
     check('idle: no pass for 2 s: every text texture deleted', r.glTextCache.size === 0 && r._lmMassTex.size === 0 && r._lmTextBytes === 0 && r._lmMassBytes === 0 && calls.filter((c) => c.startsWith('del')).length === 2);
     check('idle: no more checks while nothing is held', timers.length === 0);
@@ -409,7 +413,7 @@ function textMethods() {
     const ic = Array.from({ length: 50 }, () => ({}));
     ic.forEach((c) => r._lmMassTexture(c, '1000', F, '#fff', '#000', 10));
     r._lmTextFrameBegin();
-    dnow += 2500;
+    later(2500);
     timers.shift()();
     const dels = () => calls.filter((c) => c.startsWith('del')).length;
     check('idle: at most 64 textures deleted per tick, then the next tick is scheduled', dels() === 64 && r._lmMassTex.size === 0 && r.glTextCache.size === 86 && timers.length === 1 && r._lmTextIdleDraining);
@@ -422,7 +426,7 @@ function textMethods() {
     r._lmTextFrameBegin();
     for (let i = 0; i < 150; i++) r.getOrCreateTextTexture('t' + i, F, '#fff', '#000', 10);
     r._lmTextFrameBegin();
-    dnow += 2500;
+    later(2500);
     timers.shift()();
     check('idle: freeing started', dels() === 64 && r._lmTextIdleDraining);
     const pending = timers[0];

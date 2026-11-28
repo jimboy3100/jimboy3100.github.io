@@ -78,7 +78,7 @@ function grabVar(src, name) {
  * (the real rule spreads new mass textures over frames, which would make the comparison depend
  * on timing). */
 const HELPERS = ['lmTextTexBudget', 'lmTextCacheEvict', 'lmMassDue', 'lmMassLag', 'lmMassPoolTrim',
-    'lmSkinLayersNew', 'lmSkinLayerPick', 'lmSkinLayerTake', 'lmSkinLayerTouch', 'lmSkinUnpremulLut', 'lmSkinJobPick', 'lmSkinJobsRun', 'lmSkinSlack', 'lmSkinLayersGrow',
+    'lmSkinLayersNew', 'lmSkinLayerPick', 'lmSkinLayerTake', 'lmSkinLayerTouch', 'lmSkinUnpremulLut', 'lmSkinJobPick', 'lmSkinJobsRun', 'lmSkinSlack', 'lmClockMs', 'lmSkinLayersGrow',
     'lmMultiboxRingPlayer', 'lmMultiboxRingColor', 'lmMultiboxRing', 'lmUnitCellsInto',
     'lmJellyFanIndices', 'lmJellyBandIndices', 'lmTextAtlasNew', 'lmTextAtlasAlloc', 'lmTextAtlasFree', 'lmTextAtlasLayers', 'lmTextAtlasStep', 'lmTextAtlasMaxPages', 'lmTextAtlasBankCap', 'lmTextAtlasUnit',
     'lmSkinsShown', 'lmOwnColorPlaying', 'lmOwnBodyColor', 'lmMbShadowOn', 'lmMbShadowColor', 'lmColorInt', 'lmDlSync', 'lmDlSkinCell', 'lmDlSkinKey', 'lmWorldSkinKey', 'lmDlBackground', 'lmBgReady', 'lmBgAlpha'];
