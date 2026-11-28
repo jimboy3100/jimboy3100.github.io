@@ -146,7 +146,59 @@
         if (!side.t) delete side.t;
         if (extra && extra.start > 0) side.start = extra.start;
         if (protoOk(meta && meta.p)) side.p = meta.p;
+        var dl = cleanDl(meta && meta.dl);
+        if (dl.length) side.dl = dl;
         return side;
+    }
+    /* dl: Dying Light during the recording (window._lmRecDl in ogario.v4.js), a list of
+     * { t, on, i, cy, ck, ps } in time order. Files and entries without it, or with a newer form
+     * this version does not know, play with the normal look; unknown fields are dropped. */
+    var DL_INTENSITIES = ['competitive', 'immersive', 'nightmare'], DL_MAX = 512;
+    function cleanDl(a) {
+        var out = [];
+        if (!Array.isArray(a)) return out;
+        for (var i = 0, lastT = 0; i < a.length && out.length < DL_MAX; i++) {
+            var o = a[i];
+            if (!o || typeof o !== 'object' || Array.isArray(o) || !isNum(o.t) || o.t < lastT || o.t > 1e9) continue;
+            lastT = o.t;
+            if (!o.on) { out.push({ t: o.t, on: 0 }); continue; }
+            var e = { t: o.t, on: 1, i: DL_INTENSITIES.indexOf(o.i) !== -1 ? o.i : 'immersive', cy: o.cy === 0 || o.cy === false ? 0 : 1 };
+            if (isNum(o.ck) && o.ck >= 0 && o.ck <= 1e10) {
+                e.ck = Math.round(o.ck);
+                if (o.ps) e.ps = 1;
+            }
+            out.push(e);
+        }
+        return out;
+    }
+    /* Dying Light at ms of the recording: null (normal look) or { on: 1, i, cy, ck } with the
+     * director's clock moved on to ms (ck absent when it was not recorded) */
+    function dlAt(dl, ms) {
+        var e = null;
+        for (var i = 0; dl && i < dl.length && dl[i].t <= ms; i++) e = dl[i];
+        if (!e || !e.on) return null;
+        var r = { on: 1, i: e.i, cy: e.cy };
+        if (e.ck != null) r.ck = e.ck + (e.ps ? 0 : Math.max(0, ms - e.t));
+        return r;
+    }
+    /* the part of dl for a clip from fromT to toT, times from base: the state at fromT first */
+    function cutDl(dl, base, fromT, toT) {
+        var out = [], s = dlAt(dl, fromT), last = null;
+        for (var i = 0; dl && i < dl.length && dl[i].t <= fromT; i++) last = dl[i];
+        if (s) {
+            s.t = Math.max(0, fromT - base);
+            if (last && last.ps) s.ps = 1;
+            out.push(s);
+        }
+        for (i = 0; dl && i < dl.length; i++) {
+            var e = dl[i];
+            if (e.t <= fromT || e.t > toT) continue;
+            var c = {};
+            for (var k in e) c[k] = e[k];
+            c.t = e.t - base;
+            out.push(c);
+        }
+        return out;
     }
     /* p: the protocol of the server the packets came from (legendmod.serverType when it was
      * recorded, one of window.LM_REPLAY_PROTOCOLS in ogario.v4.js). Not the replay connection,
@@ -156,9 +208,9 @@
         return typeof p === 'string' && !!list && list.indexOf(p) !== -1;
     }
     /* validates an untrusted sidecar (files can come from links); returns
-     * { t: absolute times or null, est, s, e, c, start, p } */
+     * { t: absolute times or null, est, s, e, c, start, p, dl } */
     function readSidecar(o, n) {
-        var r = { t: null, est: true, s: [], e: [], c: [], start: 0, p: '' };
+        var r = { t: null, est: true, s: [], e: [], c: [], start: 0, p: '', dl: [] };
         if (!o || typeof o !== 'object' || Array.isArray(o) || o.lmrs !== 1) return r;
         var t = decodeTimes(o.t, n);
         if (t) { r.t = t; r.est = false; }
@@ -167,6 +219,7 @@
         r.c = cleanFlat(o.c, 3, 150000);
         if (Number.isInteger(o.start) && o.start > 0 && o.start < n) r.start = o.start;
         if (protoOk(o.p)) r.p = o.p;
+        r.dl = cleanDl(o.dl);
         return r;
     }
     /* readSidecar's form (an in-memory recording) back to the stored form */
@@ -175,6 +228,7 @@
         if (rs.t && !rs.est) o.t = encodeTimes(rs.t, n);
         if (rs.start > 0) o.start = rs.start;
         if (protoOk(rs.p)) o.p = rs.p;
+        if (rs.dl && rs.dl.length) o.dl = cleanDl(rs.dl);
         return o;
     }
     function findSidecar(spec) {
@@ -337,7 +391,7 @@
             }
             return out;
         };
-        return { s: f(side.s, 4), e: f(side.e, 3), c: f(side.c, 3) };
+        return { s: f(side.s, 4), e: f(side.e, 3), c: f(side.c, 3), dl: cutDl(side.dl || (side.live && side.live.dl), base, fromT, toT) };
     }
 
     /* Library entries (metadata only; the packets are stored separately) */
@@ -592,7 +646,7 @@
     var lib = {
         EST_MS: EST_MS, encodeTimes: encodeTimes, decodeTimes: decodeTimes, cleanTimes: cleanTimes, estTimes: estTimes,
         posAtTime: posAtTime, firstAtOrAfter: firstAtOrAfter, checkpointBefore: checkpointBefore, carryKind: carryKind,
-        makeSidecar: makeSidecar, readSidecar: readSidecar, findSidecar: findSidecar,
+        makeSidecar: makeSidecar, readSidecar: readSidecar, findSidecar: findSidecar, cleanDl: cleanDl, dlAt: dlAt,
         detectBookmarks: detectBookmarks, peakMass: peakMass, cutInterval: cutInterval, cutSide: cutSide,
         validateRecord: validateRecord, parseTags: parseTags, sortRecords: sortRecords, searchRecords: searchRecords,
         packPackets: packPackets, unpackPackets: unpackPackets, lmFileParts: lmFileParts, parseLmText: parseLmText,
@@ -669,7 +723,7 @@
         var side = arr._lmSide || null;
         if (!side) {
             var meta = arr._lm;
-            side = meta ? { t: null, est: false, s: meta.s, e: meta.e, c: meta.c, start: 0, live: meta } : readSidecar(findSidecar(spec), arr.length);
+            side = meta ? { t: null, est: false, s: meta.s, e: meta.e, c: meta.c, dl: meta.dl || null, start: 0, live: meta } : readSidecar(findSidecar(spec), arr.length);
             if (!meta && !side.t) side.est = true;
             arr._lmSide = side;
         }
@@ -688,6 +742,8 @@
         if (meta && r.t && Date.now() - r.refAt < 1000) return;
         r.refAt = Date.now();
         if (meta) {
+            /* Dying Light changes are added while it records (window._lmRecDl) */
+            r.side.dl = meta.dl || null;
             var t = cleanTimes(meta.t, n);
             if (!t) { t = estTimes(n); r.side.est = true; } else r.side.est = false;
             r.t = t;
@@ -1436,7 +1492,7 @@
         if (!arr) return;
         var spec = (window.RecordedArenasSpecifications || {})[key] || [];
         var side = arr._lm ? makeSidecar(arr._lm, arr.length)
-            : arr._lmSide && (!arr._lmSide.est || arr._lmSide.p) ? sideOut(arr._lmSide, arr.length) : null;
+            : arr._lmSide && (!arr._lmSide.est || arr._lmSide.p || (arr._lmSide.dl && arr._lmSide.dl.length)) ? sideOut(arr._lmSide, arr.length) : null;
         download(lmFileParts(arr.slice(0, arr.length), spec, side), String(key).replace(/\.lm$/i, ''));
     }
     function exportLibrary(meta) {
@@ -1592,6 +1648,7 @@
         var cut = cutInterval(REC.t, a, b, { checkpoints: REC.cps, carry: REC.carry, compact: OPT.compact, isCell: isCell, warmMs: 10000 });
         var cs = cutSide(REC.side, cut.base, cut.base, cut.endT);
         var side = { lmrs: 1, t: encodeTimes(cut.times), s: cs.s, e: cs.e, c: cs.c };
+        if (cs.dl.length) side.dl = cs.dl;
         if (cut.start > 0) side.start = cut.start;
         /* a clip comes from the same server */
         if (recProto(REC)) side.p = recProto(REC);

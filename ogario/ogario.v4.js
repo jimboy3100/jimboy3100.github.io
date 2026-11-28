@@ -5785,7 +5785,55 @@ window._lmRecSample = function (lm) {
     if (!m || n - m.st < 250 || m.s.length > 80000) return;
     m.st = n;
     m.s.push(n - m.t0, Math.round(+lm.playerMass || 0), lm.playerCells ? lm.playerCells.length : 0, ~~lm.playerPosition);
+    /* the Dying Light director's clock, every 5 s once the theme was on in this recording */
+    if (m.dl && n - (m.dlt || 0) >= 5000) { m.dlt = n; window._lmRecDl(); }
 };
+/* Dying Light in a recording, so a replay can show that look (extras/dyinglight.js). _lm.dl lists
+ * { t, on, i, cy, ck, ps }: ms since the recording started, on (1/0), the intensity, the Day and
+ * night setting (1/0), the director's clock at t (ms of visible time since the theme was turned
+ * on, its 10 minute cycle position is ck % 600000; absent when the director does not run) and ps 1
+ * while that clock stands still (a hidden tab). Only changes are kept: the state at the start
+ * (when on), turning on or off, another intensity or Day and night, the clock stopping or going
+ * again, or drifting 2 s from the last entry. No dl (older recordings, or the theme never on in
+ * this one) means the normal look. */
+var LM_REC_DL_MAX = 512;
+function lmRecDlState() {
+    var DL = window.LMDyingLight, D = window.LMDyingLightDirector, s = window.defaultmapsettings, info = null, i = '';
+    try {
+        if (!DL || typeof DL.isEnabled !== 'function' || !DL.isEnabled()) return null;
+        i = typeof DL.intensity === 'function' ? DL.intensity() : '';
+        info = D && typeof D.info === 'function' ? D.info() : null;
+    } catch (e) { return null; }
+    var st = { on: 1, i: typeof i === 'string' ? i : '', cy: s && s.dyingLightCycle === false ? 0 : 1 };
+    if (info && info.on && isFinite(info.clock)) {
+        st.ck = Math.max(0, Math.round(info.clock));
+        if (!info.running) st.ps = 1;
+    }
+    return st;
+}
+/* the entry to add at t for the state now, or null when nothing changed */
+function lmRecDlNext(list, t, st) {
+    var last = list && list.length ? list[list.length - 1] : null;
+    if (!st) return last && last.on ? { t: t, on: 0 } : null;
+    if (last && last.on && last.i === st.i && last.cy === st.cy && !last.ps === !st.ps && (last.ck == null) === (st.ck == null) &&
+        (st.ck == null || Math.abs(last.ck + (last.ps ? 0 : t - last.t) - st.ck) < 2000)) return null;
+    var e = { t: t, on: 1, i: st.i, cy: st.cy };
+    if (st.ck != null) e.ck = st.ck;
+    if (st.ps) e.ps = 1;
+    return e;
+}
+window._lmRecDl = function () {
+    var m = window._lmRecM();
+    if (!m) return;
+    var e = lmRecDlNext(m.dl, Math.max(0, Date.now() - m.t0), lmRecDlState());
+    if (!e) return;
+    if (!m.dl) m.dl = [];
+    if (m.dl.length < LM_REC_DL_MAX) m.dl.push(e);
+};
+if (window.LMEvents && typeof window.LMEvents.on === 'function') {
+    window.LMEvents.on('dyingLightChange', function () { window._lmRecDl(); });
+    window.LMEvents.on('settingsChange', function (d) { if (d && d.key === 'dyingLightCycle') window._lmRecDl(); });
+}
 //window.fpsloopsetter=60
 window.renderDelay = 0;
 //window.specificRecordedProtocol = []
@@ -43308,6 +43356,8 @@ function thelegendmodproject() {
                 window.RecordedProtocol[window.temporaryRecordedProtocol]._lm = { v: 1, t0: Date.now(), ct: 0, st: 0, t: [], s: [], e: [], c: [] };
                 /* the server's protocol, so a replay is read the same way whatever its file is called */
                 if (window.LM_REPLAY_PROTOCOLS && window.LM_REPLAY_PROTOCOLS.indexOf(this.serverType) !== -1) window.RecordedProtocol[window.temporaryRecordedProtocol]._lm.p = this.serverType;
+                /* Dying Light at the start (window._lmRecDl): nothing when it is off */
+                if (typeof window._lmRecDl === 'function') window._lmRecDl();
                 window.RecordedProtocolArenas.push(window.temporaryRecordedProtocol)
                 window.RecordedArenasSpecifications[window.temporaryRecordedProtocol] = [Date.now(), application.gameMode, application.region, $("#nick").val()]
                 /* At most 5 in memory, a safety net: the 11th packet of this recording frees the
