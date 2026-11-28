@@ -68,6 +68,42 @@ check('extras: an older export without the Multibox players\' profiles leaves th
         prof.includes('this.loadProfiles();') && !prof.includes('this.mbSlots = [];') && !/addBox|mbAddPlayer|mbEnable/.test(live + prof));
 }
 
+/* an old export with the two inactive-player switches ("Inactive unit keeps moving", "Freeze inactive
+ * multibox unit"): the real import loop folds them into "Inactive players" (mbInactive), the real
+ * _lmImportLive puts it into the running game, and the inactive players follow it at once
+ * (lmMbInactiveMoves); the old keys never reach the game */
+{
+    const fn = (name, next) => cut(og, 'function ' + name, next);
+    const helpers = [fn('lmSchemaDecimals(x) {', '/* A number put on its range'), fn('lmSchemaFit(r, n) {', '/* A stored/imported value'),
+        fn('lmSettingValue(key, value) {', '/* "Video skins volume"'), fn('lmFoldVideoVolume(s) {', '/* Anti-aliasing (glAntialias)'),
+        fn('lmFoldLegacySettings(s) {', '/* "Inactive unit keeps moving"'), fn('lmFoldMbInactive(s) {', '/* Whether a multibox player'),
+        fn('lmMbInactiveMoves() {', '/* The HUD editor'), fn('lmFoldClickFollow(s) {', '/* Performance mode, its automatic')];
+    const impLoop = cut(og, '                    var _impS = importValue.ogarioSettings;', "                if (Object.prototype.hasOwnProperty.call(importValue, 'ogarioThemeSettings')");
+    const liveCut = cut(og, '        _lmImportLive(v, sel, backup, touched, failed) {', '        _lmImportCommandsLive() {');
+    const liveSrc = liveCut.slice(0, liveCut.lastIndexOf('return need;')) + 'return need; }';
+    check('inactive players import: the real fold, import loop and live import found', helpers.every((h) => h.length > 0) && impLoop.length > 0 && liveSrc.length > 100);
+    const run = (old) => {
+        const c = { window: {}, clearTimeout: () => { }, JSON, Object, Number, String, Math, Array };
+        c.window.localStorage = { getItem: () => null, setItem() { }, removeItem() { } };
+        vm.createContext(c);
+        vm.runInContext('var defaultmapsettings = { mbInactive: "move", showMass: true, massFormat: 2, shortMass: true };\n' +
+            'var LM_SETTINGS_DEFAULTS = Object.freeze(Object.assign({}, defaultmapsettings));\n' +
+            'var LM_SETTINGS_SCHEMA = { massFormat: [1, 3, 1], mbInactive: { choices: ["move", "stay"] } };\n' + helpers.join('\n') + '\n' +
+            'this.imp = function (importValue) {\n' + impLoop.replace(/\}\s*$/, '') + '\n};\n' +
+            'this.app = { ' + liveSrc + ', saveSettings() { },\n' +
+            ' setSettings(id, checked) { checked = lmSettingValue(id, checked); if (checked === undefined || !defaultmapsettings.hasOwnProperty(id)) return; defaultmapsettings[id] = checked; } };', c);
+        const v = { ogarioSettings: Object.assign({ showMass: false }, old) };
+        c.imp(v);
+        c.app._lmImportLive(v, (k) => k === 'ogarioSettings', {}, []);
+        const d = c.defaultmapsettings;
+        return [d.mbInactive, c.lmMbInactiveMoves(), 'multiKeepMoving' in d || 'mbFreeze' in d, d.showMass].join();
+    };
+    check('live import of an old export, both switches on: Stay still at once, the old keys not in the game', run({ multiKeepMoving: true, mbFreeze: true }) === 'stay,false,false,false', run({ multiKeepMoving: true, mbFreeze: true }));
+    check('live import of an old export, Keep moving off: Stay still at once', run({ multiKeepMoving: false, mbFreeze: false }) === 'stay,false,false,false', run({ multiKeepMoving: false }));
+    check('live import of an old export, the shipped pair: Keep moving', run({ multiKeepMoving: true, mbFreeze: false }) === 'move,true,false,false', run({ multiKeepMoving: true, mbFreeze: false }));
+    check('live import of a new export (Stay still): applied at once', run({ mbInactive: 'stay' }) === 'stay,false,false,false', run({ mbInactive: 'stay' }));
+}
+
 /* Legend Mod settings */
 const setSrc = cut(lmx, 'var _LM_IMPORT_LIVE_KEYS = ', '/* Imported user scripts (Userscript1-5 URLs');
 check('LMexpress: _lmImportSet found', setSrc.length > 0);

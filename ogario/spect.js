@@ -1198,12 +1198,14 @@ class Spect {
                 this.distX = held ? 0 : this.rawToWorldX(this.convertX(legendmod.cursorX)) - this.rawToWorldX(this.convertX(this.playerX))
                 this.distY = held ? 0 : this.rawToWorldY(this.convertY(legendmod.cursorY)) - this.rawToWorldY(this.convertY(this.playerY))
             } else {
-                /* "Freeze inactive multibox unit": hold it at its own centre. With "Keep moving"
-                 * off too it holds as well, as the inactive main player does (LM.sendPosition): it
-                 * sent nothing and kept running to the last target. */
-                if ((defaultmapsettings.mbFreeze || !defaultmapsettings.multiKeepMoving || held) && Number.isFinite(this.playerX) && Number.isFinite(this.playerY)) {
+                /* "Inactive players" (lmMbInactiveMoves, the rule of the inactive main player in
+                 * LM.sendPosition): Stay still holds it at its own centre, Keep moving runs on by
+                 * the offset it had to the cursor. Stay still without a centre yet sends nothing
+                 * (with both old switches on it sent the keep-moving aim then). */
+                var moves = lmMbInactiveMoves() && !held;
+                if (!moves && Number.isFinite(this.playerX) && Number.isFinite(this.playerY)) {
                     this.sendPosition(this.convertX(this.playerX), this.convertY(this.playerY));
-                } else if (defaultmapsettings.multiKeepMoving) {
+                } else if (moves) {
                     this.sendPosition(Math.round(this.worldToRawX(this.rawToWorldX(this.convertX(this.playerX)) + this.distX)),
                         Math.round(this.worldToRawY(this.rawToWorldY(this.convertY(this.playerY)) + this.distY)));
                 }

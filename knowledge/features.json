@@ -41,7 +41,7 @@
     {
       "id": "multibox",
       "name": "Multibox controls",
-      "description": "Play 2 to 6 players from one tab: the Multibox switch key (Tab) starts multibox with P2 and then controls the next player, the stats HUD roster adds, picks and removes players (Settings 'Maximum Multibox players', 2-6, default 2, sets how many), 'Multibox off' (no default key) closes them. Each slot (P1-P6) keeps its colour and plays its own profile; a ring on the player you control, a camera that frames the players, a minimap dot for each and its own life in stats and history. Full Map (Premium) can stay on while you play, also with multibox. Options: middle view, freeze or keep moving, background auto-respawn, switch after death, players glow, smooth camera. Bot controls: bot feed, split, macro, double/pop/16-split.",
+      "description": "Play 2 to 6 players from one tab: the Multibox switch key (Tab) starts multibox with P2 and then controls the next player, the stats HUD roster adds, picks and removes players (Settings 'Maximum Multibox players', 2-6, default 2, sets how many), 'Multibox off' (no default key) closes them. Each slot (P1-P6) keeps its colour and plays its own profile; a ring on the player you control, a camera that frames the players, a minimap dot for each and its own life in stats and history. Full Map (Premium) can stay on while you play, also with multibox. Options: middle view, inactive players (keep moving or stay still), background auto-respawn, switch after death, players glow, smooth camera. Bot controls: bot feed, split, macro, double/pop/16-split.",
       "url": "https://www.legendmod.ml/features.html"
     },
     {

@@ -149,7 +149,7 @@ Play 2 to 6 players from one tab. Features:
 - **Control ring and glow**: a ring on the cells of the player you control; "Players glow (profile colors)" lights each player's cells in its profile colour
 - **Minimap and leaderboard**: a dot for each player in its slot colour (the player you control full size); the leaderboard marks every row one of your connections owns
 - **Lives**: each player's life counts by itself in the session line, personal bests, match history (while you controlled it, shown as "· P3"), 16-pieces sounds and death recap. The game over comes when the last of your players dies; a lost connection is no death (the player reconnects in its slot)
-- **Other options**: freeze or keep moving the players you do not control, background auto-respawn, auto-switch focus after death, smooth camera, lighter rendering (one-colour cells)
+- **Other options**: "Inactive players" (what the players you do not control do: Keep moving, the default, runs on toward where you last aimed it; Stay still holds it where it is), background auto-respawn, auto-switch focus after death, smooth camera, lighter rendering (one-colour cells)
 - **Full Map (Premium, V)**: the whole map from up to 15 extra spectator connections. It stays on while you play: Play, a death and the respawn keep it, and it turns on and off while alive without touching your players. Full Map and the In-game Spectator are one mode at a time; the In-game Spectator ends once a spawn is confirmed (your first own cell) and when multibox starts. Multibox works with Full Map on or off: starting, adding, removing or turning multibox off keeps Full Map, and Full Map on / off keeps your players. Full Map is not available in Teams and Battle Royale; on a server with more than 180 players it closes quietly (your players stay) and opens again at 170 players or fewer
 - **Scripts and plugins**: `window.lmMbPlayers` is the slot registry (`get(slot)`, `activeSlot`, `count()`; read it, do not change it). `application.mbEnable()`, `mbDisable()`, `mbAddPlayer()`, `mbRemovePlayer(slot)`, `mbSelectPlayer(slot)` and `mbSelectAdjacent(1 or -1)` do what the keys and the roster do. LMEvents sends `multiboxSwap` (with `slot` / `previousSlot`) and `playerAdded`, `playerRemoved`, `playerSpawned`, `playerDied`, `playerDisconnected` (developers/LMEvents.md)
 - **Bot controls**: Bot feed, bot split, bot macro feed, double/pop/16 bot split hotkeys
@@ -354,7 +354,7 @@ Legend Mod organises its 300+ settings into the following categories accessible 
 - **Chat**: Enable/disable, images, videos, emoticons, translation, mentions, sounds, popups, coloured nicks, hide country, AgarTool team, player ID
 - **Sounds**: Volume per sound and master volume, sound switches and files
 - **Leaderboard**: Limit, top 5 skins, centred, hide bots, pass toast
-- **Multibox**: Maximum Multibox players (2-6, default 2), freeze or keep moving, background auto-respawn, switch after death, middle view, players glow, smooth camera, lighter rendering
+- **Multibox**: Maximum Multibox players (2-6, default 2), inactive players (keep moving or stay still), background auto-respawn, switch after death, middle view, players glow, smooth camera, simplified cell colors
 - **Line Split**: Splits per press, aim lock time
 - **Mouse**: Button bindings (left, right, middle, mouse4, mouse5), invert
 - **Gamepad**: dead zone, move range, curve, zoom sensitivity, trigger, axis inversion, vibrate (always on when a pad is connected)

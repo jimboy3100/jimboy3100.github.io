@@ -63,7 +63,7 @@ const OLD_TPL = {
   ffa: { oppColors: true, oppRings: true, splitRange: true, virusesRange: true, virMassShots: true, showMass: true, mergeRings: true, showTop5: false, showTargeting: false },
   teams: { showTop5: true, teammatesInd: true, showTargeting: true, showMiniMap: true, showMiniMapGhostCells: true, hideTeammatesNames: false, oneColoredTeammates: false, showChat: true },
   /* its two ring switches are gone: the ring on the player you control has no settings */
-  multibox: { mbSwitchAfterDeath: true, mbAutoRespawn: true, multiKeepMoving: true, middleMultiViewWhenClose: true, cameraSmoothLerp: true },
+  multibox: { mbSwitchAfterDeath: true, mbAutoRespawn: true, mbInactive: 'move', middleMultiViewWhenClose: true, cameraSmoothLerp: true },
   streaming: { streamMode: true, hideSkinUrl: true, hidecountry: true, showChatImages: false, showChatVideos: false, showDevConsole: false },
   mobile: { fpsLimit: 60, jellyPhisycs: false, videoSkins: false, highDPI: false, showGhostCells: false, borderGlow: false, virusGlow: false, suckAnimation: false, showBgSectors: false, hudBlur: 0 },
   competitive: { oppColors: true, oppRings: true, virColors: true, splitRange: true, virusesRange: true, virMassShots: true, showMass: true, mergeRings: true, showStatsFPS: true, showStatsPPS: true } /* its splitPrediction: always part of the cursor line now */

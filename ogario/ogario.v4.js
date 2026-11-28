@@ -23246,14 +23246,16 @@ var defaultmapsettings = {
     showChatMyOwn: false,
     oneColoredSpectator: false,
     multiBoxShadow: false,
-    multiKeepMoving: true,
+    /* "Inactive players": what a multibox player you do not control does (lmMbInactiveMoves):
+     * 'move' keeps running toward the point it aimed at when you left it, 'stay' holds where it
+     * is. It replaces the switches multiKeepMoving and mbFreeze (lmFoldMbInactive). */
+    mbInactive: 'move',
     middleMultiView: false,
     middleMultiViewWhenClose: true,
     /* the most Multibox players (P1 included) Add Player may open: 2, P1 + P2, as shipped; a
      * saved value (an old 3 as well) is the player's own and is kept as it is */
     multiboxAmount: 2,
     mbSwitchAfterDeath: true,
-    mbFreeze: false,
     mbAutoRespawn: true,
     cameraSmoothLerp: true,
     centerWeightCamera: false,    /* camera target = mass-weighted centre of the own cells (like Delta) */
@@ -23516,6 +23518,7 @@ var LM_SETTINGS_SCHEMA = Object.freeze({
     a11yTextScale: [1, 1.6, 0.05],
     a11yHudTextScale: [1, 1.6, 0.05],
     dyingLightIntensity: { choices: ['competitive', 'immersive', 'nightmare'] },
+    mbInactive: { choices: ['move', 'stay'] },
     dyingLightVolume: [0, 1, 0.05]
 });
 /* the number of decimals of a step or bound (0.05 -> 2), to drop float noise after snapping */
@@ -23617,6 +23620,7 @@ function lmFoldLegacySettings(s) {
         changed = true;
     }
     if (lmFoldClickFollow(s)) changed = true;
+    if (lmFoldMbInactive(s)) changed = true;
     /* "Optimized mass (+/-2%) OR Merge timer" is now only the merge timer (mergeTimer): a saved
      * optimizedMass off was the timer on */
     if (has('optimizedMass')) {
@@ -23649,6 +23653,32 @@ function lmFoldLegacySettings(s) {
         if (mfOk !== undefined) s.shortMass = mfOk === 2;
     }
     return changed || JSON.stringify([s.massFormat, s.shortMass]) !== was;
+}
+/* "Inactive unit keeps moving" (multiKeepMoving, on by default) and "Freeze inactive multibox unit"
+ * (mbFreeze, off) are one choice now, mbInactive. An inactive player kept moving only with the
+ * first on and the second off; any other combination (both on as well) held it where it was. A
+ * stored, imported or profile set (or a preset's Undo copy) gets the choice it had, a missing old
+ * key counting as its default, unless it already has a valid mbInactive; the old keys go.
+ * Returns true when s had one of them. */
+function lmFoldMbInactive(s) {
+    if (!s || typeof s !== 'object') return false;
+    var has = function (k) { return Object.prototype.hasOwnProperty.call(s, k); };
+    if (!has('multiKeepMoving') && !has('mbFreeze')) return false;
+    if (!has('mbInactive') || lmSettingValue('mbInactive', s.mbInactive) === undefined) {
+        var keep = !(s.multiKeepMoving === false || s.multiKeepMoving === 'false');
+        var freeze = s.mbFreeze === true || s.mbFreeze === 'true';
+        s.mbInactive = keep && !freeze ? 'move' : 'stay';
+    }
+    delete s.multiKeepMoving;
+    delete s.mbFreeze;
+    return true;
+}
+/* Whether a multibox player you do not control keeps moving ("Inactive players" = Keep moving,
+ * the shipped choice) or holds where it is (Stay still). The one rule for the inactive main player
+ * (LM.sendPosition) and the inactive units (spect.js sendCursor); read on every send, so a change
+ * applies at once. */
+function lmMbInactiveMoves() {
+    return !(typeof defaultmapsettings !== 'undefined' && defaultmapsettings && defaultmapsettings.mbInactive === 'stay');
 }
 /* The HUD editor (Theme > HUD > Edit HUD, ogario/modules/hudeditor.js) is the one place for HUD
  * positions: Settings > HUD "Game stats position" (statsPosition; before it the switches fpsAtTop
@@ -28973,7 +29003,7 @@ function thelegendmodproject() {
                     cleanHud: { key: 'lmPresetCleanHud', en: 'Clean HUD', set: { showTop5: false, showTargeting: false, showTime: false, showLbData: false, top5skins: false, showStatsN16: false, showStatsWorldSize: false, showStatsDecayInfo: false, showStatsServerHz: false, showMiniMapGuides: false, showExtraMiniMapGuides: false } },
                     ffa: { key: 'pkg.pt.presetFfa', en: 'FFA', set: { oppColors: true, oppRings: true, splitRange: true, virusesRange: true, virMassShots: true, showMass: true, mergeRings: true, showTop5: false, showTargeting: false } },
                     teams: { key: 'pkg.pt.presetTeams', en: 'Teams', set: { showTop5: true, teammatesInd: true, showTargeting: true, showMiniMap: true, showMiniMapGhostCells: true, hideTeammatesNames: false, oneColoredTeammates: false, showChat: true } },
-                    multibox: { key: 'pkg.pt.presetMultibox', en: 'Multibox', set: { mbSwitchAfterDeath: true, mbAutoRespawn: true, multiKeepMoving: true, middleMultiViewWhenClose: true, cameraSmoothLerp: true } }
+                    multibox: { key: 'pkg.pt.presetMultibox', en: 'Multibox', set: { mbSwitchAfterDeath: true, mbAutoRespawn: true, mbInactive: 'move', middleMultiViewWhenClose: true, cameraSmoothLerp: true } }
                 };
                 application.lmPresets = presets;
                 var setOpt = function (k, v) {
@@ -29019,7 +29049,9 @@ function thelegendmodproject() {
                     var keys = Object.keys(p.set).filter(function (k) { return defaultmapsettings.hasOwnProperty(k); });
                     var lines = keys.map(function (k) {
                         var v = p.set[k];
-                        return '- ' + String(textLanguage[k] || (p.lbl && p.lbl[k] && _lmTx(p.lbl[k], '')) || k).replace(/<[^>]*>/g, '').trim() + ': ' + (v === true ? 'ON' : v === false ? 'OFF' : v);
+                        /* a choice (a dropdown): the text of its option, not the stored value */
+                        var vOpt = typeof v === 'string' && document.getElementById(k) ? $('#' + k + ' option').filter(function () { return this.value === v; }).first().text() : '';
+                        return '- ' + String(textLanguage[k] || (p.lbl && p.lbl[k] && _lmTx(p.lbl[k], '')) || k).replace(/<[^>]*>/g, '').trim() + ': ' + (v === true ? 'ON' : v === false ? 'OFF' : vOpt || v);
                     });
                     var tip = p.tip ? _lmTx(p.tip, '') : '';
                     if (!window.confirm(_lmTx(p.key, p.en) + '\n' + _lmTx('lmPresetConfirm', 'Apply this preset? These settings change (Undo puts them back):') + '\n\n' + lines.join('\n') + (tip ? '\n\n' + tip : ''))) return false;
@@ -29051,7 +29083,9 @@ function thelegendmodproject() {
                      * another Undo (the button stays) */
                     var failed = {}, nFailed = 0;
                     if (snap) {
-                        /* the snapshot can come from an import: only values that fit their setting */
+                        /* the snapshot can come from an import: only values that fit their setting
+                         * (an older Multibox preset's copy has the old keep-moving switch) */
+                        lmFoldMbInactive(snap);
                         var wasB = application._lmBatchSave;
                         application._lmBatchSave = true;
                         Object.keys(snap).forEach(function (k) {
@@ -29133,7 +29167,10 @@ function thelegendmodproject() {
             //this.addOptions(["showTop5", "showTargeting", "showLbData", "centeredLb", "normalLb", "fpsAtTop", "tweenMaxEffect"], "hudGroup"),
             this.addOptions(["showTop5", "showTargeting", "showLbData", "lbHideBots", "lbPassToast", "centeredLb", "tweenMaxEffect", "top5skins", "notificationCentre"], "hudGroup");
             this.addOptions(["showStats", "showStatsMass", "showStatsESTE", "showStatsEMTE", "showStatsMTE", "showStatsSTE", "showStatsTTE", "showStatsPTE", "showStatsN16", "showStatsFPS", "showStatsPPS", "showStatsAlive", "gameOverStats", "showTime", "showDevConsole"], "statsGroup");
-            this.addOptions(["oneColoredSpectator", "multiBoxShadow", "multiKeepMoving", "middleMultiViewWhenClose", "middleMultiView", "mbSwitchAfterDeath", "mbFreeze", "mbAutoRespawn", "cameraSmoothLerp"], "multiBox");
+            this.addOptions(["oneColoredSpectator", "multiBoxShadow", "middleMultiViewWhenClose", "middleMultiView", "mbSwitchAfterDeath", "mbAutoRespawn", "cameraSmoothLerp"], "multiBox");
+            /* what the players you do not control do (the old switches "Inactive unit keeps moving"
+             * and "Freeze inactive multibox unit", lmFoldMbInactive) */
+            this.addChoiceBox(".multiBox", "mbInactive", "settings.mbInactive", [['move', 'settings.mbInactiveMove'], ['stay', 'settings.mbInactiveStay']]);
             /* Line split section; its key is set in Hotkeys ("Line split"). */
             this.addOptions([], "lineSplitGroup");
             this.addSliderBox(".lineSplitGroup", "lineSplitCount", 2, 4, 1);
@@ -45898,9 +45935,10 @@ function thelegendmodproject() {
                     /* Server-space view centre (viewXTrue is client space; mirrored maps differ). */
                     var _viewServerX = window.legendmod.vector[window.legendmod.vnr][0] ? this.translateX(this.viewXTrue) : this.viewXTrue;
                     var _viewServerY = window.legendmod.vector[window.legendmod.vnr][1] ? this.translateY(this.viewYTrue) : this.viewYTrue;
-                    /* "Freeze inactive multibox unit" also holds the inactive main player, and so does
-                     * Pause (the unit holds on Pause too, spect.js sendCursor): it kept running. */
-                    if (!this.pause && defaultmapsettings.multiKeepMoving && !defaultmapsettings.mbFreeze && Number.isFinite(this.distX) && Number.isFinite(this.distY)) {
+                    /* "Inactive players" (lmMbInactiveMoves, as the inactive units in spect.js
+                     * sendCursor): Keep moving runs on toward the last aim, Stay still holds; Pause
+                     * holds too (the unit holds on Pause as well): it kept running. */
+                    if (!this.pause && lmMbInactiveMoves() && Number.isFinite(this.distX) && Number.isFinite(this.distY)) {
                         //cursorX = this.playerX + this.distX;
                         //cursorY = this.playerY + this.distY;
                         cursorX = _viewServerX + this.distX;

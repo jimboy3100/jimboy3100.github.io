@@ -97,6 +97,8 @@ const S = (() => {
     /* the per-connection observation index of the core (a spectator's flushCellsData empties it) */
     vm.runInContext(cut(src, 'var _lmSrcObs = new Map();', '/* Speed of a cell'), ctx);
     vm.runInContext(spectSrc + '\n;window.Spect = Spect;', ctx);
+    /* the core's "Inactive players" rule, which the cursor loop of spect.js reads */
+    vm.runInContext(cut(src, 'function lmMbInactiveMoves() {', '/* The HUD editor'), ctx);
     /* the core's "a player of ours alive" test, which spect.js calls on a death */
     vm.runInContext(cut(src, 'function lmMbAlive(p) {', 'window.lmMbAlive = lmMbAlive;'), ctx);
     /* one method of the LM object, up to its closing brace (the comment before the next one left out) */
@@ -220,6 +222,7 @@ const M = (() => {
         cut(src, 'function lmTimeAlive(p, n, now) {', '/* Session summary') + '\n' + cut(src, '    function quickSwapDelete(arr, index, idxProp) {', '    var ogarCellPool') +
         '\nwindow.lmCellIdx = { push: indexedPush, of: lmIdxOf, remove: lmIdxRemove, filter: lmIdxFilter };', ctx);
     vm.runInContext(spectSrc + '\n;window.Spect = Spect;', ctx);
+    vm.runInContext(cut(src, 'function lmMbInactiveMoves() {', '/* The HUD editor'), ctx);
     const m = (name, next) => { const b = cut(src, '        ' + name + '(', next); return b.slice(0, b.lastIndexOf('\n        }') + 10); };
     const lmMethods = [
         m('_lmSpecSetMode', '        _lmFullMapCrowdCheck('), m('_lmFullMapModeOff', '        _lmSpecLocal('), m('_lmSpecLocal', '        _lmSpecReconcile('),

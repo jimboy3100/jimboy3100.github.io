@@ -47,6 +47,9 @@ function block(src, start, from) {
     return null;
 }
 const noop = () => { };
+/* "Inactive players" (mbInactive): the one rule of the inactive main player and units */
+const inactiveRule = block(v4, 'function lmMbInactiveMoves() {');
+if (!inactiveRule) { console.log('FAIL lmMbInactiveMoves not found'); process.exit(1); }
 
 /* 1. death of the main player: updateCells (all other servers) after onPlayerDeath's switch */
 const a = v4.indexOf('/* LMEvents: hooks'), b = v4.indexOf('window.OgVer', a);
@@ -129,11 +132,11 @@ function death(o) {
     const mm = st < 0 ? null : /\n        [A-Za-z_$][\w$]*\([^)]*\) \{\n/.exec(v4.slice(st + head.length));
     if (!mm) { console.log('FAIL sendPosition not found'); process.exit(1); }
     const m = v4.slice(st, st + head.length + mm.index).trim().replace(/,\s*$/, '');
-    const sendFor = (focus, pause) => {
+    const sendFor = (focus, pause, inactive) => {
         const ctx = { console: { log: noop }, Date };
         ctx.window = ctx;
         vm.createContext(ctx);
-        vm.runInContext('var defaultmapsettings = { multiKeepMoving: true, mbFreeze: false };\n' +
+        vm.runInContext('var defaultmapsettings = { mbInactive: ' + JSON.stringify(inactive || 'move') + ' };\n' + inactiveRule + '\n' +
             'var sent = window.sent = []; window.userBots = {};\n' +
             'var LM = window.legendmod = { ' + m + ',\n' +
             ' isSocketOpen() { return true; }, connectionOpened: true, clientKey: 1, integrity: false, vector: [[0, 0]], vnr: 0, serverType: "garix", play: true, pause: ' + pause + ',\n' +
@@ -146,7 +149,10 @@ function death(o) {
     };
     check('Pause, focus on the main player: it holds', sendFor(null, true) === '1000,1000', sendFor(null, true));
     check('Pause, focus on the unit: the main player holds too (kept running)', sendFor(1, true) === '1000,1000', sendFor(1, true));
-    check('no Pause, focus on the unit: the main player keeps moving (Keep moving on)', sendFor(1, false) === '4000,1000', sendFor(1, false));
+    check('no Pause, focus on the unit: the main player keeps moving (Inactive players: Keep moving)', sendFor(1, false) === '4000,1000', sendFor(1, false));
+    check('no Pause, focus on the unit: the main player holds at the view centre (Inactive players: Stay still)', sendFor(1, false, 'stay') === '1000,1000', sendFor(1, false, 'stay'));
+    check('Pause with Keep moving or Stay still: the inactive main player holds', sendFor(1, true, 'move') === '1000,1000' && sendFor(1, true, 'stay') === '1000,1000');
+    check('focus on the main player: it follows the cursor with either choice', sendFor(null, false, 'move') === sendFor(null, false, 'stay') && sendFor(null, false, 'stay') !== '1000,1000', sendFor(null, false, 'stay'));
 }
 
 /* 2b. the same feed / split with the same settings: the selected unit (spect.js sendEject, sendSplit,
@@ -171,7 +177,7 @@ function death(o) {
             const ctx = { console: { log: noop }, Date: { now: () => 1000 }, Math, Number };
             ctx.window = ctx;
             vm.createContext(ctx);
-            vm.runInContext('var defaultmapsettings = { multiKeepMoving: ' + !!o.keep + ', mbFreeze: false };\n' +
+            vm.runInContext('var defaultmapsettings = { mbInactive: ' + JSON.stringify(o.keep === false ? 'stay' : 'move') + ' };\n' + inactiveRule + '\n' +
                 'var sent = window.sent = []; window.userBots = {}; window.LMEvents = { _has() { return false; } };\n' +
                 'var LM = window.legendmod = { ' + mainM.join(',\n') + ',\n' +
                 ' isSocketOpen() { return true; }, connectionOpened: true, clientKey: 1, integrity: false, vector: [[0, 0]], vnr: 0, serverType: "' + o.server + '", play: true, pause: false,\n' +
@@ -204,7 +210,7 @@ function death(o) {
             u.sendSplit(); u.sendQuadSplit();
             check('unit split: LMEvents split with unit (one per split, one for an atomic quad split)', got.join() === 'split:1:2,split:4:2', got.join());
         }
-        /* inactive unit, both settings off: holds its centre (the inactive main player holds the view centre) */
+        /* "Inactive players" Stay still: the inactive unit holds its centre (the inactive main player holds the view centre) */
         {
             const ctx = env({ server: 'garix', keep: false });
             let tick = null;
@@ -213,11 +219,35 @@ function death(o) {
             ctx.multiboxPlayerEnabled = null;
             const u = new ctx.Unit();
             u.sendCursor(); tick();
-            check('inactive unit, Freeze inactive and Keep moving off: holds at its centre', ctx.sent.join() === '1000,1000', ctx.sent.join());
+            check('inactive unit, Inactive players: Stay still: holds at its centre', ctx.sent.join() === '1000,1000', ctx.sent.join());
             ctx.sent.length = 0;
             ctx.multiboxPlayerEnabled = 2;
             ctx.legendmod.sendPosition();
-            check('inactive main player, both off: holds at the view centre (unchanged)', ctx.sent.join() === '1000,1000', ctx.sent.join());
+            check('inactive main player, Stay still: holds at the view centre (unchanged)', ctx.sent.join() === '1000,1000', ctx.sent.join());
+        }
+        /* each choice for the unit: controlled it learns its offset to the cursor (+3000, +300); left
+         * alone it runs on by it (Keep moving) or holds (Stay still); a change applies at the next tick */
+        {
+            const ctx = env({ server: 'garix', keep: true });
+            let tick = null;
+            ctx.setInterval = (f) => { tick = f; return 1; };
+            ctx.clearInterval = noop;
+            const u = new ctx.Unit();
+            ctx.multiboxPlayerEnabled = 2;
+            u.sendCursor(); tick();
+            ctx.multiboxPlayerEnabled = null;
+            ctx.sent.length = 0; tick();
+            check('inactive unit, Inactive players: Keep moving: runs on toward where the cursor was', ctx.sent.join() === '4000,1300', ctx.sent.join());
+            ctx.defaultmapsettings.mbInactive = 'stay';
+            ctx.sent.length = 0; tick();
+            check('    ... switched to Stay still: holds at its centre at the next tick (live)', ctx.sent.join() === '1000,1000', ctx.sent.join());
+            ctx.defaultmapsettings.mbInactive = 'move';
+            ctx.sent.length = 0; tick();
+            check('    ... back to Keep moving: runs on again by the same offset', ctx.sent.join() === '4000,1300', ctx.sent.join());
+            u.playerX = NaN;
+            ctx.defaultmapsettings.mbInactive = 'stay';
+            ctx.sent.length = 0; tick();
+            check('    ... Stay still before the unit has a centre: nothing is sent', ctx.sent.length === 0, ctx.sent.join());
         }
     }
 }

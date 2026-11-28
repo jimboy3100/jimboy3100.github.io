@@ -167,6 +167,56 @@ for (const how of ['terminate', 'beforecalculation']) {
     e.ctx.application.multiboxback();
     check('back hotkey: one event', e.got.join() === '2<0', e.got.join());
 }
+/* "Inactive players" (mbInactive, lmMbInactiveMoves) around the swap hotkey: the player the key
+ * leaves runs on toward where its cursor was (Keep moving, the shipped choice) or holds where it is
+ * (Stay still), for the main player (LM.sendPosition) and a unit (spect.js sendCursor) alike */
+{
+    const head = '        sendPosition(cell, target2, specialcommand, periodic) {';
+    const st = v4.indexOf(head);
+    const mm = st < 0 ? null : /\n        [A-Za-z_$][\w$]*\([^)]*\) \{\n/.exec(v4.slice(st + head.length));
+    const sendPos = mm ? v4.slice(st, st + head.length + mm.index).trim().replace(/,\s*$/, '') : null;
+    const cursorM = block(sp, '    sendCursor() {'), rule = block(v4, 'function lmMbInactiveMoves() {');
+    if (!sendPos || !cursorM || !rule) check('sendPosition / sendCursor / lmMbInactiveMoves found', false);
+    else {
+        const run = (choice) => {
+            const e = env({ focus: null, mainAlive: true, units: 1 }), c = e.ctx, sent = [];
+            c.defaultmapsettings = choice === undefined ? {} : { mbInactive: choice };
+            c.sent = sent;
+            let tick = null;
+            c.setInterval = (f) => { tick = f; return 1; };
+            c.clearInterval = () => { };
+            vm.runInContext(rule + '\nObject.assign(legendmod, { ' + sendPos + ',\n' +
+                ' isSocketOpen() { return true; }, connectionOpened: true, clientKey: 1, integrity: false, vector: [[0, 0]], vnr: 0, serverType: "garix", pause: false,\n' +
+                ' createView(n) { return new DataView(new ArrayBuffer(n)); }, sendBuffer(v) { sent.push("P1 " + v.getInt32(3, true) + "," + v.getInt32(7, true)); },\n' +
+                ' playerX: 1000, playerY: 1000, viewXTrue: 1000, viewYTrue: 1000, cursorX: 4000, cursorY: 1000, distX: 0, distY: 0 });\n' +
+                'window.userBots = {};\n' +
+                'var _lmC = (class { ' + cursorM + ' }).prototype; Unit.prototype.sendCursor = _lmC.sendCursor;\n' +
+                'Object.assign(Unit.prototype, { _lmAimSend() { return true; }, convertX(x) { return x; }, convertY(y) { return y; }, rawToWorldX(x) { return x; }, rawToWorldY(y) { return y; },\n' +
+                ' worldToRawX(x) { return x; }, worldToRawY(y) { return y; }, sendPosition(x, y) { sent.push("P2 " + Math.round(x) + "," + Math.round(y)); return true; } });', c);
+            const u = e.unit(1);
+            u.playerX = 2000; u.playerY = 2000;
+            /* P1 controlled: its offset to the cursor (+3000, 0); P2 controlled: its own (+500, +300) */
+            c.legendmod.distX = 3000; c.legendmod.distY = 0;
+            u.sendCursor();
+            c.application.multiboxchange();
+            c.legendmod.cursorX = 2500; c.legendmod.cursorY = 2300;
+            tick();
+            sent.length = 0;
+            c.legendmod.sendPosition();
+            const main = sent.join();
+            c.application.multiboxchange();
+            sent.length = 0;
+            tick();
+            return [main, sent.join(), e.got.join()];
+        };
+        const mv = run('move'), st = run('stay'), def = run(undefined);
+        check('Keep moving: after the swap to P2, P1 runs on toward its cursor point (+3000, 0)', mv[0] === 'P1 4000,1000' && mv[2] === '1<0,0<1', mv.join(' | '));
+        check('Keep moving: after the swap back, P2 runs on by its offset (+500, +300)', mv[1] === 'P2 2500,2300', mv[1]);
+        check('Stay still: after the swap to P2, P1 holds at its centre', st[0] === 'P1 1000,1000', st[0]);
+        check('Stay still: after the swap back, P2 holds at its centre', st[1] === 'P2 2000,2000', st[1]);
+        check('no saved choice: Keep moving (the shipped behaviour)', def[0] === mv[0] && def[1] === mv[1], def.join(' | '));
+    }
+}
 /* the event data is the documented one */
 {
     const e = env({ focus: 2, mainAlive: true });

@@ -166,6 +166,58 @@ app.loadSettings();
 const reSaved2 = JSON.parse(ctx.localStorage.getItem('ogarioSettings'));
 check('load: an old save with the pop sound on has the virus sound on, the old keys are not loaded, the pass toast is read', S.virusSound === true && !('virusPopSound' in reSaved2) && !('virusPopSound' in S) && S.lbPassToast === true);
 S.lbPassToast = D.lbPassToast;
+// ── "Inactive players" (mbInactive) is the one choice of the old switches multiKeepMoving + mbFreeze
+check('Inactive players: Keep moving by default (as the shipped switches: keep moving on, freeze off), choices move / stay only',
+  D.mbInactive === 'move' && J(SCH.mbInactive.choices) === J(['move', 'stay']) && V('mbInactive', 'stay') === 'stay' && V('mbInactive', 'freeze') === undefined && V('mbInactive', true) === undefined);
+check('Inactive players: the old switches are no settings any more (readable only by the fold)', ['multiKeepMoving', 'mbFreeze'].every(k => !(k in D) && !(k in SCH) && V(k, true) === undefined));
+check('Inactive players: one dropdown in Settings > MultiBox, the old switches gone from it',
+  main.includes('this.addChoiceBox(".multiBox", "mbInactive", "settings.mbInactive", [[\'move\', \'settings.mbInactiveMove\'], [\'stay\', \'settings.mbInactiveStay\']]);') &&
+  !/addOptions\(\[[^\]]*"(multiKeepMoving|mbFreeze)"/.test(main));
+{
+  const mi = (o) => lfold(o).mbInactive;
+  const rows = [
+    [{ multiKeepMoving: true, mbFreeze: false }, 'move'], [{ multiKeepMoving: false, mbFreeze: false }, 'stay'],
+    [{ multiKeepMoving: true, mbFreeze: true }, 'stay'], [{ multiKeepMoving: false, mbFreeze: true }, 'stay'],
+    [{ multiKeepMoving: true }, 'move'], [{ multiKeepMoving: 'false' }, 'stay'], [{ mbFreeze: true }, 'stay'], [{ mbFreeze: 'false' }, 'move']];
+  const got = rows.map(r => mi(Object.assign({}, r[0])));
+  check('fold: keep moving only with Keep moving on and Freeze off; both on held (Stay still); a missing old key counts as its default',
+    J(got) === J(rows.map(r => r[1])) || (console.log('   ' + J(got)), false));
+  check('fold: the old keys go, other keys stay', J(lfold({ multiKeepMoving: false, mbFreeze: true, showMass: true })) === J({ showMass: true, mbInactive: 'stay' }));
+  check('fold: a valid mbInactive wins over stray old keys, an unusable one is replaced',
+    J(lfold({ mbInactive: 'move', mbFreeze: true })) === J({ mbInactive: 'move' }) && J(lfold({ mbInactive: 'x', mbFreeze: true })) === J({ mbInactive: 'stay' }));
+  check('fold: a set without the old keys is untouched', J(lfold({ mbInactive: 'stay' })) === J({ mbInactive: 'stay' }) && !('mbInactive' in lfold({ showMass: true })));
+}
+for (const [old, want] of [[{ multiKeepMoving: true, mbFreeze: true }, 'stay'], [{ multiKeepMoving: false, mbFreeze: false }, 'stay'], [{ multiKeepMoving: true, mbFreeze: false }, 'move']]) {
+  const o = Object.assign({}, saved, old);
+  delete o.mbInactive;
+  ctx.localStorage.setItem('ogarioSettings', JSON.stringify(o));
+  S.mbInactive = want === 'move' ? 'stay' : 'move';
+  app.loadSettings();
+  const re = JSON.parse(ctx.localStorage.getItem('ogarioSettings'));
+  check('load: an old save with ' + J(old) + ' plays ' + want + ', the save rewritten without the old keys',
+    S.mbInactive === want && re.mbInactive === want && !('multiKeepMoving' in re) && !('mbFreeze' in re) && !('multiKeepMoving' in S) && !('mbFreeze' in S));
+}
+{
+  const o = Object.assign({}, saved);
+  delete o.mbInactive;
+  ctx.localStorage.setItem('ogarioSettings', JSON.stringify(o));
+  S.mbInactive = D.mbInactive;
+  app.loadSettings();
+  check('load: a save from before without either old key keeps the default (Keep moving)', S.mbInactive === 'move' && !('mbInactive' in JSON.parse(ctx.localStorage.getItem('ogarioSettings'))));
+}
+{
+  const impOld = { ogarioSettings: { multiKeepMoving: true, mbFreeze: true, showMass: false } };
+  vm.runInContext('(function (importValue) {\n' + impLoop.replace(/\}\s*$/, '') + '\n})', ctx)(impOld);
+  const impNew = { ogarioSettings: { mbInactive: 'stay' } }, impBad = { ogarioSettings: { mbInactive: 'freeze' } };
+  vm.runInContext('(function (importValue) {\n' + impLoop.replace(/\}\s*$/, '') + '\n})', ctx)(impNew);
+  vm.runInContext('(function (importValue) {\n' + impLoop.replace(/\}\s*$/, '') + '\n})', ctx)(impBad);
+  check('import: an old export with both switches on is Stay still, the old keys dropped; a new one is kept, an unusable choice dropped',
+    J(impOld.ogarioSettings) === J({ showMass: false, mbInactive: 'stay' }) && J(impNew.ogarioSettings) === J({ mbInactive: 'stay' }) && J(impBad.ogarioSettings) === J({}));
+}
+/* back to the loaded state the checks below read (the old pop sound save above) */
+ctx.localStorage.setItem('ogarioSettings', JSON.stringify(Object.assign({}, saved, { virusSound: false, virusPopSound: true, audioDucking: true, volNotifications: 0.2, lbPassToast: true })));
+app.loadSettings();
+S.lbPassToast = D.lbPassToast;
 /* the pass toast itself: the real lines of the leaderboard update, a climb of 1-3 places while playing */
 {
   const src = fs.readFileSync(path.join(__dirname, '..', '..', 'ogario', 'ogario.v4.js'), 'utf8').replace(/\r\n/g, '\n');

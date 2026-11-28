@@ -28,6 +28,10 @@
 'use strict';
 const fs = require('fs'), path = require('path'), vm = require('vm');
 const src = fs.readFileSync(process.argv[2] || path.join(__dirname, '..', '..', 'ogario', 'spect.js'), 'utf8').replace(/\r\n/g, '\n');
+/* the "Inactive players" rule of ogario.v4.js that sendCursor uses (lmMbInactiveMoves) */
+const v4src = fs.readFileSync(process.argv[3] || path.join(__dirname, '..', '..', 'ogario', 'ogario.v4.js'), 'utf8').replace(/\r\n/g, '\n');
+const inactiveRule = (() => { const i = v4src.indexOf('function lmMbInactiveMoves() {'); return i < 0 ? '' : v4src.slice(i, v4src.indexOf('\n}\n', i) + 2); })();
+if (!inactiveRule) { console.log('FAIL lmMbInactiveMoves not found in ogario.v4.js'); process.exit(1); }
 let failed = 0;
 const check = (name, ok, info) => { console.log((ok ? 'ok   ' : 'FAIL ') + name + (ok || info === undefined ? '' : '  [' + info + ']')); if (!ok) failed++; };
 
@@ -71,6 +75,7 @@ function load(LM) {
         lmObsUntrack(c) { if (c._lmObsSet) c._lmObsSet.delete(c); c._lmObsSet = null; }, lmObsOfSource: (src) => obs.get(src) || null, lmObsVelocity() { }, lmFoodAdd() { }, lmFoodTouch() { }, toastr: {}, $: () => ({ val: () => '' })
     };
     vm.createContext(ctx);
+    vm.runInContext(inactiveRule, ctx);
     vm.runInContext(src + '\n;window.Spect = Spect; window.h = { lmRawToWorld, lmWorldToRaw };', ctx);
     return ctx;
 }
@@ -491,7 +496,7 @@ for (const [d, vnr] of [[0, 0], [3, 2]]) {
     ctx.window.multiboxPlayerEnabled = 1; LM.cursorX = sp.playerX + 500; LM.cursorY = sp.playerY + 300;
     sp.sendCursor(); tick();
     /* the main player takes control back; the unit keeps moving: target - unit centre in world units */
-    ctx.window.multiboxPlayerEnabled = 0; ctx.defaultmapsettings.multiKeepMoving = true;
+    ctx.window.multiboxPlayerEnabled = 0; ctx.defaultmapsettings.mbInactive = 'move';
     const dir = () => {
         sent.length = 0; tick();
         return [sp.rawToWorldX(sent[0][0]) - sp.rawToWorldX(sp.convertX(sp.playerX)), sp.rawToWorldY(sent[0][1]) - sp.rawToWorldY(sp.convertY(sp.playerY))].map((v) => Math.round(v)).join(',');
