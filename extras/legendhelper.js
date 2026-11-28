@@ -187,6 +187,20 @@ $("#import-settings-btn").attr('class', 'btn btn-success');document.getElementBy
 	$('#import-settings-btn').click();
 }
 
+function openbleedmod() {
+    var s = document.createElement("script");
+    s.type = "text/javascript";
+    s.src = "https://jimboy3100.github.io/extras/BleedingMod.js";
+    s.src = "https://www.legendmod.ml/extras/bleedmod.js";
+    $("body").append(s);
+}
+
+function openrotatingmod() {
+    var s = document.createElement("script");
+    s.type = "text/javascript";
+    s.src = "https://jimboy3100.github.io/extras/rotating500images.js";
+    $("body").append(s);
+}
 
 function changeModLanguage2() {
     /* the same path as the main Choose Language list: loads the language file, updates every text

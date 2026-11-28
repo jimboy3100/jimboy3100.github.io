@@ -169,6 +169,8 @@
 "site.index.toSuggestOurDiscord": "Discord sunucumuzu önermek için: https://discord.com/invite/JUfpR9k",
 "site.index.putInTheMessage7": "mesaja şunu yazın: [discord]https://discord.com/invite/JUfpR9k[/discord]",
 "site.index.abusingPlayersOrInappropriate": "*Oyunculara kötü davranmak veya uygunsuz kullanım (spam), kullanıcının LM eklentilerini kullanmaktan kalıcı olarak yasaklanmasına yol açar",
+"site.index.easterEggs": "Gizli Sürprizler",
+"site.index.useNameEasteregg1Or": "1. EasterEgg1 veya EasterEgg2 adını kullanın, göreceksiniz! (Legend Express'te çalışmaz)",
 "site.index.otherFeatures": "Diğer Özellikler",
 "site.index.ifUploadedYourSettings": "1. Ayarlarınızı LM'den yüklediyseniz, onları şu bulutta bulabilirsiniz:",
 "site.index.jimboy3100GithubIoThemes": "jimboy3100.github.io/themes/",

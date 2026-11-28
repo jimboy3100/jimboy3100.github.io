@@ -169,6 +169,8 @@
 "site.index.toSuggestOurDiscord": "Για να προτείνετε τον Discord server μας: https://discord.com/invite/JUfpR9k",
 "site.index.putInTheMessage7": "γράψτε στο μήνυμα: [discord]https://discord.com/invite/JUfpR9k[/discord]",
 "site.index.abusingPlayersOrInappropriate": "*Η παρενόχληση παικτών ή η ακατάλληλη χρήση (spam) οδηγεί σε μόνιμο αποκλεισμό του χρήστη από τις επεκτάσεις LM",
+"site.index.easterEggs": "Easter Eggs",
+"site.index.useNameEasteregg1Or": "1. Χρησιμοποιήστε το όνομα EasterEgg1 ή EasterEgg2 και θα δείτε! (δεν λειτουργεί στο Legend Express)",
 "site.index.otherFeatures": "Άλλες λειτουργίες",
 "site.index.ifUploadedYourSettings": "1. Αν ανεβάσατε τις ρυθμίσεις σας από το LM, θα τις βρείτε σε αυτό το cloud:",
 "site.index.jimboy3100GithubIoThemes": "jimboy3100.github.io/themes/",

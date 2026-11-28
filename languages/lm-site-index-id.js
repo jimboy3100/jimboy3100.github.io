@@ -169,6 +169,8 @@
 "site.index.toSuggestOurDiscord": "Untuk menyarankan server Discord kami: https://discord.com/invite/JUfpR9k",
 "site.index.putInTheMessage7": "tulis di pesan: [discord]https://discord.com/invite/JUfpR9k[/discord]",
 "site.index.abusingPlayersOrInappropriate": "*Melecehkan pemain atau penggunaan yang tidak pantas (spam) akan berujung pada ban permanen dari ekstensi LM",
+"site.index.easterEggs": "Easter Egg",
+"site.index.useNameEasteregg1Or": "1. Pakai nama EasterEgg1 atau EasterEgg2 dan lihat sendiri! (tidak berfungsi di Legend Express)",
 "site.index.otherFeatures": "Fitur Lainnya",
 "site.index.ifUploadedYourSettings": "1. Kalau kamu sudah mengunggah pengaturan dari LM, kamu bisa menemukannya di cloud ini:",
 "site.index.jimboy3100GithubIoThemes": "jimboy3100.github.io/themes/",

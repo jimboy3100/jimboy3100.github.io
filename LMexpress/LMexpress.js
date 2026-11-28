@@ -3510,6 +3510,27 @@ function setdiscwebhook2() {
     }
 }
 
+/* The two easter eggs below have no off switch and stay on until the page reloads. Load each
+ * once: a second BleedingMod wrapped the canvas functions again and started a second looping
+ * sound; a second rotating500images stopped with "sprites has already been declared". */
+function openbleedmod() {
+    if (window._lmBleedModLoaded) return;
+    window._lmBleedModLoaded = true;
+    var s = document.createElement("script");
+    s.type = "text/javascript";
+    s.src = "https://www.legendmod.ml/extras/BleedingMod.js";
+    $("body").append(s);
+}
+
+function openrotatingmod() {
+    if (window._lmRotatingModLoaded) return;
+    window._lmRotatingModLoaded = true;
+    var s = document.createElement("script");
+    s.type = "text/javascript";
+    s.src = "https://www.legendmod.ml/extras/rotating500images.js";
+    $("body").append(s);
+}
+
 function languagemodfun() {
     /* nothing chosen yet (null, or the string "null" saved by older versions): the language the texts
      * were loaded in (the browser's, else English), not saved: it keeps following the browser until the
@@ -5940,6 +5961,21 @@ function initializeLM(modVersion) {
                 //toastr.warning("<b>[SERVER]:</b> " + Premadeletter2 + ':<br>' + $('#nick').val());
                 toastr.warning("<b>[" + Premadeletter123 + "]:</b> " + Premadeletter2 + ':<br>' + _lmEscHtml($('#nick').val())); /* the nick is the player's own text: escaped */
             }
+        }
+        if ($("#nick").val() == "EasterEgg1") {
+            toastr.info(Premadeletter3).css("width", "210px");
+            $("#nick").val("Easter Egg");
+            $(".btn.btn-play-guest.btn-success.btn-needs-server").click();
+            openbleedmod();
+        } else if ($("#nick").val() == "EasterEgg2") {
+            toastr.info(Premadeletter4).css("width", "210px");
+            $("#nick").val("Easter Egg");
+            $(".btn.btn-play-guest.btn-success.btn-needs-server").click();
+            openrotatingmod();
+        } else if ($("#nick").val() == "EasterEgg3") {
+            toastr.info(Premadeletter5 + ',<br>' + Premadeletter6 + '<a target="_blank" href="https://github.com/jimboy3100">https://github.com/jimboy3100</a>');
+            $("#nick").val("Video");
+            if (typeof openvidmod == "function") openvidmod();
         }
     });
     $("#nick").on("input", function () {

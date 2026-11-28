@@ -169,6 +169,8 @@
 "site.index.toSuggestOurDiscord": "私たちの Discord サーバーをすすめるには：https://discord.com/invite/JUfpR9k",
 "site.index.putInTheMessage7": "メッセージに入力：[discord]https://discord.com/invite/JUfpR9k[/discord]",
 "site.index.abusingPlayersOrInappropriate": "*プレイヤーへの迷惑行為や不適切な使い方 (スパム) をすると、LM 拡張機能の利用を永久に BAN されます",
+"site.index.easterEggs": "イースターエッグ",
+"site.index.useNameEasteregg1Or": "1. 名前を EasterEgg1 か EasterEgg2 にすると…！(Legend Express では動作しません)",
 "site.index.otherFeatures": "その他の機能",
 "site.index.ifUploadedYourSettings": "1. LM から設定をアップロードした場合は、このクラウドで見つけられます：",
 "site.index.jimboy3100GithubIoThemes": "jimboy3100.github.io/themes/",

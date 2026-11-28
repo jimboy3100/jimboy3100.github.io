@@ -169,6 +169,8 @@
 "site.index.toSuggestOurDiscord": "要推薦我們的 Discord 伺服器：https://discord.com/invite/JUfpR9k",
 "site.index.putInTheMessage7": "在訊息中輸入：[discord]https://discord.com/invite/JUfpR9k[/discord]",
 "site.index.abusingPlayersOrInappropriate": "*騷擾玩家或不當使用（洗版）將導致使用者被永久禁止使用 LM 擴充功能",
+"site.index.easterEggs": "彩蛋",
+"site.index.useNameEasteregg1Or": "1. 使用名稱 EasterEgg1 或 EasterEgg2 就知道了！（不適用於 Legend Express）",
 "site.index.otherFeatures": "其他功能",
 "site.index.ifUploadedYourSettings": "1. 如果你已從 LM 上傳設定，可以在這個雲端找到:",
 "site.index.jimboy3100GithubIoThemes": "jimboy3100.github.io/themes/",

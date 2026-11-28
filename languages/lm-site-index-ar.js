@@ -169,6 +169,8 @@
 "site.index.toSuggestOurDiscord": "لاقتراح خادم Discord الخاص بنا: https://discord.com/invite/JUfpR9k",
 "site.index.putInTheMessage7": "اكتب في الرسالة: [discord]https://discord.com/invite/JUfpR9k[/discord]",
 "site.index.abusingPlayersOrInappropriate": "*الإساءة إلى اللاعبين أو الاستخدام غير اللائق (الإزعاج المتكرر) سيؤدي إلى حظر المستخدم نهائيًا من استخدام إضافات LM",
+"site.index.easterEggs": "مفاجآت مخفية",
+"site.index.useNameEasteregg1Or": "1. استخدم الاسم EasterEgg1 أو EasterEgg2 وسترى! (لا يعمل على Legend Express)",
 "site.index.otherFeatures": "ميزات أخرى",
 "site.index.ifUploadedYourSettings": "1. إذا رفعت إعداداتك من LM، فيمكنك العثور عليها في هذه السحابة:",
 "site.index.jimboy3100GithubIoThemes": "jimboy3100.github.io/themes/",

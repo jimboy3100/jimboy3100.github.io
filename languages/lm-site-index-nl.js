@@ -169,6 +169,8 @@
 "site.index.toSuggestOurDiscord": "Om onze Discord-server voor te stellen: https://discord.com/invite/JUfpR9k",
 "site.index.putInTheMessage7": "zet in het bericht: [discord]https://discord.com/invite/JUfpR9k[/discord]",
 "site.index.abusingPlayersOrInappropriate": "*Misbruik tegenover spelers of ongepast gebruik (spammen) leidt tot een permanente ban voor het gebruik van LM-extensies",
+"site.index.easterEggs": "Easter eggs",
+"site.index.useNameEasteregg1Or": "1. Gebruik de naam EasterEgg1 of EasterEgg2 en je zult het zien! (werkt niet in Legend Express)",
 "site.index.otherFeatures": "Andere functies",
 "site.index.ifUploadedYourSettings": "1. Als je je instellingen vanuit LM hebt geüpload, vind je ze in deze cloud:",
 "site.index.jimboy3100GithubIoThemes": "jimboy3100.github.io/themes/",

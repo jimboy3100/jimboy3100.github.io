@@ -169,6 +169,8 @@
 "site.index.toSuggestOurDiscord": "За да предложите нашия Discord сървър: https://discord.com/invite/JUfpR9k",
 "site.index.putInTheMessage7": "напишете в съобщението: [discord]https://discord.com/invite/JUfpR9k[/discord]",
 "site.index.abusingPlayersOrInappropriate": "*Тормозът над играчи или неподходящата употреба (спам) води до перманентна забрана за ползване на разширенията на LM",
+"site.index.easterEggs": "Скрити изненади (Easter eggs)",
+"site.index.useNameEasteregg1Or": "1. Използвайте името EasterEgg1 или EasterEgg2 и ще видите! (не работи в Legend Express)",
 "site.index.otherFeatures": "Други функции",
 "site.index.ifUploadedYourSettings": "1. Ако сте качили настройките си от LM, можете да ги намерите в този облак:",
 "site.index.jimboy3100GithubIoThemes": "jimboy3100.github.io/themes/",
