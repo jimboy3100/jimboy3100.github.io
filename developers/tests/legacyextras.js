@@ -80,6 +80,17 @@ function makeDom() {
     d.log.scripts.length = 0; d.log.toasts.length = 0;
     vm.runInContext('nickPlay("Jimboy")', ctx);
     check('another nick: nothing loaded', d.log.scripts.length === 0 && d.log.toasts.length === 0);
+    /* the Mod Info window (extras/legendhelper.js) is loaded later: its functions must not replace
+     * the egg loaders (a copy there loaded the missing extras/bleedmod.js, with no load-once guard) */
+    const d2 = makeDom();
+    const ctx2 = { $: d2.$, document: d2.document, window: {}, toastr: d2.toastr, Premadeletter3: 'egg1', Premadeletter4: 'egg2', Premadeletter5: 'egg3', Premadeletter6: '' };
+    vm.createContext(ctx2);
+    vm.runInContext(cutIn(lmx, 'function openbleedmod()', '\nfunction languagemodfun()'), ctx2);
+    vm.runInContext(eggs, ctx2);
+    vm.runInContext(cutIn(helper, 'function templatesIframe()', '\nfunction changeModLanguage2()'), ctx2);
+    vm.runInContext('nickPlay("EasterEgg1"); nickPlay("EasterEgg1")', ctx2);
+    check('after Mod Info was opened: EasterEgg1 still loads extras/BleedingMod.js once',
+        d2.log.scripts.length === 1 && d2.log.scripts[0] === 'https://www.legendmod.ml/extras/BleedingMod.js');
     check('Dying Light state exported and imported again', /legendSettings\.dyinglight1load = localStorage\.getItem\("dyinglight1load"\)/.test(lmx) &&
         /_lmImportSet\("dyinglight1load", LegendJSON\.legendSettings\.dyinglight1load\)/.test(lmx));
     check('the saved Dying Light state is no longer deleted on load', !/removeItem\('dyinglight1load'\)/.test(main));
