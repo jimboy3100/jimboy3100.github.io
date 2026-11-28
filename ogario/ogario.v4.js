@@ -63663,8 +63663,9 @@ function pickPlayerCellBySize(players, selectBiggest) {
             var _glFxN = 0;
             /* Cell shadows are the Canvas2D drop shadow of cell.draw and the GPU batch has no
              * shadow pass, so a frame with a shadowed cell on screen stays on Canvas2D (food
-             * and ejected mass cast none). Fallback reason: 'cellShadows'. */
-            var _glShadows = !!defaultmapsettings.showCellShadows;
+             * and ejected mass cast none). Fallback reason: 'cellShadows'. Settings that
+             * make that shadow paint nothing keep WebGL (_lmShadowSeen). */
+            var _glShadows = !!defaultmapsettings.showCellShadows && this._lmShadowSeen();
 
 
             for (
@@ -63868,6 +63869,33 @@ function pickPlayerCellBySize(players, selectBiggest) {
         _lmNoGL(why) {
             this._lmGlWhy = why;
             return false;
+        },
+        /* Cell shadows on: does cell.draw's Canvas2D shadow paint anything? It paints none
+         * with a fully transparent colour, or with blur 0 and both offsets 0 (the canvas
+         * shadow rule); the values are those cell.draw sets. A colour this cannot read
+         * counts as seen. The colour test is kept per colour string (no work per frame). */
+        _lmShadowSeen() {
+            var col = defaultSettings.cellShadowColor || 'rgba(0,0,0,0.35)';
+            if (col !== this._lmShColK) {
+                var s = String(col).trim().toLowerCase(), a0 = s === 'transparent', m;
+                if (s.charAt(0) === '#') a0 = s.length === 5 ? s.charAt(4) === '0' : s.length === 9 && s.slice(7) === '00';
+                else if ((m = /^(?:rgb|hsl)a?\(([^)]*)\)$/.exec(s))) {
+                    var p = m[1].split(/[\s,\/]+/).filter(Boolean);
+                    if (p.length === 4) {
+                        var av = parseFloat(p[3]);
+                        a0 = av <= 0 && /^[-+]?(?:\d+\.?\d*|\.\d+)(?:e[-+]?\d+)?%?$/.test(p[3]);
+                    }
+                }
+                this._lmShColK = col;
+                this._lmShColA0 = a0;
+            }
+            if (this._lmShColA0) return false;
+            var b = defaultSettings.cellShadowBlur;
+            b = b === '' || b == null ? NaN : +b;
+            b = b >= 0 && b < Infinity ? b : 20;
+            var ox = +(defaultSettings.cellShadowOffsetX || 0), oy = +(defaultSettings.cellShadowOffsetY || 0);
+            /* a non-finite offset is ignored by the canvas (it keeps 0) */
+            return b !== 0 || (ox !== 0 && isFinite(ox)) || (oy !== 0 && isFinite(oy));
         },
         /* one frame, drawn by WebGL (GLW.WEBGL) or kept on Canvas2D for that reason */
         _lmGlCount(why) {

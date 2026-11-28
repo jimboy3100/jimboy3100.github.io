@@ -603,6 +603,28 @@ for (const jelly of [true, false]) {
     check('cell contours (jelly ' + (jelly ? 'on' : 'off') + '): WebGL; Canvas2D (reason "contours") only without the contour resources',
         withRes && whyWith === 'webgl' && !without && whyWithout === 'contours', whyWith + ' / ' + whyWithout);
 }
+/* cell shadows: Canvas2D (reason "cellShadows") while cell.draw's shadow paints something;
+ * WebGL when the canvas would paint none (a fully transparent colour, or blur 0 and no offset) */
+{
+    const cases = [
+        [{}, false], [{ cellShadowColor: 'rgba(0,0,0,0)' }, true], [{ cellShadowColor: 'transparent' }, true], [{ cellShadowColor: '#0000' }, true],
+        [{ cellShadowColor: '#000000ff' }, false], [{ cellShadowColor: '#00000000' }, true], [{ cellShadowColor: 'hsla(0, 0%, 0%, 0%)' }, true],
+        [{ cellShadowColor: 'rgb(0 0 0 / 0)' }, true], [{ cellShadowColor: 'rgba(0,0,0,0.01)' }, false], [{ cellShadowColor: '' }, false], [{ cellShadowColor: 'bogus(0)' }, false],
+        [{ cellShadowBlur: 0, cellShadowOffsetX: 0, cellShadowOffsetY: 0 }, true], [{ cellShadowBlur: '0', cellShadowOffsetX: '0', cellShadowOffsetY: 0 }, true],
+        [{ cellShadowBlur: 0, cellShadowOffsetX: 0, cellShadowOffsetY: 3 }, false], [{ cellShadowBlur: 0, cellShadowOffsetX: -2, cellShadowOffsetY: 0 }, false],
+        [{ cellShadowBlur: 5, cellShadowOffsetX: 0, cellShadowOffsetY: 0 }, false], [{ cellShadowBlur: '', cellShadowOffsetX: 0, cellShadowOffsetY: 0 }, false]
+    ];
+    const bad = [];
+    for (const [set, gl] of cases) {
+        setSettings({ map: { showCellShadows: true }, set: set });
+        const ok = R.canUseWebGLScene(LM.cells), w = why();
+        if (ok !== gl || w !== (gl ? 'webgl' : 'cellShadows')) bad.push(JSON.stringify(set) + ' -> ' + w);
+    }
+    setSettings({ map: { showCellShadows: false }, set: { cellShadowBlur: 20 } });
+    const off = R.canUseWebGLScene(LM.cells), wOff = why();
+    check('cell shadows: Canvas2D (reason "cellShadows") only when the canvas shadow paints something (colour alpha > 0 and a blur or offset); off: WebGL',
+        bad.length === 0 && off && wOff === 'webgl', bad.join('; ') + ' / off ' + wOff);
+}
 setSettings({ map: { FBTracking: true } });
 LM.gameMode = ':teams';
 r = frame(S1);
