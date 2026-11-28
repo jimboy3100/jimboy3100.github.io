@@ -1,6 +1,6 @@
 /* Plugin manager checks (ogario/modules/plugins.js): plugin header
  * parsing and validation, Legend Mod version compatibility, stored data checks, the catalogue
- * file and its example plugins, the Lab removed, the old Lab hotkey moved to User Scripts, and that every new
+ * and its example plugins removed, the Lab removed, the old Lab hotkey moved to User Scripts, and that every new
  * LMEvents emit point is guarded so it costs nothing while nobody listens.
  * node developers/tests/plugins.js */
 const fs = require('fs'), path = require('path'), vm = require('vm');
@@ -89,8 +89,6 @@ se = P.slotEntry(4, { url: 'javascript:alert(1)', code: '' });
 check('bad URL kept out but the slot is not empty', !se.empty && se.url === '' && se.badUrl);
 check('official slot URL', P.slotEntry(5, { url: 'https://www.legendmod.ml/extras/plugins/split-counter.js' }).official);
 check('slotEntry of junk', P.slotEntry(1, null).empty && P.slotEntry(1, 5).empty && P.slotEntry(1, { code: 5 }).empty);
-check('first empty slot', P.firstEmptySlot([P.slotEntry(1, { code: 'a' }), P.slotEntry(2, {}), P.slotEntry(3, {})]) === 2);
-check('no empty slot', P.firstEmptySlot([P.slotEntry(1, { code: 'a' }), P.slotEntry(2, { url: 'https://x.com/a.js' })]) === 0);
 
 /* ---- plugin settings ---- */
 const schema = P.validateSchema([
@@ -106,42 +104,11 @@ check('values typed and clamped', vals.words === 'abcdefghij' && vals.n === 3 &&
 check('values from broken JSON fall back to defaults', JSON.stringify(P.cleanValues(schema, '{')) === JSON.stringify({ words: 'a', n: 5, on: true, odd: '' }));
 check('number out of range clamped', P.cleanValues(schema, { n: 100 }).n === 5 && P.cleanValues(schema, { n: -4 }).n === 1);
 
-/* ---- the catalogue and its example plugins ---- */
-const catFile = path.join(root, 'extras', 'plugins', 'catalogue.json');
-const cat = P.validateCatalogue(fs.readFileSync(catFile, 'utf8'), 'https://www.legendmod.ml/extras/plugins/catalogue.json');
-check('catalogue has 3 example plugins', cat.length === 3);
-check('catalogue URLs are official', cat.every(c => P.isOfficialUrl(c.url) && /^https:\/\/www\.legendmod\.ml\/extras\/plugins\/[a-z-]+\.js$/.test(c.url)));
-cat.forEach(c => {
-    const file = path.join(root, 'extras', 'plugins', c.url.split('/').pop());
-    const src = fs.existsSync(file) ? fs.readFileSync(file, 'utf8') : '';
-    const m = P.parseMeta(src);
-    check('example ' + c.id + ': file exists and its header matches the catalogue', m.ok && m.meta.id === c.id && m.meta.name === c.name && m.meta.version === c.version && m.meta.permissions.join() === c.permissions.join());
-    check('example ' + c.id + ': works with this version', P.compat(m.meta, +/window\.OgVer = ([\d.]+);/.exec(fs.readFileSync(path.join(root, 'ogario', 'ogario.v4.js'), 'utf8'))[1]).ok);
-});
-check('catalogue rejects bad entries', P.validateCatalogue({ plugins: [{ name: 'A', file: 'javascript:1' }, { name: 'B' }, { name: 'C', file: 'c.js' }, { name: 'C', file: 'd.js' }] }, 'https://www.legendmod.ml/extras/plugins/catalogue.json').map(c => c.id).join() === 'c');
-
-/* ---- example plugins run against a stub LMEvents and clean up after onDisable ---- */
+/* ---- the catalogue and its example plugins are removed: no view, no file, no API ---- */
 (function () {
-    const listeners = {};
-    const E = { on: (n, f) => { (listeners[n] = listeners[n] || []).push(f); }, off: (n, f) => { listeners[n] = (listeners[n] || []).filter(x => x !== f); }, api: { toast: t => toasts.push(t) } };
-    const toasts = [];
-    const opts = {};
-    const ctx = { LMEvents: E, document: { getElementById: () => ({ value: 'Jim' }) }, LMPlugins: { ready: o => { Object.assign(opts, o); return { id: 'x', get: k => ({ milestones: '1000, 5k', words: '', own: false })[k], values: () => ({}) }; } } };
-    ctx.window = ctx;
-    ['mass-milestones', 'split-counter', 'chat-highlighter'].forEach(f => vm.runInNewContext(fs.readFileSync(path.join(root, 'extras', 'plugins', f + '.js'), 'utf8'), ctx));
-    const count = () => Object.keys(listeners).reduce((a, k) => a + listeners[k].length, 0);
-    check('example plugins add their listeners', count() === 7);
-    listeners.massUpdate.forEach(f => f({ mass: 2000 }));
-    check('mass milestones: loaded mid-life, no message for what was reached', toasts.length === 0);
-    listeners.massUpdate.forEach(f => f({ mass: 6000 }));
-    check('mass milestones: 5k message', toasts.length === 1 && toasts[0] === 'Mass 5k!');
-    listeners.split.forEach(f => f({ time: 1, count: 1, before: 1 }));
-    listeners.split.forEach(f => f({ time: 2, count: 1, before: 16 }));
-    listeners.merge.forEach(f => f({ merged: 1, cells: 1 }));
-    listeners.death.forEach(f => f({}));
-    check('split counter: message at death', toasts.some(t => t === 'This life: 1 split, 1 merge'));
-    listeners.chat.forEach(f => f({ nick: 'A', text: 'hi jim <b>', own: false }));
-    check('chat highlighter: nick used when no words are set', toasts[toasts.length - 1] === 'A: hi jim <b>');
+    const src = fs.readFileSync(path.join(root, 'ogario', 'modules', 'plugins.js'), 'utf8');
+    check('catalogue: no example plugin files', !fs.existsSync(path.join(root, 'extras', 'plugins')));
+    check('catalogue: no view, loader or install in the module', src.toLowerCase().indexOf('catalogue') < 0 && src.indexOf('function install(') < 0 && !('validateCatalogue' in P) && !('firstEmptySlot' in P));
 })();
 
 /* ---- the confirm text of a plugin comes from the language pack and follows a language change ---- */

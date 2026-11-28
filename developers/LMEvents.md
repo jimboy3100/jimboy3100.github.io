@@ -150,6 +150,6 @@ At its top level a plugin can call `LMPlugins.ready(options)`:
 
 `ready()` returns `{ id, get(key), values() }` to read the saved settings (the defaults when it runs
 outside a slot). Without `onDisable` a plugin that is turned off keeps running until the page
-is reloaded. Examples: `extras/plugins/` (also listed in the catalogue).
+is reloaded.
 
 User scripts and plugins run inside Legend Mod with full access to the page. Only load scripts from people you trust.

@@ -14,8 +14,7 @@
  *
  * Fields can also be written "name: value"; unknown fields are ignored, every value is cleaned
  * and shown as text only. The panel gets: the header of the chosen slot under the slot chooser,
- * a "Plugins" view (all slots with their header, on/off at start, compatibility, settings) and a
- * "Catalogue" view (example plugins, installed into a free slot). The slots keep their storage
+ * a "Plugins" view (all slots with their header, on/off at start, compatibility, settings). The slots keep their storage
  * (Userscript<n>, Userscripttexture<n>, UserscriptEnabled<n>); LMexpress/LMexpress.sniff2.js asks
  * window._lmUsGate before a slot runs: a plugin runs only on the Legend Mod versions it supports,
  * and its declared permissions (or a URL from another site) are confirmed when the user loads it.
@@ -206,30 +205,6 @@
         return { ok: true, reason: 'ok', need: null };
     }
 
-    /* the catalogue file -> entries with absolute script URLs (only http/https) */
-    function validateCatalogue(json, base) {
-        var o = json;
-        if (typeof json === 'string') { try { o = JSON.parse(json); } catch (e) { o = null; } }
-        var out = [];
-        if (!o || typeof o !== 'object' || !Array.isArray(o.plugins)) return out;
-        var seen = {};
-        for (var i = 0; i < o.plugins.length && out.length < 50; i++) {
-            var e = o.plugins[i];
-            if (!e || typeof e !== 'object') continue;
-            var meta = cleanMeta(e);
-            if (!meta || hasOwn(seen, meta.id)) continue;
-            var file = typeof e.url === 'string' ? e.url : typeof e.file === 'string' ? e.file : '';
-            var url = '';
-            if (!file.trim()) continue;
-            try { url = safeUrl(new URL(file.trim(), base).href); } catch (er) { url = ''; }
-            if (!url) continue;
-            seen[meta.id] = 1;
-            meta.url = url;
-            out.push(meta);
-        }
-        return out;
-    }
-
     /* a plugin's own settings: [{ key, type: 'checkbox' | 'number' | 'text', label, default, min, max }] */
     function validateSchema(list) {
         var out = [], seen = {};
@@ -293,17 +268,12 @@
             meta: pm.ok ? pm.meta : null
         };
     }
-    /* the first slot without a URL or code (0 = all in use) */
-    function firstEmptySlot(entries) {
-        for (var i = 0; i < entries.length; i++) if (entries[i] && entries[i].empty) return entries[i].n;
-        return 0;
-    }
 
     var pure = {
         cleanText: cleanText, escapeHtml: escapeHtml, slug: slug, lmVersion: lmVersion, safeUrl: safeUrl,
         isOfficialUrl: isOfficialUrl, parsePermissions: parsePermissions, cleanMeta: cleanMeta, parseMeta: parseMeta,
-        compat: compat, validateCatalogue: validateCatalogue, validateSchema: validateSchema, cleanValues: cleanValues,
-        slotEntry: slotEntry, firstEmptySlot: firstEmptySlot, PERMS: PERMS, MAX_CODE: MAX_CODE
+        compat: compat, validateSchema: validateSchema, cleanValues: cleanValues,
+        slotEntry: slotEntry, PERMS: PERMS, MAX_CODE: MAX_CODE
     };
 
     if (typeof window === 'undefined') {
@@ -317,7 +287,6 @@
     if (window._lmPluginsLoaded) return;
     window._lmPluginsLoaded = true;
 
-    var CATALOGUE_URL = 'https://www.legendmod.ml/extras/plugins/catalogue.json';
     var LETTERS = ['', 'A', 'B', 'C', 'D', 'E'];
 
     /* texts: developers/i18n/src (modules.plugins.*); tx('key', a, b) fills {0} {1} */
@@ -456,23 +425,8 @@
             } catch (e) { bad(e); }
         });
     }
-    var catalogue = null, catalogueState = '';
-    /* the player opens the catalogue again: a failed load is tried once more */
-    function retryCatalogue() { if (catalogueState === 'fail') catalogueState = ''; }
-    function loadCatalogue() {
-        if (catalogue) return Promise.resolve(catalogue);
-        catalogueState = 'loading';
-        return fetchText(CATALOGUE_URL + '?v=' + encodeURIComponent(String(window.OgVer || ''))).then(function (t) {
-            catalogue = validateCatalogue(t, CATALOGUE_URL);
-            catalogueState = '';
-            return catalogue;
-        }, function (e) {
-            catalogueState = 'fail';
-            throw e;
-        });
-    }
 
-    /* ---------- turning slots on and off, installing ---------- */
+    /* ---------- turning slots on and off ---------- */
 
     function runNow(n) {
         var $ = jq();
@@ -532,25 +486,6 @@
             r.status = '';
             if (was) toast('info', tx('offToast', n));
         }
-    }
-    /* catalogue plugin -> the first empty slot, through the slot's own URL field */
-    function install(id, skipConfirm) {
-        var m = (catalogue || []).filter(function (x) { return x.id === id; })[0];
-        var $ = jq();
-        if (!m || !$) return 0;
-        var n = firstEmptySlot(slots());
-        if (!n) { toast('warning', tx('noSlot', tx('editor'), eraseLabel())); return 0; }
-        var c = compat(m, ogVer());
-        if (!c.ok) { toast('warning', tx('notCompat', m.name, needText(c))); return 0; }
-        if (!skipConfirm && !window.confirm(confirmText(m, m.url))) return 0;
-        var L = LETTERS[n];
-        $('#Userscripttext' + L).val(m.name);
-        try { if (typeof window['Userscripttext1' + n] === 'function') window['Userscripttext1' + n](); else lsSet('Userscripttext1' + n, m.name); } catch (e) { }
-        if (typeof window._lmUserscriptSetEnabled === 'function') window._lmUserscriptSetEnabled(n, true);
-        /* the slot fetches the URL and loads it (asked here already) */
-        $('#Userscript' + L).val(m.url).trigger('blur');
-        refresh();
-        return n;
     }
 
     /* ---------- the panel ---------- */
@@ -722,41 +657,6 @@
             body.appendChild(row);
         });
     }
-    function renderCatalogue(body) {
-        body.appendChild(el('div', 'lm-us-warn', tx('warn')));
-        body.appendChild(el('div', 'lm-us-note', tx('catNote')));
-        if (!catalogue) {
-            body.appendChild(el('div', 'lm-us-note', catalogueState === 'fail' ? tx('catFail') : tx('catLoading')));
-            /* one try per opening: a failed load drew this again and loaded again at once, without end
-             * (about 90 requests a second while offline, also with the panel closed) */
-            if (!catalogueState) loadCatalogue().then(refresh, refresh);
-            return;
-        }
-        var have = {};
-        slots().forEach(function (s) { if (s.meta) have[s.meta.id] = s.n; });
-        catalogue.forEach(function (m) {
-            var row = el('div', 'lm-us-item'), main = el('div', 'lm-us-main');
-            row.setAttribute('data-cat', m.id);
-            var name = el('div', 'lm-us-name', m.name);
-            if (m.version) name.appendChild(el('small', '', 'v' + m.version));
-            if (m.author) name.appendChild(el('small', '', tx('by', m.author)));
-            main.appendChild(name);
-            if (m.description) main.appendChild(el('div', 'lm-us-desc', m.description));
-            var p = el('div', 'lm-us-meta');
-            chips(p, m);
-            main.appendChild(p);
-            var c = compat(m, ogVer());
-            main.appendChild(el('div', 'lm-us-meta' + (c.ok ? '' : ' lm-us-bad'), c.ok ? versionLine(m) : (c.reason === 'old' ? tx('stOld', c.need) : tx('stNew', c.need))));
-            row.appendChild(main);
-            var acts = el('div', 'lm-us-acts');
-            var b = btn(have[m.id] ? tx('installed', have[m.id]) : tx('install'), 'install', null, have[m.id] ? '' : 'btn-success');
-            b.setAttribute('data-id', m.id);
-            b.disabled = !!have[m.id] || !c.ok;
-            acts.appendChild(b);
-            row.appendChild(acts);
-            body.appendChild(row);
-        });
-    }
     function renderSettings(body) {
         var n = settingsFor, r = rt[n], s = slot(n);
         if (!r || !r.schema.length || !r.id) { settingsFor = 0; render(); return; }
@@ -804,7 +704,6 @@
         var top = ext.scrollTop;
         ext.textContent = '';
         if (settingsFor) renderSettings(ext);
-        else if (view === 'catalogue') renderCatalogue(ext);
         else renderPlugins(ext);
         ext.scrollTop = top;
     }
@@ -842,10 +741,10 @@
             toast('success', tx('saved'));
             settingsFor = 0;
             render();
-        } else if (act === 'install') install(id);
+        }
     }
 
-    /* adds the view switch, the header line and the Plugins / Catalogue area to the panel */
+    /* adds the view switch, the header line and the Plugins area to the panel */
     function mount() {
         var hud = document.getElementById('Userscriptshud2');
         if (!hud) return false;
@@ -854,7 +753,7 @@
         var h5 = hud.querySelector('h5');
         var bar = el('div');
         bar.id = 'lm-us-bar';
-        [['plugins', 'plugins'], ['catalogue', 'catalogue']].forEach(function (v) {
+        [['plugins', 'plugins']].forEach(function (v) {
             var b = el('button', '', tx(v[1]));
             b.type = 'button';
             b.setAttribute('data-view', v[0]);
@@ -884,7 +783,7 @@
         panel.addEventListener('click', function (e) {
             var t = e.target;
             var vb = t.closest ? t.closest('#lm-us-bar button') : null;
-            if (vb) { e.preventDefault(); view = vb.getAttribute('data-view'); settingsFor = 0; retryCatalogue(); render(); return; }
+            if (vb) { e.preventDefault(); view = vb.getAttribute('data-view'); settingsFor = 0; render(); return; }
             var a = t.closest ? t.closest('#lm-us-ext [data-act], #lm-us-info [data-act]') : null;
             if (a && !a.disabled) { e.preventDefault(); onAct(a.getAttribute('data-act'), +a.getAttribute('data-n') || 0, a.getAttribute('data-id')); }
         });
@@ -914,9 +813,8 @@
     function open(v) {
         var $ = jq();
         /* the list of slots unless a view is asked for */
-        view = v === 'catalogue' || v === 'editor' ? v : 'plugins';
+        view = v === 'editor' ? v : 'plugins';
         settingsFor = 0;
-        retryCatalogue();
         try { if (window.application && typeof window.application.showMenu === 'function') window.application.showMenu(); } catch (e) { }
         /* the click below is this call's own: it keeps the view asked for */
         opening = true;
@@ -950,8 +848,6 @@
             });
         },
         setEnabled: function (n, on, skipConfirm) { return setSlotEnabled(n, !!on, !!skipConfirm); },
-        install: function (id, skipConfirm) { return loadCatalogue().then(function () { return install(String(id), !!skipConfirm); }); },
-        catalogue: loadCatalogue,
         /* redraws the window */
         _refresh: refresh,
         _pure: pure
