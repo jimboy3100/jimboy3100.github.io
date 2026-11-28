@@ -77,7 +77,7 @@
 
 <https://www.legendmod.ml/knowledge/#feature-multibox> a schema:DefinedTerm, lm:Feature ;
   schema:name "Multibox controls" ;
-  schema:description "Control up to 4 connections with colour-coded rings and middle camera view." .
+  schema:description "Control up to 4 connections with a ring on the controlled unit and middle camera view." .
 
 <https://www.legendmod.ml/knowledge/#feature-replays> a schema:DefinedTerm, lm:Feature ;
   schema:name "Replay tools" ;
@@ -93,7 +93,7 @@
 
 <https://www.legendmod.ml/knowledge/#feature-accessibility> a schema:DefinedTerm, lm:Feature ;
   schema:name "Accessibility features" ;
-  schema:description "Reduced motion, text scale, HUD text scale, opponent indicators, colour-blind preset." .
+  schema:description "Reduced motion, text scale, HUD text scale, colour-blind preset." .
 
 <https://help.expanding.land/knowledge/#mechanic-dynamic-map> a schema:DefinedTerm, lm:GameMechanic ;
   schema:name "Dynamic circular arena" ;

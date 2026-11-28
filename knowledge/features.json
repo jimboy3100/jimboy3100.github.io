@@ -35,7 +35,7 @@
     {
       "id": "gamepad",
       "name": "Gamepad support",
-      "description": "Full controller support. The 16 buttons are bound in the Hotkeys window like keys and mouse buttons (any hotkey command; click a field and press the button). Default: A=split, B=feed, X=doubleSplit, Y=respawn, LB=multibox, RB=split16. Settings: dead zone (0.05-0.5), response curve (0.5-3), zoom sensitivity (0.2-4), trigger threshold (Gamepad window, with a live test).",
+      "description": "Full controller support. The 16 buttons are bound in the Hotkeys window like keys and mouse buttons (any hotkey command; click a field and press the button). Default: A=split, B=feed, X=doubleSplit, Y=respawn, LB=multibox, RB=split16. Settings: dead zone (0.05-0.5), response curve (0.5-3), zoom sensitivity (0.2-4), trigger threshold, axis inversion, vibration on split and death (Gamepad window, with a live test).",
       "url": "https://www.legendmod.ml/features.html"
     },
     {
@@ -125,7 +125,7 @@
     {
       "id": "accessibility",
       "name": "Accessibility features",
-      "description": "Reduced motion in Settings > Expanding Land (no Expanding Land death shake, particles, entrance spin). Menu text scale (1.0-1.6x). Colour-blind safe theme preset (Okabe-Ito). Clean HUD preset. Focus warning toast.",
+      "description": "Reduced motion in Settings > Expanding Land (no Expanding Land death shake, particles, entrance spin). Menu text scale (1.0-1.6x). Colour-blind safe theme preset (Okabe-Ito). Clean HUD preset.",
       "url": "https://www.legendmod.ml/features.html"
     },
     {

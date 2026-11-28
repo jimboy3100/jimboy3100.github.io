@@ -3690,40 +3690,10 @@
     "it": "<b>Direzione al tocco</b> (mobile, pannello dell'ingranaggio, disattivato di base): come su agar.io, la cellula si muove verso il punto che tocchi invece di usare il joystick; trascina per sterzare, solleva il dito per continuare dritto."
   },
   "site.index.splitPredictionAgarIo": {
-    "en": "<b>Split prediction</b> (agar.io): the split lines of Cursor tracking are dimmed for the cells that will not split on your next split (16-cell limit, under 35 mass).",
-    "el": "<b>Πρόβλεψη split</b> (agar.io, Helpers, απενεργοποιημένο από προεπιλογή): με ενεργό το Cursor tracking, οι γραμμές split των κελιών που δεν θα σπάσουν στο επόμενο split σας (όριο 16 κελιών, κάτω από 35 μάζα) εμφανίζονται αχνές.",
-    "es": "<b>Predicción de split</b> (agar.io, Helpers, desactivado por defecto): con Cursor tracking activado, las líneas de split de las células que no se dividirán en tu próximo split (límite de 16 células, menos de 35 de masa) aparecen atenuadas.",
-    "bg": "<b>Предвиждане на сплита</b> (agar.io, Помощници, изключено по подразбиране): при включено проследяване на курсора линиите за сплит на клетките, които няма да се разделят при следващия ви сплит (лимит от 16 клетки, под 35 маса), са затъмнени.",
-    "fr": "<b>Prédiction du split</b> (agar.io, Helpers, désactivé par défaut) : avec Cursor tracking activé, les lignes de split des cellules qui ne se diviseront pas lors de votre prochain split (limite de 16 cellules, moins de 35 de masse) sont atténuées.",
-    "ar": "<b>توقّع الانقسام</b> (agar.io، المساعدات، معطّل افتراضيًا): عند تفعيل تتبّع المؤشر، تُعتَّم خطوط انقسام الخلايا التي لن تنقسم في انقسامك التالي (حد 16 خلية، أقل من 35 كتلة).",
-    "zh": "<b>分裂預測</b>（agar.io，輔助工具，預設關閉）：開啟游標追蹤時，下次分裂時不會分裂的細胞（16 個細胞上限、質量低於 35）其分裂線會變暗。",
-    "ru": "<b>Прогноз сплита</b> (agar.io, Помощники, по умолчанию выключено): при включённом отслеживании курсора линии сплита клеток, которые не разделятся при следующем сплите (лимит 16 клеток, масса меньше 35), затемняются.",
-    "de": "<b>Split-Vorhersage</b> (agar.io, Hilfen, standardmäßig aus): Bei aktivem Cursor-Tracking werden die Split-Linien von Zellen abgedunkelt, die sich beim nächsten Split nicht teilen (16-Zellen-Limit, unter 35 Masse).",
-    "tr": "<b>Split tahmini</b> (agar.io, Yardımcılar, varsayılan olarak kapalı): Cursor tracking açıkken, bir sonraki splitinizde bölünmeyecek hücrelerin split çizgileri (16 hücre sınırı, 35 kütlenin altı) soluk gösteriliyor.",
-    "pl": "<b>Przewidywanie splitu</b> (agar.io, Wspomagacze, domyślnie wyłączone): przy włączonym śledzeniu kursora linie splitu komórek, które nie podzielą się przy następnym splicie (limit 16 komórek, poniżej 35 masy), są przyciemnione.",
-    "nl": "<b>Splitvoorspelling</b> (agar.io, Hulpmiddelen, standaard uit): met Cursor tracking aan worden de splitlijnen gedimd van cellen die bij je volgende split niet splitsen (limiet van 16 cellen, onder 35 massa).",
-    "pt": "<b>Previsão de split</b> (agar.io, Helpers, desligado por padrão): com o rastreamento do cursor ligado, as linhas de split das células que não vão se dividir no seu próximo split (limite de 16 células, abaixo de 35 de massa) ficam apagadas.",
-    "id": "<b>Prediksi split</b> (agar.io, Helper, nonaktif secara default): dengan Cursor tracking aktif, garis split sel yang tidak akan ikut split pada split berikutnya (batas 16 sel, di bawah 35 massa) diredupkan.",
-    "ja": "<b>分裂予測</b> (agar.io、ヘルパー、初期状態でオフ)：カーソル追跡がオンのとき、次の分裂で分裂しないセル (16セルの上限、質量35未満) の分裂ラインが薄く表示されます。",
-    "it": "<b>Previsione dello split</b> (agar.io, Aiuti, disattivato di base): con il Tracciamento del cursore attivo, le linee di split delle cellule che non si divideranno al prossimo split (limite di 16 cellule, sotto 35 di massa) appaiono attenuate."
+    "en": "<b>Split prediction</b> (agar.io): the split lines of Cursor tracking are dimmed for the cells that will not split on your next split (16-cell limit, under 35 mass). <b>Triple split range</b> (Helpers, off by default): rings around enemies 8x your mass or more, who can triple-split onto you."
   },
   "site.index.hudHelpersEachOff": {
-    "en": "<b>HUD helpers</b> (each off by default): an optional <b>sound when your cells can merge</b> (agar.io, an estimate), <b>enemy mass as a ratio</b> to your biggest cell (1.75x, =) and a <b>Mass format</b> slider (exact, 12.3k, auto).",
-    "el": "<b>Βοηθήματα HUD</b> (όλα απενεργοποιημένα από προεπιλογή): ένας προαιρετικός <b>ήχος όταν τα κελιά σας μπορούν να ενωθούν</b> (agar.io, εκτίμηση), <b>μάζα εχθρού ως αναλογία</b> προς το μεγαλύτερο κελί σας (1.75x, =) και ένα ρυθμιστικό <b>μορφής μάζας</b> (ακριβής, 12.3k, αυτόματη).",
-    "es": "<b>Ayudas del HUD</b> (todas desactivadas por defecto): un <b>sonido opcional cuando tus células pueden fusionarse</b> (agar.io, una estimación), <b>masa enemiga como proporción</b> respecto a tu célula más grande (1.75x, =) y un control de <b>formato de masa</b> (exacto, 12.3k, auto).",
-    "bg": "<b>HUD помощници</b> (всеки изключен по подразбиране): незадължителен <b>звук, когато клетките ви могат да се слеят</b> (agar.io, приблизително), <b>маса на врага като съотношение</b> спрямо най-голямата ви клетка (1.75x, =) и плъзгач <b>Формат на масата</b> (точно, 12.3k, автоматично).",
-    "fr": "<b>Aides du HUD</b> (toutes désactivées par défaut) : un <b>son optionnel quand vos cellules peuvent fusionner</b> (agar.io, une estimation), la <b>masse ennemie en ratio</b> par rapport à votre plus grosse cellule (1.75x, =) et un curseur de <b>format de masse</b> (exact, 12.3k, auto).",
-    "ar": "<b>أدوات الواجهة المساعدة</b> (كلها معطّلة افتراضيًا): <b>صوت اختياري عندما يمكن لخلاياك الدمج</b> (agar.io، تقديري)، و<b>كتلة العدو كنسبة</b> إلى أكبر خلاياك (1.75x، =)، وشريط <b>تنسيق الكتلة</b> (دقيق، 12.3k، تلقائي).",
-    "zh": "<b>HUD 輔助工具</b>（皆預設關閉）：可選的<b>細胞可合併時的提示音</b>（agar.io，估計值）、以你最大細胞為基準的<b>敵人質量比例</b>（1.75x、=），以及<b>質量格式</b>滑桿（精確、12.3k、自動）。",
-    "ru": "<b>Помощники HUD</b> (каждый по умолчанию выключен): необязательный <b>звук, когда ваши клетки могут слиться</b> (agar.io, приблизительно), <b>масса врага в виде соотношения</b> к вашей крупнейшей клетке (1.75x, =) и ползунок <b>Формат массы</b> (точно, 12.3k, авто).",
-    "de": "<b>HUD-Helfer</b> (alle standardmäßig aus): ein optionaler <b>Sound, wenn deine Zellen verschmelzen können</b> (agar.io, geschätzt), <b>gegnerische Masse als Verhältnis</b> zu deiner größten Zelle (1.75x, =) und ein Regler für das <b>Masse-Format</b> (exakt, 12.3k, auto).",
-    "tr": "<b>HUD yardımcıları</b> (her biri varsayılan olarak kapalı): hücreleriniz birleşebildiğinde isteğe bağlı bir <b>uyarı sesi</b> (agar.io, tahmini), en büyük hücrenize göre <b>oran olarak düşman kütlesi</b> (1.75x, =) ve bir <b>Kütle biçimi</b> kaydırıcısı (tam, 12.3k, otomatik).",
-    "pl": "<b>Wspomagacze HUD</b> (każdy domyślnie wyłączony): opcjonalny <b>dźwięk, gdy twoje komórki mogą się połączyć</b> (agar.io, szacunkowo), <b>masa wroga jako stosunek</b> do twojej największej komórki (1.75x, =) i suwak <b>Format masy</b> (dokładnie, 12.3k, auto).",
-    "nl": "<b>HUD-helpers</b> (elk standaard uit): een optioneel <b>geluid als je cellen kunnen mergen</b> (agar.io, een schatting), <b>vijandelijke massa als verhouding</b> tot je grootste cel (1.75x, =) en een schuifregelaar <b>Mass format</b> (exact, 12.3k, auto).",
-    "pt": "<b>Helpers de HUD</b> (todos desligados por padrão): um <b>som opcional quando suas células podem se juntar</b> (agar.io, uma estimativa), <b>massa do inimigo como proporção</b> da sua maior célula (1.75x, =) e um controle de <b>Formato da massa</b> (exato, 12.3k, auto).",
-    "id": "<b>Helper HUD</b> (semuanya nonaktif secara default): <b>suara opsional saat sel-selmu bisa merge</b> (agar.io, perkiraan), <b>massa musuh sebagai rasio</b> terhadap sel terbesarmu (1.75x, =) dan slider <b>Format massa</b> (persis, 12.3k, otomatis).",
-    "ja": "<b>HUD ヘルパー</b> (すべて初期状態でオフ)：<b>セルが合体できるときの音</b> (任意、agar.io、推定値)、一番大きい自分のセルとの <b>敵の質量の比率</b> 表示 (1.75x、=)、<b>質量の表示形式</b> スライダー (正確、12.3k、自動)。",
-    "it": "<b>Aiuti dell'HUD</b> (tutti disattivati di base): un <b>suono facoltativo quando le tue cellule possono unirsi</b> (agar.io, una stima), la <b>massa nemica in proporzione</b> alla tua cellula più grande (1.75x, =) e uno slider <b>Formato massa</b> (esatta, 12.3k, auto)."
+    "en": "<b>HUD helpers</b> (each off by default): a <b>movement direction</b> arrow from how your cells really move (also multibox), an optional <b>sound when your cells can merge</b> (agar.io, an estimate), <b>enemy mass as a ratio</b> to your biggest cell (1.75x, =), screen-edge arrows to <b>teammates</b> and to <b>big threats</b> that just left the screen and a <b>Mass format</b> slider (exact, 12.3k, auto)."
   },
   "site.index.phonesTheSplitFeed": {
     "en": "<b>Phones</b>: the Split, Feed, 4x and 16x buttons on the right stay visible again while the menu is open (they only ignore taps there, so the menu still works).",
@@ -4121,24 +4091,6 @@
     "ja": "<b>再接続が高速に</b> (最初の再試行は約1秒後)。サーバーが落ちたままの場合はメッセージを表示します。",
     "it": "<b>Riconnessione più veloce</b> (primo tentativo dopo circa 1 secondo) con un messaggio se il server resta giù."
   },
-  "site.index.newSettingRecordReplays": {
-    "en": "New setting <b>Record replays</b> (turn it off to save memory).",
-    "el": "Νέα ρύθμιση <b>Record replays</b> (απενεργοποιήστε τη για εξοικονόμηση μνήμης).",
-    "es": "Nuevo ajuste <b>Record replays</b> (desactívalo para ahorrar memoria).",
-    "bg": "Нова настройка <b>Записване на повторения</b> (изключете я, за да пестите памет).",
-    "fr": "Nouveau paramètre <b>Record replays</b> (désactivez-le pour économiser la mémoire).",
-    "ar": "إعداد جديد <b>Record replays</b> (عطّله لتوفير الذاكرة).",
-    "zh": "新設定 <b>Record replays</b>（關閉可節省記憶體）。",
-    "ru": "Новая настройка <b>Запись повторов</b> (выключите её, чтобы сэкономить память).",
-    "de": "Neue Einstellung <b>Record replays</b> (deaktivieren, um Speicher zu sparen).",
-    "tr": "Yeni ayar <b>Record replays</b> (bellek tasarrufu için kapatın).",
-    "pl": "Nowe ustawienie <b>Nagrywanie powtórek</b> (wyłącz je, aby oszczędzać pamięć).",
-    "nl": "Nieuwe instelling <b>Record replays</b> (zet die uit om geheugen te sparen).",
-    "pt": "Nova configuração <b>Gravar replays</b> (desligue para economizar memória).",
-    "id": "Pengaturan baru <b>Rekam replay</b> (matikan untuk menghemat memori).",
-    "ja": "新しい設定 <b>リプレイを録画</b> (オフにするとメモリーを節約できます)。",
-    "it": "Nuova impostazione <b>Registra replay</b> (disattivala per risparmiare memoria)."
-  },
   "site.index.fasterLoadingNoRedirect": {
     "en": "Faster loading: no redirect per file, a much smaller jQuery UI, updated jQuery and Bootstrap with security fixes.",
     "el": "Γρηγορότερη φόρτωση: χωρίς ανακατεύθυνση ανά αρχείο, πολύ μικρότερο jQuery UI, ενημερωμένα jQuery και Bootstrap με διορθώσεις ασφαλείας.",
@@ -4428,7 +4380,7 @@
     "it": "Novità:"
   },
   "site.index.replayPauseSpeedAnd": {
-    "en": "optional sounds for 16 pieces and viruses; a copy button on the Game Over card. Replays no longer jump to the end at Start.",
+    "en": "optional sounds for 16 pieces and viruses; optional trail of your path on the minimap; a copy button on the Game Over card. Replays no longer jump to the end at Start.",
     "el": "προαιρετικοί ήχοι για 16 κομμάτια και ιούς· κουμπί αντιγραφής στην κάρτα Game Over. Τα replays δεν πηδούν πια στο τέλος στην Έναρξη.",
     "es": "sonidos opcionales para 16 piezas y para virus; un botón de copiar en la tarjeta de Game Over. Las repeticiones ya no saltan al final al iniciar.",
     "bg": "незадължителни звуци за 16 части и вируси; бутон за копиране на картата Game Over. Повторенията вече не скачат до края при Start.",
@@ -4464,7 +4416,7 @@
     "it": "<b>Novità:</b> barra di avanzamento del replay (clicca per spostarti), tasto rapido per ingrandire la minimappa. <b>Nuove opzioni</b> (disattivate di base): raggruppa i nomi dei bot ripetuti in classifica, un grafico della massa nella scheda Game Over. Ora i suoni dei virus funzionano su ogni server."
   },
   "site.index.newUpDownIn": {
-    "en": "<b>New:</b> Up/Down in the chat box recalls your last messages. <b>New options</b> (off by default): camera on the centre of mass, stats at the bottom centre. Pasting a party link in search no longer leaves a dark overlay.",
+    "en": "<b>New:</b> Up/Down in the chat box recalls your last messages; game brightness and saturation sliders. <b>New options</b> (off by default): camera on the centre of mass, stats at the bottom centre. Pasting a party link in search no longer leaves a dark overlay.",
     "el": "<b>Νέο:</b> Πάνω/Κάτω στο πλαίσιο chat ανακαλεί τα τελευταία σας μηνύματα. <b>Νέες επιλογές</b> (απενεργοποιημένες από προεπιλογή): κάμερα στο κέντρο μάζας, στατιστικά κάτω στο κέντρο. Η επικόλληση συνδέσμου party στην αναζήτηση δεν αφήνει πια σκοτεινό επικάλυμμα.",
     "es": "<b>Novedad:</b> Arriba/Abajo en el cuadro de chat recupera tus últimos mensajes. <b>Nuevas opciones</b> (desactivadas por defecto): cámara en el centro de masa, estadísticas abajo en el centro. Pegar un enlace de party en la búsqueda ya no deja una capa oscura.",
     "bg": "<b>Ново:</b> Нагоре/Надолу в полето за чат връща последните ви съобщения. <b>Нови опции</b> (изключени по подразбиране): камера в центъра на масата, статистика долу в центъра. Поставянето на парти връзка в търсенето вече не оставя тъмен слой.",

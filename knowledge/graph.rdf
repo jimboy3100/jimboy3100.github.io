@@ -163,7 +163,7 @@
     <rdf:type rdf:resource="https://schema.org/DefinedTerm"/>
     <rdf:type rdf:resource="https://www.legendmod.ml/knowledge/vocabulary.ttl#Feature"/>
     <schema:name>Multibox controls</schema:name>
-    <schema:description>Control up to 4 connections with colour-coded rings and middle camera view.</schema:description>
+    <schema:description>Control up to 4 connections with a ring on the controlled unit and middle camera view.</schema:description>
   </rdf:Description>
   <rdf:Description rdf:about="https://www.legendmod.ml/knowledge/#feature-replays">
     <rdf:type rdf:resource="https://schema.org/DefinedTerm"/>
@@ -187,7 +187,7 @@
     <rdf:type rdf:resource="https://schema.org/DefinedTerm"/>
     <rdf:type rdf:resource="https://www.legendmod.ml/knowledge/vocabulary.ttl#Feature"/>
     <schema:name>Accessibility features</schema:name>
-    <schema:description>Reduced motion, text scale, HUD text scale, opponent indicators, colour-blind preset.</schema:description>
+    <schema:description>Reduced motion, text scale, HUD text scale, colour-blind preset.</schema:description>
   </rdf:Description>
   <rdf:Description rdf:about="https://help.expanding.land/knowledge/#mechanic-dynamic-map">
     <rdf:type rdf:resource="https://schema.org/DefinedTerm"/>

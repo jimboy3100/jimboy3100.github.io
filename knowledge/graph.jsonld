@@ -269,7 +269,7 @@
         "lm:Feature"
       ],
       "name": "Multibox controls",
-      "description": "Control up to 4 connections with colour-coded rings and middle camera view."
+      "description": "Control up to 4 connections with a ring on the controlled unit and middle camera view."
     },
     {
       "@id": "https://www.legendmod.ml/knowledge/#feature-replays",
@@ -305,7 +305,7 @@
         "lm:Feature"
       ],
       "name": "Accessibility features",
-      "description": "Reduced motion, text scale, HUD text scale, opponent indicators, colour-blind preset."
+      "description": "Reduced motion, text scale, HUD text scale, colour-blind preset."
     },
     {
       "@id": "https://help.expanding.land/knowledge/#mechanic-dynamic-map",
