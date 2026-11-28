@@ -6,6 +6,8 @@
  * - Pause with the focus on the unit: the main player holds too (it kept its keep-moving offset).
  * - Opcode 17 with no multibox frame (both players dead, spectating, "View on middle of both"):
  *   the camera follows the server's view (it stayed frozen).
+ * - A unit that dies and respawns on the same socket while the main player is dead takes the
+ *   focus again (terminate, beforecalculation); with the main player alive it does not.
  * node developers/tests/mbdeath.js [ogario.v4.js] [spect.js] */
 'use strict';
 const fs = require('fs'), path = require('path'), vm = require('vm');
@@ -119,6 +121,33 @@ function death(o) {
     check('both dead, spectating, "View on middle of both": the camera follows the server (was frozen)', view(true, null) === '5000,-3000', view(true, null));
     check('focus on a respawning unit, main dead: the camera follows the server (was frozen)', view(false, 1) === '5000,-3000', view(false, 1));
     check('a multibox frame drives the camera: opcode 17 leaves the view centre to it', view(true, 1, true) === '100,100', view(true, 1, true));
+}
+
+/* 4. a unit that dies and respawns on the same socket (spect.js terminate, beforecalculation) */
+{
+    const term = block(sp, '    terminate() {'), before = block(sp, '    beforecalculation() {');
+    if (!term || !before) { console.log('FAIL terminate / beforecalculation not found'); process.exit(1); }
+    const life = (mainAlive) => {
+        const ctx = { console: { log: noop, warn: noop }, toastr: {}, Date, menuShown: 0 };
+        ctx.window = ctx;
+        vm.createContext(ctx);
+        vm.runInContext(v4.slice(a, b), ctx);
+        vm.runInContext('window.Unit = class Unit { constructor(n) { this.number = n; this.player = true; this.active = true; this.cells = 0; this.openSecond = false; }\n' +
+            'getOwnPlayerCells() { return new Array(this.cells); }\ncalculatePlayerMassAndPosition() { }\n' + term + '\n' + before + '\n}\n' +
+            'var application = window.application = { showMenu() { window.menuShown++; } };\n' +
+            'var legendmod = window.legendmod = { play: ' + mainAlive + ' }, LM = legendmod;', ctx);
+        const u = new ctx.Unit(1);
+        ctx.spects.length = 0; ctx.spects.push(u);
+        ctx.multiboxPlayerEnabled = null;
+        u.cells = 3; u.beforecalculation();          /* first life: focus */
+        const first = +ctx.multiboxPlayerEnabled || 0;
+        u.cells = 0; u.terminate();                  /* dies */
+        const dead = +ctx.multiboxPlayerEnabled || 0;
+        u.active = true; u.cells = 3; u.beforecalculation();  /* background auto-respawn, same socket */
+        return [first, dead, +ctx.multiboxPlayerEnabled || 0].join(',');
+    };
+    check('main dead: a unit that respawns on its socket takes the focus again (mouse and keys went to the dead main)', life(false) === '1,0,1', life(false));
+    check('main alive: a background respawn of the unit does not take the focus', life(true) === '1,0,0', life(true));
 }
 
 console.log(failed ? failed + ' failed' : 'all multibox death checks passed');

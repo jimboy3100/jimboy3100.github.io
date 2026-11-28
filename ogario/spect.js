@@ -2321,6 +2321,9 @@ class Spect {
     terminate() {
         this.active = false;
         this._lmFocusOnSpawn = false;
+        /* the next life on this socket is a new spawn for beforecalculation: with the main player
+         * dead it takes the focus (mouse and keys stayed on the dead main player) */
+        this.openSecond = false;
         this.playerCellIDs = [];
         if (this.positionController) clearInterval(this.positionController);
         this.positionController = null;
