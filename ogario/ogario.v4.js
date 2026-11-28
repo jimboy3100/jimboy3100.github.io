@@ -87069,12 +87069,15 @@ function repeatSendingSpecialSkins() {
     if (document.hidden) return;
     temp = localStorage.getItem("isActualUsingSpecialEffectsSkin")
     //var temp= temp.split(';')
-
-    if (temp && temp != "null" && (($("#nick").val().includes('?') && $("#clantag").val() === window.clanTagLc) || window.proLicenceUID || temp === "Byzantium" || window.tempAnimatedCoolArray.includes(temp))) {
-        if (application.lastSentNick === "") application.lastSentNick = $("#nick").val()
+    /* the nick box is read once per tick (it was read three times). The stored effect stays read
+     * here: the shop page (LMexpress/shop/shopscript.js) and other tabs write it, a cached copy
+     * would send an old effect. */
+    var nick;
+    if (temp && temp != "null" && (((nick = $("#nick").val()).includes('?') && $("#clantag").val() === window.clanTagLc) || window.proLicenceUID || temp === "Byzantium" || window.tempAnimatedCoolArray.includes(temp))) {
+        if (application.lastSentNick === "") application.lastSentNick = nick
         SpecialEffectPlayers[application.lastSentNick] = temp
         //
-        animateCustomSkin($("#nick").val(), temp)
+        animateCustomSkin(nick, temp)
         //
         window.application.sendSocket3Info("spfc", temp)
     }
