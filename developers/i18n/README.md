@@ -97,7 +97,7 @@ node developers/i18n/build.js
 node developers/i18n/extension.js
 node developers/tests/i18n.js
 # 3. replace the hard-coded text in the code with lmT('key') / data-i18n, then check the file
-node developers/i18n/scan.js ogario/modules/smalltools.js
+node developers/i18n/scan.js ogario/modules/notifications.js
 ```
 
 Do not translate the other 15 languages in a feature change. When the English of a key changes,

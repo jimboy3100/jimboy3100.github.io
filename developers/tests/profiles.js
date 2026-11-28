@@ -156,15 +156,15 @@ tplIds.forEach(id => {
     let impErr = null;
     try { imp({ lmCommandCentre: { fav: ['hk:hk-feed'] } }, (k, t) => dst3.setItem(k, t), k => dst3.removeItem(k), null, k => dst3.getItem(k)); } catch (e) { impErr = e; }
     check('import: old Command Centre stars are ignored', !impErr && dst3.getItem('lmCommandCentre') === null);
-    /* the removed notification centre: its muted categories are not exported, and an older
-     * export that has them writes nothing (and no error) */
+    /* Notifications: the muted categories go, the read mark and the list filter stay per device */
     const src4 = makeStorage(0);
     src4.setItem('lmNotificationPrefs', J({ readId: 40, muted: { chat: true }, cat: 'chat', type: 'all' }));
-    check('export: no notification centre categories', !('lmNotificationPrefs' in JSON.parse(J(exp(src4)))));
+    const out4 = JSON.parse(J(exp(src4)));
+    check('export: the muted notification categories only', J(out4.lmNotificationPrefs) === J({ muted: { chat: true } }));
     const dst4 = makeStorage(0);
-    let impErr4 = null;
-    try { imp({ lmNotificationPrefs: { muted: { chat: true } } }, (k, t) => dst4.setItem(k, t), k => dst4.removeItem(k), null, k => dst4.getItem(k)); } catch (e) { impErr4 = e; }
-    check('import: old muted notification categories are ignored', !impErr4 && dst4.getItem('lmNotificationPrefs') === null);
+    dst4.setItem('lmNotificationPrefs', J({ readId: 3, muted: {}, cat: 'all', type: 'all' }));
+    imp(out4, (k, t) => dst4.setItem(k, t), k => dst4.removeItem(k), null, k => dst4.getItem(k));
+    check('import: muted categories come in, this device keeps its read mark', dst4.getItem('lmNotificationPrefs') === J({ readId: 3, muted: { chat: true }, cat: 'all', type: 'all' }));
     /* Settings > Voice: the chat prefix and the speech language, stored as plain text (not JSON) */
     const src5 = makeStorage(0);
     src5.setItem('prefix', 'VX'); src5.setItem('lang', 'ja');

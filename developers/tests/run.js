@@ -36,7 +36,7 @@ if (args.includes('--help') || args.includes('-h')) {
 }
 const secs = Number(argVal('--secs', process.env.SMOKE_SECS || 14));
 const only = argVal('--only', '');
-/* only these probes (names without .js), e.g. --probes smalltools,zzz-practice */
+/* only these probes (names without .js), e.g. --probes notifications,zzz-practice */
 const pick = String(argVal('--probes', process.env.SMOKE_PROBES || '')).split(',').map(s => s.trim().replace(/\.js$/, '')).filter(Boolean);
 /* the fast set is the default (owner: the updates waited on the tests); --full runs every probe */
 const quick = !(args.includes('--full') || process.env.SMOKE_FULL === '1');

@@ -1748,6 +1748,24 @@
     "ja": "チャットのポップアップと通知",
     "it": "Popup della chat e notifiche"
   },
+  "modules.hudeditor.comp.bell": {
+    "en": "Notification bell",
+    "el": "Καμπανάκι ειδοποιήσεων",
+    "es": "Campana de notificaciones",
+    "bg": "Звънче за известия",
+    "fr": "Cloche de notifications",
+    "ar": "جرس الإشعارات",
+    "zh": "通知鈴鐺",
+    "ru": "Колокольчик уведомлений",
+    "de": "Benachrichtigungsglocke",
+    "tr": "Bildirim zili",
+    "pl": "Dzwonek powiadomień",
+    "nl": "Meldingenbel",
+    "pt": "Sino de notificações",
+    "id": "Lonceng notifikasi",
+    "ja": "通知ベル",
+    "it": "Campanella notifiche"
+  },
   "modules.hudeditorui.done": {
     "en": "Done",
     "el": "Τέλος",

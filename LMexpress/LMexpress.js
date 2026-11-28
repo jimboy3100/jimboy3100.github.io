@@ -7778,6 +7778,9 @@ function lmUiKit() {
         '--lm-w-btn:' + (mix ? A('var(--lm-tc, #fff)', '6%') : 'rgba(255,255,255,.06)') + ';' + // i18n-ok: CSS
         '--lm-w-btn-h:' + (mix ? A('var(--lm-tc, #fff)', '14%') : 'rgba(255,255,255,.14)') + ';' + // i18n-ok: CSS
         '--lm-w-field:rgba(0,0,0,.22)}' +
+        /* the notification panel is a HUD part: its text follows the HUD text size (accessibility.js
+         * scales it as a whole), not the menu text size on top of it */
+        '#lm-notif-panel{--lm-w-fs:12px;--lm-w-fs-s:11px;--lm-w-title:14px}' +
         /* touch screens: larger controls and close crosses */
         '@media (pointer:coarse){:root{--lm-w-ctl:36px;--lm-w-x:40px}}' +
         '.lm-modal-container{border-radius:var(--lm-radius,6px);box-shadow:0 8px 32px rgba(0,0,0,.5);' +

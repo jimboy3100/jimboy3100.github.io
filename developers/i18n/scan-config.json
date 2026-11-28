@@ -32,6 +32,7 @@
     "lib/lm-i18n.js",
     "developers/i18n/runtime.js",
     "ogario/modules/themeworkshop.js",
+    "ogario/modules/notifications.js",
     "ogario/modules/hudeditor.js",
     "ogario/modules/hudeditor-ui.js",
     "ogario/modules/replaystudio.js",

@@ -67,6 +67,12 @@
   else {
     var hr = hud.getBoundingClientRect();
     if (hr.left < 0 || hr.right > innerWidth + 1) fail.push('HUD wider than the screen');
+    ['lm-notif-bell'].forEach(function (id) {
+      var e = document.getElementById(id);
+      if (!e || e.offsetParent === null && getComputedStyle(e).position !== 'fixed') return;
+      var b = e.getBoundingClientRect();
+      if (b.width && !(b.right <= hr.left || b.left >= hr.right || b.bottom <= hr.top || b.top >= hr.bottom)) info['overlaps_' + id] = true;
+    });
   }
   /* settings window pauses the arena */
   P.open();

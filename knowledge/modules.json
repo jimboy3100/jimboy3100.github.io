@@ -57,6 +57,13 @@
       "feature": "HUD Editor"
     },
     {
+      "id": "notifications",
+      "file": "ogario/modules/notifications.js",
+      "lines": 812,
+      "description": "Notification centre with bell icon, unread count, 8 categories, 4 types. Up to 200 notifications, 120KB storage limit.",
+      "feature": "Notifications"
+    },
+    {
       "id": "replaystudio",
       "file": "ogario/modules/replaystudio.js",
       "lines": 1615,
@@ -106,6 +113,6 @@
       "feature": "Extension"
     }
   ],
-  "totalModules": 20,
+  "totalModules": 21,
   "totalHotkeyBindings": "146+"
 }

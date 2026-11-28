@@ -255,6 +255,7 @@ Drag and resize HUD elements with named layouts (the one place for HUD positions
 - **Death recap**: Last 20 seconds as 3-6 summarised steps with mass sparkline, showing splits, virus pops, being eaten. Attributes killer from eat events. Expanding Land uses server-provided killer info.
 - **Killer display**: "Eaten by: nick (mass)" on the Game Over card
 - **Game stats**: the Dashboard, Heatmaps, Coach (play pattern analysis with tips) and Objectives (three daily, up to 8 custom) views of the Replays window, next to the match history: up to 500 game summaries, 50 heatmap tracks (3600 position samples each). Split analysis: groups, mass lost per split, final 20s analysis. Recorded with Record replays.
+- **Notification centre**: Bell icon with unread count, filterable list by category (achievements, bests, party, replay, connection, settings, chat, other), mark read, clear, suppress toasts by category. Up to 200 notifications, max 120KB in localStorage.
 - **Session stats**: Games played, best mass, time played per tab session (sessionStorage)
 
 ### 16. Scan Trick and Line Split

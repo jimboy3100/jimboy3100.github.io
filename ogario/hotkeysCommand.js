@@ -163,6 +163,18 @@
 				keyUp: null,
 				type: 'normal'
 			},
+			'hk-notifCentre': {
+				get label() {
+					return lmT('settings.hk-notifCentre');
+				},
+				defaultKey: '',
+				keyDown() {
+					/* opens / closes the list (ogario/modules/notifications.js), also while its option is off */
+					if (window.LMNotifications) window.LMNotifications.toggle();
+				},
+				keyUp: null,
+				type: 'normal'
+			},
 			'hk-pingHelp': {
 				get label() {
 					return lmT('settings.hk-pingHelp');
