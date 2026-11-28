@@ -145,13 +145,12 @@ async function skinMethods() {
     const made = [];
     Object.assign(app, {
         _lmSkinJobMax: 96, _lmSkinDecodeMax: 6,
-        customSkinsCache: {}, cacheQueue: [], cacheQueue2: [], cacheQueue3: [], cacheQueue4: [], cacheQueueSkinAnimated: [],
+        customSkinsCache: {}, cacheQueue: [], cacheQueue2: [], cacheQueue3: [], cacheQueueSkinAnimated: [],
         _pendingSkinLoads: new Set(), touched: [], trims: 0,
         _lmTouchSkin(u) { this.touched.push(u); }, _lmTrimSkinCache() { this.trims++; },
         cacheSkin() { while (this.cacheQueue.length) made.push('c:' + this.cacheQueue.shift()); },
         cacheSkin2() { while (this.cacheQueue2.length) made.push('c2:' + this.cacheQueue2.shift()); },
         cacheSkin3() { while (this.cacheQueue3.length) made.push('c3:' + this.cacheQueue3.shift()); },
-        cacheSkin4() { while (this.cacheQueue4.length) made.push('c4:' + this.cacheQueue4.shift()); },
         cacheSkinAnimated() { while (this.cacheQueueSkinAnimated.length) made.push('ca:' + this.cacheQueueSkinAnimated.shift()); },
     });
     const runRaf = () => { const f = raf.shift(); if (f) f(); };
@@ -166,11 +165,10 @@ async function skinMethods() {
     check('job: canvases of a plain skin (512 + 64 px) and no longer pending', made.join() === 'c:u1,c2:u1' && !app._pendingSkinLoads.has('u1') && !app._lmSkinJobMap.has('u1'));
     made.length = 0;
     app._lmSkinJobAdd(app.customSkinsCache, 'u2', {}, true, false);
-    app._lmSkinJobAdd(app.customSkinsCache, 'u3', {}, 'fbSkin', false);
     app._lmSkinJobAdd(app.customSkinsCache, 'u4', {}, 'animatedSkins', false);
     check('jobs added in one burst share one rAF', raf.length === 1);
     runRaf();
-    check('2-frame sheet: both frames + thumbnail; fbSkin; animatedSkins (as before)', made.join() === 'c:u2,c2:u2,c3:u2,c4:u3,ca:u4,c2:u4');
+    check('2-frame sheet: both frames + thumbnail; animatedSkins (as before)', made.join() === 'c:u2,c2:u2,c3:u2,ca:u4,c2:u4');
 
     /* image.decode(): queued only after it settles */
     let resolve;

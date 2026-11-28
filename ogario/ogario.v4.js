@@ -21443,7 +21443,6 @@ var defaultmapsettings = {
     bubbleCursorTracker: false,
     bubbleInd: false,
     cursorTracking: false,
-    FBTracking: true,
     //ingameSpectator2: false,
     //fullSpectator2: false,	
     teammatesInd: true,
@@ -23435,7 +23434,6 @@ function thelegendmodproject() {
         cacheQueue: [],
         cacheQueue2: [],
         cacheQueue3: [],
-        cacheQueue4: [],
         cacheQueueSkinAnimated: [],
         deathLocations: [],
         playerID: null,
@@ -26897,7 +26895,7 @@ function thelegendmodproject() {
             this.addOptions(["showMiniMap", "showMiniMapGrid", "showMiniMapGuides", "showExtraMiniMapGuides", "showMiniMapGhostCells", "showMiniMapTrail", "oneColoredTeammates"], "miniMapGroup");
             //            this.addOptions(["oppColors", "oppRings", "virColors", "splitRange", "qdsplitRange", "sdsplitRange", "virusesRange", "cursorTracking", "FBTracking", "bubbleInd", "bubbleCursorTracker", "onlineStatus", "teammatesInd", "showGhostCells", "showGhostCellsInfo", "reverseTrick", "showPartyBots"], "helpersGroup"); //Sonia2
             //this.addOptions(["oppColors", "oppRings", "virColors", "splitRange", "qdsplitRange", "sdsplitRange", "virusesRange", "cursorTracking", "FBTracking", "bubbleInd", "bubbleCursorTracker", "onlineStatus", "teammatesInd", "showGhostCells", "showGhostCellsInfo", "showPartyBots"], "helpersGroup"); //Sonia2
-            this.addOptions(["oppColors", "oppRings", "virColors", "splitRange", "qdsplitRange", "sdsplitRange", "tripleSplitRange", "virusesRange", "cursorTracking", "splitPrediction", "bubbleCursorTracker", "FBTracking", "bubbleInd", "onlineStatus", "teammatesInd", "showGhostCells"], "helpersGroup"); //Sonia2
+            this.addOptions(["oppColors", "oppRings", "virColors", "splitRange", "qdsplitRange", "sdsplitRange", "tripleSplitRange", "virusesRange", "cursorTracking", "splitPrediction", "bubbleCursorTracker", "bubbleInd", "onlineStatus", "teammatesInd", "showGhostCells"], "helpersGroup"); //Sonia2
             /* Sticky cells: what the left and right button do on cells (a behaviour, not a binding,
              * so here and not in the Hotkeys window) */
             this.addOptionTo('.helpersGroup', 'stickyCell');
@@ -29896,16 +29894,13 @@ function thelegendmodproject() {
                 if (this.cacheQueueSkinAnimated.length === 1) this.cacheSkinAnimated(this.customSkinsCache, animated);
                 this.cacheQueue2.push(url);
                 if (this.cacheQueue2.length === 1) this.cacheSkin2(this.customSkinsCache);
-            } else if (animated !== "fbSkin") {
+            } else {
                 this.cacheQueue.push(url);
                 if (this.cacheQueue.length === 1) this.cacheSkin(this.customSkinsCache, animated);
                 this.cacheQueue2.push(url);
                 if (this.cacheQueue2.length === 1) this.cacheSkin2(this.customSkinsCache);
                 if (animated === true) this.cacheQueue3.push(url);
                 if (this.cacheQueue3.length === 1) this.cacheSkin3(this.customSkinsCache);
-            } else {
-                this.cacheQueue4.push(url);
-                if (this.cacheQueue4.length === 1) this.cacheSkin4(this.customSkinsCache);
             }
         },
         cacheSkin(skinCache, animated) {
@@ -30024,36 +30019,6 @@ function thelegendmodproject() {
                 }
             }
         },
-        cacheSkin4(skinCache) {
-            while (0 !== this.cacheQueue4.length) {
-                var e = this.cacheQueue4.shift();
-                if (e && !this.customSkinsCache[e + "_cached4"]) {
-                    let depth = 512;
-                    this.checkgraphics();
-                    if (application.graphics) {
-                        depth = depth / application.graphics;
-                    }
-                    let i = document.createElement("canvas");
-                    i.width = depth;
-                    i.height = depth;
-                    const sCtx = i.getContext("2d");
-                    sCtx.beginPath();
-                    sCtx.arc(depth / 2, depth / 2, depth / 2, 0, 2 * Math.PI, false);
-                    sCtx.clip();
-                    try {
-                        if (this.customSkinsCache[e]) {
-                            /* fbSkin pictures are square (never 2-frame sheets): draw the whole image */
-                            sCtx.drawImage(this.customSkinsCache[e], 0, 0, depth, depth);
-                        }
-                    } catch (error) { }
-                    try {
-                        this.customSkinsCache[e + "_cached4"] = i;
-                    } catch (eErr) {
-                        this.customSkinsCache[e + "_cached4"] = this.customSkinsCache[e];
-                    }
-                }
-            }
-        },
         cacheSkinAnimated(skinCache, animated) {
             while (0 !== this.cacheQueueSkinAnimated.length) {
                 const e = this.cacheQueueSkinAnimated.shift();
@@ -30152,7 +30117,7 @@ function thelegendmodproject() {
              * at once when the URL count runs well past the limit */
             if (use.size <= this._lmSkinCacheMax + 50 && this._lmSkinTrimAt && now - this._lmSkinTrimAt < 1000) return;
             this._lmSkinTrimAt = now;
-            var suffixes = ['', '_cached', '_cached2', '_cached3', '_cached4'];
+            var suffixes = ['', '_cached', '_cached2', '_cached3'];
             var held = [];
             use.forEach(function (t, u) {
                 var objs = [];
@@ -37806,22 +37771,6 @@ function thelegendmodproject() {
                 ctx.drawImage(nickImg, ~~this.x - ~~(w / 2), ~~this.y - this.margin, w, h);
             } catch (e) { }
         };
-        /* The Facebook friend badge the Canvas2D branch of draw() puts on this cell, or null:
-         * only over a custom skin, not in Teams, once the image has loaded. */
-        this.lmFbBadge = function () {
-            var app = application;
-            if (!defaultmapsettings.FBTracking || !defaultmapsettings.customSkins || !LM.showCustomSkins ||
-                this.isEjected || LM.gameMode == ":teams" || !app.customSkinsMap) return null;
-            /* map key kept per nick: no new string per cell and frame */
-            if (this._lmFbNick !== this.targetNick) {
-                this._lmFbNick = this.targetNick;
-                this._lmFbKey = this.targetNick + "facebookskin";
-            }
-            var key = app.customSkinsMap[this._lmFbKey];
-            var img = key && app.customSkinsCache[key + "_cached4"];
-            if (!img || img._failed || !(img.naturalWidth > 0 || img.width > 0)) return null;
-            return app.getCustomSkin(this.targetNick, this.color, this.skin) ? img : null;
-        };
         /* The live chat line this cell shows as a bubble, or null. Only showChat (and
          * showChatMyOwn, applied when the lookup is built) decide it, not the nick or mass
          * labels. Keyed by targetNick: this.nick is only refreshed where a nick is laid out.
@@ -38465,32 +38414,19 @@ function thelegendmodproject() {
                             style.stroke();
                             style.restore();
                         }
-                        /* The FB friend badge and the special effects (hats, crowns, smoke...), in
+                        /* The special effects (hats, crowns, smoke...), in
                          * the order of the Canvas2D branch, on the overlay. There they sit under
                          * the cell's own multibox ring and labels: for the cells canUseWebGLScene
                          * checked (_lmLabelsOnFg) those follow on the overlay too, below, and the
                          * GL ring and text passes skipped them. */
-                        var _fbImg = defaultmapsettings.FBTracking ? this.lmFbBadge() : null;
                         /* (Canvas2D draws the effects only with custom skins on) */
                         var _spFx = defaultmapsettings.customSkins && LM.showCustomSkins &&
                             typeof SpecialEffectPlayers !== 'undefined' && typeof SpecialEffectPlayers[this.targetNick] === 'string' &&
                             SpecialEffectPlayers[this.targetNick];
                         var _onFg = drawRender._lmLabelsOnFg(this);
-                        if (_fbImg || _spFx) {
+                        if (_spFx) {
                             var _fg1 = drawRender._lmFgFor(style), _c1 = _fg1 || style;
                             try {
-                                if (_fbImg) {
-                                    var _a1 = _c1.globalAlpha;
-                                    /* the skin alpha it is drawn with in the Canvas2D branch */
-                                    if ((defaultmapsettings.transparentSkins && !(this.isPlayerCell && !defaultmapsettings.myTransparentSkin)) ||
-                                        (this.isPlayerCell && defaultmapsettings.myTransparentSkin && defaultSettings.skinsAlpha < 0.99)) {
-                                        _c1.globalAlpha = _a1 * defaultSettings.skinsAlpha;
-                                    }
-                                    try {
-                                        _c1.drawImage(_fbImg, this.x - 1 / 2 * y, this.y - y, y, y);
-                                    } catch (e) { }
-                                    _c1.globalAlpha = _a1;
-                                }
                                 if (_spFx) this.drawSpecialSkin(_c1, y);
                             } finally {
                                 if (_fg1) _fg1.restore();
@@ -39460,82 +39396,6 @@ function thelegendmodproject() {
                                         finally {
                                             style.restore();
                                         }
-                                        }
-                                    }
-
-
-                                    /*
-                                     * Facebook tracking skin overlay.
-                                     *
-                                     * This is intentionally retained unchanged;
-                                     * it is unrelated to jelly perimeter
-                                     * simulation.
-                                     */
-                                    if (
-                                        defaultmapsettings
-                                            .FBTracking
-                                    ) {
-                                        var nodeFb =
-                                            application
-                                                .customSkinsMap[
-                                                    this.targetNick +
-                                                    "facebookskin"
-                                                ];
-
-
-                                        if (
-                                            nodeFb &&
-                                            application
-                                                .customSkinsCache[
-                                                    nodeFb +
-                                                    "_cached4"
-                                                ]
-                                        ) {
-                                            var temp =
-                                                nodeFb +
-                                                "_cached4";
-
-
-                                            var nodeFB =
-                                                application
-                                                    .customSkinsCache[
-                                                        temp
-                                                    ];
-
-
-                                            if (
-                                                nodeFB &&
-                                                !nodeFB._failed &&
-                                                (
-                                                    nodeFB
-                                                        .naturalWidth >
-                                                        0 ||
-                                                    nodeFB
-                                                        .width >
-                                                        0
-                                                )
-                                            ) {
-                                                try {
-                                                    style.drawImage(
-                                                        nodeFB,
-
-                                                        this.x -
-                                                            1 /
-                                                            2 *
-                                                            y,
-
-                                                        this.y -
-                                                            y,
-
-                                                        y,
-                                                        y
-                                                    );
-                                                }
-                                                catch (
-                                                    e
-                                                ) {
-                                                }
-                                            }
                                         }
                                     }
 
@@ -44259,13 +44119,6 @@ function thelegendmodproject() {
                                 user.nick = this.leaderboard[i].nick
                             }
                         }
-                        if (!application.customSkinsMap[user.nick + "facebookskin"]) {
-                            application.customSkinsMap[user.nick + "facebookskin"] = `https://graph.facebook.com/${user.fbId}/picture?type=square&width=720&height=720`;
-                            application.loadSkin(application.customSkinsCache, `https://graph.facebook.com/${user.fbId}/picture?type=square&width=720&height=720`, "fbSkin");
-                            //console.log("fb id found", user.id, user.nick, `https://graph.facebook.com/${user.fbId}/picture?type=square&width=720&height=720`);
-                        }
-                        //application.cacheCustomSkin(user.fbId, '#000000', `https://graph.facebook.com/${user.fbId}/picture?type=square&width=720&height=720`);
-
                         this.fbOnline.push(user);
                     }
                     //console.log('\x1b[32m%s\x1b[34m%s\x1b[0m', consoleMsgLM, ' opcode: ', data.getUint8(0));
@@ -51766,7 +51619,7 @@ function thelegendmodproject() {
                         teamText += '<span class="me">' + Premadeletter130 + ': ' + this.leaderboard.length + '</span>';
                     }
 
-                    if (defaultmapsettings.FBTracking && legendmod.friends && legendmod.friends > 0) {
+                    if (legendmod.friends && legendmod.friends > 0) {
                         teamText += '<span class="teammate">' + lmT('game2.friends') + ': ' + legendmod.friends + '</span>';
                     }
                 } else {
@@ -61323,25 +61176,20 @@ function pickPlayerCellBySize(players, selectBiggest) {
             }
 
 
-            /* Teammate indicators (GL text pass or overlay) and the Facebook friend
-             * marker (overlay): checked per visible cell below, not per frame just
-             * because the option is on. */
+            /* Teammate indicators (GL text pass or overlay): checked per visible cell
+             * below, not per frame just because the option is on. */
             var _glTeamNicks =
                 (defaultmapsettings.teammatesInd && window.teammatenicks)
                     ? (window._lmTeammateNickSet || null) : null;
             var _glTeamList =
                 (defaultmapsettings.teammatesInd && window.teammatenicks && !_glTeamNicks)
                     ? window.teammatenicks : null;
-            var _glFbSkins =
-                defaultmapsettings.FBTracking && typeof application !== 'undefined' && application && application.customSkinsMap
-                    ? application.customSkinsMap : null;
 
 
             /* The Facebook friend arrow is stroked on the main Canvas2D (below the
              * GL cell layer), starting inside the own cell. When GL is active,
              * draw it on the overlay canvas so it stays visible above cells. */
             this._glFbArrowActive =
-                defaultmapsettings.FBTracking &&
                 LM.arrowFB && LM.arrowFB[0] && LM.arrowFB[0].visible &&
                 (LM.play || (LM.playerCellsMulti && LM.playerCellsMulti.length));
 
@@ -61403,14 +61251,14 @@ function pickPlayerCellBySize(players, selectBiggest) {
              * and the indicator and bubble of a cell outside the GL view: in Canvas2D a
              * later (bigger) cell and its labels cover them, so keep WebGL only while no
              * later cell comes near such a mark (boxes in this._lmFxBoxes, conservative).
-             * Marks that sit under the cell's own labels in Canvas2D (FB friend badge,
-             * special effects) take that cell's labels (and multibox ring) onto the
+             * Marks that sit under the cell's own labels in Canvas2D (special
+             * effects) take that cell's labels (and multibox ring) onto the
              * overlay with them, in the Canvas2D order (_lmLabelsOnFg).
              */
             var _glSpFx = (defaultmapsettings.customSkins && LM.showCustomSkins &&
                 typeof SpecialEffectPlayers !== 'undefined' && SpecialEffectPlayers) ? SpecialEffectPlayers : null;
             var _glFxCheck = !!(_glTeamNicks || _glTeamList || _glChatMap);
-            var _glFgCheck = !!(_glFbSkins || _glSpFx);
+            var _glFgCheck = !!_glSpFx;
             var _glFxN = 0;
             /* Cell shadows are the Canvas2D drop shadow of cell.draw and the GPU batch has no
              * shadow pass, so a frame with a shadowed cell on screen stays on Canvas2D (food
@@ -61690,7 +61538,7 @@ function pickPlayerCellBySize(players, selectBiggest) {
         _lmSpFxReach(raw) {
             return typeof raw === 'string' && !window.testAnimatCells && raw.indexOf('WhiteArrow') !== -1 ? 12 : 2.5;
         },
-        /* canUseWebGLScene: the FB friend badge and special effect (hats, crowns, smoke...)
+        /* canUseWebGLScene: the special effect (hats, crowns, smoke...)
          * of a cell, on screen or not (an effect reaches 2.5 radii out). In Canvas2D they
          * sit over the cell's skin and under its multibox ring and labels: on the overlay,
          * those then come after them there too (_lmLabelsOnFg: cell.draw draws them, the GL
@@ -61698,10 +61546,6 @@ function pickPlayerCellBySize(players, selectBiggest) {
         _lmCellFg(cell, n, spFx) {
             var nick = cell.targetNick, x = cell.x, y = cell.y, ms = defaultmapsettings;
             var r = cell.size * (1 + _EAT_PULSE_MAGNITUDE), on = false;
-            if (ms.FBTracking && cell.lmFbBadge && cell.lmFbBadge()) {
-                n = this._lmFxPush(n, x - 0.5 * r, y - r, x + 0.5 * r, y, this.GLW.COVER_FB);
-                on = true;
-            }
             /* drawSpecialSkin runs with custom skins on, as in the Canvas2D branch */
             if (spFx && nick && typeof spFx[nick] === 'string' && spFx[nick] && ms.customSkins && LM.showCustomSkins) {
                 var k = this._lmSpFxReach(spFx[nick]) * r;
@@ -80340,7 +80184,7 @@ function pickPlayerCellBySize(players, selectBiggest) {
                 if (defaultmapsettings.cursorTracking && defaultmapsettings.bubbleCursorTracker) {
                     this.drawBCursorTracking(this.ctx, LM.playerCells, LM.cursorX, LM.cursorY);
                 }
-                if (defaultmapsettings.FBTracking && LM.arrowFB && LM.arrowFB[0] && LM.arrowFB[0].visible) {
+                if (LM.arrowFB && LM.arrowFB[0] && LM.arrowFB[0].visible) {
                     /* When WebGL drew the cells, the main canvas is below the GL layer:
                      * draw the FB arrow on the overlay prepared for this frame. */
                     var _fbCtx = (this._gpuSceneActive && this._foregroundCtx) || this.ctx;

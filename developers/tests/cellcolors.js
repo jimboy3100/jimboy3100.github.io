@@ -266,7 +266,7 @@ const protoSrc = '(function (env) {\n' +
 
 function pageLib() {
     var W = 200, H = 200;
-    var NOSKIN = { customSkins: false, videoSkins: false, noNames: true, showMass: false, showChat: false, teammatesInd: false, FBTracking: false,
+    var NOSKIN = { customSkins: false, videoSkins: false, noNames: true, showMass: false, showChat: false, teammatesInd: false,
         oppColors: false, cellContours: false, transparentCells: false, transparentSkins: false, transparentViruses: false, multiBoxShadow: false,
         spawnSpecialEffects: false, virusGlow: false, showCellShadows: false };
     function makeEnv(defaults, cfg) {

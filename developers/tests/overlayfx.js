@@ -1,5 +1,5 @@
-/* Overlay marks above WebGL cells (teammate indicator, chat bubble, FB friend badge and
- * arrow, special effects) in Node, with real code cut out of ogario/ogario.v4.js:
+/* Overlay marks above WebGL cells (teammate indicator, chat bubble, friend arrow,
+ * special effects) in Node, with real code cut out of ogario/ogario.v4.js:
  *   - the frame block of renderFrame from the renderer label to the pings (overlay
  *     preparation, cell pass, post-cell effects, FB arrow) and its late overlay pass
  *     (pie / death cinematic);
@@ -180,7 +180,7 @@ function cellMethod(name) {
     const at = src.indexOf('function', m.index);
     return block(src, at);
 }
-const CELL_METHODS = ['draw', 'drawChat', 'lmChatLine', 'lmChatBubble', 'drawMass', 'drawSpecialSkin', 'drawImageSpecialSkin', 'layoutNick', 'drawNick', 'lmFbBadge',
+const CELL_METHODS = ['draw', 'drawChat', 'lmChatLine', 'lmChatBubble', 'drawMass', 'drawSpecialSkin', 'drawImageSpecialSkin', 'layoutNick', 'drawNick',
     'setNick', 'setMass', 'setDrawing', 'setDrawingScale', 'setScale', 'setFontSize', 'setStrokeSize'];
 const haveMethods = CELL_METHODS.filter((n) => cellMethod(n));
 const frameA = src.indexOf('/* read by Performance diagnostics (renderer label) */');
@@ -210,7 +210,6 @@ const window = { teammatenicks: [], _lmTeammateNickSet: new Set(), LM_DPR: 1, le
 /* an Array, as SpecialEffectPlayers in ogario.v4.js */
 const SEP = [];
 const document = { createElement: () => new SoftCanvas(0, 0, 'txt') };
-const fbImage = img('fbBadge', 40, 40);
 const application = {
     customSkinsMap: {}, customSkinsCache: {},
     getCustomSkin(nick) { return this.skins && this.skins[nick] || null; },
@@ -267,7 +266,7 @@ function setSettings(over) {
     Object.assign(ms, base.defaultmapsettings, {
         jellyPhisycs: true, webgl2Acceleration: true, cellContours: false, transparentCells: false, transparentSkins: false, myTransparentSkin: false,
         spawnSpecialEffects: false, multiBoxShadow: false, customSkins: true, noNames: false, showMass: true, showChat: true, teammatesInd: true,
-        FBTracking: false, cursorTracking: false, bubbleCursorTracker: false, autoHideNames: false, autoHideMass: false, hideMyName: false, hideMyMass: false,
+        cursorTracking: false, bubbleCursorTracker: false, autoHideNames: false, autoHideMass: false, hideMyName: false, hideMyMass: false,
         hideEnemiesMass: false, hideTeammatesNames: false, oppColors: false, oppRings: false, debug: false, namesStroke: false, massStroke: false
     }, over && over.map);
     Object.assign(ds, base.defaultSettings, { indicators: 'normal', textAlpha: 1, namesScale: 1, massScale: 3, skinsAlpha: 0.7 }, over && over.set);
@@ -323,11 +322,6 @@ function paintCellCanvas(c, ctx, realText) {
     const pre = ctx.globalAlpha;
     if (ms.transparentSkins && !(c.isPlayerCell && !ms.myTransparentSkin) || c.isPlayerCell && ms.myTransparentSkin && ds.skinsAlpha < 0.99) ctx.globalAlpha *= ds.skinsAlpha;
     const node = paintSkin(ctx, c);
-    if (node && LM.gameMode != ':teams' && ms.FBTracking) {
-        const k = application.customSkinsMap[c.targetNick + 'facebookskin'];
-        const im = k && application.customSkinsCache[k + '_cached4'];
-        if (im) ctx.drawImage(im, c.x - y / 2, c.y - y, y, y);
-    }
     ctx.globalAlpha = pre;
     if (typeof SEP[c.targetNick] === 'string' && SEP[c.targetNick] && ms.customSkins && LM.showCustomSkins) c.drawSpecialSkin(ctx, y);
     const ring = lmRing(c, y, R.scale);
@@ -436,7 +430,7 @@ function frame(s) {
     for (const c of LM.cells) if (drawable(c)) paintCellCanvas(c, rctx, gl && R._lmLabelsOnFg && R._lmLabelsOnFg(c));
     /* drawRings: after the whole cell pass, over every cell */
     if (R.drawRings !== stubRings) R.drawRings(rctx);
-    if ((LM.play || LM.playerCellsMulti.length) && ms.FBTracking && LM.arrowFB && LM.arrowFB[0] && LM.arrowFB[0].visible) R.drawFBTracking(rctx, LM.playerCells, LM.arrowFB[0].x, LM.arrowFB[0].y);
+    if ((LM.play || LM.playerCellsMulti.length) && LM.arrowFB && LM.arrowFB[0] && LM.arrowFB[0].visible) R.drawFBTracking(rctx, LM.playerCells, LM.arrowFB[0].x, LM.arrowFB[0].y);
     const ops = oplog.slice();
     return { gl: gl, shown: shown, out: out, ref: composite([ref], pw, ph), d: diff(out, composite([ref], pw, ph)), ops: ops };
 }
@@ -490,66 +484,11 @@ setSettings({ map: { showChat: false } });
 r = frame(S1);
 check('showChat off: no bubble in either renderer, WebGL, equal', r.gl && marked(r.out, chatCol) === 0 && r.d.n === 0, 'gl ' + r.gl + ' ' + r.d.n + ' px');
 
-/* ---- FB friend badge ---- */
-/* In Canvas2D the badge lies over the skin and under the cell's own nick and mass: in a WebGL
- * frame the badge and then the cell's labels go on the overlay (the GL text pass skips them). */
+/* ---- marks on the overlay ---- */
 const why = () => R.GLW_IDS ? R.GLW_IDS[R._lmGlWhy] : '-';
 const fgOps = (r) => r.ops.filter((o) => /^overlay:(draw|stroke)/.test(o)).map((o) => o.replace(/^overlay:(draw:)?/, ''));
-reset(); setSettings({ map: { FBTracking: true } });
-application.customSkinsMap = { 'friendfacebookskin': 'fbk' }; application.customSkinsCache = { 'fbk_cached4': fbImage };
-application.skins = { friend: img('friendSkin', 64, 64) };
-const friend = makeCell({ x: 0, y: 0, size: 70, targetNick: 'friend' });
-scene([friend]);
-r = frame(S1);
-check('FB badge: WebGL frame, badge visible, pixels equal the Canvas2D order (badge under the nick and mass)', r.gl && marks(r, fbImage) > 0 && r.d.n === 0, 'gl ' + r.gl + ' (' + why() + ') badge px ' + marks(r, fbImage) + ' ' + r.d.n + ' px');
-check('  badge, then the nick and mass rasters on the overlay', fgOps(r).join(' ') === 'fbBadge txt txt', fgOps(r).join(' '));
-{
-    /* sensitivity: with the cell's labels left to the GL layer the badge covers its nick */
-    const keep = R._lmLabelsOnFg;
-    R._lmLabelsOnFg = () => false;
-    const bad = frame(S1);
-    R._lmLabelsOnFg = keep;
-    check('  (the comparison sees it when the nick stays under the badge)', bad.gl && bad.d.n > 0, bad.d.n + ' px');
-}
-r = frame(S1);
-check('FB badge, next frame: equal (no labels left over, none drawn twice)', r.gl && r.d.n === 0 && fgOps(r).join(' ') === 'fbBadge txt txt', r.d.n + ' px ' + fgOps(r).join(' '));
-setSettings({ map: { FBTracking: true }, set: { textAlpha: 0.6 } });
-r = frame(S1);
-check('FB badge with textAlpha 0.6: labels with the same alpha, drawn once, equal', r.gl && r.d.n === 0, 'gl ' + r.gl + ' ' + r.d.n + ' px, max ' + r.d.max.toFixed(3));
-setSettings({ map: { FBTracking: true, transparentSkins: true } });
-r = frame(S1);
-check('FB badge with transparent skins (jelly on): WebGL, badge with the skin alpha as Canvas2D, equal', r.gl && marks(r, fbImage) > 0 && r.d.n === 0, 'gl ' + r.gl + ' ' + why() + ' ' + r.d.n + ' px');
-setSettings({ map: { FBTracking: true, transparentSkins: true, jellyPhisycs: false } });
-r = frame(S1);
-check('  jelly off (fixed circles keep the old alpha rule): Canvas2D, reason "alpha", equal', !r.gl && why() === 'alpha' && r.d.n === 0, 'gl ' + r.gl + ' ' + why() + ' ' + r.d.n + ' px');
-setSettings({ map: { FBTracking: true } });
-LM.gameMode = ':teams';
-r = frame(S1);
-check('FB badge in Teams: Canvas2D (reason "teams"), no badge as in Canvas2D, equal', !r.gl && why() === 'teams' && marks(r, fbImage) === 0 && r.d.n === 0, 'gl ' + r.gl + ' ' + why() + ' ' + r.d.n + ' px');
-LM.gameMode = ':ffa';
-application.skins = {};
-r = frame(S1);
-check('FB friend without a custom skin: no badge in Canvas2D, none in WebGL, labels stay on the GL layer', r.gl && marks(r, fbImage) === 0 && !(R._lmLabelsOnFg && R._lmLabelsOnFg(friend)) && r.d.n === 0, 'gl ' + r.gl);
-application.skins = { friend: img('friendSkin', 64, 64) };
-/* overlapping cells */
-scene([friend, makeCell({ x: 20, y: -80, size: 72, targetNick: 'cover' })]);
-r = frame(S1);
-check('later bigger cell over the badge: Canvas2D, reason "coveredFbBadge", equal', !r.gl && why() === 'coveredFbBadge' && r.d.n === 0, 'gl ' + r.gl + ' ' + why() + ' ' + r.d.n + ' px');
-scene([friend, makeCell({ x: 0, y: 105, size: 72, targetNick: 'low' })]);
-r = frame(S1);
-check('later bigger cell over the moved labels only: Canvas2D, reason "coveredLabels", equal', !r.gl && why() === 'coveredLabels' && r.d.n === 0, 'gl ' + r.gl + ' ' + why() + ' ' + r.d.n + ' px');
-scene([makeCell({ x: 25, y: -45, size: 30, targetNick: 'under' }), friend]);
-r = frame(S1);
-check('earlier smaller cell under the badge: WebGL, badge and labels above it, equal', r.gl && r.d.n === 0, 'gl ' + r.gl + ' ' + why() + ' ' + r.d.n + ' px');
-/* multibox ring: over the badge, under the labels */
-strokes.on = true; window.legendmod = LM; LM.multiBoxPlayerExists = true;
-setSettings({ map: { FBTracking: true } });
-friend.isPlayerCell = true;
-scene([friend]);
-r = frame(S1);
-check('FB badge on an own cell with a multibox ring: WebGL, badge > ring > labels on the overlay, equal', r.gl && fgOps(r).join(' ') === 'fbBadge stroke txt txt' && r.d.n === 0, 'gl ' + r.gl + ' ' + why() + ' ' + fgOps(r).join(' ') + ' ' + r.d.n + ' px');
-check('  the GL ring pass leaves that cell out', typeof R.buildWebGLMultiboxRingData !== 'function' || (friend._webglRendered = true, R.buildWebGLMultiboxRingData([LM.cells], new Float32Array(64), 4) === 0));
 /* the ring is fixed: only on the player you control (player 1 here), its colour, 6% of the radius; old ring settings do nothing */
+reset(); window.legendmod = LM; LM.multiBoxPlayerExists = true;
 (function () {
     const keep = Object.assign({}, ms);
     Object.assign(ms, { mbRingsP1: false, mbRingsP2: true, mbRingSizeP1: 50, mbRingColorP1: '#000000' });
@@ -562,23 +501,11 @@ check('  the GL ring pass leaves that cell out', typeof R.buildWebGLMultiboxRing
     check('multibox ring: on the player you control only, its fixed colour and width; none without multibox',
         own && own.player === 1 && own.color === '#FF2FD6' && Math.abs(own.width - 6) < 1e-9 && unit === null && solo === null, JSON.stringify([own, unit, solo]));
 })();
-friend._webglRendered = false; friend.isPlayerCell = false; strokes.on = false; LM.multiBoxPlayerExists = false;
-/* high DPI, resize */
-setSettings({ map: { FBTracking: true } });
-const S4 = { W: 200, H: 140, dpr: 2, zoom: 0.8, camX: 10, camY: 5 };
-scene([friend]);
-r = frame(S4);
-check('FB badge at DPR 2, zoom 0.8: WebGL, equal', r.gl && marks(r, fbImage) > 0 && r.d.n === 0, 'gl ' + r.gl + ' ' + r.d.n + ' px, max ' + r.d.max.toFixed(3));
-r = frame(Object.assign({}, S4, { W: 230, H: 120 }));
-check('FB badge, resized frame: overlay resized before its marks, equal', r.gl && orderOk(r.ops) && r.d.n === 0, 'gl ' + r.gl + ' ' + r.d.n + ' px');
-/* WebGL > Canvas2D > WebGL */
-const b1 = frame(S1), b2 = frame(Object.assign({}, S1, { glOk: false })), b3 = frame(S1);
-check('FB badge, WebGL > Canvas2D > WebGL: every frame equal, labels not twice', b1.gl && !b2.gl && b3.gl && b1.d.n === 0 && b2.d.n === 0 && b3.d.n === 0 && fgOps(b3).join(' ') === 'fbBadge txt txt',
-    [b1.d.n, b2.d.n, b3.d.n].join('/') + ' ' + fgOps(b3).join(' '));
+LM.multiBoxPlayerExists = false;
 
 /* ---- FB arrow ---- */
 
-reset(); setSettings({ map: { FBTracking: true } });
+reset(); setSettings();
 LM.play = true; LM.arrowFB = [{ x: 60, y: -30, visible: true }];
 scene([makeCell({ x: 0, y: 0, size: 50, targetNick: 'me' })]);
 r = frame(S1);
@@ -637,6 +564,13 @@ r = frame(S5);
 check('effect + teammate indicator + chat bubble on one cell, DPR 2: WebGL, equal', r.gl && marks(r, hat) > 0 && marks(r, R.indicator) > 0 && r.d.n === 0, 'gl ' + r.gl + ' ' + why() + ' ' + r.d.n + ' px');
 check('  order: hat > indicator > nick > mass > bubble', fgOps(r).join(' ') === 'hat teamInd txt txt txt', fgOps(r).join(' '));
 hatter.size = 50;
+/* multibox ring: over the effect, under the labels (as in Canvas2D) */
+team([]); chat(null); setSettings(); strokes.on = true; window.legendmod = LM; LM.multiBoxPlayerExists = true;
+hatter.isPlayerCell = true;
+scene([hatter]);
+r = frame(S1);
+check('special effect on an own cell with a multibox ring: WebGL, hat > ring > labels on the overlay, equal', r.gl && fgOps(r).join(' ') === 'hat stroke txt txt' && r.d.n === 0, 'gl ' + r.gl + ' ' + why() + ' ' + fgOps(r).join(' ') + ' ' + r.d.n + ' px');
+hatter.isPlayerCell = false; hatter._webglRendered = false; strokes.on = false; LM.multiBoxPlayerExists = false;
 
 /* nicks that name an Array member ("at", "map"...) or an effect that is not a string: no
  * effect, no draw error, the labels stay where they are (they were moved to the overlay and
@@ -1159,7 +1093,7 @@ const noReset = (log) => log.filter((x, i) => !(x === 'globalAlpha=1' && log[i +
     LM.playerCells = [{ x: 1, y: 1, size: 50, isInView: () => true }];
     LM.cursorX = 300; LM.cursorY = 300;
     const S = D.defaultmapsettings;
-    S.splitPrediction = false; S.FBTracking = false;
+    S.splitPrediction = false;
     const run = (ct, bubble) => {
         calls.length = 0; S.cursorTracking = ct; S.bubbleCursorTracker = bubble;
         R.drawPostCellOverlays(R.ctx); R.drawMiscRings();

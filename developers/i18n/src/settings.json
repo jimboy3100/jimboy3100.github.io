@@ -2375,24 +2375,6 @@
     "ja": "味方の表示",
     "it": "Indicatori dei compagni"
   },
-  "settings.FBTracking": {
-    "en": "Facebook bubble tracker",
-    "el": "Ιχνηλάτης φούσκας Facebook",
-    "es": "Rastreador de burbuja de Facebook",
-    "bg": "Проследяване с балон от Facebook",
-    "fr": "Suivi bulle Facebook",
-    "ar": "متتبع فقاعة Facebook",
-    "zh": "Facebook 泡泡追蹤",
-    "ru": "Пузырьковый трекер Facebook",
-    "de": "Facebook-Blasen-Tracker",
-    "tr": "Facebook baloncuk takipçisi",
-    "pl": "Śledzenie bąbelkiem Facebooka",
-    "nl": "Facebook-bubbeltracker",
-    "pt": "Rastreador de bolha do Facebook",
-    "id": "Pelacak gelembung Facebook",
-    "ja": "Facebookバブルトラッカー",
-    "it": "Tracciamento a bolla di Facebook"
-  },
   "settings.indicators": {
     "en": "Indicator",
     "el": "Δείκτης",
