@@ -889,10 +889,23 @@
         return !!((lm && lm._isReplay) || W._lmReplayQuiet || W._lmEvReplayOn || (W.LMPractice && W.LMPractice.on));
     }
     /* no rare event now */
+    /* one of your players is in a game: the main player or a multibox unit with a life (the
+     * players' lifecycle, lmMbAlive / lmMbUnits: the player you control is one of them, and a
+     * unit still plays while the main player is dead or in the menu); an older core: the main
+     * player */
+    var gameUnits = [];
+    function inGame() {
+        var lm = W.legendmod;
+        if (!lm) return false;
+        if (typeof W.lmMbAlive !== 'function' || typeof W.lmMbUnits !== 'function') return !!lm.play;
+        if (W.lmMbAlive(lm)) return true;
+        var u = W.lmMbUnits(gameUnits);
+        for (var i = 0; u && i < u.length; i++) if (W.lmMbAlive(u[i])) return true;
+        return false;
+    }
     function quiet(E) {
         if (hidden() || E < quietUntil || replay()) return true;
-        var lm = W.legendmod;
-        if (!lm || !lm.play) return true;
+        if (!inGame()) return true;
         var d = W.document, a = d && d.activeElement;
         if (a && (a.tagName === 'INPUT' || a.tagName === 'TEXTAREA' || a.tagName === 'SELECT' || a.isContentEditable)) return true;
         return !!(d && typeof d.getElementById === 'function' && d.getElementById('lm-gameover-modal'));
@@ -1475,7 +1488,8 @@
 
     /* -- game events -- */
     function onDeath(d) {
-        /* a multibox unit lost while another lives is no Game Over */
+        /* a multibox unit lost while another lives is no Game Over (playerDied: the last of your
+         * players, also when the main player died first; death: the main player's) */
         if (!on || !live || (d && d.scope === 'unit') || replay()) return;
         var E = clock(now());
         if (E - lastDeathAt < DEATH_GAP_MS) return;
@@ -1484,8 +1498,10 @@
         hbQuiet(true);
         play('death-' + deathN, LEVEL.death, true);
     }
-    function onSpawn() {
-        /* a quick respawn ends the last life's sound and figure; a short calm after */
+    function onSpawn(d) {
+        /* a quick respawn ends the last life's sound and figure; a short calm after. playerSpawned:
+         * the first of your players alive again (a new game) or the one you control */
+        if (d && d.role && !(d.living === 1 || d.active)) return;
         stopSounds();
         hideGhost();
         hbQuiet(true);
@@ -1542,8 +1558,10 @@
         }
         onVis = function () { if (hidden()) pause(now()); else resume(now()); };
         d.addEventListener('visibilitychange', onVis);
-        sub('death', onDeath);
-        sub('spawn', onSpawn);
+        /* every player's life (playerDied / playerSpawned); an older core: the main player's */
+        var mb = typeof W.lmMbPlayerEvent === 'function';
+        sub(mb ? 'playerDied' : 'death', onDeath);
+        sub(mb ? 'playerSpawned' : 'spawn', onSpawn);
         sub('disconnect', onDisconnect);
         sub('serverChange', onServer);
         sub('settingsChange', onVolume);
@@ -1579,12 +1597,22 @@
      * Competitive, a replay or the practice arena; nothing while spectating, in the menu or on the
      * Game Over window (no valid level then) or from an old frame; reset at once by a switch of
      * the player you control, a death, a spawn, a server change and a dropped connection.
-     * LMDyingLight.setEffect('threat', false) turns it off. Decorative, under the HUD, no clicks;
+     * LMDyingLight.setEffect('threat', false) turns it off. In Competitive or suppressed its timer does
+ * not run (again at once on a change: the part's changed()); while the page is busy (the
+ * director's late ticks) the level is not asked for. Decorative, under the HUD, no clicks;
      * the element is made only when first needed. -- */
     var THR_TICK = 250, THR_RISE = 250, THR_FALL = 1500, THR_STALE = 1000, THR_A = [0, 0.45, 0.85];
     var tOn = false, tTimer = 0, tEl = null, tLvl = 0, tWant = 0, tSince = 0, tUnit = -1, tSubs = [], tVis = null;
+    /* the look can show (not Competitive, not suppressed): else its timer does not run; a change
+     * of either comes through changed() */
+    function tLive() {
+        return tOn && DL.effect('threat') && !!profile().threat;
+    }
+    /* the level is asked for (compareCells judges it): not in a replay or the practice arena, and
+     * not while the page is busy (the director's late ticks), so a struggling frame does no extra
+     * work; the look then fades as after the danger */
     function tAsk() {
-        return tOn && DL.effect('threat') && !!profile().threat && !replay();
+        return tLive() && !replay() && !busy;
     }
     function tShow(l, fast) {
         var prev = tLvl;
@@ -1608,14 +1636,22 @@
         tSince = now();
         if (tLvl || tEl) tShow(0, true);
     }
-    function tArm() {
+    /* starting: the activation is not 'on' yet (its parts start first), only the intensity is
+     * asked then; the first tick asks the rest */
+    function tArm(starting) {
         clearTimeout(tTimer);
-        tTimer = tOn && !hidden() ? setTimeout(tTick, THR_TICK) : 0;
+        tTimer = (starting === true ? tOn && !!profile().threat : tLive()) && !hidden() ? setTimeout(tTick, THR_TICK) : 0;
+    }
+    /* the intensity or the effect changed: on again at once, or gone at once */
+    function tChanged() {
+        if (!tOn) return;
+        if (!tLive()) { clearTimeout(tTimer); tTimer = 0; tReset(); }
+        else if (!tTimer) tArm();
     }
     function tTick() {
         tTimer = 0;
         if (!tOn) return;
-        if (hidden()) { tReset(); return; }
+        if (hidden() || !tLive()) { tReset(); return; }
         var t = now(), s = null, want = 0;
         if (tAsk()) {
             try { s = typeof W.lmDlThreat === 'function' ? W.lmDlThreat() : null; } catch (e) { s = null; }
@@ -1644,7 +1680,7 @@
         tVis = function () { if (hidden()) { clearTimeout(tTimer); tTimer = 0; tReset(); } else if (!tTimer) tArm(); };
         d.addEventListener('visibilitychange', tVis);
         tSub('multiboxSwap'); tSub('death'); tSub('spawn'); tSub('serverChange'); tSub('disconnect');
-        tArm();
+        tArm(true);
     }
     function tStop() {
         tOn = false;
@@ -1674,7 +1710,7 @@
         start: function () { if (typeof W.lmThemeOverride === 'function') W.lmThemeOverride('dyinglight', COLORS); },
         stop: function () { if (typeof W.lmThemeOverride === 'function') W.lmThemeOverride('dyinglight', null); }
     });
-    DL.addPart({ name: 'threat', start: tStart, stop: tStop, threat: tAsk });
+    DL.addPart({ name: 'threat', start: tStart, stop: tStop, threat: tAsk, changed: tChanged });
     /* read-only view for diagnostics and tests */
     W.LMDyingLightDirector = Object.freeze({
         phaseAt: function (ms) { return phaseAt(+ms || 0).id; },

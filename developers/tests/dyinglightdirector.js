@@ -316,14 +316,33 @@ check('the new settings: off by default with Dying Light, immersive, full sound,
         run(250, 2, 4);
         check('...and shows its own level after 250 ms', thr().level === 2);
         ['spawn', 'serverChange', 'multiboxSwap', 'disconnect'].forEach(n => { run(500, 2, 4); ctx.LMEvents.emit(n, {}); check('threat: reset by ' + n, thr().level === 0); });
+        run(500, 2, 4);
+        const shownBefore = thr().level;
         L.setIntensity('competitive');
+        check('threat: Competitive: its timer stops at once and the look goes', shownBefore === 2 && !thr().timer && thr().level === 0 && timers.size === 1);
         run(1000, 2, 4);
-        check('threat: not in Competitive (not asked)', thr().level === 0 && L.needsThreatData() === false);
+        check('threat: not in Competitive (not asked, no timer)', thr().level === 0 && L.needsThreatData() === false && !thr().timer);
         L.setIntensity('immersive');
+        check('threat: back to Immersive: its timer again at once', thr().timer && timers.size === 2);
+        D.dyingLightIntensity = 'competitive'; ctx.LMEvents.emit('settingsChange', { key: 'dyingLightIntensity', value: 'competitive' });
+        check('threat: the intensity setting changed to Competitive: no timer', !thr().timer && L.intensity() === 'competitive');
+        D.dyingLightIntensity = 'immersive'; ctx.LMEvents.emit('settingsChange', { key: 'dyingLightIntensity', value: 'immersive' });
+        check('...and back: its timer', thr().timer);
         L.setEffect('threat', false);
+        check('threat: suppressed: no timer', !thr().timer);
         run(1000, 2, 4);
         check('threat: suppressed on its own', thr().level === 0 && L.needsThreatData() === false);
         L.setEffect('threat', true);
+        check('threat: allowed again: its timer', thr().timer);
+        /* a busy page (the director's late ticks): the level is not asked for, the look fades */
+        run(500, 2, 4);
+        advance(6000, 600);
+        check('threat: a busy page: not asked (no threat work in the frames)', info().busy === true && L.needsThreatData() === false && thr().timer);
+        run(2000, 2, 4);
+        check('...the look gone meanwhile', thr().level === 0);
+        run(12000, 2, 4);
+        check('...asked again once the page is not busy', info().busy === false && L.needsThreatData() === true && thr().level === 2);
+        run(2000, 0, 4);
         ctx._lmEvReplayOn = true;
         run(1000, 2, 4);
         check('threat: nothing in a replay', thr().level === 0 && L.needsThreatData() === false);
@@ -359,6 +378,55 @@ check('the new settings: off by default with Dying Light, immersive, full sound,
     check('on again after toggles: one timer (and one of the threat look), the same listeners', timers.size === 2 && info().listeners === 6 && info().threat.listeners === 6 && head.kids.filter(n => n.id === 'lm-dl-director-style').length === 1);
     await L.disable();
     check('off again: nothing left', timers.size === 0 && docCount() === lsBefore && info().listeners === 0);
+
+    /* ═══ the players' lifecycle (lmMbPlayerEvent, lmMbAlive, lmMbUnits of the core) ═══ */
+    {
+        const unit = { player: true, active: false };
+        ctx.lmMbPlayerEvent = () => { };
+        ctx.lmMbAlive = q => q === ctx.legendmod ? !!q.play : !!q && q.player === true && q.active === true;
+        ctx.lmMbUnits = out => { out.length = 0; out.push(unit); return out; };
+        D.dyingLightIntensity = 'immersive'; L.setIntensity('immersive');
+        p = L.enable(); flushPics(true); await p;
+        const E = ctx.LMEvents;
+        check('lifecycle: listens to playerDied / playerSpawned, not death / spawn', info().listeners === 6 && E._has('playerDied') && E._has('playerSpawned'));
+        const rWas = ctx.__r;
+        ctx.__r = () => 0; plays.length = 0; toasts.length = 0;
+        ctx.legendmod.play = false;
+        advance(31000);
+        check('lifecycle: nobody of yours alive: no rare event', plays.length === 0);
+        unit.active = true;
+        advance(25000);
+        check('lifecycle: the main player dead, a multibox unit alive: the game goes on, the radio comes', plays.length === 1 && /^radio-/.test(plays[0].id));
+        plays.length = 0;
+        E.emit('playerDied', { scope: 'unit', role: 'unit', living: 1 });
+        check('lifecycle: a player lost while another lives: no death signal', plays.length === 0);
+        unit.active = false;
+        E.emit('playerDied', { scope: 'all', role: 'unit', living: 0 });
+        check('lifecycle: the last of your players (the main player died first): the death signal', plays.length === 1 && /^death-/.test(plays[0].id));
+        advance(11000);
+        ctx.legendmod.play = false;
+        E.emit('death', { scope: 'all', unit: 0 });
+        E.emit('playerDied', { scope: 'all', role: 'main', living: 0 });
+        check('lifecycle: the main player last: one death signal (death and playerDied together)', plays.length === 2);
+        const mine = audios.filter(a => a.src);
+        mine.forEach(a => { a.paused = false; });
+        E.emit('playerSpawned', { role: 'unit', living: 2, active: false });
+        check('lifecycle: another unit spawning while one lives: the sound goes on', mine.length > 0 && mine.every(a => !a.paused));
+        E.emit('playerSpawned', { role: 'unit', living: 1, active: true });
+        check('lifecycle: the first of your players alive again: the sound stops (a new game)', mine.every(a => a.paused));
+        await L.disable();
+        check('lifecycle: off: no listener left', info().listeners === 0 && !E._has('playerDied') && !E._has('playerSpawned') && timers.size === 0);
+        ctx.legendmod.play = true;
+        delete ctx.lmMbPlayerEvent; delete ctx.lmMbAlive; delete ctx.lmMbUnits;
+        ctx.__r = rWas;
+    }
+    /* Competitive from the start: the threat look's timer never runs */
+    L.setIntensity('competitive');
+    p = L.enable(); flushPics(true); await p;
+    check('Competitive from the start: no threat timer (only the director\'s)', !info().threat.timer && timers.size === 1);
+    L.setIntensity('immersive');
+    check('...Immersive: its timer', info().threat.timer && timers.size === 2);
+    await L.disable();
 
     /* ═══ made sounds (Web Audio): ambience by phase, heartbeat, live volume, rests, teardown ═══ */
     {
