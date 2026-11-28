@@ -110,10 +110,20 @@ var pic3dataimg = "Yow!!";
 var pic4dataimg = "Death!";
 var pic5dataimg = "Relax!";
 var pic6dataimg = "Legend Mod!";
-/* a cleared chat icon field falls back to these (it sent [img][/img]) */
-var _lmChatDefaults = { pic1urlimg: pic1urlimg, pic2urlimg: pic2urlimg, pic3urlimg: pic3urlimg, pic4urlimg: pic4urlimg, pic5urlimg: pic5urlimg, pic6urlimg: pic6urlimg };
-/* the YouTube video buttons of the shortcut bar are removed: their saved links and titles are deleted from this browser */
-(function () { try { for (var i = 1; i <= 6; i++) { localStorage.removeItem('yt' + i + 'urlimg'); localStorage.removeItem('yt' + i + 'dataimg'); } } catch (e) { } })();
+var yt1url = "dQw4w9WgXcQ";
+var yt2url = "btPJPFnesV4";
+var yt3url = "UD-MkihnOXg";
+var yt4url = "vpoqWs6BuIY";
+var yt5url = "VUvfn5-BLM8";
+var yt6url = "CnIfNSpCf70";
+/* a cleared chat icon / YouTube field falls back to these (it sent [img][/img] / [yt][/yt]) */
+var _lmChatDefaults = { pic1urlimg: pic1urlimg, pic2urlimg: pic2urlimg, pic3urlimg: pic3urlimg, pic4urlimg: pic4urlimg, pic5urlimg: pic5urlimg, pic6urlimg: pic6urlimg, yt1url: yt1url, yt2url: yt2url, yt3url: yt3url, yt4url: yt4url, yt5url: yt5url, yt6url: yt6url };
+var yt1data = "Rick Astley - Never Gonna Give You Up";
+var yt2data = "Survivor - Eye Of The Tiger";
+var yt3data = "Lion king - The Lion Sleeps Tonight";
+var yt4data = "Agario - Jumbo Solo vs Teams";
+var yt5data = "Agario - Kill3r vs Teams";
+var yt6data = "Promotional";
 var lastIP = localStorage.getItem("lastIP");
 var previousnickname = localStorage.getItem("previousnickname");
 var leadbtext = localStorage.getItem("leadbtext");
@@ -203,6 +213,7 @@ var mode = ""; //just in case
 var token = "";
 var messageone = 1; //If legendmod is being used
 var seticon = "YES";
+var setyt = "YES";
 var searching;
 var timerId;
 var MSGCOMMANDS = "";
@@ -1753,6 +1764,30 @@ function parseLegendJSONAPI(LegendJSON) {
     if (LegendJSON.legendSettings.pic6urlimg == "null" || LegendJSON.legendSettings.pic6urlimg == null) {
         LegendJSON.legendSettings.pic6urlimg = ""
     };
+    LegendJSON.legendSettings.yt1urlimg = localStorage.getItem("yt1urlimg");
+    if (LegendJSON.legendSettings.yt1urlimg == "null" || LegendJSON.legendSettings.yt1urlimg == null) {
+        LegendJSON.legendSettings.yt1urlimg = ""
+    };
+    LegendJSON.legendSettings.yt2urlimg = localStorage.getItem("yt2urlimg");
+    if (LegendJSON.legendSettings.yt2urlimg == "null" || LegendJSON.legendSettings.yt2urlimg == null) {
+        LegendJSON.legendSettings.yt2urlimg = ""
+    };
+    LegendJSON.legendSettings.yt3urlimg = localStorage.getItem("yt3urlimg");
+    if (LegendJSON.legendSettings.yt3urlimg == "null" || LegendJSON.legendSettings.yt3urlimg == null) {
+        LegendJSON.legendSettings.yt3urlimg = ""
+    };
+    LegendJSON.legendSettings.yt4urlimg = localStorage.getItem("yt4urlimg");
+    if (LegendJSON.legendSettings.yt4urlimg == "null" || LegendJSON.legendSettings.yt4urlimg == null) {
+        LegendJSON.legendSettings.yt4urlimg = ""
+    };
+    LegendJSON.legendSettings.yt5urlimg = localStorage.getItem("yt5urlimg");
+    if (LegendJSON.legendSettings.yt5urlimg == "null" || LegendJSON.legendSettings.yt5urlimg == null) {
+        LegendJSON.legendSettings.yt5urlimg = ""
+    };
+    LegendJSON.legendSettings.yt6urlimg = localStorage.getItem("yt6urlimg");
+    if (LegendJSON.legendSettings.yt6urlimg == "null" || LegendJSON.legendSettings.yt6urlimg == null) {
+        LegendJSON.legendSettings.yt6urlimg = ""
+    };
     LegendJSON.legendSettings.pic1dataimg = localStorage.getItem("pic1dataimg");
     if (LegendJSON.legendSettings.pic1dataimg == "null" || LegendJSON.legendSettings.pic1dataimg == null) {
         LegendJSON.legendSettings.pic1dataimg = ""
@@ -1776,6 +1811,30 @@ function parseLegendJSONAPI(LegendJSON) {
     LegendJSON.legendSettings.pic6dataimg = localStorage.getItem("pic6dataimg");
     if (LegendJSON.legendSettings.pic6dataimg == "null" || LegendJSON.legendSettings.pic6dataimg == null) {
         LegendJSON.legendSettings.pic6dataimg = ""
+    };
+    LegendJSON.legendSettings.yt1dataimg = localStorage.getItem("yt1dataimg");
+    if (LegendJSON.legendSettings.yt1dataimg == "null" || LegendJSON.legendSettings.yt1dataimg == null) {
+        LegendJSON.legendSettings.yt1dataimg = ""
+    };
+    LegendJSON.legendSettings.yt2dataimg = localStorage.getItem("yt2dataimg");
+    if (LegendJSON.legendSettings.yt2dataimg == "null" || LegendJSON.legendSettings.yt2dataimg == null) {
+        LegendJSON.legendSettings.yt2dataimg = ""
+    };
+    LegendJSON.legendSettings.yt3dataimg = localStorage.getItem("yt3dataimg");
+    if (LegendJSON.legendSettings.yt3dataimg == "null" || LegendJSON.legendSettings.yt3dataimg == null) {
+        LegendJSON.legendSettings.yt3dataimg = ""
+    };
+    LegendJSON.legendSettings.yt4dataimg = localStorage.getItem("yt4dataimg");
+    if (LegendJSON.legendSettings.yt4dataimg == "null" || LegendJSON.legendSettings.yt4dataimg == null) {
+        LegendJSON.legendSettings.yt4dataimg = ""
+    };
+    LegendJSON.legendSettings.yt5dataimg = localStorage.getItem("yt5dataimg");
+    if (LegendJSON.legendSettings.yt5dataimg == "null" || LegendJSON.legendSettings.yt5dataimg == null) {
+        LegendJSON.legendSettings.yt5dataimg = ""
+    };
+    LegendJSON.legendSettings.yt6dataimg = localStorage.getItem("yt6dataimg");
+    if (LegendJSON.legendSettings.yt6dataimg == "null" || LegendJSON.legendSettings.yt6dataimg == null) {
+        LegendJSON.legendSettings.yt6dataimg = ""
     };
     LegendJSON.legendSettings.discwebhook1 = localStorage.getItem("discwebhook1");
     if (LegendJSON.legendSettings.discwebhook1 == "null" || LegendJSON.legendSettings.discwebhook1 == null) {
@@ -1943,12 +2002,24 @@ function saveLegendJSONAPI() {
         _lmImportSet("pic4urlimg", LegendJSON.legendSettings.pic4urlimg);
         _lmImportSet("pic5urlimg", LegendJSON.legendSettings.pic5urlimg);
         _lmImportSet("pic6urlimg", LegendJSON.legendSettings.pic6urlimg);
+        _lmImportSet("yt1urlimg", LegendJSON.legendSettings.yt1urlimg);
+        _lmImportSet("yt2urlimg", LegendJSON.legendSettings.yt2urlimg);
+        _lmImportSet("yt3urlimg", LegendJSON.legendSettings.yt3urlimg);
+        _lmImportSet("yt4urlimg", LegendJSON.legendSettings.yt4urlimg);
+        _lmImportSet("yt5urlimg", LegendJSON.legendSettings.yt5urlimg);
+        _lmImportSet("yt6urlimg", LegendJSON.legendSettings.yt6urlimg);
         _lmImportSet("pic1dataimg", LegendJSON.legendSettings.pic1dataimg);
         _lmImportSet("pic2dataimg", LegendJSON.legendSettings.pic2dataimg);
         _lmImportSet("pic3dataimg", LegendJSON.legendSettings.pic3dataimg);
         _lmImportSet("pic4dataimg", LegendJSON.legendSettings.pic4dataimg);
         _lmImportSet("pic5dataimg", LegendJSON.legendSettings.pic5dataimg);
         _lmImportSet("pic6dataimg", LegendJSON.legendSettings.pic6dataimg);
+        _lmImportSet("yt1dataimg", LegendJSON.legendSettings.yt1dataimg);
+        _lmImportSet("yt2dataimg", LegendJSON.legendSettings.yt2dataimg);
+        _lmImportSet("yt3dataimg", LegendJSON.legendSettings.yt3dataimg);
+        _lmImportSet("yt4dataimg", LegendJSON.legendSettings.yt4dataimg);
+        _lmImportSet("yt5dataimg", LegendJSON.legendSettings.yt5dataimg);
+        _lmImportSet("yt6dataimg", LegendJSON.legendSettings.yt6dataimg);
         _lmImportSet("discwebhook1", LegendJSON.legendSettings.discwebhook1);
         _lmImportSet("discwebhook2", LegendJSON.legendSettings.discwebhook2);
         /* user scripts are code that runs in this page: ask first */
@@ -2676,8 +2747,143 @@ function setpic6data() {
 }
 
 
+function sendyt1() {
+    if (($("#clantag").val() != "") || document.getElementById("nick").value.includes("℄")) {
+        application.sendChatMessage(101, "[yt]" + yt1url + "[/yt]")
+    } else {
+        toastr.info(Premadeletter39);
+    }
+}
+
+function sendyt2() {
+    if (($("#clantag").val() != "") || document.getElementById("nick").value.includes("℄")) {
+        application.sendChatMessage(101, "[yt]" + yt2url + "[/yt]")
+    } else {
+        toastr.info(Premadeletter39);
+    }
+}
+
+function sendyt3() {
+    if (($("#clantag").val() != "") || document.getElementById("nick").value.includes("℄")) {
+        application.sendChatMessage(101, "[yt]" + yt3url + "[/yt]")
+    } else {
+        toastr.info(Premadeletter39);
+    }
+}
+
+function sendyt4() {
+    if (($("#clantag").val() != "") || document.getElementById("nick").value.includes("℄")) {
+        application.sendChatMessage(101, "[yt]" + yt4url + "[/yt]")
+    } else {
+        toastr.info(Premadeletter39);
+    }
+}
+
+function sendyt5() {
+    if (($("#clantag").val() != "") || document.getElementById("nick").value.includes("℄")) {
+        application.sendChatMessage(101, "[yt]" + yt5url + "[/yt]")
+    } else {
+        toastr.info(Premadeletter39);
+    }
+}
+
+function sendyt6() {
+    if (($("#clantag").val() != "") || document.getElementById("nick").value.includes("℄")) {
+        application.sendChatMessage(101, "[yt]" + yt6url + "[/yt]")
+    } else {
+        toastr.info(Premadeletter39);
+    }
+}
+
+function setyt1data() {
+    localStorage.setItem("yt1dataimg", $("#yt1data").val())
+    $("#sendyt1").attr("data-original-title", $("#yt1data").val());
+}
+
+function setyt2data() {
+    localStorage.setItem("yt2dataimg", $("#yt2data").val())
+    $("#sendyt2").attr("data-original-title", $("#yt2data").val());
+}
+
+function setyt3data() {
+    localStorage.setItem("yt3dataimg", $("#yt3data").val())
+    $("#sendyt3").attr("data-original-title", $("#yt3data").val());
+}
+
+function setyt4data() {
+    localStorage.setItem("yt4dataimg", $("#yt4data").val())
+    $("#sendyt4").attr("data-original-title", $("#yt4data").val());
+}
+
+function setyt5data() {
+    localStorage.setItem("yt5dataimg", $("#yt5data").val())
+    $("#sendyt5").attr("data-original-title", $("#yt5data").val());
+}
+
+function setyt6data() {
+    localStorage.setItem("yt6dataimg", $("#yt6data").val())
+    $("#sendyt6").attr("data-original-title", $("#yt6data").val());
+}
+
+function setyt1url() {
+    yt1url = String($("#yt1url").val() || "").trim() || _lmChatDefaults.yt1url;
+    if (getParameterByName("v", yt1url) != null) {
+        yt1url = getParameterByName("v", yt1url);
+    }
+    localStorage.setItem("yt1urlimg", yt1url);
+    return yt1url;
+}
+
+function setyt2url() {
+    yt2url = String($("#yt2url").val() || "").trim() || _lmChatDefaults.yt2url;
+    if (getParameterByName("v", yt2url) != null) {
+        yt2url = getParameterByName("v", yt2url);
+    }
+    localStorage.setItem("yt2urlimg", yt2url);
+    return yt2url;
+}
+
+function setyt3url() {
+    yt3url = String($("#yt3url").val() || "").trim() || _lmChatDefaults.yt3url;
+    if (getParameterByName("v", yt3url) != null) {
+        yt3url = getParameterByName("v", yt3url);
+    }
+    localStorage.setItem("yt3urlimg", yt3url);
+    return yt3url;
+}
+
+function setyt4url() {
+    yt4url = String($("#yt4url").val() || "").trim() || _lmChatDefaults.yt4url;
+    if (getParameterByName("v", yt4url) != null) {
+        yt4url = getParameterByName("v", yt4url);
+    }
+    localStorage.setItem("yt4urlimg", yt4url);
+    return yt4url;
+}
+
+function setyt5url() {
+    yt5url = String($("#yt5url").val() || "").trim() || _lmChatDefaults.yt5url;
+    if (getParameterByName("v", yt5url) != null) {
+        yt5url = getParameterByName("v", yt5url);
+    }
+    localStorage.setItem("yt5urlimg", yt5url);
+    return yt5url;
+}
+
+function setyt6url() {
+    yt6url = String($("#yt6url").val() || "").trim() || _lmChatDefaults.yt6url;
+    if (getParameterByName("v", yt6url) != null) {
+        yt6url = getParameterByName("v", yt6url);
+    }
+    localStorage.setItem("yt6urlimg", yt6url);
+    return yt6url;
+}
+
 
 function seticonfunction() {
+    if (setyt == "NO") {
+        YessetytReturn();
+    }
     if (setscriptingcom == "NO") {
         YessetScriptingComReturn();
     }
@@ -2688,9 +2894,26 @@ function seticonfunction() {
     }
 }
 
+function setytfunction() {
+    if (seticon == "NO") {
+        YesseticonReturn();
+    }
+    if (setscriptingcom == "NO") {
+        YessetScriptingComReturn();
+    }
+    if (setyt == "YES") {
+        NosetytReturn();
+    } else if (setyt == "NO") {
+        YessetytReturn();
+    }
+}
+
 function setscriptingfunction() {
     if (seticon == "NO") {
         YesseticonReturn();
+    }
+    if (setyt == "NO") {
+        YessetytReturn();
     }
     if (setscriptingcom == "YES") {
         NosetScriptingComReturn();
@@ -2707,6 +2930,16 @@ function NoseticonReturn() {
 function YesseticonReturn() {
     $("#images-hud").hide();
     return seticon = "YES";
+}
+
+function NosetytReturn() {
+    $("#yt-hud").show();
+    return setyt = "NO";
+}
+
+function YessetytReturn() {
+    $("#yt-hud").hide();
+    return setyt = "YES";
 }
 
 function NosetScriptingComReturn() {
@@ -2728,6 +2961,12 @@ function changePhotoFun() {
     $("#pic4url").hide();
     $("#pic5url").hide();
     $("#pic6url").hide();
+    $("#yt1url").hide();
+    $("#yt2url").hide();
+    $("#yt3url").hide();
+    $("#yt4url").hide();
+    $("#yt5url").hide();
+    $("#yt6url").hide();
 
     $("#pic1data").hide();
     $("#pic2data").hide();
@@ -2735,6 +2974,12 @@ function changePhotoFun() {
     $("#pic4data").hide();
     $("#pic5data").hide();
     $("#pic6data").hide();
+    $("#yt1data").hide();
+    $("#yt2data").hide();
+    $("#yt3data").hide();
+    $("#yt4data").hide();
+    $("#yt5data").hide();
+    $("#yt6data").hide();
 
     if ($("#changephotos").val() == 1) {
         $("#pic1url").show();
@@ -2759,6 +3004,30 @@ function changePhotoFun() {
     if ($("#changephotos").val() == 6) {
         $("#pic6url").show();
         $("#pic6data").show();
+    }
+    if ($("#changephotos").val() == 7) {
+        $("#yt1url").show();
+        $("#yt1data").show();
+    }
+    if ($("#changephotos").val() == 8) {
+        $("#yt2url").show();
+        $("#yt2data").show();
+    }
+    if ($("#changephotos").val() == 9) {
+        $("#yt3url").show();
+        $("#yt3data").show();
+    }
+    if ($("#changephotos").val() == 10) {
+        $("#yt4url").show();
+        $("#yt4data").show();
+    }
+    if ($("#changephotos").val() == 11) {
+        $("#yt5url").show();
+        $("#yt5data").show();
+    }
+    if ($("#changephotos").val() == 12) {
+        $("#yt6url").show();
+        $("#yt6data").show();
     }
 
 }
@@ -3324,6 +3593,30 @@ function triggerLMbtns() {
     if ($('#pic6url').val() != "") {
         setpic6url();
     }
+    document.getElementById("yt1url").value = localStorage.getItem("yt1urlimg");
+    if ($('#yt1url').val() != "") {
+        setyt1url();
+    }
+    document.getElementById("yt2url").value = localStorage.getItem("yt2urlimg");
+    if ($('#yt2url').val() != "") {
+        setyt2url();
+    }
+    document.getElementById("yt3url").value = localStorage.getItem("yt3urlimg");
+    if ($('#yt3url').val() != "") {
+        setyt3url();
+    }
+    document.getElementById("yt4url").value = localStorage.getItem("yt4urlimg");
+    if ($('#yt4url').val() != "") {
+        setyt4url();
+    }
+    document.getElementById("yt5url").value = localStorage.getItem("yt5urlimg");
+    if ($('#yt5url').val() != "") {
+        setyt5url();
+    }
+    document.getElementById("yt6url").value = localStorage.getItem("yt6urlimg");
+    if ($('#yt6url').val() != "") {
+        setyt6url();
+    }
     document.getElementById("pic1data").value = localStorage.getItem("pic1dataimg");
     if ($('#pic1data').val() != "") {
         setpic1data();
@@ -3347,6 +3640,30 @@ function triggerLMbtns() {
     document.getElementById("pic6data").value = localStorage.getItem("pic6dataimg");
     if ($('#pic6data').val() != "") {
         setpic6data();
+    }
+    document.getElementById("yt1data").value = localStorage.getItem("yt1dataimg");
+    if ($('#yt1data').val() != "") {
+        setyt1data();
+    }
+    document.getElementById("yt2data").value = localStorage.getItem("yt2dataimg");
+    if ($('#yt2data').val() != "") {
+        setyt2data();
+    }
+    document.getElementById("yt3data").value = localStorage.getItem("yt3dataimg");
+    if ($('#yt3data').val() != "") {
+        setyt3data();
+    }
+    document.getElementById("yt4data").value = localStorage.getItem("yt4dataimg");
+    if ($('#yt4data').val() != "") {
+        setyt4data();
+    }
+    document.getElementById("yt5data").value = localStorage.getItem("yt5dataimg");
+    if ($('#yt5data').val() != "") {
+        setyt5data();
+    }
+    document.getElementById("yt6data").value = localStorage.getItem("yt6dataimg");
+    if ($('#yt6data').val() != "") {
+        setyt6data();
     }
 
     document.getElementById("discwebhook1").value = localStorage.getItem("discwebhook1");
@@ -3454,6 +3771,12 @@ function bluebtns() {
         .mouseleave(function () {
             $('#shortcuts-hud>#Images').css('background-color', "transparent");
         });
+    $('#yout').mouseenter(function () {
+        $('#yout').css('background-color', Top5MassColor);
+    })
+        .mouseleave(function () {
+            $('#yout').css('background-color', "transparent");
+        });
     $('#fullscreenBtn').mouseenter(function () {
         $('#fullscreenBtn').css('background-color', Top5MassColor);
     })
@@ -3510,6 +3833,43 @@ function bluebtns() {
     })
         .mouseleave(function () {
             $('#sendicon6').css('background-color', "transparent");
+        });
+
+    $('#sendyt1').mouseenter(function () {
+        $('#sendyt1').css('background-color', Top5MassColor);
+    })
+        .mouseleave(function () {
+            $('#sendyt1').css('background-color', "transparent");
+        });
+    $('#sendyt2').mouseenter(function () {
+        $('#sendyt2').css('background-color', Top5MassColor);
+    })
+        .mouseleave(function () {
+            $('#sendyt2').css('background-color', "transparent");
+        });
+    $('#sendyt3').mouseenter(function () {
+        $('#sendyt3').css('background-color', Top5MassColor);
+    })
+        .mouseleave(function () {
+            $('#sendyt3').css('background-color', "transparent");
+        });
+    $('#sendyt4').mouseenter(function () {
+        $('#sendyt4').css('background-color', Top5MassColor);
+    })
+        .mouseleave(function () {
+            $('#sendyt4').css('background-color', "transparent");
+        });
+    $('#sendyt5').mouseenter(function () {
+        $('#sendyt5').css('background-color', Top5MassColor);
+    })
+        .mouseleave(function () {
+            $('#sendyt5').css('background-color', "transparent");
+        });
+    $('#sendyt6').mouseenter(function () {
+        $('#sendyt6').css('background-color', Top5MassColor);
+    })
+        .mouseleave(function () {
+            $('#sendyt6').css('background-color', "transparent");
         });
 
     $('#RotateRight').mouseenter(function () {
@@ -4887,7 +5247,7 @@ function initializeLM(modVersion) {
         '<input id="canvasPicture" class="form-control" placeholder="' + _lmxE('pack.mainCanvasImageUrl') + '" value="" style="margin-top: 2px; display: none;" onblur="setcanvasbgname();" data-toggle="tooltip" data-placement="right" data-original-title="' + _lmxE('pack.urlOfImageStarting') + '" >' +
         '</div>' +
 
-        '<div class="input-box" style="text-align: center; font-size: 12px; margin-top: 0px; padding: 4px 0 0px 0;"><span id="legendmanualmess" class="title" style="">' + _lmxE('pack.messageImgurIcons') + ':  </span>' +
+        '<div class="input-box" style="text-align: center; font-size: 12px; margin-top: 0px; padding: 4px 0 0px 0;"><span id="legendmanualmess" class="title" style="">' + _lmxE('pack.manualMessageIconsYoutube') + ':  </span>' +
         '<select id="changephotos" class="form-control" onchange="changePhotoFun();" required="" data-original-title="" title="" style="display:inline; width: 35%" >' +
         '<option value="1" data-itr="">' + _lmxE('pack.icon') + ' 1</option>' +
         '<option value="2" data-itr="">' + _lmxE('pack.icon') + ' 2</option>' +
@@ -4895,6 +5255,12 @@ function initializeLM(modVersion) {
         '<option value="4" data-itr="">' + _lmxE('pack.icon') + ' 4</option>' +
         '<option value="5" data-itr="">' + _lmxE('pack.icon') + ' 5</option>' +
         '<option value="6" data-itr="">' + _lmxE('pack.icon') + ' 6</option>' +
+        '<option value="7" data-itr="">Youtube 1</option>' + // i18n-ok: brand name and number
+        '<option value="8" data-itr="">Youtube 2</option>' + // i18n-ok: brand name and number
+        '<option value="9" data-itr="">Youtube 3</option>' + // i18n-ok: brand name and number
+        '<option value="10" data-itr="">Youtube 4</option>' + // i18n-ok: brand name and number
+        '<option value="11" data-itr="">Youtube 5</option>' + // i18n-ok: brand name and number
+        '<option value="12" data-itr="">Youtube 6</option>' + // i18n-ok: brand name and number
         '</select>' +
 
         '<input id="pic1data" class="form-control" placeholder="' + _lmxE('pack.messageIconText') + ' 1" value="" style="margin-top: 2px; display: block; " onblur="setpic1data();">' +
@@ -4903,6 +5269,12 @@ function initializeLM(modVersion) {
         '<input id="pic4data" class="form-control" placeholder="' + _lmxE('pack.messageIconText') + ' 4" value="" style="margin-top: 2px; display: none; " onblur="setpic4data();">' +
         '<input id="pic5data" class="form-control" placeholder="' + _lmxE('pack.messageIconText') + ' 5" value="" style="margin-top: 2px; display: none; " onblur="setpic5data();">' +
         '<input id="pic6data" class="form-control" placeholder="' + _lmxE('pack.messageIconText') + ' 6" value="" style="margin-top: 2px; display: none; " onblur="setpic6data();">' +
+        '<input id="yt1data" class="form-control" placeholder="' + _lmxE('pack.youtubeMessageText') + ' 1" value="" style="margin-top: 2px; display: none; " onblur="setyt1data();">' +
+        '<input id="yt2data" class="form-control" placeholder="' + _lmxE('pack.youtubeMessageText') + ' 2" value="" style="margin-top: 2px; display: none; " onblur="setyt2data();">' +
+        '<input id="yt3data" class="form-control" placeholder="' + _lmxE('pack.youtubeMessageText') + ' 3" value="" style="margin-top: 2px; display: none; " onblur="setyt3data();">' +
+        '<input id="yt4data" class="form-control" placeholder="' + _lmxE('pack.youtubeMessageText') + ' 4" value="" style="margin-top: 2px; display: none; " onblur="setyt4data();">' +
+        '<input id="yt5data" class="form-control" placeholder="' + _lmxE('pack.youtubeMessageText') + ' 5" value="" style="margin-top: 2px; display: none; " onblur="setyt5data();">' +
+        '<input id="yt6data" class="form-control" placeholder="' + _lmxE('pack.youtubeMessageText') + ' 6" value="" style="margin-top: 2px; display: none; " onblur="setyt6data();">' +
 
         '<input id="pic1url" class="form-control" placeholder="' + _lmxE('pack.messageIconImgurUrl') + ' 1" value="" style="margin-top: 2px; display: block;" onblur="setpic1url();" data-toggle="tooltip" data-placement="right" data-original-title="' + _lmxE('pack.eG') + ' https://i.imgur.com/RVBi3T1.gif" >' +
         '<input id="pic2url" class="form-control" placeholder="' + _lmxE('pack.messageIconImgurUrl') + ' 2" value="" style="margin-top: 2px; display: none;" onblur="setpic2url();" data-toggle="tooltip" data-placement="right" data-original-title="' + _lmxE('pack.eG') + ' https://i.imgur.com/RVBi3T1.gif" >' +
@@ -4910,6 +5282,12 @@ function initializeLM(modVersion) {
         '<input id="pic4url" class="form-control" placeholder="' + _lmxE('pack.messageIconImgurUrl') + ' 4" value="" style="margin-top: 2px; display: none;" onblur="setpic4url();" data-toggle="tooltip" data-placement="right" data-original-title="' + _lmxE('pack.eG') + ' https://i.imgur.com/RVBi3T1.gif" >' +
         '<input id="pic5url" class="form-control" placeholder="' + _lmxE('pack.messageIconImgurUrl') + ' 5" value="" style="margin-top: 2px; display: none;" onblur="setpic5url();" data-toggle="tooltip" data-placement="right" data-original-title="' + _lmxE('pack.eG') + ' https://i.imgur.com/RVBi3T1.gif" >' +
         '<input id="pic6url" class="form-control" placeholder="' + _lmxE('pack.messageIconImgurUrl') + ' 6" value="" style="margin-top: 2px; display: none;" onblur="setpic6url();" data-toggle="tooltip" data-placement="right" data-original-title="' + _lmxE('pack.eG') + ' https://i.imgur.com/RVBi3T1.gif" >' +
+        '<input id="yt1url" class="form-control" placeholder="' + _lmxE('pack.youtubeMessageUrl') + ' 1" value="" style="margin-top: 2px; display: none;" onblur="setyt1url();" data-toggle="tooltip" data-placement="right" data-original-title="' + _lmxE('pack.urlOfYoutubeTo') + '" >' +
+        '<input id="yt2url" class="form-control" placeholder="' + _lmxE('pack.youtubeMessageUrl') + ' 2" value="" style="margin-top: 2px; display: none;" onblur="setyt2url();" data-toggle="tooltip" data-placement="right" data-original-title="' + _lmxE('pack.urlOfYoutubeTo') + '" >' +
+        '<input id="yt3url" class="form-control" placeholder="' + _lmxE('pack.youtubeMessageUrl') + ' 3" value="" style="margin-top: 2px; display: none;" onblur="setyt3url();" data-toggle="tooltip" data-placement="right" data-original-title="' + _lmxE('pack.urlOfYoutubeTo') + '" >' +
+        '<input id="yt4url" class="form-control" placeholder="' + _lmxE('pack.youtubeMessageUrl') + ' 4" value="" style="margin-top: 2px; display: none;" onblur="setyt4url();" data-toggle="tooltip" data-placement="right" data-original-title="' + _lmxE('pack.urlOfYoutubeTo') + '" >' +
+        '<input id="yt5url" class="form-control" placeholder="' + _lmxE('pack.youtubeMessageUrl') + ' 5" value="" style="margin-top: 2px; display: none;" onblur="setyt5url();" data-toggle="tooltip" data-placement="right" data-original-title="' + _lmxE('pack.urlOfYoutubeTo') + '" >' +
+        '<input id="yt6url" class="form-control" placeholder="' + _lmxE('pack.youtubeMessageUrl') + ' 6" value="" style="margin-top: 2px; display: none;" onblur="setyt6url();" data-toggle="tooltip" data-placement="right" data-original-title="' + _lmxE('pack.urlOfYoutubeTo') + '" >' +
         '</div></div>' +
 
         '<div class="input-box" style="text-align: center; font-size: 12px; margin-top: 0px; padding: 0px 0 0px 0;"><span id="legendlanguagetext" class="title" style=""><span data-i18n="lmx.ex.chooseLanguage">' + _lmxE('lmx.ex.chooseLanguage') + '</span>:  </span>' +
@@ -5018,6 +5396,7 @@ function initializeLM(modVersion) {
         '<button id="VoiceBtn" class="btn-link" style="padding: 0px; color: #d6d3d3; width: 16%; height: 100%;" data-toggle="tooltip" data-original-title="' + _lmxE('pack.voiceCameraChat') + '"><i id="VoiceBtn1" class="fa fa-microphone" style="padding-left: 0px;"></i></button>' +
         '<button id="MiniScripts" class="btn-link" style="padding: 0px; color: #d6d3d3; width: 16%; height: 100%;" onclick="setscriptingfunction();" data-toggle="tooltip" data-original-title="' + _lmxE('pack.miniScripts') + '"><i id="MiniScripts1" class="fa fa-linode" style="padding-left: 0px;"></i></button>' +
         '<button id="Images" class="btn-link" style="padding: 0px; color: #d6d3d3; width: 16%; height: 100%;" onclick="seticonfunction();" data-toggle="tooltip" data-original-title="' + _lmxE('pack.messageImgurIcons') + '"><i id="Images1" class="fa fa-picture-o" style="padding-left: 0px;"></i></button>' +
+        '<button id="yout" class="btn-link" style="padding: 0px; color: #d6d3d3; width: 16%; height: 100%;" onclick="setytfunction();" data-toggle="tooltip" data-original-title="' + _lmxE('pack.messageYoutubeVideos') + '"><i id="yout1" class="fa fa-youtube" style="padding-left: 0px;"></i></button>' +
         '</div>');
 
 
@@ -5028,6 +5407,14 @@ function initializeLM(modVersion) {
         '<button id="sendicon4" class="btn-link" style="padding: 0px; color: #d6d3d3; width: 16%; height: 100%;" onclick="sendicon4();" data-toggle="tooltip" data-original-title="' + _lmxE('lmx.ex.icon4') + '"><i id="sendicon41" class="fa fa-cutlery" style="padding-center: 0px;"></i></button>' +
         '<button id="sendicon5" class="btn-link" style="padding: 0px; color: #d6d3d3; width: 16%; height: 100%;" onclick="sendicon5();" data-toggle="tooltip" data-original-title="' + _lmxE('lmx.ex.icon5') + '"><i id="sendicon51" class="fa fa-bed" style="padding-left: 0px;"></i></button>' +
         '<button id="sendicon6" class="btn-link" style="padding: 0px; color: #d6d3d3; width: 16%; height: 100%;" onclick="sendicon6();" data-toggle="tooltip" data-original-title="' + _lmxE('lmx.ex.icon6') + '"><i id="sendicon61" class="fa fa-telegram" style="padding-left: 0px;"></i></button></div>');
+
+    $("#minimap-hud").prepend('<div id="yt-hud" class="hud" style="width: 70%; height: 30px; padding: 0px; pointer-events: auto; position: absolute; right: 0px; top: -60px; display: none;">' +
+        '<button id="sendyt1" class="btn-link" style="padding: 0px; color: #d6d3d3; width: 16%; height: 100%;" onclick="sendyt1();" data-toggle="tooltip" data-original-title="Rick Astley - Never Gonna Give You Up"><i id="sendyt11" class="fa fa-music" style="padding-left: 0px;"></i></button>' + // i18n-ok: song title (proper name), the player can change it
+        '<button id="sendyt2" class="btn-link" style="padding: 0px; color: #d6d3d3; width: 16%; height: 100%;" onclick="sendyt2();" data-toggle="tooltip" data-original-title="Survivor - Eye Of The Tiger"><i id="sendyt21" class="fa fa-music" style="padding-left: 0px;"></i></button>' + // i18n-ok: song title (proper name), the player can change it
+        '<button id="sendyt3" class="btn-link" style="padding: 0px; color: #d6d3d3; width: 16%; height: 100%;" onclick="sendyt3();" data-toggle="tooltip" data-original-title="Lion king - The Lion Sleeps Tonight"><i id="sendyt31" class="fa fa-music" style="padding-center: 0px;"></i></button>' + // i18n-ok: song title (proper name), the player can change it
+        '<button id="sendyt4" class="btn-link" style="padding: 0px; color: #d6d3d3; width: 16%; height: 100%;" onclick="sendyt4();" data-toggle="tooltip" data-original-title="Agario - Jumbo Solo vs Teams"><i id="sendyt41" class="fa fa-video-camera" style="padding-center: 0px;"></i></button>' + // i18n-ok: video title (proper name), the player can change it
+        '<button id="sendyt5" class="btn-link" style="padding: 0px; color: #d6d3d3; width: 16%; height: 100%;" onclick="sendyt5();" data-toggle="tooltip" data-original-title="Agario - Kill3r vs Teams"><i id="sendyt51" class="fa fa-video-camera" style="padding-left: 0px;"></i></button>' + // i18n-ok: video title (proper name), the player can change it
+        '<button id="sendyt6" class="btn-link" style="padding: 0px; color: #d6d3d3; width: 16%; height: 100%;" onclick="sendyt6();" data-toggle="tooltip" data-original-title="' + _lmxE('lmx.ex.promoVideo') + '"><i id="sendyt61" class="fa fa-telegram" style="padding-left: 0px;"></i></button></div>');
 
     $("#minimap-hud").prepend('<div id="scripting-hud" class="hud" style="width: 12.5%; height: 30px; padding: 0px; pointer-events: auto; position: absolute; right: 0px; top: -60px; display: none;">' +
         '<button id="Cutnames" class="btn-link" style="padding: 0px; color: #d6d3d3; width: 100%; height: 100%;" data-toggle="tooltip" data-original-title="' + _lmxE('pack.editNames') + '"><i id="Cutnames1" class="fa fa-scissors" style="padding-left: 0px;"></i></button>' +
@@ -5422,6 +5809,7 @@ function initializeLM(modVersion) {
             //$("#rotate-hud").hide();
             $("#images-hud").hide();
             $("#scripting-hud").hide();
+            $("#yt-hud").hide();
             $("#images-hud").hide();
             $(this).html('<i class="fa fa-puzzle-piece"></i>' + Premadeletter42);
             return seticon = "YES";
