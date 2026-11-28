@@ -21,6 +21,8 @@
 const fs = require('fs'), path = require('path'), vm = require('vm');
 const src = fs.readFileSync(process.argv[2] || path.join(__dirname, '..', '..', 'ogario', 'ogario.v4.js'), 'utf8').replace(/\r\n/g, '\n');
 let failed = 0;
+/* the unit chosen that waits to take the focus (lmMbPendingUnit); 'none' in a file without it */
+const pendOf = (c) => (typeof c.lmMbPendingUnit === 'function' ? c.lmMbPendingUnit() : 'none');
 const check = (name, ok, info) => { console.log((ok ? 'ok   ' : 'FAIL ') + name + (ok || info === undefined ? '' : '  [' + info + ']')); if (!ok) failed++; };
 
 function block(start, from) {
@@ -1085,6 +1087,17 @@ for (const withUnit of [false, true]) {
             grid2.every((t) => t.number > 16), grid2.length);
         grid2.forEach(e.handshake);
         const socks2 = e.sockOf(grid2);
+        /* the unit's orientation not verified yet: the switch key to it is a choice that waits (handoff
+         * 2026-11-28 section 2), P1 keeps the control until the unit is placed, then the unit takes it */
+        const pendSeen = [];
+        e.app.multiboxchange(); pendSeen.push(e.focus());
+        e.app.multiboxchange(); pendSeen.push(e.focus());
+        check('    ... the unit not verified: the switch keys to P1, then to the unit wait (P1 controlled, the unit pending), the tiles untouched' + tag,
+            pendSeen.join() === '0,0' && pendOf(e.ctx) === unit && e.ctx.lmMultiboxControlledPlayer() === 1 && e.same(grid2, socks2), pendSeen.join());
+        unit._lmOwn = [{ x: 0, y: 0, size: 60, targetSize: 60, spectator: unit.number }];
+        unit.mapOffsetFixed = true; unit._lmOri = 'VERIFIED';
+        unit.beforecalculation();
+        check('    ... its orientation verified: the unit takes the control' + tag, e.focus() === 16 && !pendOf(e.ctx) && e.ctx.lmMultiboxControlledPlayer() === 2, e.focus());
         /* switch back and forth: the tiles are untouched */
         const seen = [];
         e.app.multiboxchange(); seen.push(e.focus());
@@ -1167,10 +1180,12 @@ for (const withUnit of [false, true]) {
         check('    ... switch key to the unit and back to P1 during the hold: P1 stays controlled when it runs out', e.go() === 0 && e.unit._lmSpawnedOnce === true &&
             e.ctx.lmMultiboxControlledPlayer() === 1, e.focus());
         e.app.multiboxchange();
-        check('    ... the switch key afterwards: the unit controlled', e.focus() === e.unit.number);
+        check('    ... the switch key afterwards, the unit still not verified: the choice waits (P1 controlled), its verification gives it the control',
+            e.focus() === 0 && pendOf(e.ctx) === e.unit && e.verify() === e.unit.number, e.focus());
         e = start();
         e.app.multiboxchange();
-        check('    ... switch key to the unit during the hold: it is controlled, and stays so when the hold runs out', e.focus() === e.unit.number && e.go() === e.unit.number, e.focus());
+        check('    ... switch key to the unit during the hold: P1 keeps the control, the hold running out unverified gives none, its verification does',
+            e.focus() === 0 && e.go() === 0 && e.unit._lmFocusWait === 1 && e.verify() === e.unit.number, e.focus());
         e = start({ mainAlive: false });
         e.app.multiboxchange(); e.app.multiboxchange();
         check('    ... P1 chosen during the hold but not alive (in the menu): the unit takes the focus once verified (not at the timeout)', e.go() === 0 && e.verify() === e.unit.number, e.focus());

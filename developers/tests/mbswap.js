@@ -16,6 +16,8 @@ const read = (p) => fs.readFileSync(p, 'utf8').replace(/\r\n/g, '\n');
 const v4 = read(process.argv[2] || path.join(root, 'ogario', 'ogario.v4.js'));
 const sp = read(process.argv[3] || path.join(root, 'ogario', 'spect.js'));
 let failed = 0;
+/* the unit chosen that waits to take the focus (lmMbPendingUnit); 'none' in a file without it */
+const pendOf = (c) => (typeof c.lmMbPendingUnit === 'function' ? c.lmMbPendingUnit() : 'none');
 const check = (name, ok, info) => { console.log((ok ? 'ok   ' : 'FAIL ') + name + (ok || info === undefined ? '' : '  [' + info + ']')); if (!ok) failed++; };
 
 function block(src, start) {
@@ -251,13 +253,25 @@ for (const how of ['terminate', 'beforecalculation']) {
     check('a unit without a slot is P2, as before', d && d.slot === 2 && d.unit === 1, d && JSON.stringify(d));
 }
 /* two players (main + one unit): the switch keys go P1 <-> P2 whatever their state, a dead target
- * spawns again (respawn(), or play() for the main player), exactly as before */
+ * spawns again (respawn(), or play() for the main player). A dead unit chosen while P1 plays is a
+ * choice that waits (handoff 2026-11-28 section 2): P1 keeps the control until the unit spawns, then
+ * the unit takes it once; the switch key again ends that choice. */
 {
     const e = env({ focus: null, mainAlive: true, units: 1, slots: true });
     const u = e.unit(1);
     u.active = false;
     e.ctx.application.multiboxchange();
-    check('two players: the swap goes to the dead unit and spawns it', e.ctx.multiboxPlayerEnabled === 1 && u.respawns === 1, e.ctx.multiboxPlayerEnabled + ' ' + u.respawns);
+    check('two players, P1 alive: the swap to the dead unit spawns it, P1 keeps the control meanwhile (no swap event)', !e.ctx.multiboxPlayerEnabled && u.respawns === 1 &&
+        pendOf(e.ctx) === u && e.got.length === 0, e.ctx.multiboxPlayerEnabled + ' ' + u.respawns);
+    u.active = true; u.cells = 2; u.openSecond = false; u.beforecalculation();
+    check('    ... its spawn: the unit controlled, one event', e.ctx.multiboxPlayerEnabled === 1 && e.got.join() === '1<0' && !pendOf(e.ctx), e.got.join());
+    {
+        const t = env({ focus: null, mainAlive: true, units: 1, slots: true }), w = t.unit(1);
+        w.active = false;
+        t.ctx.application.multiboxchange(); t.ctx.application.multiboxchange();
+        w.active = true; w.cells = 2; w.openSecond = false; w.beforecalculation();
+        check('    ... the swap twice while it is dead (P2 then back to P1): the choice ended, its spawn takes nothing', !t.ctx.multiboxPlayerEnabled && t.got.length === 0 && !pendOf(t.ctx), t.got.join());
+    }
     e.ctx.legendmod.play = false;
     e.ctx.application.multiboxback();
     check('two players: back to the dead main player spawns it (play)', !e.ctx.multiboxPlayerEnabled && e.ctx.legendmod.play === true);
@@ -273,8 +287,9 @@ for (const how of ['terminate', 'beforecalculation']) {
     const back = [];
     for (let i = 0; i < 3; i++) { e.ctx.application.multiboxback(); back.push(e.ctx.multiboxPlayerEnabled || 0); }
     check('    ... back the same players the other way (P2 -> P1 -> P5 -> P2)', back.join() === '0,4,1', back.join());
-    check('    ... choosing the dead P3 itself: the focus on it and it spawns again', e.ctx.application.mbSelectPlayer(3) === true && e.ctx.multiboxPlayerEnabled === 2 && e.unit(2).respawns === 1);
-    check('    ... an empty slot cannot be chosen', e.ctx.application.mbSelectPlayer(6) === false && e.ctx.multiboxPlayerEnabled === 2);
+    check('    ... choosing the dead P3 itself (P2 plays): it spawns again, P2 keeps the control until it spawns', e.ctx.application.mbSelectPlayer(3) === true && e.ctx.multiboxPlayerEnabled === 1 &&
+        e.unit(2).respawns === 1 && pendOf(e.ctx) === e.unit(2));
+    check('    ... an empty slot cannot be chosen', e.ctx.application.mbSelectPlayer(6) === false && e.ctx.multiboxPlayerEnabled === 1 && pendOf(e.ctx) === e.unit(2));
     for (let n = 1; n <= 4; n++) e.unit(n).active = false;
     e.ctx.legendmod.play = false;
     e.ctx.application.mbSelectPlayer(1);
@@ -403,6 +418,29 @@ for (const how of ['terminate', 'beforecalculation']) {
             s.ctx.multiboxPlayerEnabled === 2 && hidden === 1 && s.unit(2).respawns === 0 && s.unit(1).respawns === 0 && s.ctx.legendmod.play === false,
             s.ctx.multiboxPlayerEnabled + ' / ' + hidden);
     }
+}
+
+/* Handoff 2026-11-28 section 2, the exact reproduction: application._lmMbFocus from production with
+ * lmMbUnits() giving one unit, lmSetMbUnit() recording the source chosen, legendmod.play true, no
+ * profiles; the target { number: 16, active: true, transformReady: () => false } (a unit of ours: in
+ * spects), the focus on P1. The focus went to 16 with its orientation not verified. */
+{
+    const focus = block(v4, '        _lmMbFocus(sp) {');
+    const ctx = { console, toastr: {}, Date };
+    ctx.window = ctx;
+    vm.createContext(ctx);
+    vm.runInContext(v4.slice(a, b), ctx);
+    vm.runInContext('var legendmod = window.legendmod = { play: true }, LM = legendmod, profiles = [];\nfunction play() { }\n' +
+        'var application = window.application = { ' + focus + ' };', ctx);
+    const target = { number: 16, active: true, player: true, transformReady: () => false, respawn() { this.respawns = (this.respawns || 0) + 1; } };
+    ctx.spects.length = 0; ctx.spects.push(target);
+    const set = [];
+    ctx.lmMbUnits = (out) => { out = out || []; out.length = 0; out.push(target); return out; };
+    ctx.lmSetMbUnit = (n) => { set.push(+n || 0); ctx.multiboxPlayerEnabled = +n || null; };
+    ctx.multiboxPlayerEnabled = null;
+    ctx.application._lmMbFocus(target);
+    check('reproduction (handoff section 2): _lmMbFocus on a unit not verified while P1 plays: no focus change, the choice waits for its verification',
+        set.indexOf(16) < 0 && !ctx.multiboxPlayerEnabled && target._lmFocusWait === 1 && !!target._lmWantFocusAt && !target.respawns, set.join() + ' / ' + ctx.multiboxPlayerEnabled);
 }
 
 console.log(failed ? failed + ' failed' : 'all multiboxSwap checks passed');

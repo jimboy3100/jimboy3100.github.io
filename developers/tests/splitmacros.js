@@ -132,7 +132,7 @@ const check = (name, ok) => { console.log((ok ? 'ok   ' : 'FAIL ') + name); if (
     reset(); ctx.multiboxPlayerEnabled = 2; core().split(); core().eject(); core().quadSplit();
     check('dispatch: unit selected: one send per action, all to the unit', ctx.sent.join() === 'u2:split,u2:eject,u2:quad');
     reset(); ctx.multiboxPlayerEnabled = 9; core().split();
-    check('dispatch: a selected number without a unit goes to the main player', ctx.sent.join() === 'main:split');
+    check('dispatch (lmActiveUnit alone, as with an older core without the focus check): a selected number without a unit goes to the main player', ctx.sent.join() === 'main:split');
     reset(); ctx.multiboxPlayerEnabled = 2; unit().active = false;
     check('dispatch: the selected unit is dead: refused, nothing sent (no fallback to the main player)', core().split() === false && ctx.sent.length === 0);
     reset(); ctx.multiboxPlayerEnabled = 2; unit().socket.readyState = 3;
@@ -267,6 +267,77 @@ const check = (name, ok) => { console.log((ok ? 'ok   ' : 'FAIL ') + name); if (
     check('held feed on P2: P1 dies: it goes on feeding P2', before >= 5 && W.count('u2') >= before + 10 && W.count('main') === 0);
     W.unit().active = false; W.unit().playerCellIDs = []; const atDeath = W.count('u2'); W.advance(200);
     check('    ... then P2 dies: it stops, nothing to P1', W.count('u2') === atDeath && W.count('main') === 0 && !W.app().macroFeedActive);
+})();
+
+/* Handoff 2026-11-28 section 4 (13.3): focus and action routing agree. The real LMEvents .. registry
+ * helpers (lmSetMbUnit, lmMbFocused, lmMbFocusCheck), lmActiveUnit, lmMultiboxControlledPlayer and
+ * window.core.act: a focus left on a source that is no unit of ours (a number nobody has, a unit
+ * closed for good, a passive Full Map tile) is moved on before anything acts, the action asked for
+ * at that moment reaches nobody (never the player the focus fell back to), and from then on every
+ * reader names the same player; lmSetMbUnit never takes a tile or a gone unit; a bound action of a
+ * unit replaced in its slot under its number is refused; a feed or split of a unit whose
+ * orientation is not verified is refused (it holds on its own centre), its bot commands are not. */
+(function () {
+    const evA = src.indexOf('/* LMEvents: hooks'), evB = src.indexOf('window.OgVer', evA);
+    const a = src.indexOf('\n        act(m, bound) {'), b = src.indexOf('\n        specialOn() {', a);
+    if (evA < 0 || evB < 0 || a < 0 || b < 0 || src.slice(evA, evB).indexOf('function lmMbFocusCheck(') < 0) { check('focus / action routing code found', false); return; }
+    const ctx = { console: { log() { }, warn() { } }, Math, Number, Date, toastr: {} };
+    ctx.window = ctx;
+    vm.createContext(ctx);
+    vm.runInContext(src.slice(evA, evB) + '\n' + fn('lmActiveUnit') + '\n' + fn('lmMultiboxControlledPlayer') + '\nwindow.core = {' + src.slice(a, b) + '\n};\n' +
+        'var application = window.application = { _lmLifeStartAt: 5 };', ctx);
+    const open = () => ({ readyState: 1, OPEN: 1 });
+    const player = (name, o) => Object.assign({
+        socket: open(), isSocketOpen() { return !!this.socket && this.socket.readyState === this.socket.OPEN; },
+        sendEject() { ctx.sent.push(name + ':eject'); }, sendSplit() { ctx.sent.push(name + ':split'); }, sendDoubleSplit() { ctx.sent.push(name + ':double'); },
+        sendBotEject() { ctx.sent.push(name + ':botEject'); }, sendBotSplit() { ctx.sent.push(name + ':botSplit'); }
+    }, o);
+    const reg = ctx.lmMbPlayers;
+    const unit = (name, n) => { const r = reg.reserve(); const u = player(name, { number: n, player: true, active: true, slotId: r.slotId, slotEpoch: r.slotEpoch, connectionGeneration: 1, playerCellIDs: [n] }); reg.attach(u); ctx.spects.push(u); return u; };
+    ctx.sent = [];
+    ctx.legendmod = player('main', { play: true, _connectSeq: 1 });
+    const u2 = unit('u2', 2), tile = player('tile', { number: 3, player: false, active: true }), u5 = unit('u5', 5);
+    ctx.spects.push(tile);
+    const agree = () => {
+        const f = ctx.lmMbFocused(), n = +ctx.multiboxPlayerEnabled || 0, au = ctx.lmActiveUnit(true);
+        return au.target === f && (n ? f && f.number === n && f.player === true : f === ctx.legendmod) && ctx.lmMbPlayers.activeSlot === ctx.lmMultiboxControlledPlayer();
+    };
+    const core = ctx.core;
+    /* a number nobody has, written past the transition (an older script): refused once, then P1 */
+    ctx.multiboxPlayerEnabled = 9; ctx.sent = [];
+    const r9 = core.split();
+    check('section 4: a selected number without a unit: the split goes to nobody (not P1), the focus is moved on to P1, every reader agrees',
+        r9 === false && ctx.sent.length === 0 && !ctx.multiboxPlayerEnabled && ctx.lmMbPlayers.activeSlot === 1 && agree());
+    check('    ... the next split goes to P1, now the player in focus everywhere', core.split() === true && ctx.sent.join() === 'main:split');
+    /* the passive spectator (a Full Map tile) */
+    ctx.lmSetMbUnit(2); ctx.sent = [];
+    ctx.lmSetMbUnit(tile.number);
+    check('    ... lmSetMbUnit with a Full Map tile\'s number: refused, the focus stays on P2', ctx.multiboxPlayerEnabled === 2 && ctx.lmMbPlayers.activeSlot === 2 && agree());
+    ctx.multiboxPlayerEnabled = tile.number;
+    const rt = core.eject();
+    check('    ... a tile\'s number written past the transition: the feed reaches nobody (not the tile, not P1), the focus is moved on',
+        rt === false && ctx.sent.length === 0 && ctx.multiboxPlayerEnabled !== tile.number && agree(), ctx.sent.join());
+    /* a unit closed for good (still registered while it is removed) */
+    ctx.lmSetMbUnit(5); ctx.sent = [];
+    u5._lmRemoved = true;
+    const rr = core.split();
+    check('    ... the selected unit removed: the split reaches nobody, the focus moves to P1 (alive), readers agree', rr === false && ctx.sent.length === 0 && !ctx.multiboxPlayerEnabled && agree());
+    u5._lmRemoved = false;
+    /* a unit replaced in its slot under the same number: a bound action of the old one is refused */
+    ctx.lmSetMbUnit(5); ctx.sent = [];
+    const bound = ctx.lmActiveUnit(true);
+    reg.release(u5.slotId, u5.slotEpoch); ctx.spects.splice(ctx.spects.indexOf(u5), 1);
+    const nu = unit('new5', 5);
+    check('    ... P3 replaced in its slot under its number: the old unit\'s bound split is refused, nothing sent', core.act('sendSplit', bound) === false && ctx.sent.length === 0 && nu.slotId === 3);
+    check('    ... lmSetMbUnit(5, the old object): refused; the new unit is the one in focus by its number', (ctx.lmSetMbUnit(5, u5), ctx.lmMbFocused() === nu && agree()));
+    /* the orientation not verified: aimed actions refused, bot commands sent */
+    ctx.lmSetMbUnit(2); ctx.sent = [];
+    u2.transformReady = () => false;
+    const aimed = [core.split(), core.eject(), core.doubleSplit()], bots = [core.Botsplit(), core.Botseject()];
+    check('    ... the unit in focus not verified (it holds on its centre): split / feed / double split refused, nothing to anyone; the bot commands still sent',
+        aimed.every((x) => x === false) && bots.every((x) => x === true) && ctx.sent.join() === 'u2:botSplit,u2:botEject', ctx.sent.join());
+    u2.transformReady = () => true; ctx.sent = [];
+    check('    ... verified (or CONFLICTED after verified: transformReady): the split reaches it', core.split() === true && ctx.sent.join() === 'u2:split');
 })();
 
 

@@ -929,9 +929,21 @@ class Spect {
         this.socket = null;
         /* a kicked/dropped unit kept the focus: the main cell and camera stayed frozen for
          * the whole reconnect backoff. A dropped socket is no death: no game-over menu, the
-         * unit reconnects in its slot */
+         * unit reconnects in its slot. A focus this socket's spawn was to take (a choice made
+         * while it was dead or unverified) ends with it: the reconnect's spawn takes none.
+         * Dead or alive, a unit without a connection cannot keep the focus either (it stayed on
+         * the dead unit, also after its last retry, while another player lived): it goes on as
+         * for a lost socket (lmMbFallbackUnit 'disconnect': the main player while it plays, else
+         * the next player that can be steered, else the main player), whatever "Auto-switch focus
+         * after death" says. The slot, profile and retries stay. */
+        this._lmFocusOnSpawn = false;
+        this._lmFocusWait = 0;
+        if (window.multiboxPlayerEnabled !== this.number) this._lmWantFocusAt = 0;
         if (this.active) this.terminate('disconnect');
-        else if (window.multiboxPlayerEnabled === this.number && legendmod.play) lmSetMbUnit(0);
+        else if (window.multiboxPlayerEnabled === this.number) {
+            if (typeof lmMbFallbackUnit === 'function') lmSetMbUnit(lmMbFallbackUnit(this, 'disconnect'));
+            else if (legendmod.play) lmSetMbUnit(0);
+        }
         if (this.player && typeof lmMbPlayerEvent === 'function') lmMbPlayerEvent('playerDisconnected', this, shouldReconnect ? 'reconnect' : '');
         this.flushCellsData()
         this._lmDropLooks()
@@ -2892,8 +2904,10 @@ class Spect {
         var wasAlive = this.player === true && this.active === true, wasActive = window.multiboxPlayerEnabled === this.number;
         var died = wasAlive && reason === 'death';
         this.active = false;
+        /* a focus it waited for ends with the life (a choice of it too) */
         this._lmFocusOnSpawn = false;
         this._lmFocusWait = 0;
+        if (!wasActive) this._lmWantFocusAt = 0;
         /* the next life on this socket is a new spawn for beforecalculation: with the main player
          * dead it takes the focus (mouse and keys stayed on the dead main player) */
         this.openSecond = false;
@@ -3444,6 +3458,10 @@ class Spect {
             var _lmFocusNow = 0, _lmDeathMenu = false, _lmMenuSeen = false;
             var _lmCur = typeof lmMbFocused === 'function' ? lmMbFocused() : (window.multiboxPlayerEnabled ? null : legendmod);
             var _lmSwitchOn = typeof lmMbSwitchOnDeath !== 'function' || lmMbSwitchOnDeath();
+            /* a focus due because the player in focus is not alive never takes it over a choice
+             * that still waits (another unit chosen, or the dead player in focus chosen and spawning
+             * again: lmMbAutoFocusOk); a background reconnect + spawn took it from that choice */
+            var _lmAutoOk = function (u) { return typeof lmMbAutoFocusOk !== 'function' || lmMbAutoFocusOk(u); };
             if (!this.openSecond && !(typeof this._lmSpawnHold === 'function' && this._lmSpawnHold(Date.now()))) {
                 this.openSecond = true;
                 /* first spawn of this unit, a spawn the player asked for (Tab), or the player you
@@ -3456,7 +3474,7 @@ class Spect {
                  * (_lmSpawnHold) and undid the choice. With the setting off a dead player in focus
                  * keeps it: the player chooses the next one himself. */
                 _lmFocusNow = (!this._lmSpawnedOnce && !this._lmFocusClaimed) || this._lmFocusOnSpawn || _lmCur === this ? 1 :
-                    !lmMbAlive(_lmCur) && _lmSwitchOn ? 2 : 0;
+                    !lmMbAlive(_lmCur) && _lmSwitchOn && _lmAutoOk(this) ? 2 : 0;
                 /* the hold ran out without a verified place on the map: that is no proof of the
                  * orientation, so the focus does not move to it yet (the camera would show it at a
                  * mirrored place); it waits for the place (_lmFocusWait), the player in control
@@ -3474,7 +3492,7 @@ class Spect {
                 /* its place is known now: the focus it was due, unless the player chose another
                  * player meanwhile (application._lmMbFocus cleared the wait) or, due because the
                  * player in focus was dead, that one lives again */
-                _lmFocusNow = this._lmFocusWait === 1 || (!lmMbAlive(_lmCur) && _lmSwitchOn) ? 1 : 0;
+                _lmFocusNow = this._lmFocusWait === 1 || (!lmMbAlive(_lmCur) && _lmSwitchOn && _lmAutoOk(this)) ? 1 : 0;
                 this._lmFocusWait = 0;
                 _lmMenuSeen = true;
             }
@@ -3486,7 +3504,11 @@ class Spect {
                 window._lmMbDeathMenuAt = 0;
             }
             if (_lmFocusNow) {
-                lmSetMbUnit(this.number);
+                /* this object (sp): a late call of a unit gone, its number given to a new one,
+                 * takes nothing (lmSetMbUnit) */
+                lmSetMbUnit(this.number, this);
+                /* the choice it waited for is done */
+                if (window.multiboxPlayerEnabled === this.number) this._lmWantFocusAt = 0;
                 /* the death menu (terminate: last player died) stayed up over the unit now played;
                  * not a menu the player opened (Esc) or is using (typing a nick, server list) */
                 var _lmAe = typeof document !== 'undefined' && document ? document.activeElement : null;
@@ -3621,7 +3643,9 @@ class Spect {
             this._lmLife = (this._lmLife || 0) + 1
             /* its time alive starts with its first own cell (until terminate) */
             if (typeof lmTimeAlive === 'function') lmTimeAlive(this, 1)
-            this._lmWantFocusAt = 0
+            /* the grace of the unit in focus ends with its spawn; a unit chosen that waits to take
+             * the focus (lmMbPendingUnit) keeps its mark until it takes it (beforecalculation) */
+            if (window.multiboxPlayerEnabled === this.number) this._lmWantFocusAt = 0
             this.sendCursor()
             loadMultiCellSkin(this)
             if (typeof lmMbPlayerEvent === 'function') lmMbPlayerEvent('playerSpawned', this)

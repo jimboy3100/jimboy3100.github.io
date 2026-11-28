@@ -38,6 +38,8 @@ const read = (p) => fs.readFileSync(p, 'utf8').replace(/\r\n/g, '\n');
 const v4 = read(process.argv[2] || path.join(root, 'ogario', 'ogario.v4.js'));
 const sp = read(process.argv[3] || path.join(root, 'ogario', 'spect.js'));
 let failed = 0;
+/* the unit chosen that waits to take the focus (lmMbPendingUnit); 'none' in a file without it */
+const pendOf = (c) => (typeof c.lmMbPendingUnit === 'function' ? c.lmMbPendingUnit() : 'none');
 const check = (name, ok, info) => { console.log((ok ? 'ok   ' : 'FAIL ') + name + (ok || info === undefined ? '' : '  [' + info + ']')); if (!ok) failed++; };
 function block(src, start, from) {
     const i = src.indexOf(start, from || 0);
@@ -705,7 +707,12 @@ function death(o) {
             const u3 = q.app.mbAddPlayer();
             q.app.mbSelectPlayer(3);
             u._lmPlaced = true; u.beforecalculation();
-            check('    ... P3 chosen meanwhile (the latest choice): P2 verified later does not take the focus from it', q.s.focus() === u3.number && !u._lmFocusWait, q.s.focus());
+            /* P3 is not spawned yet: the choice waits (handoff 2026-11-28 section 2), P1 keeps the control */
+            check('    ... P3 (not spawned yet) chosen meanwhile, the latest choice: P1 keeps the control while it spawns, P2 verified later does not take it',
+                q.s.focus() === 0 && !u._lmFocusWait && pendOf(q.s.ctx) === u3 && u3.spawnRequests === 1, q.s.focus());
+            u3._lmOwn = [{ x: 3, y: 3, size: 60, targetSize: 60, spectator: u3.number }]; u3.active = true;
+            u3.beforecalculation();
+            check('    ... P3 spawns: it takes the control, once', q.s.focus() === u3.number && !pendOf(q.s.ctx), q.s.focus());
         }
     }
     {
@@ -1218,6 +1225,17 @@ function death(o) {
             lst.every((l) => l.capture) && /pointer-events:auto/.test(ctx.css || ''), calls.join());
         ctx.application._lmMbRosterHtml();
         check('    ... the listeners are added once', lst.filter((l) => l.type === 'click').length === 1);
+        /* a choice that waits (handoff 2026-11-28 section 2): the chip of the player chosen is marked
+         * apart from the one controlled */
+        ctx.lmSetMbUnit(0);
+        const pu = ctx.lmMbPlayers.get(3);
+        pu._lmWantFocusAt = Date.now(); pu._lmFocusOnSpawn = true;
+        const hp = ctx.application._lmMbRosterHtml();
+        pu._lmWantFocusAt = 0; pu._lmFocusOnSpawn = false;
+        const hq = ctx.application._lmMbRosterHtml();
+        check('roster: the dead P3 chosen while P1 plays (the choice waits): P1 outlined as controlled, P3 marked pending; none once it ends',
+            /lm-mb-sel" data-lm-mb-slot="1"/.test(hp) && /lm-mb-pend" data-lm-mb-slot="3"/.test(hp) && !/lm-mb-pend"/.test(hq) && /lm-mb-pend\{/.test(ctx.css || ''), hp);
+        ctx.lmSetMbUnit(16);
         /* the stats HUD's [MB n/m]: n the slot of the player you control (not its connection number + 1),
          * m the players open, in that slot's colour */
         const lbl = block(v4, 'if (window.multiboxPlayerEnabled || legendmod.multiBoxPlayerExists) {', v4.indexOf('/* [MB slot/players]'));
@@ -1324,6 +1342,203 @@ function death(o) {
         const unitCells = units.map((u) => ({ targetNick: 'Same', color: '#000000', skin: skinOf(u) }));
         const got = [mainCell].concat(unitCells).map(key);
         check('    ... the lookup: P1 its nick\'s skin, P2 and P3 the skins their cells carry (one nick, three skins)', got.join() === [url(0), url(1), url(2)].join(), got.join());
+    }
+}
+/* 5f. Handoff 2026-11-28, sections 2 to 4, on the scene with the real code (Full Map off and on):
+ * - the manual choice follows the spawn focus (lmMbCanSteer): a unit whose orientation is not
+ *   verified, or a dead one spawning again, is a choice that waits (lmMbPendingUnit); the player in
+ *   control keeps the mouse, keys and camera until the unit can take them, once (one multiboxSwap);
+ *   no time makes a provisional orientation a verified one; a newer choice ends the earlier one; a
+ *   socket closing, a removal or a new unit in the slot end it (13.1);
+ * - spect.js onclose: a unit in focus that loses its socket, dead or alive, hands the focus on
+ *   (lmMbFallbackUnit 'disconnect'), with both "Auto-switch focus after death" settings and after
+ *   the last retry; a late close of an old socket changes nothing; a background reconnect does not
+ *   take the focus from a newer choice (13.2), including the exact reproduction of the handoff;
+ * - multiboxPlayerEnabled, lmMbPlayers.activeSlot, lmMbFocused, lmActiveUnit and
+ *   lmMultiboxControlledPlayer agree after every transition, also with a multiboxSwap listener that
+ *   removes or switches players while it runs (13.3; the actions themselves: splitmacros.js). */
+{
+    const MB = require('./lib/mbplayers');
+    const onclose = block(sp, '    onclose(socket, generation) {');
+    const extra = ['function lmActiveUnit(', 'function lmMultiboxControlledPlayer('].map((m) => block(v4, m));
+    if (!onclose || extra.some((x) => !x)) check('spect.js onclose / lmActiveUnit found', false);
+    else {
+        const mk = (o) => {
+            o = o || {};
+            const s = MB.scene({ players: o.players || 4, fullMap: !!o.fullMap, ids: o.ids, v4: process.argv[2], sp: process.argv[3], app: true });
+            MB.populate(s);
+            const c = s.ctx, app = c.application;
+            vm.runInContext(extra.join('\n') + '\nUnit.prototype.onclose = (class { ' + onclose + ' }).prototype.onclose;\n' +
+                'Unit.prototype.flushCellsData = function () { }; Unit.prototype._lmDropLooks = function () { };\n' +
+                'Unit.prototype.resetConnectionState = function () { this.openSecond = false; this.connectionOpened = false; };', c);
+            s.step(2);
+            app.mbSelectPlayer(1); /* every first spawn took the focus in turn: P1 controlled */
+            const got = [];
+            c.LMEvents.on('multiboxSwap', (d) => got.push(d.unit + '<' + d.previous));
+            const u = (slot) => s.player(slot).unit;
+            /* the unit's orientation: verified while _lmPlaced */
+            const unverify = (slot) => { const x = u(slot); x._lmPlaced = false; x.transformReady = function () { return !!this._lmPlaced; }; return x; };
+            /* every reader names the same player */
+            const agree = () => {
+                const n = +c.multiboxPlayerEnabled || 0, f = c.lmMbFocused(), a = c.lmActiveUnit(true), slot = c.lmMbPlayers.activeSlot;
+                return (n ? !!f && +f.number === n && f.player === true : f === s.LM) && a.target === f && slot === c.lmMultiboxControlledPlayer() &&
+                    slot === c.lmMbSlotOf(f) && (+c.multiboxPlayerEnabled || 0) === n;
+            };
+            return { s, c, app, got, u, unverify, agree, f: () => s.focus() };
+        };
+        for (const fullMap of [false, true]) {
+            const tag = fullMap ? ' (Full Map on)' : ' (Full Map off)';
+            /* 13.1 the handoff's case: P1 usable, P2 not verified */
+            {
+                const t = mk({ fullMap }), p2 = t.unverify(2);
+                check('5f. P1 controlled, P2 alive but its orientation not verified: chosen, the choice waits, P1 keeps the control (no swap)' + tag,
+                    t.app.mbSelectPlayer(2) === true && t.f() === 0 && t.got.length === 0 && pendOf(t.c) === p2 && p2._lmFocusWait === 1 && t.agree(), t.f());
+                const now = Date.now;
+                t.c.Date = { now: () => now() + 60000 };
+                t.s.step(5);
+                t.c.Date = Date;
+                check('    ... a minute later, still not verified: P1 still controlled (no timeout makes it verified)' + tag, t.f() === 0 && t.got.length === 0 && t.agree(), t.f());
+                p2._lmPlaced = true; t.s.step(3);
+                check('    ... verified: P2 takes the control once (one swap; camera, cursor, actions, slot agree)' + tag,
+                    t.f() === p2.number && t.got.join() === p2.number + '<0' && t.c.lmMbPlayers.activeSlot === 2 && !pendOf(t.c) && t.agree(), t.got.join());
+                /* a newer choice ends the earlier one */
+                t.app.mbSelectPlayer(1); p2._lmPlaced = false;
+                const p3 = t.unverify(3);
+                t.app.mbSelectPlayer(2); t.app.mbSelectPlayer(3);
+                p2._lmPlaced = true; t.s.step(2);
+                check('    ... P2 then P3 chosen (both not verified): P2 verified first does not take the control, P3 waits' + tag,
+                    t.f() === 0 && !p2._lmFocusWait && pendOf(t.c) === p3 && t.agree(), t.f());
+                t.got.length = 0;
+                p3._lmPlaced = true; t.s.step(2);
+                check('    ... P3 verified: it takes the control, once' + tag, t.f() === p3.number && t.got.join() === p3.number + '<0' && t.agree(), t.got.join());
+                /* the switch keys go on from the choice that waits: P4 chosen (waiting), back: P3 */
+                const p4 = t.unverify(4);
+                t.app.mbSelectPlayer(4);
+                const w = pendOf(t.c) === p4 && t.f() === p3.number;
+                t.app.multiboxback();
+                check('    ... P4 chosen (waiting), the back key: from P4 to P3 (the choice ends, P3 kept)' + tag, w && t.f() === p3.number && !pendOf(t.c) && !p4._lmFocusWait, t.f());
+            }
+            /* 13.1 stale claims: removal and a new unit in the slot, a socket that closes */
+            {
+                const t = mk({ fullMap }), p4 = t.unverify(4), n4 = p4.number;
+                t.app.mbSelectPlayer(4);
+                t.app.mbRemovePlayer(4);
+                const added = t.app.mbAddPlayer();
+                p4._lmPlaced = true; p4._lmFocusWait = 1; p4.openSecond = true; p4.active = true; p4._lmOwn = [{ x: 1, y: 1, size: 60, targetSize: 60, spectator: n4 }];
+                p4.beforecalculation(); /* a late call of the removed unit */
+                check('5f. P4 chosen (waiting), removed, a new unit in slot 4: the old unit\'s late spawn takes nothing, P1 controlled' + tag,
+                    !!added && added.slotId === 4 && t.f() === 0 && t.got.length === 0 && !pendOf(t.c) && t.agree(),
+                    t.f() + ' new ' + (added && added.number) + ' old ' + n4);
+                t.c.lmSetMbUnit(n4, p4);
+                check('    ... lmSetMbUnit with the old object (its number reused or not): refused, the focus stays' + tag, t.f() === 0 && t.agree(), t.f());
+                const p3 = t.unverify(3);
+                t.app.mbSelectPlayer(3);
+                const sock = p3.socket = {};
+                p3.onclose(sock, p3.connectionGeneration);
+                check('    ... P3 chosen (waiting), its socket closes: the choice ends with it' + tag, t.f() === 0 && !pendOf(t.c) && !p3._lmFocusWait && !p3._lmFocusOnSpawn && t.agree(), t.f());
+                t.s.reconnect(3); p3._lmPlaced = true; t.s.step(3);
+                check('    ... its reconnect and background spawn, verified: P1 keeps the control' + tag, t.f() === 0 && t.got.length === 0 && t.agree(), t.f());
+            }
+            /* dead players: chosen while another plays (it spawns again, then takes the control), with
+             * "Auto-switch focus after death" on and off; nothing of ours alive: controlled at once */
+            for (const off of [false, true]) {
+                const t = mk({ fullMap }), p2 = t.u(2), sw = off ? ' (auto-switch off)' : ' (auto-switch on)';
+                if (off) t.c.defaultmapsettings.mbSwitchAfterDeath = false;
+                t.s.kill(2);
+                const req = p2.spawnRequests;
+                t.app.mbSelectPlayer(2);
+                check('5f. P1 plays, the dead P2 chosen' + sw + ': it spawns again, P1 keeps the control meanwhile' + tag,
+                    t.f() === 0 && p2.spawnRequests === req + 1 && pendOf(t.c) === p2 && t.agree(), t.f());
+                t.s.respawn(2, null, { background: true }); t.s.step(2);
+                check('    ... its spawn: P2 controlled, once' + sw + tag, t.f() === p2.number && t.got.join() === p2.number + '<0' && t.agree(), t.got.join());
+                for (let k = 1; k <= 4; k++) t.s.kill(k);
+                t.app.mbSelectPlayer(3);
+                check('    ... nothing of ours alive: the dead P3 chosen is controlled at once and spawns again' + sw + tag,
+                    t.f() === t.u(3).number && t.u(3)._lmFocusOnSpawn === true && t.agree(), t.f());
+            }
+            /* the death fallback passes a unit not verified: P2 dies (P1 dead), P3 not verified, P4 plays */
+            {
+                const t = mk({ fullMap }), p3 = t.unverify(3);
+                t.s.kill(1);
+                t.app.mbSelectPlayer(2);
+                t.s.kill(2);
+                check('5f. P1 dead, the controlled P2 dies, P3 not verified, P4 plays: the focus to P4' + tag, t.f() === t.u(4).number && t.agree(), t.f());
+                t.s.kill(4);
+                check('    ... P4 dies too: no unit to steer, the focus on the dead P1, P3 takes it once verified' + tag, t.f() === 0 && p3._lmFocusWait === 2 && t.agree(), t.f());
+                p3._lmPlaced = true; t.s.step(2);
+                check('    ... P3 verified: P3 controlled' + tag, t.f() === p3.number && t.agree(), t.f());
+            }
+            /* 13.2 the exact reproduction (handoff section 3): selected source 17, P1 dead, 17 inactive,
+             * socket generation 2 matching the current socket, closedByUser false, 8 reconnects made;
+             * another surviving unit (16) */
+            for (const off of [false, true]) {
+                const t = mk({ fullMap, players: 4, ids: [16, 17, 5] }), u17 = t.u(3), sw = off ? ' (auto-switch off)' : ' (auto-switch on)';
+                if (off) t.c.defaultmapsettings.mbSwitchAfterDeath = false;
+                t.s.kill(4); t.s.kill(1); t.s.kill(3);
+                t.c.lmSetMbUnit(17);
+                const sock = {};
+                Object.assign(u17, { socket: sock, connectionGeneration: 2, closedByUser: false, _reconnectAttempts: 8, reconnectTimer: null, _openedAt: 0 });
+                t.got.length = 0;
+                u17.onclose(sock, 2);
+                check('5f. reproduction: the selected dead 17 loses its socket on its last retry, P1 dead, 16 alive: the focus to 16' + sw + tag,
+                    t.f() === 16 && u17.socket === null && u17._reconnectAttempts === 9 && !u17.reconnectTimer && t.got.join() === '16<17' && t.agree(),
+                    t.f() + ' attempts ' + u17._reconnectAttempts);
+                t.got.length = 0;
+                u17.onclose(sock, 1);
+                const old = {}; u17.socket = {}; u17.connectionGeneration = 3;
+                u17.onclose(old, 3);
+                check('    ... a late close of an old socket or generation: nothing changes' + sw + tag, t.f() === 16 && t.got.length === 0 && u17.socket !== null, t.f());
+                /* a newer choice (P1: Play, the scene spawns it at once), then the background reconnect +
+                 * spawn of 17 */
+                t.app.mbSelectPlayer(1);
+                t.s.reconnect(3); t.s.step(2);
+                check('    ... P1 chosen (Play), then 17 reconnects and spawns in the background: P1 keeps the control' + sw + tag, t.f() === 0 && t.got.join() === '0<16' && t.agree(), t.got.join());
+                t.s.LM.play = false; t.s.kill(2); t.s.kill(3);
+                t.app.mbSelectPlayer(2); /* the dead 16 chosen (nothing alive): controlled at once, spawning */
+                t.s.respawn(3, null, { background: true }); t.s.step(2);
+                check('    ... the dead 16 chosen and spawning, 17 spawns in the background meanwhile: 16 keeps the focus' + sw + tag, t.f() === 16 && t.agree(), t.f());
+            }
+            {
+                const t = mk({ fullMap, players: 3 }), p2 = t.u(2), p3 = t.u(3);
+                t.c.defaultmapsettings.mbSwitchAfterDeath = false;
+                t.app.mbSelectPlayer(3); t.s.kill(3);
+                const kept = t.f() === p3.number;
+                const sock = p3.socket = {};
+                p3.onclose(sock, p3.connectionGeneration);
+                check('5f. P1 alive, the selected P3 dies (auto-switch off: it keeps the focus), then loses its socket: P1 controlled' + tag, kept && t.f() === 0 && t.agree(), t.f());
+                for (let k = 1; k <= 3; k++) t.s.kill(k);
+                t.s.respawn(2, null, { background: true }); t.s.step(1);
+                t.app.mbSelectPlayer(2);
+                const menus = t.app.menuShown, s2 = p2.socket = {};
+                p2.onclose(s2, p2.connectionGeneration);
+                check('    ... the last living player (P2, controlled) loses its socket: the menu once, its latch, the focus on the dead P1' + tag,
+                    t.app.menuShown === menus + 1 && !!t.c._lmMbDeathMenuAt && t.f() === 0 && t.agree(), (t.app.menuShown - menus) + ' focus ' + t.f());
+                p2.socket = {}; p2.onclose(p2.socket, p2.connectionGeneration);
+                check('    ... its reconnects fail: no second menu, the focus stays' + tag, t.app.menuShown === menus + 1 && t.f() === 0, t.app.menuShown - menus);
+            }
+            /* 13.3 a multiboxSwap listener that removes the unit taking the focus, or switches back */
+            {
+                const t = mk({ fullMap }), p3 = t.u(3);
+                let once = true;
+                t.c.LMEvents.on('multiboxSwap', (d) => { if (once && d.unit === p3.number) { once = false; t.app.mbRemovePlayer(3); } });
+                t.app.mbSelectPlayer(3);
+                check('5f. a swap listener removes the unit just chosen: the focus moves on, every reader agrees' + tag, t.f() === 0 && p3._lmRemoved === true && t.agree(), t.f());
+                const p2 = t.u(2);
+                t.s.kill(1); t.s.kill(2); t.s.kill(4);
+                let back = true;
+                t.c.LMEvents.on('multiboxSwap', (d) => { if (back && d.unit === p2.number) { back = false; t.app.mbSelectPlayer(1); } });
+                t.app.mbSelectPlayer(2);
+                t.s.respawn(2, null, { background: true }); t.s.step(2);
+                check('    ... a listener switches back to P1 while the dead P2 is chosen: P1 kept, P2\'s spawn takes nothing' + tag, t.f() === 0 && !p2._lmFocusOnSpawn && t.agree(), t.f());
+                t.c.lmSetMbUnit(p3.number);
+                check('    ... lmSetMbUnit with the removed unit\'s number: refused, the focus stays' + tag, t.f() === 0 && t.agree(), t.f());
+                const tile = t.s.tiles.length ? t.s.tiles[0].unit : null;
+                if (tile) {
+                    t.c.lmSetMbUnit(tile.number);
+                    check('    ... lmSetMbUnit with a Full Map tile\'s number (a passive spectator): refused, the focus stays' + tag, t.f() === 0 && t.agree(), t.f());
+                }
+            }
+        }
     }
 }
 /* 6. a spectator (Full Map tile, in-game spectator) with its active flag set is never a living

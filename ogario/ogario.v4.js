@@ -336,11 +336,22 @@ window.lmMbSlotOf = lmMbSlotOf;
 /* The one place that changes the multibox unit you control (window.multiboxPlayerEnabled:
  * a unit number, null = the main player). LMEvents 'multiboxSwap' is sent from here, once per
  * real change, so every path reports it: hotkeys, a unit dying, focus at spawn, reconnects.
- * lmMbPlayers.activeSlot follows it (slot and previousSlot in the event). */
-function lmSetMbUnit(unit) {
+ * lmMbPlayers.activeSlot follows it (slot and previousSlot in the event).
+ * Only a unit of ours takes it (lmMbUnitValid): a number of a spectator (a Full Map tile, the
+ * in-game spectator), of a unit closed or removed, of nobody, or (sp given: the unit that asks)
+ * of another object now (a late call of a unit gone, its number given to a new one) leaves the
+ * focus where it is while that is valid, else moves it on as for a removed unit
+ * (lmMbFallbackUnit). So multiboxPlayerEnabled, activeSlot, lmMbFocused and lmActiveUnit name the
+ * same player before anything routes an action. Everything is written before the event: a
+ * listener that switches, adds or removes players sees the new state and its change stays. */
+function lmSetMbUnit(unit, sp) {
     var prev = +window.multiboxPlayerEnabled || 0, reg = typeof lmMbPlayers !== 'undefined' ? lmMbPlayers : null;
     var prevSlot = reg ? reg.activeSlot || 1 : (prev ? 2 : 1);
     unit = +unit || 0;
+    if (unit) {
+        var want = getActiveSpect(unit);
+        if (!lmMbUnitValid(want) || (sp && want !== sp)) unit = prev && lmMbUnitValid(getActiveSpect(prev)) ? prev : lmMbFallbackUnit(null, 'removed');
+    }
     window.multiboxPlayerEnabled = unit || null;
     var slot = unit ? lmMbSlotOf(getActiveSpect(unit) || {}) : 1;
     if (reg) reg.activeSlot = slot;
@@ -371,6 +382,57 @@ function lmMbAlive(p) {
 }
 window.lmMbAlive = lmMbAlive;
 window.lmSetMbUnit = lmSetMbUnit;
+/* A multibox unit that may hold the focus: a playing connection of ours (never a Full Map tile or
+ * the in-game spectator: player false), not closed for good (_lmRemoved), in its player slot
+ * (lmMbPlayers) or, a unit without one (an older spect.js), in spects. */
+function lmMbUnitValid(sp) {
+    if (!sp || sp === window.legendmod || sp.player === false || sp._lmRemoved) return false;
+    if (sp.slotId >= 2) return lmMbPlayers.isCurrent(sp);
+    var list = window.spects;
+    return !!list && list.indexOf(sp) !== -1;
+}
+window.lmMbUnitValid = lmMbUnitValid;
+/* May the player p take the mouse and keys now: the main client while it plays; a unit of ours
+ * with a life and its orientation known (transformReady: verified, or CONFLICTED after it was
+ * verified on this socket; a spawn held by Spect._lmSpawnHold is one not verified). A PROVISIONAL
+ * unit never is, however long it waits. This is the one test of the manual choice
+ * (application._lmMbFocus), the fallbacks (lmMbFallbackUnit, onPlayerDeath) and the spawn focus
+ * (Spect.beforecalculation, _lmFocusWait). */
+function lmMbCanSteer(p) {
+    if (!p) return false;
+    if (p === window.legendmod) return !!p.play;
+    return lmMbAlive(p) && lmMbUnitValid(p) && (typeof p.transformReady !== 'function' || p.transformReady());
+}
+window.lmMbCanSteer = lmMbCanSteer;
+/* A living unit that is due the focus but cannot take it yet (its orientation not verified):
+ * it takes it once its place is known, while the player in focus is still not alive
+ * (Spect.beforecalculation, _lmFocusWait 2); a spawn still held decides that itself. */
+function lmMbFocusLater(sp) {
+    if (sp && sp.openSecond && !sp._lmFocusWait && lmMbAlive(sp)) sp._lmFocusWait = 2;
+}
+var _lmMbPendList = [];
+/* The unit the player chose that waits to take the focus (application._lmMbFocus: a dead one
+ * spawning again, a spawn held, an orientation not verified yet; _lmWantFocusAt with
+ * _lmFocusOnSpawn or _lmFocusWait), null when none. At most one: a new choice ends the others. */
+function lmMbPendingUnit() {
+    var u = lmMbUnits(_lmMbPendList), f = +window.multiboxPlayerEnabled || 0;
+    for (var i = 0; i < u.length; i++) {
+        var s = u[i];
+        if (s._lmWantFocusAt && (s._lmFocusOnSpawn || s._lmFocusWait) && +s.number !== f && !s._lmRemoved) return s;
+    }
+    return null;
+}
+window.lmMbPendingUnit = lmMbPendingUnit;
+/* May a focus due because the player in focus is not alive (Spect.beforecalculation) go to sp:
+ * not over a choice that still waits, another unit chosen (lmMbPendingUnit) or the dead unit in
+ * focus chosen and spawning again (its _lmWantFocusAt, 25 s as its own grace). The dead main
+ * player chosen does not hold it (Play may never come: the unit takes the focus as before). */
+function lmMbAutoFocusOk(sp) {
+    var p = lmMbPendingUnit(), f = lmMbFocused();
+    if (p && p !== sp) return false;
+    return !(f && f !== sp && f !== window.legendmod && !lmMbAlive(f) && f._lmWantFocusAt && Date.now() - f._lmWantFocusAt < 25000);
+}
+window.lmMbAutoFocusOk = lmMbAutoFocusOk;
 /* The multibox units in slot order (lmMbPlayers.ordered), then any unit in spects without a
  * slot (not made by addBox), into out (a new list without it). Spectators never. */
 function lmMbUnits(out) {
@@ -392,8 +454,19 @@ function lmMbLiving() {
     for (var i = 0; i < u.length; i++) if (lmMbAlive(u[i])) n++;
     return n;
 }
+/* The focus checked before it is read: left on a source that is no unit of ours any more (closed
+ * or removed without a transition, a spectator) it is moved on through lmSetMbUnit, the one
+ * place that changes it. true when it was moved. */
+function lmMbFocusCheck() {
+    var n = +window.multiboxPlayerEnabled || 0;
+    if (!n || lmMbUnitValid(getActiveSpect(n))) return false;
+    lmSetMbUnit(n);
+    return true;
+}
+window.lmMbFocusCheck = lmMbFocusCheck;
 /* the player the mouse and keys move now: the focused unit, else the main client */
 function lmMbFocused() {
+    lmMbFocusCheck();
     var n = +window.multiboxPlayerEnabled || 0;
     return n ? getActiveSpect(n) : window.legendmod || null;
 }
@@ -417,30 +490,42 @@ window.lmMbSwitchOnDeath = lmMbSwitchOnDeath;
  *   with "Auto-switch focus after death" on, the next living player after it in slot order, the
  *   main player included and wrapping round (P2 dies: P3, P4 ... P1; with two players P2 -> P1 as
  *   before), else 0. With it off the focus stays on the dead player (its own number) while it is
- *   still there; the player chooses another one himself.
+ *   still there and connected (a socket open or opening: it spawns again there); the player
+ *   chooses another one himself. A dead unit without a socket (dropped, reconnecting or given up)
+ *   is no player awaiting its respawn: as below.
  * - any other reason (its socket closed, it was removed or closed): the main player while it plays,
  *   else the next living unit after it in slot order (wrapping round), else 0. Whatever the death
  *   setting says: a player that is gone cannot keep the focus.
- * Never a spectator (lmMbUnits lists playing units only). */
+ * A unit is taken only when it can be steered (lmMbCanSteer): a living one whose orientation is
+ * not verified yet is passed and, when nothing else is found, takes the focus once its place is
+ * known (lmMbFocusLater). Never a spectator (lmMbUnits lists playing units only). */
 function lmMbFallbackUnit(sp, reason) {
     var lm = window.legendmod, main = !sp || sp === lm;
-    var u = lmMbUnits(_lmMbList), n = u.length, k = main ? -1 : u.indexOf(sp), i, s;
+    var u = lmMbUnits(_lmMbList), n = u.length, k = main ? -1 : u.indexOf(sp), i, s, later = null;
+    var pick = function (x) {
+        if (!x || x === sp || !lmMbAlive(x)) return false;
+        if (lmMbCanSteer(x)) return true;
+        if (!later) later = x;
+        return false;
+    };
     if ((reason === 'death' || reason === 'lost') && (main || k !== -1)) {
         if (!lmMbSwitchOnDeath()) {
             if (main) return 0;
-            if (!sp._lmRemoved && lmMbStatus(sp) !== 'offline') return +sp.number || 0;
+            if (!sp._lmRemoved && sp.socket) return +sp.number || 0;
         } else {
-            for (i = k + 1; i < n; i++) if (u[i] !== sp && lmMbAlive(u[i])) return +u[i].number || 0;
+            for (i = k + 1; i < n; i++) if (pick(u[i])) return +u[i].number || 0;
             if (!main && lmMbAlive(lm)) return 0;
-            for (i = 0; i < k; i++) if (lmMbAlive(u[i])) return +u[i].number || 0;
+            for (i = 0; i < k; i++) if (pick(u[i])) return +u[i].number || 0;
+            lmMbFocusLater(later);
             return 0;
         }
     }
     if (lm && lm.play) return 0;
     for (i = 1; i <= n; i++) {
         s = u[(k + i + n) % n];
-        if (s && s !== sp && lmMbAlive(s)) return +s.number || 0;
+        if (pick(s)) return +s.number || 0;
     }
+    lmMbFocusLater(later);
     return 0;
 }
 window.lmMbFallbackUnit = lmMbFallbackUnit;
@@ -4556,6 +4641,7 @@ function lmMultiboxRingPlayer(cell) {
 /* The slot of the player the mouse and keys move now: 1 = the main player, else the focused
  * unit's (2 with two players). Callers ask "a unit?" with !== 1. */
 function lmMultiboxControlledPlayer() {
+    if (window.multiboxPlayerEnabled && typeof lmMbFocusCheck === 'function') lmMbFocusCheck();
     var sp = window.multiboxPlayerEnabled ? getActiveSpect(window.multiboxPlayerEnabled) : null;
     return sp ? (sp.slotId >= 2 ? sp.slotId : 2) : 1;
 }
@@ -4575,10 +4661,17 @@ function lmMultiboxControlledPlayer() {
  *   connection number, life: changes with each life, lifeGen: the life counter (_lmLife, one more
  *   at each spawn), alive }. A unit's life list (playerCellIDs) is replaced at its death and its
  *   next life fills the same list, so a split macro started while it was dead went on into its
- *   next life: lifeGen changes there (the main player's life, _lmLifeStartAt, already did). */
+ *   next life: lifeGen changes there (the main player's life, _lmLifeStartAt, already did).
+ * A focus left on a source that is no unit of ours (closed or removed, a spectator) is moved on
+ * first (lmMbFocusCheck); an action asked for at that moment gets no target (target null:
+ * window.core.act refuses it), never the player the focus fell back to (it was meant for the
+ * unit that went). */
 function lmActiveUnit(lite) {
     var LM = window.legendmod;
     if (!LM) return null;
+    if (window.multiboxPlayerEnabled && typeof lmMbFocusCheck === 'function' && lmMbFocusCheck() && lite === true) {
+        return { target: null, transport: 'none', slotId: 0, sourceId: 0, sock: null, gen: 0, life: 0, lifeGen: 0, alive: false };
+    }
     var n = window.multiboxPlayerEnabled || 0, sp = n ? getActiveSpect(n) : null, src, i;
     if (lite === true) {
         if (sp) return { target: sp, transport: 'spect', slotId: sp.slotId >= 2 ? sp.slotId : 2, sourceId: n, sock: sp.socket, gen: sp.connectionGeneration, life: sp.playerCellIDs, lifeGen: +sp._lmLife || 0, alive: sp.player === true && sp.active === true };
@@ -26756,19 +26849,21 @@ function thelegendmodproject() {
             slot = +slot || 1;
             var sp = slot === 1 ? null : lmMbPlayers.get(slot);
             if (slot !== 1 && !sp) return false;
-            this._lmMbFocus(sp);
-            return true;
+            return this._lmMbFocus(sp) !== false;
         },
         /* With two players the switch keys go P1 -> P2 -> P1 whatever their state, and a dead
          * target spawns again (as always). With more, the next living player in slot order (dead
-         * and connecting ones are passed); only when none lives, the next one as with two. */
+         * and connecting ones are passed); only when none lives, the next one as with two.
+         * They go on from the player chosen last: the one waiting to take the focus
+         * (lmMbPendingUnit) while there is one, so P1 -> P2 (spawning) -> P1 ends that choice. */
         mbSelectAdjacent(dir) {
             dir = dir < 0 ? -1 : 1;
-            var units = lmMbUnits(), n = 1 + units.length, cur = 0, i, k;
+            var units = lmMbUnits(), n = 1 + units.length, cur = 0, i, k, pend = lmMbPendingUnit();
+            var at = pend ? +pend.number : +window.multiboxPlayerEnabled || 0;
             if (n < 2) return false;
-            if (window.multiboxPlayerEnabled) {
+            if (at) {
                 for (i = 0; i < units.length; i++) {
-                    if (units[i].number === window.multiboxPlayerEnabled) { cur = i + 1; break; }
+                    if (+units[i].number === at) { cur = i + 1; break; }
                 }
             }
             var next = (cur + dir + n) % n;
@@ -26791,30 +26886,60 @@ function thelegendmodproject() {
          * focus back from the player chosen meanwhile), the spawn of one chosen before
          * (_lmFocusOnSpawn: P1 -> dead P2 -> P1 gave the focus to P2 at its spawn), and a spawn
          * that went on unverified and waits for its place on the map to take the focus
-         * (_lmFocusWait). */
+         * (_lmFocusWait).
+         * A unit is controlled at once when it can be steered (lmMbCanSteer), or when it already
+         * is the one in focus. Else the choice waits (lmMbPendingUnit, the roster marks it) while
+         * the player in focus can be steered, or whenever the unit lives (it cannot be placed or
+         * steered yet): the player in control keeps the mouse, keys and camera, and the unit takes
+         * them once, when it can (Spect.beforecalculation): a dead one spawns again
+         * (respawn: _lmFocusOnSpawn), a spawn being held at its end (_lmFocusOnSpawn), a living
+         * one with its orientation not verified once it is (_lmFocusWait 1). No timer ever takes
+         * a guessed orientation for a verified one. Nothing of ours to keep the control (the main
+         * player dead too): a dead unit chosen is controlled at once and spawns again, as before.
+         * A newer choice ends the earlier one; the end of that unit's life or socket ends it too
+         * (Spect.terminate, onclose), and a unit removed or replaced in its slot is another
+         * object that never had it. false: sp is no unit of ours (removed, a spectator). */
         _lmMbFocus(sp) {
-            var others = lmMbUnits();
+            if (sp && !lmMbUnitValid(sp)) return false;
+            var others = lmMbUnits(), f = +window.multiboxPlayerEnabled || 0;
             if (sp) sp._lmFocusWait = 0;
             for (var i = 0; i < others.length; i++) {
                 if (others[i] === sp) continue;
                 others[i]._lmFocusOnSpawn = false;
                 others[i]._lmFocusWait = 0;
+                /* the dead unit in focus keeps the grace of its own respawn (Spect.beforecalculation) */
+                if (+others[i].number !== f) others[i]._lmWantFocusAt = 0;
                 if (!others[i]._lmSpawnedOnce) others[i]._lmFocusClaimed = true;
             }
             if (sp) sp._lmFocusClaimed = false;
+            /* the focus leaves the dead unit in focus: the grace of its respawn goes with it */
+            var pf = f ? getActiveSpect(f) : null;
             if (!sp) {
+                if (pf) pf._lmWantFocusAt = 0;
                 lmSetMbUnit(0);
-                if (!legendmod.play) {
+                /* a listener of the swap that chose another player meanwhile keeps its choice */
+                if (!legendmod.play && !window.multiboxPlayerEnabled) {
                     play();
                 }
-            } else {
-                lmSetMbUnit(sp.number);
-                if (!sp.active) {
-                    sp.respawn();
-                }
-                var prof = profiles[lmMbProfileIdx(sp)];
-                if (prof && prof.skinURL && typeof lmPreloadUnitSkin === 'function') lmPreloadUnitSkin(prof.skinURL);
+                return true;
             }
+            var prof = profiles[lmMbProfileIdx(sp)];
+            if (prof && prof.skinURL && typeof lmPreloadUnitSkin === 'function') lmPreloadUnitSkin(prof.skinURL);
+            var cur = lmMbFocused();
+            /* everything is set before the swap event (lmSetMbUnit last) */
+            if (cur !== sp && !lmMbCanSteer(sp) && (sp.active === true || lmMbCanSteer(cur))) {
+                sp._lmWantFocusAt = Date.now();
+                if (sp.active !== true || sp.openSecond === false) sp._lmFocusOnSpawn = true;
+                else sp._lmFocusWait = 1;
+                if (sp.active !== true) sp.respawn();
+                return true;
+            }
+            if (pf && pf !== sp) pf._lmWantFocusAt = 0;
+            if (!sp.active) {
+                sp.respawn();
+            }
+            lmSetMbUnit(sp.number, sp);
+            return true;
         },
         /* the switch keys: no unit yet (Full Map tiles do not count) starts multibox, else the
          * next / previous player (mbSelectAdjacent). The menu goes, except the death menu (nothing
@@ -26854,13 +26979,16 @@ function thelegendmodproject() {
         _lmMbRosterHtml() {
             this._lmMbRosterBind();
             var units = lmMbUnits(_lmMbList), cur = window.multiboxPlayerEnabled ? lmMultiboxControlledPlayer() : 1, h = '<div class="lm-mb-roster">', i, p, slot, st, mass;
+            /* the player chosen that waits to take the control (application._lmMbFocus): marked apart
+             * from the one controlled */
+            var pend = lmMbPendingUnit(), pendSlot = pend ? lmMbSlotOf(pend) : 0;
             for (i = -1; i < units.length; i++) {
                 p = i < 0 ? legendmod : units[i];
                 slot = lmMbSlotOf(p);
                 st = lmMbStatus(p);
                 mass = st === 'alive' ? Math.round(+p.playerMass || 0) : 0;
                 var col = LM_MB_RING_DEFAULT_COLORS[slot] || '#fff', tip = 'P' + slot + ': ' + lmT(st === 'alive' ? 'game1.hud.mbAlive' : st === 'dead' ? 'game1.hud.mbDead' : st === 'connecting' ? 'game1.hud.mbConnecting' : 'game1.hud.mbOffline');
-                h += '<span class="lm-mb-chip lm-mb-' + st + (slot === cur ? ' lm-mb-sel' : '') + '" data-lm-mb-slot="' + slot + '" role="button" title="' + _lmG1e(tip) + '" aria-label="' + _lmG1e(tip) +
+                h += '<span class="lm-mb-chip lm-mb-' + st + (slot === cur ? ' lm-mb-sel' : slot === pendSlot ? ' lm-mb-pend' : '') + '" data-lm-mb-slot="' + slot + '" role="button" title="' + _lmG1e(tip) + '" aria-label="' + _lmG1e(tip) +
                     '" style="border-color:' + col + '"><i class="lm-mb-dot"></i><b style="color:' + col + '">P' + slot + '</b>' + (mass ? ' ' + mass : '') +
                     (p.slotId >= 3 ? '<span class="lm-mb-x" data-lm-mb-rm="' + slot + '" role="button" title="' + _lmG1e(lmT('game1.hud.mbRemove')) + '">×</span>' :
                         i >= 0 && units.length === 1 ? '<span class="lm-mb-x" data-lm-mb-off="1" role="button" title="' + _lmG1e(lmT('game1.hud.mbOff')) + '">×</span>' : '') + '</span>';
@@ -26878,6 +27006,7 @@ function thelegendmodproject() {
             css.textContent = '.lm-mb-roster{margin-top:2px;white-space:nowrap}' +
                 '.lm-mb-chip{display:inline-block;pointer-events:auto;cursor:pointer;border:1px solid;border-radius:8px;padding:0 6px;margin:0 4px 0 0;line-height:1.6;font-size:90%;touch-action:manipulation;user-select:none}' +
                 '.lm-mb-chip.lm-mb-sel{box-shadow:0 0 0 2px currentColor inset;font-weight:bold}' +
+                '.lm-mb-chip.lm-mb-pend{outline:2px dashed;outline-offset:-2px}' +
                 '.lm-mb-dot{display:inline-block;width:6px;height:6px;border-radius:50%;margin-right:4px;vertical-align:middle;background:#4f4}' +
                 '.lm-mb-dead .lm-mb-dot{background:#f44}.lm-mb-connecting .lm-mb-dot{background:#ff0}.lm-mb-offline .lm-mb-dot{background:#888}' +
                 '.lm-mb-dead,.lm-mb-offline{opacity:.6}.lm-mb-connecting{border-style:dashed}' +
@@ -31366,11 +31495,17 @@ function thelegendmodproject() {
                  * order (P2, P3 ...); never a spectator */
                 var _lmMbU = typeof lmMbUnits === 'function' ? lmMbUnits() : spects, _lmMbF = getActiveSpect(+window.multiboxPlayerEnabled || 0);
                 if (lmMbAlive(_lmMbF)) _lmMbU = [_lmMbF];
+                /* one that can be steered first (lmMbCanSteer); a living one with its orientation not
+                 * verified yet only when no other lives, and it takes the focus once its place is
+                 * known (lmMbFocusLater): the focus never goes to a unit the camera and the cursor
+                 * cannot place */
+                else if (typeof lmMbCanSteer === 'function') _lmMbU = _lmMbU.filter(lmMbCanSteer).concat(_lmMbU.filter(function (u) { return !lmMbCanSteer(u); }));
                 for (var _i = 0; _i < _lmMbU.length; _i++) {
                     /* a living unit, never a spectator */
                     if (lmMbAlive(_lmMbU[_i])) {
                         /* multiboxPlayerEnabled is the unit number, not index + 1 (units can be spliced) */
-                        lmSetMbUnit(_lmMbU[_i].number);
+                        if (_lmMbU[_i] === _lmMbF || typeof lmMbCanSteer !== 'function' || lmMbCanSteer(_lmMbU[_i])) lmSetMbUnit(_lmMbU[_i].number);
+                        else lmMbFocusLater(_lmMbU[_i]);
                         console.log('[MB] Main player died, auto-switched to spect ' + window.multiboxPlayerEnabled);
 
                         // Flush main client's cells (spectator=0 or undefined) so its dead viewport stops
@@ -46481,7 +46616,9 @@ function thelegendmodproject() {
             /* Replay Studio cursor overlay: the mouse target in world space (at most 10/s) */
             if (window._lmRecLive && this.play && this === window.legendmod) window._lmRecCur(this.cursorX, this.cursorY);
             if (this.isSocketOpen() && this.connectionOpened && (this.clientKey || !legendmod.integrity)) {
-                if (window.multiboxPlayerEnabled && !window.multiboxFollowMouse && !window.autoPlay) {
+                /* inactive while the focus is on a unit (lmMbFocused: a focus left on a unit gone is
+                 * moved on first, so it is never a number this player and the roster disagree on) */
+                if (window.multiboxPlayerEnabled && (typeof lmMbFocused !== 'function' || lmMbFocused() !== this) && !window.multiboxFollowMouse && !window.autoPlay) {
                     /* Server-space view centre (viewXTrue is client space; mirrored maps differ). */
                     var _viewServerX = window.legendmod.vector[window.legendmod.vnr][0] ? this.translateX(this.viewXTrue) : this.viewXTrue;
                     var _viewServerY = window.legendmod.vector[window.legendmod.vnr][1] ? this.translateY(this.viewYTrue) : this.viewYTrue;
@@ -89400,6 +89537,10 @@ function pickPlayerCellBySize(players, selectBiggest) {
             if (bound && !(u.target === bound.target && u.sock === bound.sock && u.gen === bound.gen && u.life === bound.life && u.lifeGen === bound.lifeGen)) return false;
             if (!t.socket || (typeof t.isSocketOpen === 'function' && !t.isSocketOpen())) return false;
             if (!u.alive && m !== 'sendBotEject' && m !== 'sendBotSplit') return false;
+            /* a feed or split aims (the unit's send* sends its aim first): a unit whose orientation
+             * is not verified holds on its own centre (_lmAimSend), so the action would go where
+             * nobody aimed. Refused until its place is known; the bot commands do not aim. */
+            if (u.transport === 'spect' && typeof t.transformReady === 'function' && !t.transformReady() && m !== 'sendBotEject' && m !== 'sendBotSplit') return false;
             t[m]();
             return true;
         },
