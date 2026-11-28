@@ -20060,21 +20060,21 @@ function _lmCssUrl(u) {
 var defaultSettings = {
     checkonetimeLc2: false,
     darkTheme: true,
-    mainColor: '#01d9cc',
-    bgColor: '#000a11',
-    bordersColor: '#d90101',
+    mainColor: '#651fff',
+    bgColor: '#000000',
+    bordersColor: '#999fbd',
     borderGlowColor: "#ffffff",
-    gridColor: '#00243e',
+    gridColor: '#08151d',
     sectorsColor: '#00243e',
     namesColor: '#ffffff',
     namesStrokeColor: '#000000',
     massColor: '#ffffff',
     massStrokeColor: '#000000',
-    virusColor: '#327a19',
-    virusStrokeColor: '#327a19',
+    virusColor: '#282a33',
+    virusStrokeColor: '#47517a',
     mVirusColor: '#ce6363',
     mVirusStrokeColor: '#b95959',
-    foodColor: '#0057ff',
+    foodColor: '#47517a',
     teammatesIndColor: '#ffffff',
     cursorTrackingColor: '#ffffff',
     splitRangeColor: '#ffffff',
@@ -20107,12 +20107,12 @@ var defaultSettings = {
     virMassScale: 3,
     strokeScale: 1,
     foodSize: 5,
-    bordersWidth: 14,
-    sectorsWidth: 40,
-    sectorsFontSize: 1200,
-    cellsAlpha: 1,
-    skinsAlpha: 1,
-    virusAlpha: 0.6,
+    bordersWidth: 30,
+    sectorsWidth: 6,
+    sectorsFontSize: 820,
+    cellsAlpha: 0.99,
+    skinsAlpha: 0.99,
+    virusAlpha: 0.35,
     textAlpha: 1,
     backgroundAlpha: 0.6,
     virusGlowColor: '#fff',
@@ -20123,57 +20123,57 @@ var defaultSettings = {
     cellShadowOffsetY: 4,
     borderGlowSize: 14,
     ghostCellsAlpha: 0.3,
-    virusStrokeSize: 14,
+    virusStrokeSize: 11,
     graphics: 'high',
     indicators: 'normal',
-    menuMainColor: '#01d9cc',
+    menuMainColor: '#505a85',
     menuBtnTextColor: '#ffffff',
-    menuPanelColor: '#00243e',
-    menuPanelColor2: '#002f52',
-    menuTextColor: '#ffffff',
-    menuTextColor2: '#8096a7',
-    btn1Color: '#018cf6',
-    btn1Color2: '#0176ce',
-    btn2Color: '#00b9e8',
-    btn2Color2: '#0099c0',
-    btn3Color: '#8d5fe6',
-    btn3Color2: '#814ee3',
-    btn4Color: '#bf00aa',
-    btn4Color2: '#a80096',
+    menuPanelColor: '#282a33',
+    menuPanelColor2: '#333642',
+    menuTextColor: '#bbbbbb',
+    menuTextColor2: '#bbbbbb',
+    btn1Color: '#505a85',
+    btn1Color2: '#505a85',
+    btn2Color: '#6d728a',
+    btn2Color2: '#505a85',
+    btn3Color: '#474b5c',
+    btn3Color2: '#3a3e4f',
+    btn4Color: '#c9302c',
+    btn4Color2: '#c9302c',
     menuBg: 'https://www.legendmod.ml/banners/static/img/pattern.png',
-    menuOpacity: 0.96,
-    hudMainColor: '#01d9cc',
-    hudColor: 'rgba(0,0,0,0.4)',
+    menuOpacity: 1,
+    hudMainColor: '#626fa6',
+    hudColor: 'rgba(0,0,0,0.72)',
     hudTextColor: '#ffffff',
     statsHudColor: '#ffffff',
-    timeHudColor: '#01d9cc',
-    top5MassColor: '#bf00aa',
-    lbMeColor: '#bf00aa',
+    timeHudColor: '#626fa6',
+    top5MassColor: '#8a8a8a',
+    lbMeColor: '#3685c5',
     lbTeammateColor: '#018cf6',
     lbTeammateColor2: '#018cf6',
-    hudFont: 'ubuntu-bold',
-    hudFontFamily: 'Ubuntu',
-    hudFontWeight: 700,
-    hudScale: 1,
+    hudFont: 'roboto',
+    hudFontFamily: 'Roboto',
+    hudFontWeight: 400,
+    hudScale: 1.1,
     messageColor: 'rgba(0,0,0,0.4)',
     messageTextColor: '#ffffff',
-    messageTimeColor: '#018cf6',
-    messageNickColor: '#01d9cc',
-    commandsColor: 'rgba(191,0,170,0.9)',
+    messageTimeColor: '#292929',
+    messageNickColor: '#626fa6',
+    commandsColor: 'rgba(80,90,133,1)',
     commandsTextColor: '#ffffff',
-    commandsTimeColor: '#bf00aa',
+    commandsTimeColor: '#999999',
     commandsNickColor: '#ffffff',
     chatBoxColor: 'rgba(0,0,0,0.4)',
     chatScale: 1,
     miniMapSectorsColor: '#ffffff',
-    miniMapSectorColor: '#01d9cc',
-    miniMapGuidesColor: '#bf00aa',
+    miniMapSectorColor: '#626fa6',
+    miniMapGuidesColor: '#ffffff',
     miniMapNickColor: '#ffffff',
     miniMapNickStrokeColor: '#000000',
     miniMapMyCellColor: '#ffffff',
-    miniMapMyCellStrokeColor: '#bf00aa',
-    miniMapTeammatesColor: '#01d9cc',
-    miniMapDeathLocationColor: '#bf00aa',
+    miniMapMyCellStrokeColor: '#000000',
+    miniMapTeammatesColor: '#3c8bff',
+    miniMapDeathLocationColor: '#ffffff',
     miniMapGhostCellsColor: '#ffffff',
     ////
     color: "#fff",
@@ -20190,25 +20190,25 @@ var defaultSettings = {
     commanderImageDyingLightvirus: "https://www.legendmod.ml/banners/icondyinglightvirus.png",
 
     ////
-    miniMapFont: 'ubuntu-bold',
-    miniMapFontFamily: 'Ubuntu',
-    miniMapFontWeight: 700,
-    miniMapNickFont: 'ubuntu-bold',
-    miniMapNickFontFamily: 'Ubuntu',
-    miniMapNickFontWeight: 700,
-    miniMapWidth: 240,
-    miniMapTop: 24,
+    miniMapFont: 'roboto',
+    miniMapFontFamily: 'Roboto',
+    miniMapFontWeight: 400,
+    miniMapNickFont: 'roboto',
+    miniMapNickFontFamily: 'Roboto',
+    miniMapNickFontWeight: 400,
+    miniMapWidth: 222,
+    miniMapTop: 22,
     miniMapSectorsOpacity: 0.1,
     miniMapNickSize: 11,
-    miniMapNickStrokeSize: 2,
-    miniMapMyCellSize: 7.5,
+    miniMapNickStrokeSize: 0,
+    miniMapMyCellSize: 5.5,
     miniMapMyCellStrokeSize: 4,
-    miniMapTeammatesSize: 5.5,
+    miniMapTeammatesSize: 4,
     miniMapGhostCellsAlpha: 0.15,
     customBackground: '',
     customCursor: 'https://www.legendmod.ml/cursors/cursor_02.cur',
     /* Theme > HUD: rounded menu and HUD corners (was the Tools tab button Rounded / Square HUD) */
-    hudRoundedCorners: false
+    hudRoundedCorners: true
 }
 /* The shipped theme defaults, frozen before the stored theme is loaded: the schema for
  * stored and imported theme values (see LM_SETTINGS_DEFAULTS for the gameplay ones). */
@@ -21681,7 +21681,7 @@ var defaultmapsettings = {
     highDPI: false,
     glAntialias: true,            /* WebGL anti-aliasing (MSAA); read when the GPU context is created */
     fpsLimit: 0,                  /* frames per second cap (0 = off): less heat/battery on laptops and phones */
-    reducedMotion: false,         /* no death screen shake, death particles or Expanding Land entrance spin */
+    reducedMotion: true,          /* no death screen shake, death particles or Expanding Land entrance spin */
     autoHideNames: true,
     autoHideMass: true,
     autoHideFood: false,
@@ -21698,7 +21698,7 @@ var defaultmapsettings = {
     multiKeepMoving: true,
     middleMultiView: false,
     middleMultiViewWhenClose: true,
-    multiboxAmount: 2,
+    multiboxAmount: 3,
     mbSwitchAfterDeath: true,
     mbFreeze: false,
     mbAutoRespawn: true,
@@ -21711,7 +21711,7 @@ var defaultmapsettings = {
     hideMyMass: false,
     hideEnemiesMass: false,
     vanillaSkins: true,
-    ownVanillaSkin: false,
+    ownVanillaSkin: true,
     customSkins: true,
     noSkins: false,
     noColors: false,              /* Issue #9: added so the checkbox persists via setSettings/loadSettings */
@@ -21770,10 +21770,10 @@ var defaultmapsettings = {
     oneColoredTeammates: false,
     //optimizedFood: true,
     rainbowFood: true,
-    oppColors: false,
+    oppColors: true,
     oppRings: true,
     virColors: false,
-    splitRange: false,
+    splitRange: true,
     qdsplitRange: true, //Sonia2
     sdsplitRange: false, //Sonia2
     tripleSplitRange: false,      /* rings at 3*size+760 around enemies that can triple-split onto you */
@@ -21793,7 +21793,7 @@ var defaultmapsettings = {
     FBTracking: true,
     //ingameSpectator2: false,
     //fullSpectator2: false,	
-    teammatesInd: true,
+    teammatesInd: false,
     mouseSplit: false,
     mouseFeed: false,
     mouseWheelClick: false,
@@ -21847,7 +21847,7 @@ var defaultmapsettings = {
     /* the Game Over card with everything known about the life that ended: the stats, who ate you,
      * the mass graph and the last 20 s (ogario/modules/deathrecap.js). massGraph, showKiller and
      * deathRecap were a switch per part; they are gone (saved values of them are skipped on load). */
-    gameOverStats: false,
+    gameOverStats: true,
     massLossAlert: false,         /* a line at the top right when you lose massLossPct % of your mass within 2 s */
     massLossPct: 30,              /* mass-loss alert threshold in % (10-90) */
     /* personalBests is gone: the all-time personal bests are always kept (localStorage) and shown on the
@@ -21861,7 +21861,7 @@ var defaultmapsettings = {
     showQuickMenu: true,
     showQuickBots: false,
     showSkinsPanel: true,
-    animation: 80,
+    animation: 120,
     macroFeeding: 80,
     macroSplitDelay: 40,          /* ms between the splits of double/triple/16 split macros */
     macroPopSplitDelay: 200,      /* ms between the two splits of pop split */
@@ -21872,8 +21872,8 @@ var defaultmapsettings = {
     dominatedRate: 3 / 4,
     profileNumber: 15,
     ////
-    suckAnimation: false,
-    virusSpikes: false,
+    suckAnimation: true,
+    virusSpikes: true,
     virusGlow: false,
     borderGlow: false,
     ////
@@ -22573,14 +22573,14 @@ function thelegendmodproject() {
                 }
             }
             /* the Tools tab button Rounded / Square HUD (localStorage MAINBTBtn, "true" = rounded) became
-             * Theme > HUD "Rounded corners": a rounded choice comes along once, then the old key goes
-             * (saved first: a full storage keeps both as they were) */
+             * Theme > HUD "Rounded corners": the choice comes along once (a square one too, rounded is the
+             * default now), then the old key goes (saved first: a full storage keeps both as they were) */
             var _lmOldCorners = null;
             try { _lmOldCorners = window.localStorage.getItem('MAINBTBtn'); } catch (eOc) { }
             if (_lmOldCorners !== null) {
                 try {
-                    if (_lmOldCorners === 'true' && !(storage && Object.prototype.hasOwnProperty.call(storage, 'hudRoundedCorners'))) {
-                        defaultSettings.hudRoundedCorners = true;
+                    if ((_lmOldCorners === 'true' || _lmOldCorners === 'false') && !(storage && Object.prototype.hasOwnProperty.call(storage, 'hudRoundedCorners'))) {
+                        defaultSettings.hudRoundedCorners = _lmOldCorners === 'true';
                         this.saveThemeSettings();
                     }
                     window.localStorage.removeItem('MAINBTBtn');

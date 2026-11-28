@@ -379,7 +379,7 @@
 				get label() {
 					return lmT('settings.hk-scanTrick');
 				},
-				defaultKey: '',
+				defaultKey: 'N',
 				keyDown() {
 					var game = window.legendmod || window.LM;
 					if (game && typeof game.setScanTrickHeld === 'function') {
@@ -468,7 +468,7 @@
 			},			
             'hk-multiboxswap': {
                 get label() { return lmT('settings.hk-multiboxswap'); },
-                defaultKey: '',
+                defaultKey: 'TAB',
                 keyDown() {
                     application && application.multiboxswap();
                 },
@@ -477,7 +477,7 @@
             },
             'hk-multiboxFollowMouse': {
                 get label() { return lmT('settings.hk-multiboxFollowMouse'); },
-                defaultKey: 'TILDE',
+                defaultKey: '',
                 keyDown() {
                     application && application.multiboxFollowMouse();
                 },
@@ -719,7 +719,7 @@
             },
             'hk-showNames': {
                 get label() { return lmT('settings.hk-showNames'); },
-                defaultKey: 'N',
+                defaultKey: '',
                 keyDown() {
                     application && application.setShowNames();
                 },
@@ -764,7 +764,7 @@
             },
             'hk-quickResp': {
                 get label() { return lmT('settings.hk-quickResp'); },
-                defaultKey: 'Y',
+                defaultKey: 'TILDE',
                 keyDown() {
                     application && application.quickResp();
                 },

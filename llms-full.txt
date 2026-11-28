@@ -28,15 +28,14 @@ Legend Mod (entity: https://www.legendmod.ml/#app) is a SoftwareApplication and 
 | R | Pause cell movement (freeze position) |
 | Alt+R | Dance (hold — cells wiggle in place) |
 | Enter | Open chat input / send message |
-| Y | Quick response (send preset message) |
+| ~ (Tilde) | Quick respawn |
 | Escape | Open menu / enter free spectate |
-| Tab | Toggle leaderboard / team panel |
+| Tab | Multibox switch (next unit) |
 | Ctrl+K | Open Command Centre (fuzzy search palette) |
 | J | Autoplay |
 | Z | Reset zoom (hold) |
 | + | Quit game (respawn) |
 | = | Voice chat (push-to-talk) |
-| ~ (Tilde) | Multibox follow mouse |
 
 ### Keyboard — Toggle Hotkeys
 | Key | Action |
@@ -61,7 +60,7 @@ Legend Mod (entity: https://www.legendmod.ml/#app) is a SoftwareApplication and 
 | Alt+L | Toggle leaderboard |
 | M | Toggle mass display |
 | Alt+M | Toggle minimap |
-| N | Toggle names |
+| N | Scan trick (hold) |
 | B | Toggle background sectors |
 | Alt+B | Hide small bots |
 | V | Toggle spectator mode |
@@ -205,7 +204,7 @@ In-game text chat with rich features:
 - **Coloured nicks**: Different colours for different users
 - **Hide country**: Hide country flag from chat
 - **Voice chat**: Push-to-talk with = key
-- **Quick response**: Y key sends preset message
+- **Quick respawn**: ~ (Tilde) key respawns at once
 - **Auto response**: Automatic responses
 - **Chat commands**: 50 customizable chat command slots with one-keypress sending
 - **Team pings**: Help, Danger, Go here, Virus pings at cursor position (configurable hotkeys)

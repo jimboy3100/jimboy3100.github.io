@@ -21,7 +21,7 @@ const readJSON = ls => (k, d) => { try { const v = ls.getItem(k); return v === n
 
 /* ═══ Rounded corners (theme) ═══ */
 const themeDefs = vm.runInNewContext('(function(){' + cut('var defaultSettings = {', '\n/* The shipped theme defaults') + '; return defaultSettings; })()', { window: {} });
-check('theme default: square corners (hudRoundedCorners false)', themeDefs.hudRoundedCorners === false);
+check('theme default: rounded corners (hudRoundedCorners true)', themeDefs.hudRoundedCorners === true);
 const valueCtx = { LM_THEME_DEFAULTS: themeDefs, LM_THEME_SCHEMA: {}, lmSchemaFit: (r, n) => n, LM_THEME_COLOR: /x/ };
 vm.createContext(valueCtx);
 vm.runInContext(cut('function lmThemeValue(', '\ncimg2 = new Image;'), valueCtx);
@@ -55,7 +55,7 @@ check('carry: saved in the theme, the old key gone', t.saved && t.saved.hudRound
 t = loadTheme(null, 'true');
 check('carry: also without a saved theme', t.d.hudRoundedCorners === true && t.saved && t.saved.hudRoundedCorners === true);
 t = loadTheme({}, 'false');
-check('carry: Square HUD stays square, the old key gone', t.d.hudRoundedCorners === false && t.ls.getItem('MAINBTBtn') === null);
+check('carry: Square HUD stays square, saved, the old key gone', t.d.hudRoundedCorners === false && t.saved && t.saved.hudRoundedCorners === false && t.ls.getItem('MAINBTBtn') === null);
 t = loadTheme({ hudRoundedCorners: false }, 'true');
 check('carry: once: a saved theme choice wins over the old key', t.d.hudRoundedCorners === false && t.ls.getItem('MAINBTBtn') === null);
 t = loadTheme({ hudRoundedCorners: true });

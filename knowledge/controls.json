@@ -69,9 +69,9 @@
       "category": "core"
     },
     {
-      "input": "Y",
-      "action": "Quick response",
-      "notes": "Send preset message",
+      "input": "~ (Tilde)",
+      "action": "Quick respawn",
+      "notes": "Leave the game and respawn at once (Quick respawn on in Settings)",
       "category": "core"
     },
     {
@@ -82,8 +82,8 @@
     },
     {
       "input": "Tab",
-      "action": "Toggle leaderboard",
-      "notes": "Show/hide leaderboard or team panel",
+      "action": "Multibox switch",
+      "notes": "Control the next multibox unit",
       "category": "core"
     },
     {
@@ -114,12 +114,6 @@
       "input": "= (Equals)",
       "action": "Voice chat",
       "notes": "Push-to-talk voice chat",
-      "category": "core"
-    },
-    {
-      "input": "~ (Tilde)",
-      "action": "Multibox follow mouse",
-      "notes": "Toggle follow-mouse for multibox",
       "category": "core"
     },
     {
@@ -244,8 +238,8 @@
     },
     {
       "input": "N",
-      "action": "Toggle names",
-      "notes": "Show/hide player names",
+      "action": "Scan trick (hold)",
+      "notes": "Scan trick while held with the left mouse button",
       "category": "toggle"
     },
     {
