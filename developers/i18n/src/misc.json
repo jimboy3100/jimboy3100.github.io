@@ -666,7 +666,22 @@
     "it": "Pulsanti chat rapida (comandi 1-4)"
   },
   "misc.mobile.mbButton": {
-    "en": "Multibox button (starts a second player, then switches players; uses more data)"
+    "en": "Multibox button (starts a second player, then switches players; uses more data)",
+    "el": "Κουμπί multibox (ξεκινά δεύτερο παίκτη, μετά αλλάζει παίκτη· χρησιμοποιεί περισσότερα δεδομένα)",
+    "es": "Botón de multibox (inicia un segundo jugador y luego cambia de jugador; usa más datos)",
+    "bg": "Бутон за мултибокс (пуска втори играч, после сменя играчите; използва повече данни)",
+    "fr": "Bouton multibox (lance un second joueur, puis change de joueur ; utilise plus de données)",
+    "ar": "زر Multibox (يبدأ لاعبًا ثانيًا ثم يبدّل بين اللاعبين؛ يستهلك بيانات أكثر)",
+    "zh": "多開按鈕（先開啟第二位玩家，之後切換玩家；使用更多流量）",
+    "ru": "Кнопка мультибокса (запускает второго игрока, затем переключает игроков; больше трафика)",
+    "de": "Multibox-Taste (startet einen zweiten Spieler, wechselt dann die Spieler; braucht mehr Daten)",
+    "tr": "Multibox düğmesi (ikinci bir oyuncu başlatır, sonra oyuncular arasında geçiş yapar; daha fazla veri kullanır)",
+    "pl": "Przycisk multiboxa (uruchamia drugiego gracza, potem przełącza graczy; zużywa więcej danych)",
+    "nl": "Multiboxknop (start een tweede speler, wisselt daarna van speler; gebruikt meer data)",
+    "pt": "Botão de multibox (inicia um segundo jogador e depois troca de jogador; usa mais dados)",
+    "id": "Tombol multibox (memulai pemain kedua, lalu berganti pemain; memakai lebih banyak data)",
+    "ja": "マルチボックスボタン（2人目のプレイヤーを開始し、その後プレイヤーを切り替え。通信量が増えます）",
+    "it": "Pulsante multibox (avvia un secondo giocatore, poi cambia giocatore; usa più dati)"
   },
   "misc.mobile.pingButton": {
     "en": "Team ping button (tap = Go here; hold and slide = Help, Danger, Virus here)",

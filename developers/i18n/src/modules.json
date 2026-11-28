@@ -900,10 +900,40 @@
     "it": "Le tue partite nel tempo: statistiche, heatmap, un coach con consigli e obiettivi giornalieri. Salvato in questo browser."
   },
   "modules.discovery.card.deathRecap": {
-    "en": "Death recap"
+    "en": "Death recap",
+    "el": "Ανασκόπηση θανάτου",
+    "es": "Resumen de muerte",
+    "bg": "Обзор на смъртта",
+    "fr": "Récap de la mort",
+    "ar": "ملخص الموت",
+    "zh": "死亡回顧",
+    "ru": "Итоги гибели",
+    "de": "Todesrückblick",
+    "tr": "Ölüm özeti",
+    "pl": "Podsumowanie śmierci",
+    "nl": "Doodsoverzicht",
+    "pt": "Resumo da morte",
+    "id": "Ringkasan kematian",
+    "ja": "死亡レポート",
+    "it": "Riepilogo morte"
   },
   "modules.discovery.card.deathRecap.desc": {
-    "en": "The last 20 s before a death on the Game Over card."
+    "en": "The last 20 s before a death on the Game Over card.",
+    "el": "Τα τελευταία 20 s πριν από έναν θάνατο στην κάρτα Game Over.",
+    "es": "Los últimos 20 s antes de una muerte en la tarjeta de fin de la partida.",
+    "bg": "Последните 20 s преди смърт на картата за край на играта.",
+    "fr": "Les 20 dernières s avant une mort sur la carte de fin de partie.",
+    "ar": "آخر 20 s قبل الموت على بطاقة انتهت اللعبة.",
+    "zh": "在遊戲結束卡片上顯示死亡前的最後 20 s。",
+    "ru": "Последние 20 s перед гибелью на карточке конца игры.",
+    "de": "Die letzten 20 s vor einem Tod auf der Game-Over-Karte.",
+    "tr": "Oyun bitti kartında ölümden önceki son 20 s.",
+    "pl": "Ostatnie 20 s przed śmiercią na karcie końca gry.",
+    "nl": "De laatste 20 s voor een dood op de game-overkaart.",
+    "pt": "Os últimos 20 s antes de uma morte no card de Game Over.",
+    "id": "20 s terakhir sebelum mati di kartu Game Over.",
+    "ja": "ゲームオーバーのカードに死亡前の最後の 20 s を表示します。",
+    "it": "Gli ultimi 20 s prima di una morte sulla scheda Game Over."
   },
   "modules.discovery.card.gamepad": {
     "en": "Gamepad",

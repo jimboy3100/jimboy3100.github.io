@@ -1,17 +1,92 @@
 {
   "pkg.dlv3life.confirm": {
-    "en": "Turn on the Dying Light theme? It only changes how the game looks while it is on. Your settings stay as they are, and the same banner turns it off at any time."
+    "en": "Turn on the Dying Light theme? It only changes how the game looks while it is on. Your settings stay as they are, and the same banner turns it off at any time.",
+    "el": "Να ενεργοποιηθεί το θέμα Dying Light; Αλλάζει μόνο την εμφάνιση του παιχνιδιού όσο είναι ενεργό. Οι ρυθμίσεις σου μένουν όπως είναι, και το ίδιο banner το απενεργοποιεί όποτε θέλεις.",
+    "es": "¿Activar el tema Dying Light? Solo cambia el aspecto del juego mientras está activado. Tus ajustes se quedan como están, y el mismo banner lo desactiva en cualquier momento.",
+    "bg": "Да се включи ли темата Dying Light? Тя променя само вида на играта, докато е включена. Настройките ти остават същите, а същият банер я изключва по всяко време.",
+    "fr": "Activer le thème Dying Light ? Il change seulement l'apparence du jeu tant qu'il est activé. Tes réglages restent tels quels, et la même bannière le désactive à tout moment.",
+    "ar": "تشغيل ثيم Dying Light؟ إنه يغيّر شكل اللعبة فقط ما دام مفعّلًا. تبقى إعداداتك كما هي، ويمكن إيقافه في أي وقت من اللافتة نفسها.",
+    "zh": "要開啟 Dying Light 主題嗎？開啟期間只會改變遊戲的外觀。你的設定保持不變，隨時都能用同一個橫幅關閉它。",
+    "ru": "Включить тему Dying Light? Пока она включена, меняется только внешний вид игры. Твои настройки останутся как есть, а тот же баннер выключает её в любой момент.",
+    "de": "Das Dying-Light-Theme einschalten? Es ändert nur, wie das Spiel aussieht, solange es an ist. Deine Einstellungen bleiben, wie sie sind, und dasselbe Banner schaltet es jederzeit wieder aus.",
+    "tr": "Dying Light teması açılsın mı? Açık olduğu sürece yalnızca oyunun görünüşünü değiştirir. Ayarların olduğu gibi kalır ve aynı banner onu istediğin zaman kapatır.",
+    "pl": "Włączyć motyw Dying Light? Zmienia tylko wygląd gry, dopóki jest włączony. Twoje ustawienia zostają bez zmian, a ten sam baner wyłącza go w każdej chwili.",
+    "nl": "Het Dying Light-thema aanzetten? Het verandert alleen hoe het spel eruitziet zolang het aan staat. Je instellingen blijven zoals ze zijn, en dezelfde banner zet het op elk moment weer uit.",
+    "pt": "Ligar o tema Dying Light? Ele só muda a aparência do jogo enquanto estiver ligado. Suas configurações ficam como estão, e o mesmo banner desliga o tema a qualquer momento.",
+    "id": "Aktifkan tema Dying Light? Tema ini hanya mengubah tampilan game selama aktif. Pengaturanmu tetap seperti semula, dan banner yang sama bisa mematikannya kapan saja.",
+    "ja": "Dying Light テーマをオンにしますか？オンの間、ゲームの見た目だけが変わります。設定はそのまま残り、同じバナーでいつでもオフにできます。",
+    "it": "Attivare il tema Dying Light? Cambia solo l'aspetto del gioco finché è attivo. Le tue impostazioni restano come sono, e lo stesso banner lo disattiva in qualsiasi momento."
   },
   "pkg.dlv3life.failed": {
-    "en": "Dying Light could not be turned on. Legend Mod stays as it was."
+    "en": "Dying Light could not be turned on. Legend Mod stays as it was.",
+    "el": "Το Dying Light δεν μπόρεσε να ενεργοποιηθεί. Το Legend Mod έμεινε όπως ήταν.",
+    "es": "No se pudo activar Dying Light. Legend Mod sigue como estaba.",
+    "bg": "Dying Light не можа да се включи. Legend Mod остава както беше.",
+    "fr": "Dying Light n'a pas pu être activé. Legend Mod reste tel qu'il était.",
+    "ar": "تعذّر تشغيل Dying Light. بقي Legend Mod كما كان.",
+    "zh": "無法開啟 Dying Light。Legend Mod 維持原樣。",
+    "ru": "Не удалось включить Dying Light. Legend Mod остался как был.",
+    "de": "Dying Light konnte nicht eingeschaltet werden. Legend Mod bleibt, wie es war.",
+    "tr": "Dying Light açılamadı. Legend Mod olduğu gibi kaldı.",
+    "pl": "Nie udało się włączyć Dying Light. Legend Mod został bez zmian.",
+    "nl": "Dying Light kon niet worden aangezet. Legend Mod blijft zoals het was.",
+    "pt": "Não foi possível ligar o Dying Light. O Legend Mod continua como estava.",
+    "id": "Dying Light tidak bisa diaktifkan. Legend Mod tetap seperti semula.",
+    "ja": "Dying Light をオンにできませんでした。Legend Mod は元のままです。",
+    "it": "Non è stato possibile attivare Dying Light. Legend Mod resta com'era."
   },
   "pkg.dlv3life.turnOn": {
-    "en": "Turn on Dying Light"
+    "en": "Turn on Dying Light",
+    "el": "Ενεργοποίηση Dying Light",
+    "es": "Activar Dying Light",
+    "bg": "Включи Dying Light",
+    "fr": "Activer Dying Light",
+    "ar": "تشغيل Dying Light",
+    "zh": "開啟 Dying Light",
+    "ru": "Включить Dying Light",
+    "de": "Dying Light einschalten",
+    "tr": "Dying Light'ı aç",
+    "pl": "Włącz Dying Light",
+    "nl": "Dying Light aanzetten",
+    "pt": "Ligar Dying Light",
+    "id": "Aktifkan Dying Light",
+    "ja": "Dying Light をオン",
+    "it": "Attiva Dying Light"
   },
   "pkg.dlv3life.turnOff": {
-    "en": "Turn off Dying Light"
+    "en": "Turn off Dying Light",
+    "el": "Απενεργοποίηση Dying Light",
+    "es": "Desactivar Dying Light",
+    "bg": "Изключи Dying Light",
+    "fr": "Désactiver Dying Light",
+    "ar": "إيقاف Dying Light",
+    "zh": "關閉 Dying Light",
+    "ru": "Выключить Dying Light",
+    "de": "Dying Light ausschalten",
+    "tr": "Dying Light'ı kapat",
+    "pl": "Wyłącz Dying Light",
+    "nl": "Dying Light uitzetten",
+    "pt": "Desligar Dying Light",
+    "id": "Matikan Dying Light",
+    "ja": "Dying Light をオフ",
+    "it": "Disattiva Dying Light"
   },
   "pkg.dlv3life.loading": {
-    "en": "Dying Light is loading (press again to cancel)"
+    "en": "Dying Light is loading (press again to cancel)",
+    "el": "Το Dying Light φορτώνει (πάτα ξανά για ακύρωση)",
+    "es": "Dying Light se está cargando (pulsa otra vez para cancelar)",
+    "bg": "Dying Light се зарежда (натисни пак за отказ)",
+    "fr": "Dying Light se charge (appuie à nouveau pour annuler)",
+    "ar": "جارٍ تحميل Dying Light (اضغط مرة أخرى للإلغاء)",
+    "zh": "Dying Light 載入中（再按一次取消）",
+    "ru": "Dying Light загружается (нажми ещё раз для отмены)",
+    "de": "Dying Light lädt (zum Abbrechen erneut drücken)",
+    "tr": "Dying Light yükleniyor (iptal için tekrar bas)",
+    "pl": "Dying Light się wczytuje (naciśnij ponownie, aby anulować)",
+    "nl": "Dying Light wordt geladen (druk opnieuw om te annuleren)",
+    "pt": "Dying Light carregando (pressione de novo para cancelar)",
+    "id": "Dying Light sedang dimuat (tekan lagi untuk batal)",
+    "ja": "Dying Light を読み込み中（もう一度押すとキャンセル）",
+    "it": "Dying Light in caricamento (premi di nuovo per annullare)"
   }
 }

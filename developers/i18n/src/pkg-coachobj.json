@@ -1,8 +1,38 @@
 {
   "pkg.coachobj.big": {
-    "en": "Reach {1} mass in {0} games"
+    "en": "Reach {1} mass in {0} games",
+    "el": "Φτάσε τη μάζα {1} σε {0} παιχνίδια",
+    "es": "Alcanza {1} de masa en {0} partidas",
+    "bg": "Достигни маса {1} в {0} игри",
+    "fr": "Atteins {1} de masse dans {0} parties",
+    "ar": "اصل إلى كتلة {1} في {0} ألعاب",
+    "zh": "在 {0} 局中達到 {1} 質量",
+    "ru": "Набери массу {1} в играх: {0}",
+    "de": "Erreiche {1} Masse in {0} Spielen",
+    "tr": "{0} oyunda {1} kütleye ulaş",
+    "pl": "Osiągnij masę {1} w grach: {0}",
+    "nl": "Haal {1} massa in {0} spellen",
+    "pt": "Chegue a {1} de massa em {0} partidas",
+    "id": "Capai massa {1} dalam {0} game",
+    "ja": "{0} ゲームで質量 {1} に到達",
+    "it": "Raggiungi {1} di massa in {0} partite"
   },
   "pkg.coachobj.playtime": {
-    "en": "Stay alive {0} min in total"
+    "en": "Stay alive {0} min in total",
+    "el": "Μείνε ζωντανός {0} λεπτά συνολικά",
+    "es": "Sigue vivo {0} min en total",
+    "bg": "Остани жив общо {0} мин",
+    "fr": "Reste en vie {0} min au total",
+    "ar": "ابقَ حيًا {0} دقيقة إجمالًا",
+    "zh": "累計存活 {0} 分鐘",
+    "ru": "Продержись в сумме {0} мин",
+    "de": "Überlebe insgesamt {0} Min.",
+    "tr": "Toplamda {0} dk hayatta kal",
+    "pl": "Przeżyj łącznie {0} min",
+    "nl": "Blijf in totaal {0} min in leven",
+    "pt": "Fique vivo {0} min no total",
+    "id": "Bertahan hidup total {0} menit",
+    "ja": "合計 {0} 分生き残る",
+    "it": "Resta in vita {0} min in totale"
   }
 }
