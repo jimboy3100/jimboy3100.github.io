@@ -1626,6 +1626,64 @@
     function accent() { return (window.defaultSettings && defaultSettings.menuMainColor) || '#01d9cc'; }
     /* window chrome follows the menu theme live (CSS variables set by the theme); canvas keeps accent() */
     function cssMc() { return 'var(--lm-mc,' + accent() + ')'; }
+    /* The window is moved by its title bar (mouse or touch) like the Performance diagnostics
+     * window: kept on screen, the place remembered. Buttons in the bar are not handles, and on a
+     * phone the tab strip scrolls sideways instead of moving the window. */
+    var POS_KEY = 'lmReplayStudioPos';
+    function clampPos(x, y, w, h, vw, vh) {
+        return { x: Math.round(Math.min(Math.max(0, x), Math.max(0, vw - w))), y: Math.round(Math.min(Math.max(0, y), Math.max(0, vh - h))) };
+    }
+    function placeAt(x, y) {
+        var r = W.getBoundingClientRect();
+        var p = clampPos(x, y, r.width, r.height, window.innerWidth, window.innerHeight);
+        W.style.left = p.x + 'px'; W.style.top = p.y + 'px';
+        W.style.bottom = 'auto'; W.style.transform = 'none';
+        return p;
+    }
+    /* a moved window that grew (another tab) or a smaller screen (phone turned): back on screen */
+    function keepOnScreen() {
+        if (W && W.style.top && W.style.display !== 'none') { var r = W.getBoundingClientRect(); placeAt(r.left, r.top); }
+    }
+    function savedPos() {
+        try {
+            var p = JSON.parse(window.localStorage.getItem(POS_KEY) || 'null');
+            if (p && isNum(p.x) && isNum(p.y)) return p;
+        } catch (e) { }
+        return null;
+    }
+    function dragBy(handle, tabs) {
+        handle.style.cursor = 'move';
+        handle.style.touchAction = 'none';
+        var drag = null;
+        var onControl = function (t) {
+            for (; t && t !== handle; t = t.parentNode) if (/^(BUTTON|SELECT|INPUT|A)$/.test(t.tagName)) return true;
+            return false;
+        };
+        handle.addEventListener('pointerdown', function (e) {
+            if ((e.button !== undefined && e.button > 0) || onControl(e.target)) return;
+            if (e.pointerType === 'touch' && tabs.contains(e.target)) return;
+            var r = W.getBoundingClientRect();
+            drag = { id: e.pointerId, dx: e.clientX - r.left, dy: e.clientY - r.top };
+            try { handle.setPointerCapture(e.pointerId); } catch (er) { }
+            e.preventDefault();
+        });
+        handle.addEventListener('pointermove', function (e) {
+            if (!drag || e.pointerId !== drag.id) return;
+            placeAt(e.clientX - drag.dx, e.clientY - drag.dy);
+            e.preventDefault();
+        });
+        var end = function (e) {
+            if (!drag || e.pointerId !== drag.id) return;
+            drag = null;
+            try { handle.releasePointerCapture(e.pointerId); } catch (er) { }
+            var r = W.getBoundingClientRect();
+            try { window.localStorage.setItem(POS_KEY, JSON.stringify({ x: Math.round(r.left), y: Math.round(r.top) })); } catch (er) { }
+        };
+        handle.addEventListener('pointerup', end);
+        handle.addEventListener('pointercancel', end);
+        window.addEventListener('resize', keepOnScreen);
+        if (typeof ResizeObserver === 'function') new ResizeObserver(keepOnScreen).observe(W);
+    }
     function build() {
         if (W) return W;
         /* the shared window look (LMexpress.js) */
@@ -1657,7 +1715,6 @@
             '#lm-rs .lm-rs-item{padding:5px 8px;border-top:1px solid var(--lm-pc2,rgba(255,255,255,.08));}' +
             '#lm-rs .lm-rs-tag{display:inline-block;padding:0 6px;margin:0 3px 0 0;border-radius:8px;background:var(--lm-w-btn-h,rgba(255,255,255,.1));font-size:var(--lm-w-fs-s,11px);}' +
             '#lm-rs .lm-rs-dim{opacity:.7;}' +
-            '#lm-rs.min .lm-rs-full{display:none!important;}' +
             '@media (max-height:460px){#lm-rs{bottom:4px;max-height:calc(100vh - 8px);font-size:11px;}#lm-rs .lm-rs-b{min-height:28px;}}';
         document.head.appendChild(st);
         W = el('div', '', null, { id: 'lm-rs', role: 'dialog' });
@@ -1692,7 +1749,7 @@
         L(function () { hb.textContent = T('title'); });
         head.appendChild(hb);
         /* Player, Library and the recorded games' views; they scroll sideways on a narrow screen */
-        var tabs = el('div', 'display:flex;flex:1 1 auto;min-width:0;', null, { 'class': 'lm-rs-scroll lm-rs-full' });
+        var tabs = el('div', 'display:flex;flex:1 1 auto;min-width:0;', null, { 'class': 'lm-rs-scroll' });
         W.tabP = btn(K('player'), '', function () { setTab('player'); });
         W.tabL = btn(K('library'), '', function () { setTab('library'); });
         W.tabG = btn(function () { return TF('matchHistory'); }, '', function () { setTab('games'); });
@@ -1701,13 +1758,12 @@
         W.tabG.id = 'lm-rs-tab-games'; W.tabD.id = 'lm-rs-tab-dash'; W.tabH.id = 'lm-rs-tab-heat';
         [W.tabP, W.tabL, W.tabG, W.tabD, W.tabH].forEach(function (b) { tabs.appendChild(b); });
         head.appendChild(tabs);
-        W.minB = btn('\u2581', K('minimize'), function () { W.classList.toggle('min'); });
-        head.appendChild(W.minB);
         head.appendChild(btn('\u2715', K('close'), close, 'min-width:38px;font-size:15px;color:var(--lm-tc2,#eee);'));
         W.appendChild(head);
+        dragBy(head, tabs);
         /* player */
         var pv = W.pv = el('div', 'display:flex;flex-direction:column;min-height:0;');
-        var r1 = el('div', '', null, { 'class': 'lm-rs-row lm-rs-full' });
+        var r1 = el('div', '', null, { 'class': 'lm-rs-row' });
         W.sel = el('select', 'max-width:46%;flex:0 1 auto;');
         W.sel.addEventListener('change', function () { select(W.sel.value); });
         r1.appendChild(W.sel);
@@ -1754,26 +1810,25 @@
         SPEEDS.forEach(function (v) { var o = el('option', '', v + 'x'); o.value = String(v); W.spd.appendChild(o); });
         W.spd.addEventListener('change', function () { setSpeed(+W.spd.value); });
         r2.appendChild(W.spd);
-        var full = function (b) { b.classList.add('lm-rs-full'); return b; };
-        r2.appendChild(full(btn(function () { return '[ ' + T('inPt'); }, K('inTitle'), function () { P.inMs = tAt(P.pos); if (P.outMs != null && P.outMs <= P.inMs) P.outMs = null; ui(); })));
-        r2.appendChild(full(btn(function () { return T('outPt') + ' ]'; }, K('outTitle'), function () { P.outMs = tAt(P.pos); if (P.inMs != null && P.inMs >= P.outMs) P.inMs = null; ui(); })));
-        r2.appendChild(full(btn('\u2715[]', '', function () { P.inMs = P.outMs = null; ui(); })));
-        r2.appendChild(full(btn(K('clipX'), '', function () { var c = makeClip(); if (c) download(lmFileParts(c.packets, c.spec, c.side), c.name); })));
-        r2.appendChild(full(btn(K('clipL'), '', function () {
+        r2.appendChild(btn(function () { return '[ ' + T('inPt'); }, K('inTitle'), function () { P.inMs = tAt(P.pos); if (P.outMs != null && P.outMs <= P.inMs) P.outMs = null; ui(); }));
+        r2.appendChild(btn(function () { return T('outPt') + ' ]'; }, K('outTitle'), function () { P.outMs = tAt(P.pos); if (P.inMs != null && P.inMs >= P.outMs) P.inMs = null; ui(); }));
+        r2.appendChild(btn('\u2715[]', '', function () { P.inMs = P.outMs = null; ui(); }));
+        r2.appendChild(btn(K('clipX'), '', function () { var c = makeClip(); if (c) download(lmFileParts(c.packets, c.spec, c.side), c.name); }));
+        r2.appendChild(btn(K('clipL'), '', function () {
             var c = makeClip();
             if (!c) return;
             var entry = buildEntry({ packets: c.packets, spec: c.spec, side: c.side, key: REC.key, name: c.name, tags: ['clip'], clip: true });
             libPut(entry.meta, entry.data).then(function (m) { toast('success', T('saved') + ': ' + m.name); refreshLibrary(); }, libError);
-        })));
-        W.saveB = full(btn(K('save'), '', function () { if (REC) saveMemory(REC.key); }));
+        }));
+        W.saveB = btn(K('save'), '', function () { if (REC) saveMemory(REC.key); });
         r2.appendChild(W.saveB);
-        r2.appendChild(full(btn(K('export'), '', function () { if (REC) exportMemory(REC.key); })));
+        r2.appendChild(btn(K('export'), '', function () { if (REC) exportMemory(REC.key); }));
         /* leave the replay: end the session (skins back), then join the previous server */
         W.backB = btn(K('backGame'), '', function () { dispose('stopped'); if (window._lmJoinPrevServer) window._lmJoinPrevServer(); });
         r2.appendChild(W.backB);
         pv.appendChild(r2);
         /* overlay toggles + bookmark chips */
-        var r3 = el('div', '', null, { 'class': 'lm-rs-row lm-rs-scroll lm-rs-full' });
+        var r3 = el('div', '', null, { 'class': 'lm-rs-row lm-rs-scroll' });
         var chk = function (key, label, title) {
             var lb = el('label'), c = el('input', '', null, { type: 'checkbox' }), tn = document.createTextNode('');
             c.checked = !!OPT[key];
@@ -1804,7 +1859,7 @@
         pv.appendChild(r3);
         W.appendChild(pv);
         /* library */
-        var lv = W.lv = el('div', 'display:none;flex-direction:column;min-height:0;flex:1 1 auto;', null, { 'class': 'lm-rs-full' });
+        var lv = W.lv = el('div', 'display:none;flex-direction:column;min-height:0;flex:1 1 auto;');
         var l1 = el('div', '', null, { 'class': 'lm-rs-row' });
         W.q = el('input', 'flex:1 1 auto;min-width:60px;', null, { type: 'search' });
         L(function () { W.q.setAttribute('placeholder', T('search')); });
@@ -1831,7 +1886,7 @@
         lv.appendChild(W.usage);
         W.appendChild(lv);
         /* the recorded games: Match history, Dashboard, Heatmaps (see drawView) */
-        W.av = el('div', 'display:none;min-height:0;flex:1 1 auto;overflow:auto;-webkit-overflow-scrolling:touch;padding:4px 8px 8px;', null, { 'class': 'lm-rs-full' });
+        W.av = el('div', 'display:none;min-height:0;flex:1 1 auto;overflow:auto;-webkit-overflow-scrolling:touch;padding:4px 8px 8px;');
         W.av.id = 'lm-rs-games';
         W.appendChild(W.av);
         document.body.appendChild(W);
@@ -1842,7 +1897,6 @@
         if (t !== 'player' && t !== 'library' && !VIEWS[t]) t = 'player';
         tab = t;
         if (!W) return;
-        W.classList.remove('min');
         W.pv.style.display = t === 'player' ? 'flex' : 'none';
         W.lv.style.display = t === 'library' ? 'flex' : 'none';
         W.av.style.display = VIEWS[t] ? 'block' : 'none';
@@ -1900,6 +1954,9 @@
             if (k) select(k);
         }
         setTab(tab);
+        /* where it was moved to last time (first opening of the page), else bottom centre */
+        var sp = !W.style.top && savedPos();
+        if (sp) placeAt(sp.x, sp.y); else keepOnScreen();
         if (!uiTimer) uiTimer = setInterval(ui, 250);
         ui();
     }

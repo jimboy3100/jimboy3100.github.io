@@ -4160,24 +4160,6 @@
     "ja": "閉じる",
     "it": "Chiudi"
   },
-  "modules.replaystudio.minimize": {
-    "en": "Minimize",
-    "el": "Ελαχιστοποίηση",
-    "es": "Minimizar",
-    "bg": "Минимизирай",
-    "fr": "Réduire",
-    "ar": "تصغير",
-    "zh": "最小化",
-    "ru": "Свернуть",
-    "de": "Minimieren",
-    "tr": "Küçült",
-    "pl": "Minimalizuj",
-    "nl": "Minimaliseren",
-    "pt": "Minimizar",
-    "id": "Perkecil",
-    "ja": "最小化",
-    "it": "Riduci a icona"
-  },
   "modules.replaystudio.noRec": {
     "en": "No recording yet. Play a game with \"Record replays\" on.",
     "el": "Καμία εγγραφή ακόμα. Παίξε με ενεργή την «Καταγραφή replays».",

@@ -22,6 +22,23 @@
       var r = box.getBoundingClientRect();
       info.rect = [Math.round(r.left), Math.round(r.top), Math.round(r.width), Math.round(r.height)];
       if (r.left < 0 || r.top < 0 || r.right > innerWidth + 1 || r.bottom > innerHeight + 1) fail.push('window outside the screen ' + info.rect.join(','));
+      // no minimise button; dragged by the title it follows and stays on screen
+      var hd = box.querySelector('.lm-rs-hd'), ttl = hd && hd.firstElementChild;
+      if (Array.prototype.some.call(box.querySelectorAll('.lm-rs-hd button'), function (b) { return b.textContent === '▁'; })) fail.push('minimise button still there');
+      if (ttl) {
+        var tr0 = ttl.getBoundingClientRect(), sx = tr0.left + 5, sy = tr0.top + tr0.height / 2;
+        var pe = function (type, x, y) { ttl.dispatchEvent(new PointerEvent(type, { bubbles: true, cancelable: true, pointerId: 9, pointerType: 'mouse', isPrimary: true, button: 0, buttons: type === 'pointerup' ? 0 : 1, clientX: x, clientY: y })); };
+        pe('pointerdown', sx, sy); pe('pointermove', sx - 40, sy - 60);
+        var r2 = box.getBoundingClientRect();
+        info.dragged = [Math.round(r2.left), Math.round(r2.top)];
+        var cl = function (v, max) { return Math.min(Math.max(0, v), Math.max(0, max)); };
+        if (Math.abs(r2.left - cl(r.left - 40, innerWidth - r.width)) > 2 || Math.abs(r2.top - cl(r.top - 60, innerHeight - r.height)) > 2 || r2.top === r.top) fail.push('drag by the title did not move it: ' + info.dragged.join(','));
+        pe('pointermove', sx - 5000, sy + 5000); pe('pointerup', sx - 5000, sy + 5000);
+        var r3 = box.getBoundingClientRect();
+        if (r3.left < -1 || r3.bottom > innerHeight + 1) fail.push('dragged off screen: not kept inside ' + [r3.left, r3.bottom].join(','));
+        try { localStorage.removeItem('lmReplayStudioPos'); } catch (e) { }
+        ['left', 'top', 'bottom', 'transform'].forEach(function (k) { box.style[k] = ''; });
+      } else fail.push('title bar missing');
     }
     var st = window.LMReplayStudio.state();
     info.state = st;
