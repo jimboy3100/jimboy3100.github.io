@@ -3836,24 +3836,6 @@
     "ja": "チームランキングの表示/非表示",
     "it": "Mostra/nascondi classifica squadra"
   },
-  "settings.hk-dance": {
-    "en": "Dance",
-    "el": "Χορός",
-    "es": "Bailar",
-    "bg": "Танц",
-    "fr": "Danser",
-    "ar": "رقص",
-    "zh": "跳舞",
-    "ru": "Танец",
-    "de": "Tanzen",
-    "tr": "Dans",
-    "pl": "Taniec",
-    "nl": "Dansen",
-    "pt": "Dançar",
-    "id": "Menari",
-    "ja": "ダンス",
-    "it": "Balla"
-  },
   "settings.hk-limitposition": {
     "en": "Hold: move straight to the map edge (8 directions)",
     "el": "Κράτα πατημένο: κίνηση ευθεία ως την άκρη του χάρτη (8 κατευθύνσεις)",

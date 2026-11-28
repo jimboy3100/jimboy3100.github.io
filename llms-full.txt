@@ -26,7 +26,6 @@ Legend Mod (entity: https://www.legendmod.ml/#app) is a SoftwareApplication and 
 | Alt+Q | Pop split (virus pop combined with split) |
 | Shift | Split into 16 fragments (maximum split) |
 | R | Pause cell movement (freeze position) |
-| Alt+R | Dance (hold — cells wiggle in place) |
 | Enter | Open chat input / send message |
 | Y | Quick response (send preset message) |
 | Escape | Open menu / enter free spectate |

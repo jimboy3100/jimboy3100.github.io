@@ -13,23 +13,25 @@ const check = (n, c) => { console.log((c ? 'ok   ' : 'FAIL ') + n); if (!c) fail
 
 const hkSrc = read('ogario/hotkeysCommand.js').replace(/\r\n/g, '\n');
 const v4 = read('ogario/ogario.v4.js').replace(/\r\n/g, '\n');
-const gone = ['hk-switchServerMode', 'hk-showQuest', 'hk-multiboxback'];
+const gone = ['hk-switchServerMode', 'hk-showQuest', 'hk-multiboxback', 'hk-dance'];
 gone.forEach(c => check(c + ': no hotkey command', hkSrc.indexOf("'" + c + "'") < 0));
 /* texts of commands that do not exist are not shipped */
 {
   const en = read('languages/lm-en.js');
-  ['settings.hk-switchServerMode', 'settings.hk-showQuest', 'settings.hk-multiboxback', 'settings.hk-showDevConsole', 'game1.ps.toPrivate']
+  ['settings.hk-switchServerMode', 'settings.hk-showQuest', 'settings.hk-multiboxback', 'settings.hk-showDevConsole', 'game1.ps.toPrivate', 'settings.hk-dance']
     .forEach(k => check(k + ': no text', en.indexOf('"' + k + '"') < 0));
 }
 
 /* a key saved on a removed hotkey is free again, the other keys stay */
 {
   const a = v4.indexOf('function lmRenameOldHotkeys(map) {'), b = v4.indexOf('\n}', a);
-  const hk = { '-': 'hk-switchServerMode', 'ALT+Q': 'hk-showQuest', W: 'hk-feed' };
+  const hk = { '-': 'hk-switchServerMode', 'ALT+Q': 'hk-showQuest', 'ALT+R': 'hk-dance', W: 'hk-feed' };
   const ctx = { hotkeys: hk };
   let err = null;
   try { vm.runInNewContext(v4.slice(a, b + 2) + '\nchanged = lmRenameOldHotkeys(hotkeys);', ctx); } catch (e) { err = e; }
-  check('stored keys on the removed hotkeys dropped', !err && ctx.changed === true && !('-' in hk) && !('ALT+Q' in hk) && hk.W === 'hk-feed');
+  check('stored keys on the removed hotkeys dropped', !err && ctx.changed === true && !('-' in hk) && !('ALT+Q' in hk) && !('ALT+R' in hk) && hk.W === 'hk-feed');
+  /* Dance (Alt+R): its state and the method that set it are gone with the hotkey */
+  check('no dance state or method left', !/\bLM\.dance\b|\n        dance\(on\) \{|\n        dance: false,/.test(v4) && read('ogario/spect.js').indexOf('legendmod.dance') < 0);
 }
 
 /* the public relay is the only one: connect() opens it, whatever an old page state says */

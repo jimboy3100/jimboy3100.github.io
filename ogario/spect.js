@@ -900,7 +900,7 @@ class Spect {
                 this.sendPosition(this.convertX(this.playerX), this.convertY(this.playerY));
             } else if (window.multiboxPlayerEnabled === this.number || this.isFreeSpectate || window.multiboxFollowMouse) {
                 /* Only the controlled unit follows the cursor (any truthy value moved every unit).
-                 * Same rules as the main cell: line lock / dance aim, and no update while a crazy
+                 * Same rules as the main cell: line lock aim, and no update while a crazy
                  * double split holds the position (window.lockPosition). */
                 if (!(window.lockPosition && window.multiboxPlayerEnabled === this.number)) {
                     var _lmAim = this._lmAimTarget();
@@ -924,23 +924,18 @@ class Spect {
     }
 
     /* Cursor target for the controlled unit, in client space (like legendmod.cursorX/Y).
-     * Mirrors LM.sendPosition: line lock snaps to the nearest of 8 directions, dance spins;
-     * a running line split keeps its locked cursor (legendmod.cursorX/Y) over both. */
+     * Mirrors LM.sendPosition: line lock snaps to the nearest of 8 directions;
+     * a running line split keeps its locked cursor (legendmod.cursorX/Y) over it. */
     _lmAimTarget() {
         var cx = legendmod.cursorX, cy = legendmod.cursorY;
-        if ((window.followStraight || legendmod.dance) && !legendmod.lineSplitActive && window.multiboxPlayerEnabled === this.number &&
+        if (window.followStraight && !legendmod.lineSplitActive && window.multiboxPlayerEnabled === this.number &&
             Number.isFinite(this.playerX) && Number.isFinite(this.playerY)) {
-            var d;
-            if (window.followStraight) {
-                var dx = cx - this.playerX, dy = cy - this.playerY;
-                if (dx || dy) {
-                    d = (Math.round(Math.atan2(dy, dx) / (Math.PI / 4)) + 10) % 8;
-                    this._lmLineDir = d;
-                } else {
-                    d = this._lmLineDir;
-                }
+            var d, dx = cx - this.playerX, dy = cy - this.playerY;
+            if (dx || dy) {
+                d = (Math.round(Math.atan2(dy, dx) / (Math.PI / 4)) + 10) % 8;
+                this._lmLineDir = d;
             } else {
-                d = ~~((Date.now() / 40) % 8);
+                d = this._lmLineDir;
             }
             if (d !== undefined) {
                 var DX = [0, 1, 1, 1, 0, -1, -1, -1], DY = [-1, -1, 0, 1, 1, 1, 0, -1], D = 50000;
@@ -1067,7 +1062,7 @@ class Spect {
     }
 
     sendSplit() {
-        /* aim like the cursor loop (line lock / dance); a crazy split keeps the held position */
+        /* aim like the cursor loop (line lock); a crazy split keeps the held position */
         if (!(window.lockPosition && window.multiboxPlayerEnabled === this.number)) {
             var _lmAim = this._lmAimTarget();
             this.sendPosition(this.convertX(_lmAim[0]), this.convertY(_lmAim[1]));
