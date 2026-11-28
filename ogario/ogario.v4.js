@@ -36524,6 +36524,8 @@ function thelegendmodproject() {
         this._lmJellyCX = NaN;
         this._lmJellyCY = NaN;
         this._lmJellyHeld = false;
+        /* Multibox: the copy it was last hidden behind (LM.prepareJellyCells) */
+        this._lmJellyFrom = null;
 
 
         this.oldAlpha = 0;
@@ -36736,6 +36738,7 @@ function thelegendmodproject() {
             this.maxPointRad = 0;
             this._lmJellyCX = this._lmJellyCY = NaN;
             this._lmJellyHeld = false;
+            this._lmJellyFrom = null;
 
             /* a reused object starts outside every indexed list */
             this._cellsIdx = this._virusIdx = this._foodIdx = this._foodMultiIdx = -1;
@@ -39844,6 +39847,13 @@ function thelegendmodproject() {
          * starts from a round perimeter like a new cell instead of one left
          * from long ago.
          *
+         * Multibox / Full Map: a hidden copy remembers the copy it sat behind
+         * (_lmMbTwin, kept as _lmJellyFrom after the link is dropped). When it
+         * is drawn in that copy's place it starts with that copy's perimeter
+         * moved to its own centre, so the wobble and dents go on instead of
+         * snapping round (seedJellyCell). Without other connections nothing
+         * is linked and this costs nothing.
+         *
          * hold: a frame between two jelly steps (jellyStepDue): perimeters
          * keep their point count until the next step; only a cell without
          * one gets its round start perimeter. On a step, a perimeter moved
@@ -39886,10 +39896,24 @@ function thelegendmodproject() {
                         cell.size <= 36
                     )
                 ) {
+                    var jellyTo =
+                        cell._lmMbTwin;
+
                     if (
                         cell.points &&
                         cell.points.length
                     ) {
+                        /* drawn last frame, now hidden behind a copy with no
+                         * perimeter yet: that copy takes this shape */
+                        if (
+                            jellyTo &&
+                            jellyTo.invisible !== true &&
+                            !jellyTo.removed &&
+                            !(jellyTo.points && jellyTo.points.length)
+                        ) {
+                            if (this.seedJellyCell(jellyTo, cell)) jellyTo._lmJellyFrom = null;
+                        }
+
                         cell.points.length = 0;
 
                         if (cell.pointsVel) {
@@ -39898,6 +39922,10 @@ function thelegendmodproject() {
                     }
                     cell._lmJellyHeld = false;
                     cell._lmJellyCX = cell._lmJellyCY = NaN;
+
+                    if (jellyTo || cell._lmJellyFrom) {
+                        cell._lmJellyFrom = jellyTo || null;
+                    }
 
                     continue;
                 }
@@ -39942,6 +39970,16 @@ function thelegendmodproject() {
                         cell.pointsVel &&
                         cell.pointsVel.length === cell.points.length
                     );
+
+                /* drawn in place of the copy it was hidden behind last frame */
+                if (!hasPerimeter && cell._lmJellyFrom) {
+                    var jellyFrom =
+                        cell._lmJellyFrom;
+
+                    cell._lmJellyFrom = null;
+                    hasPerimeter =
+                        this.seedJellyCell(cell, jellyFrom);
+                }
 
                 if (hold && hasPerimeter) {
                     out.push(cell);
@@ -39999,6 +40037,62 @@ function thelegendmodproject() {
             }
 
             return out;
+        },
+        /*
+         * Give cell the perimeter of from, another connection's copy of the
+         * same cell, moved by the centre difference: same radii, velocities
+         * and point count (updateNumPoints adjusts the count on the next
+         * step). Point records come from the shared pool; this runs once per
+         * hand-over, not per frame. Refused for a copy that is not at the
+         * same place (a recycled cell object) or a virus/non-virus pair.
+         * Returns whether cell has a perimeter now.
+         */
+        seedJellyCell: function (cell, from) {
+            var src = from.points, srcVel = from.pointsVel;
+            var n = src ? src.length : 0;
+            if (
+                cell === from ||
+                n < 3 ||
+                !srcVel ||
+                srcVel.length !== n ||
+                !cell.isVirus !== !from.isVirus
+            ) {
+                return false;
+            }
+            var dx = cell.x - from.x, dy = cell.y - from.y;
+            var r = cell.size > from.size ? cell.size : from.size;
+            /* also false for NaN */
+            if (!(dx * dx + dy * dy <= r * r)) return false;
+            var points = cell.points || (cell.points = []);
+            var vel = cell.pointsVel || (cell.pointsVel = []);
+            var pool = window._lmJellyPointPool || (window._lmJellyPointPool = []);
+            var i, p, q;
+            /* a short start set (fewer than 3 points) goes back to the pool */
+            for (i = 0; i < points.length; i++) {
+                if (points[i] && pool.length < 8192) {
+                    points[i].parent = null;
+                    pool.push(points[i]);
+                }
+            }
+            points.length = 0;
+            vel.length = 0;
+            for (i = 0; i < n; i++) {
+                q = src[i];
+                p = pool.pop() || { x: 0, y: 0, rl: 0, parent: null };
+                p.x = q.x + dx;
+                p.y = q.y + dy;
+                p.rl = q.rl;
+                p.parent = cell;
+                points.push(p);
+                vel.push(srcVel[i]);
+            }
+            /* around this frame's centre, as its own last step would lay it */
+            if (typeof cell.placeJellyPoints === "function") cell.placeJellyPoints(cell.x, cell.y);
+            cell.maxPointRad = from.maxPointRad || 0;
+            /* not a perimeter its own step left */
+            cell._lmJellyHeld = false;
+            cell._lmJellyCX = cell._lmJellyCY = NaN;
+            return true;
         },
         /*
          * Jelly cadence. One jelly step (random wave, collision dents, pull

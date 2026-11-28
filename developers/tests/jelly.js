@@ -404,6 +404,87 @@ function maxDiff(a, b) {
         check('  and it moves normally on the next frame', c0.points.every((p) => isFinite(p.x) && Math.abs(Math.hypot(p.x - c0.x, p.y - c0.y) - c0.size) < 3));
     }
 
+    /* ---- 8. multibox: the copy drawn in another copy's place keeps its jelly shape ---- */
+    {
+        const J = B.loadJelly(), rng = B.makeRng(91);
+        B.setCamera(J);
+        const n = 35; /* the point count updateNumPoints gives a size 100 cell at scale 0.35 */
+        /* A drawn with a dented perimeter, B the hidden copy of another connection behind it */
+        function pair(order) {
+            const a = body(J, 1, 100, 50, 100), b = body(J, 2, 103, 48, 100);
+            ring(a, n, 30, rng);
+            a.pointsVel = a.pointsVel.map(() => rng() - 0.5);
+            a.maxPointRad = Math.max(...a.points.map((p) => p.rl));
+            b.invisible = true; b._lmMbTwin = a; a._lmMbHides = b;
+            J.LM.cells = order === 'ba' ? [b, a] : [a, b];
+            J.LM.prepareJellyCells(J.LM.cells, []);
+            return { a, b };
+        }
+        /* B's perimeter is A's shape around B's centre */
+        function sameShape(b, ax, ay, shape) {
+            const dx = b.x - ax, dy = b.y - ay;
+            return b.points.length === shape.length && b.points.every((p, i) =>
+                Math.abs(p.x - (shape[i].x + dx)) < 1e-9 && Math.abs(p.y - (shape[i].y + dy)) < 1e-9 &&
+                p.rl === shape[i].rl && p.parent === b && b.pointsVel[i] === shape[i].v);
+        }
+        const notRound = (c) => Math.max(...c.points.map((p) => p.rl)) - Math.min(...c.points.map((p) => p.rl)) > 5;
+        const shapeOf = (c) => c.points.map((p, i) => ({ x: p.x, y: p.y, rl: p.rl, v: c.pointsVel[i] }));
+
+        /* A leaves (removeCell hands over: B shown, its twin link dropped), on a step and on a frame between steps */
+        for (const hold of [false, true]) {
+            const { a, b } = pair('ab');
+            check('hidden copy: no physics, points dropped, the copy it sits behind remembered', b.points.length === 0 && b._lmJellyFrom === a);
+            const shape = shapeOf(a);
+            a.removed = true; b.invisible = false; b._lmMbTwin = null; a._lmMbHides = null;
+            J.LM.cells = [b];
+            const jc = J.LM.prepareJellyCells(J.LM.cells, [], hold);
+            if (hold) J.LM.holdJellyCells(jc);
+            check('drawn copy removed (' + (hold ? 'between steps' : 'step') + '): the copy shown in its place starts with its perimeter moved to its centre, not a circle',
+                jc.indexOf(b) >= 0 && sameShape(b, a.x, a.y, shape) && notRound(b) && b._lmJellyFrom === null && b._lmJellyHeld === false);
+            J.LM.updateQuadtree(jc);
+            b.movePoints();
+            check('  and it moves normally on the next step', b.points.every((p) => isFinite(p.x) && Math.abs(Math.hypot(p.x - b.x, p.y - b.y) - b.size) < 40));
+        }
+
+        /* the drawn copy switches connection: A now hidden behind B, in both list orders */
+        for (const order of ['ab', 'ba']) {
+            const { a, b } = pair(order);
+            const shape = shapeOf(a);
+            a.invisible = true; a._lmMbTwin = b; b._lmMbHides = a;
+            b.invisible = false; b._lmMbTwin = null;
+            b.x += 2; /* both moved a little this frame */
+            const jc = J.LM.prepareJellyCells(J.LM.cells, []);
+            check('drawn copy switches (list order ' + order + '): the new drawn copy takes the shape of the old one, the old one is dropped',
+                jc.indexOf(b) >= 0 && jc.indexOf(a) < 0 && sameShape(b, a.x, a.y, shape) && notRound(b) && a.points.length === 0 && a._lmJellyFrom === b && !b._lmJellyFrom);
+        }
+
+        /* a copy at another place (a recycled cell object) or a removed copy with no points gives no shape */
+        {
+            const { a, b } = pair('ab');
+            a.x += 500; a.removed = true; b.invisible = false; b._lmMbTwin = null;
+            J.LM.cells = [b];
+            J.LM.prepareJellyCells(J.LM.cells, []);
+            check('a copy far away is not taken: round start perimeter', b.points.length === n && b.points.every((p) => p.rl === b.size) && b._lmJellyFrom === null);
+        }
+
+        /* single connection: no twin links, the hand-over is never looked at */
+        {
+            const Js = B.loadJelly();
+            const cells = B.makeScene(Js, 200, 50, 4);
+            let calls = 0;
+            const seed = Js.LM.seedJellyCell;
+            Js.LM.seedJellyCell = function () { calls++; return seed.apply(this, arguments); };
+            runFrames(Js, cells, 3);
+            const hidden = cells.filter((c) => !c.isFood && c.isInView()).slice(0, 10);
+            hidden.forEach((c) => (c.invisible = true));
+            runFrames(Js, cells, 2);
+            hidden.forEach((c) => (c.invisible = false));
+            runFrames(Js, cells, 2);
+            check('single connection: no hand-over, no remembered copy, shown-again cells start round as before',
+                calls === 0 && cells.every((c) => !c._lmJellyFrom));
+        }
+    }
+
     /* Resize repeatedly while zooming and growing. The original splice algorithm
      * is the oracle: every point, velocity and random draw must be identical. */
     {
