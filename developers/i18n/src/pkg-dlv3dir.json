@@ -1,0 +1,38 @@
+{
+  "pkg.dlv3dir.intensity": {
+    "en": "Intensity"
+  },
+  "pkg.dlv3dir.competitive": {
+    "en": "Competitive"
+  },
+  "pkg.dlv3dir.immersive": {
+    "en": "Immersive"
+  },
+  "pkg.dlv3dir.nightmare": {
+    "en": "Nightmare"
+  },
+  "pkg.dlv3dir.volume": {
+    "en": "Sound"
+  },
+  "pkg.dlv3dir.cycle": {
+    "en": "Day and night"
+  },
+  "pkg.dlv3dir.scares": {
+    "en": "Scares"
+  },
+  "pkg.dlv3dir.themeNote": {
+    "en": "While Dying Light is on, the menu and HUD show its colours. Your own theme is kept and comes back when you turn it off. Day and night is scenery only."
+  },
+  "pkg.dlv3dir.nightfall": {
+    "en": "Dying Light: night falls (scenery only)"
+  },
+  "pkg.dlv3dir.radio1": {
+    "en": "Dying Light radio (story): ...static... anyone still out there? Get to a safe zone before dark."
+  },
+  "pkg.dlv3dir.radio2": {
+    "en": "Dying Light radio (story): Tower to all survivors, the Quarantine Zone is sealed. Stay together."
+  },
+  "pkg.dlv3dir.radio3": {
+    "en": "Dying Light radio (story): ...signal breaking up... they hunt at night..."
+  }
+}

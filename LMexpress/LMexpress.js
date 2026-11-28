@@ -3977,7 +3977,41 @@ function lmDyingLightBanner() {
     var tip = _lmxE(on ? "pkg.dlv3life.turnOff" : busy ? "pkg.dlv3life.loading" : "pkg.dlv3life.turnOn");
     box.innerHTML = '<a class="lm-dl-banner" href="#" role="button" data-lm-dl="toggle" title="' + tip + '" aria-label="' + tip + '"' +
         (busy ? ' aria-busy="true" style="opacity:.6"' : '') + '><img src="https://www.legendmod.ml/banners/' +
-        (on ? 'dyinglightbanner3.jpg' : 'dyinglightbanner2.jpg') + '" alt="Dying Light" height="70" style="width:100%"></a>';
+        (on ? 'dyinglightbanner3.jpg' : 'dyinglightbanner2.jpg') + '" alt="Dying Light" height="70" style="width:100%"></a>' +
+        (on ? lmDyingLightOpts() : '');
+}
+/* its few controls, under the banner while it is on (gameplay settings dyingLightIntensity,
+ * dyingLightVolume, dyingLightCycle, dyingLightScares; the director reads them live) */
+var LM_DL_OPTS = ["dyingLightIntensity", "dyingLightVolume", "dyingLightCycle", "dyingLightScares"];
+function lmDyingLightOpts() {
+    var s = typeof defaultmapsettings === "object" && defaultmapsettings ? defaultmapsettings : {};
+    var it = s.dyingLightIntensity || "immersive", v = Number(s.dyingLightVolume);
+    var vol = Math.round((Number.isFinite(v) ? Math.max(0, Math.min(1, v)) : 1) * 100);
+    var opt = function (k, t) { return '<option value="' + k + '"' + (it === k ? ' selected' : '') + '>' + _lmxE(t) + '</option>'; };
+    var box = function (k, t) {
+        return '<label style="margin:0;font-weight:400;cursor:pointer"><input type="checkbox" data-lm-dl-opt="' + k + '"' + (s[k] !== false ? ' checked' : '') +
+            ' style="vertical-align:middle;margin:0 4px 0 0"> ' + _lmxE(t) + '</label>';
+    };
+    return '<div class="lm-dl-opts" role="group" aria-label="Dying Light" style="display:flex;flex-wrap:wrap;gap:4px 12px;align-items:center;margin:6px 0;font-size:12px;color:var(--lm-tc,#fff)">' + // i18n-ok: name
+        '<label style="margin:0;font-weight:400">' + _lmxE("pkg.dlv3dir.intensity") + ' <select data-lm-dl-opt="dyingLightIntensity" class="form-control" style="display:inline-block;width:auto;height:24px;padding:0 4px;font-size:12px">' +
+        opt("competitive", "pkg.dlv3dir.competitive") + opt("immersive", "pkg.dlv3dir.immersive") + opt("nightmare", "pkg.dlv3dir.nightmare") + '</select></label>' +
+        '<label style="margin:0;font-weight:400">' + _lmxE("pkg.dlv3dir.volume") + ' <input type="range" min="0" max="100" step="5" value="' + vol +
+        '" data-lm-dl-opt="dyingLightVolume" style="display:inline-block;width:90px;vertical-align:middle"></label>' +
+        box("dyingLightCycle", "pkg.dlv3dir.cycle") + box("dyingLightScares", "pkg.dlv3dir.scares") +
+        '<div style="flex-basis:100%;opacity:.8">' + _lmxE("pkg.dlv3dir.themeNote") + '</div></div>';
+}
+/* a control changed: the setting is saved like the others (exported, reset by Restore defaults) */
+function lmDyingLightOpt(el) {
+    var key = el && el.getAttribute && el.getAttribute("data-lm-dl-opt");
+    if (LM_DL_OPTS.indexOf(key) < 0 || typeof defaultmapsettings !== "object" || !defaultmapsettings || window._lmSettingsReload) return false;
+    var v = el.type === "checkbox" ? !!el.checked : el.type === "range" ? Number(el.value) / 100 : String(el.value);
+    if (typeof lmSettingValue === "function") v = lmSettingValue(key, v);
+    if (v === undefined) return false;
+    defaultmapsettings[key] = v;
+    try { application.saveSettings(defaultmapsettings, "ogarioSettings"); } catch (e) { }
+    var api = window.LMDyingLight;
+    if (key === "dyingLightIntensity" && api && api._lm === 1) api.setIntensity(v);
+    return true;
 }
 /* moves the old flag dyinglight1load into the setting once, then turns a saved switch on again */
 function lmDyingLightStartup() {
@@ -3993,6 +4027,7 @@ function lmDyingLightStartup() {
         if (this.getAttribute("data-lm-dl") === "on") opendyinglight();
         else lmDyingLightToggle();
     });
+    $(document).off("change.lmDl").on("change.lmDl", "[data-lm-dl-opt]", function () { lmDyingLightOpt(this); });
     lmDyingLightBanner();
     if (typeof defaultmapsettings === "object" && defaultmapsettings && defaultmapsettings.dyingLight === true) opendyinglight(true);
 }

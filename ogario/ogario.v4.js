@@ -20093,6 +20093,46 @@ function _lmCssUrl(u) {
     var s = String(u == null ? '' : u).replace(/["'\\()\s<>]/g, '');
     return s ? 'url("' + s + '")' : 'none';
 }
+/* Theme colours an expansion (Dying Light) shows for a while: resolved on top of the player's
+ * theme (defaultSettings) by the menu, HUD and Game Over colours, never saved, exported, sent to
+ * Legend pages or shown in the Theme pickers, so turning it off shows the CURRENT theme again.
+ * lmThemeOverride(owner, { key: colour }) sets them (null clears that owner's) and repaints. */
+var LM_THEME_OV_KEYS = ['menuMainColor', 'menuPanelColor', 'menuPanelColor2', 'menuTextColor', 'menuTextColor2', 'hudMainColor', 'hudColor', 'hudTextColor'];
+var _lmThemeOv = null;
+function lmThemeEffective() {
+    if (!_lmThemeOv) return defaultSettings;
+    var o = Object.create(defaultSettings);
+    for (var k in _lmThemeOv.map) o[k] = _lmThemeOv.map[k];
+    return o;
+}
+function lmThemeOverride(owner, map) {
+    if (!owner || typeof owner !== 'string') return false;
+    if (map == null) {
+        if (!_lmThemeOv || _lmThemeOv.owner !== owner) return false;
+        _lmThemeOv = null;
+    } else {
+        if (_lmThemeOv && _lmThemeOv.owner !== owner) return false;
+        var m = {}, n = 0;
+        for (var i = 0; i < LM_THEME_OV_KEYS.length; i++) {
+            var k = LM_THEME_OV_KEYS[i], v = map[k];
+            /* colours only: #hex, rgb() / rgba() */
+            if (typeof v === 'string' && /^(#[0-9a-fA-F]{3,8}|rgba?\([0-9., ]+\))$/.test(v)) { m[k] = v; n++; }
+        }
+        if (!n) return false;
+        _lmThemeOv = { owner: owner, map: m };
+    }
+    var T = window.Settings;
+    try {
+        if (T && typeof T.setMenuMainColor === 'function') {
+            T.setMenuMainColor();
+            T.setMenuPanelColor();
+            T.setMenuTextColor();
+            T.setHudColors();
+        }
+    } catch (e) { }
+    return true;
+}
+window.lmThemeOverride = lmThemeOverride;
 var defaultSettings = {
     checkonetimeLc2: false,
     darkTheme: true,
@@ -21953,6 +21993,13 @@ var defaultmapsettings = {
     /* the Dying Light expansion (extras/dyinglight.js, its banner in the Tools tab); no menu switch.
      * It replaces the old stored flag dyinglight1load (moved once by LMexpress.js) */
     dyingLight: false,
+    /* its controls under the banner while it is on: how much happens (competitive: a fixed scene,
+     * no surprises), the level of its own sounds (times the Gameplay channel), the 10 minute day and
+     * night scenes, the rare scares (a shadow at the edge of the screen) */
+    dyingLightIntensity: 'immersive',
+    dyingLightVolume: 1,
+    dyingLightCycle: true,
+    dyingLightScares: true,
     //
     FacebookIDs: ''
 };
@@ -22000,7 +22047,9 @@ var LM_SETTINGS_SCHEMA = Object.freeze({
     volGameplay: [0, 1, 0.01],
     volNotifications: [0, 1, 0.01],
     a11yTextScale: [1, 1.6, 0.05],
-    a11yHudTextScale: [1, 1.6, 0.05]
+    a11yHudTextScale: [1, 1.6, 0.05],
+    dyingLightIntensity: { choices: ['competitive', 'immersive', 'nightmare'] },
+    dyingLightVolume: [0, 1, 0.05]
 });
 /* the number of decimals of a step or bound (0.05 -> 2), to drop float noise after snapping */
 function lmSchemaDecimals(x) {
@@ -23101,19 +23150,21 @@ function thelegendmodproject() {
                 ':root{--lm-op:' + _lmCssNum(defaultSettings.menuOpacity, 0.1, 1, 0.96) + '}');
         },
         setMenuMainColor() {
-            var css = '::-moz-selection{background-color:' + defaultSettings.menuMainColor + '!important}::selection{background-color:' + defaultSettings.menuMainColor + '!important}.menu-main-color,.main-color,#quick-menu a:hover,.quick,.quick:focus,.menu-tabs a:hover,.menu-tabs .active,.submenu-tabs a:hover,.submenu-tabs .active,#stats center,#exp-imp h1{color:' + defaultSettings.menuMainColor + '}#exp-bar .progress-bar-striped,.quick:hover,.rangeslider__fill{background-color:' + defaultSettings.menuMainColor + '}.quick.lm-quick-on{box-shadow:0 0 0 2px ' + defaultSettings.menuMainColor + '}#main-menu,.agario-side-panel,#hotkeys,#exp-imp{border-color:' + defaultSettings.menuMainColor + '}.picker-emoji-content::-webkit-scrollbar-thumb,.ps-scrollbar-y{background-color:' + defaultSettings.menuMainColor + '!important}';
-            css += ':root{--lm-mc:' + _lmCssVal(defaultSettings.menuMainColor, '#01d9cc') + '}';
+            var S = lmThemeEffective();
+            var css = '::-moz-selection{background-color:' + S.menuMainColor + '!important}::selection{background-color:' + S.menuMainColor + '!important}.menu-main-color,.main-color,#quick-menu a:hover,.quick,.quick:focus,.menu-tabs a:hover,.menu-tabs .active,.submenu-tabs a:hover,.submenu-tabs .active,#stats center,#exp-imp h1{color:' + S.menuMainColor + '}#exp-bar .progress-bar-striped,.quick:hover,.rangeslider__fill{background-color:' + S.menuMainColor + '}.quick.lm-quick-on{box-shadow:0 0 0 2px ' + S.menuMainColor + '}#main-menu,.agario-side-panel,#hotkeys,#exp-imp{border-color:' + S.menuMainColor + '}.picker-emoji-content::-webkit-scrollbar-thumb,.ps-scrollbar-y{background-color:' + S.menuMainColor + '!important}';
+            css += ':root{--lm-mc:' + _lmCssVal(S.menuMainColor, '#01d9cc') + '}';
             /* Switchery paints a switch's colour inline when it is created, so a later theme change
              * never reached the switches: the switched-on colour now follows the theme */
-            var swc = _lmCssVal(defaultSettings.menuMainColor, '#01d9cc');
+            var swc = _lmCssVal(S.menuMainColor, '#01d9cc');
             css += 'input:checked+.switchery{background-color:' + swc + '!important;border-color:' + swc + '!important;box-shadow:' + swc + ' 0 0 0 16px inset!important}';
             this.addCustomCSS('menuMainColorCSS', css);
             /* Keep the inline --lm-mc in sync so it always wins over CSS fallbacks */
-            try { document.documentElement.style.setProperty('--lm-mc', _lmCssVal(defaultSettings.menuMainColor, '#01d9cc')); } catch(e){}
+            try { document.documentElement.style.setProperty('--lm-mc', _lmCssVal(S.menuMainColor, '#01d9cc')); } catch(e){}
         },
         setMenuPanelColor() {
-            var css = '#main-menu,.agario-side-panel,#hotkeys,#exp-imp{background-color: ' + defaultSettings.menuPanelColor + '}label:hover,.emoji-selectables,.agario-panel input,#UserProfileID2a, .agario-panel select,.agario-side-panel input,.agario-side-panel select,.input-group-addon,.nick .input-group-btn,.skin .input-group-btn,#stream-mode,#hide-url,.menu-tabs a:hover,.menu-tabs .active,.submenu-tabs,#exp-bar .progress,#quick-menu a:hover,.quick,.select-wrapper,#hotkeys-cfg div.row:hover,#hotkeys-cfg .command-in,#exp-imp-settings textarea,.restore-settings{background-color: ' + defaultSettings.menuPanelColor2 + '}.agario-panel h5,.agario-side-panel h5,#stats h2,.menu-tabs,.submenu-tabs,#skins a.default,#stats hr,#hotkeys-cfg div.row, #exp-imp h1{border-color: ' + defaultSettings.menuPanelColor2 + '}.quick:hover,#skins a,#profiles{color:' + defaultSettings.menuPanelColor2 + '}input.stream-mode,input.hide-url{color:' + defaultSettings.menuPanelColor2 + '!important}';
-            css += ':root{--lm-pc:' + _lmCssVal(defaultSettings.menuPanelColor, '#00243e') + ';--lm-pc2:' + _lmCssVal(defaultSettings.menuPanelColor2, '#002f52') + '}';
+            var S = lmThemeEffective();
+            var css = '#main-menu,.agario-side-panel,#hotkeys,#exp-imp{background-color: ' + S.menuPanelColor + '}label:hover,.emoji-selectables,.agario-panel input,#UserProfileID2a, .agario-panel select,.agario-side-panel input,.agario-side-panel select,.input-group-addon,.nick .input-group-btn,.skin .input-group-btn,#stream-mode,#hide-url,.menu-tabs a:hover,.menu-tabs .active,.submenu-tabs,#exp-bar .progress,#quick-menu a:hover,.quick,.select-wrapper,#hotkeys-cfg div.row:hover,#hotkeys-cfg .command-in,#exp-imp-settings textarea,.restore-settings{background-color: ' + S.menuPanelColor2 + '}.agario-panel h5,.agario-side-panel h5,#stats h2,.menu-tabs,.submenu-tabs,#skins a.default,#stats hr,#hotkeys-cfg div.row, #exp-imp h1{border-color: ' + S.menuPanelColor2 + '}.quick:hover,#skins a,#profiles{color:' + S.menuPanelColor2 + '}input.stream-mode,input.hide-url{color:' + S.menuPanelColor2 + '!important}';
+            css += ':root{--lm-pc:' + _lmCssVal(S.menuPanelColor, '#00243e') + ';--lm-pc2:' + _lmCssVal(S.menuPanelColor2, '#002f52') + '}';
             /* The open list of every dropdown never takes the theme: Chrome draws it from the option's
              * colours (or the select's, over white), and theme text on the theme or the browser's white
              * could not be read (grey panels, light themes). Dark text on white, as in the browser, for
@@ -23123,14 +23174,15 @@ function thelegendmodproject() {
             css += 'select option:not(#main-panel option),select optgroup:not(#main-panel optgroup){background-color:#fff!important;color:#1a1a1a!important}select option:checked:not(#main-panel option){background-color:#d3e3fd!important}select option:disabled:not(#main-panel option){color:#6b6b6b!important}';
             this.addCustomCSS('menuPanelColorCSS', css);
             /* Keep inline --lm-pc/pc2 in sync */
-            try { var _r = document.documentElement.style; _r.setProperty('--lm-pc', _lmCssVal(defaultSettings.menuPanelColor, '#00243e')); _r.setProperty('--lm-pc2', _lmCssVal(defaultSettings.menuPanelColor2, '#002f52')); } catch(e){}
+            try { var _r = document.documentElement.style; _r.setProperty('--lm-pc', _lmCssVal(S.menuPanelColor, '#00243e')); _r.setProperty('--lm-pc2', _lmCssVal(S.menuPanelColor2, '#002f52')); } catch(e){}
         },
         setMenuTextColor() {
-            var css = '.agario-panel,.agario-side-panel,.agario-panel input,.agario-panel select,#UserProfileID2a, .agario-side-panel input,.agario-side-panel select,.input-group-addon,.dark .yt-username,#stream-mode,#hide-url,.menu-tabs a,.submenu-tabs a,#skins a.default:hover,#quick-menu a,#prev-profile.default:hover,#next-profile.default:hover,#statsText,#hotkeys,#hotkeys-cfg .command-in,#exp-imp{color:' + defaultSettings.menuTextColor + '}#skins a.default:hover{border-color:' + defaultSettings.menuTextColor + '}::-webkit-input-placeholder{color:' + defaultSettings.menuTextColor2 + '!important}::-moz-placeholder{color:' + defaultSettings.menuTextColor2 + '!important}#user-id-tag,#UserProfileID2a, #version-tag,#statsSubtext,#hotkeys-inst,#exp-imp textarea,.restore-settings a,.restore-settings a:hover{color:' + defaultSettings.menuTextColor2 + '}#hotkeys-cfg .command-in,#theme .color-box{border-color:' + defaultSettings.menuTextColor2 + '}';
-            css += ':root{--lm-tc:' + _lmCssVal(defaultSettings.menuTextColor, '#ffffff') + ';--lm-tc2:' + _lmCssVal(defaultSettings.menuTextColor2, '#8096a7') + '}';
+            var S = lmThemeEffective();
+            var css = '.agario-panel,.agario-side-panel,.agario-panel input,.agario-panel select,#UserProfileID2a, .agario-side-panel input,.agario-side-panel select,.input-group-addon,.dark .yt-username,#stream-mode,#hide-url,.menu-tabs a,.submenu-tabs a,#skins a.default:hover,#quick-menu a,#prev-profile.default:hover,#next-profile.default:hover,#statsText,#hotkeys,#hotkeys-cfg .command-in,#exp-imp{color:' + S.menuTextColor + '}#skins a.default:hover{border-color:' + S.menuTextColor + '}::-webkit-input-placeholder{color:' + S.menuTextColor2 + '!important}::-moz-placeholder{color:' + S.menuTextColor2 + '!important}#user-id-tag,#UserProfileID2a, #version-tag,#statsSubtext,#hotkeys-inst,#exp-imp textarea,.restore-settings a,.restore-settings a:hover{color:' + S.menuTextColor2 + '}#hotkeys-cfg .command-in,#theme .color-box{border-color:' + S.menuTextColor2 + '}';
+            css += ':root{--lm-tc:' + _lmCssVal(S.menuTextColor, '#ffffff') + ';--lm-tc2:' + _lmCssVal(S.menuTextColor2, '#8096a7') + '}';
             this.addCustomCSS('menuTextColorCSS', css);
             /* Keep inline --lm-tc/tc2 in sync */
-            try { var _r = document.documentElement.style; _r.setProperty('--lm-tc', _lmCssVal(defaultSettings.menuTextColor, '#ffffff')); _r.setProperty('--lm-tc2', _lmCssVal(defaultSettings.menuTextColor2, '#8096a7')); } catch(e){}
+            try { var _r = document.documentElement.style; _r.setProperty('--lm-tc', _lmCssVal(S.menuTextColor, '#ffffff')); _r.setProperty('--lm-tc2', _lmCssVal(S.menuTextColor2, '#8096a7')); } catch(e){}
         },
         setMenuButtons() {
             var css = 'a,a:hover{color:' + defaultSettings.btn1Color + '}.btn,#hotkeys-cfg .custom-key-in{color:' + defaultSettings.menuBtnTextColor + '}.btn-primary{background-color:' + defaultSettings.btn1Color + '!important}.btn-primary:active,.btn-primary:disabled,.btn-primary:focus,.btn-primary:hover{background-color:' + defaultSettings.btn1Color2 + '!important}.btn-success{background-color:' + defaultSettings.btn2Color + '!important}.btn-success:active,.btn-success:disabled,.btn-success:focus,.btn-success:hover{background-color:' + defaultSettings.btn2Color2 + '!important}.btn-warning{background-color:' + defaultSettings.btn3Color + '!important}.btn-warning:active,.btn-warning:disabled,.btn-warning:focus,.btn-warning:hover{background-color:' + defaultSettings.btn3Color2 + '!important}.btn-danger{background-color:' + defaultSettings.btn4Color + '!important}.btn-danger:active,.btn-danger:disabled,.btn-danger:focus,.btn-danger:hover{background-color:' + defaultSettings.btn4Color2 + '!important}#hotkeys-cfg .custom-key-in{background-color:' + defaultSettings.btn4Color2 + ';border-color:' + defaultSettings.btn4Color2 + '}';
@@ -23199,13 +23251,14 @@ function thelegendmodproject() {
                 '#minimap-hud{border-radius:0 0 ' + R15 + ' ' + R15 + '!important}'));
         },
         setHudColors() {
+            var S = lmThemeEffective();
             /* ".hud,.hud-b,#.emoji-picker" was not a valid selector list, so the browser dropped the
              * whole rule and the HUD background colour setting never reached the HUD */
-            var css = '.hud-main-color,#top5-hud a,#target-panel-hud a:hover,#target-panel-hud a.active,#message-menu a{color:' + defaultSettings.hudMainColor + '}.hud,' +
-                '.hud-b,.emoji-picker{background-color:' + defaultSettings.hudColor + '}.hud,.hud-b,#top5-hud a:hover,#target-panel-hud a{color:' + defaultSettings.hudTextColor + '}.stats-hud-color{color:' + defaultSettings.statsHudColor + '}.time-hud-color{color:' + defaultSettings.timeHudColor + '}.top5-mass-color{color:' + defaultSettings.top5MassColor + '}#leaderboard-positions .me{color:' + defaultSettings.lbMeColor + '}#leaderboard-positions .teammate{color:' + defaultSettings.lbTeammateColor2 + '}';
+            var css = '.hud-main-color,#top5-hud a,#target-panel-hud a:hover,#target-panel-hud a.active,#message-menu a{color:' + S.hudMainColor + '}.hud,' +
+                '.hud-b,.emoji-picker{background-color:' + S.hudColor + '}.hud,.hud-b,#top5-hud a:hover,#target-panel-hud a{color:' + S.hudTextColor + '}.stats-hud-color{color:' + S.statsHudColor + '}.time-hud-color{color:' + S.timeHudColor + '}.top5-mass-color{color:' + S.top5MassColor + '}#leaderboard-positions .me{color:' + S.lbMeColor + '}#leaderboard-positions .teammate{color:' + S.lbTeammateColor2 + '}';
             $('.top5-mass-bar').css('background-color', $('#hudMainColor')[0].value)
             /* in-game panels (HUD helpers, death recap, ...) read these */
-            css += ':root{--lm-hud-mc:' + _lmCssVal(defaultSettings.hudMainColor, '#01d9cc') + ';--lm-hud-bg:' + _lmCssVal(defaultSettings.hudColor, 'rgba(0,0,0,0.4)') + ';--lm-hud-tc:' + _lmCssVal(defaultSettings.hudTextColor, '#ffffff') + '}';
+            css += ':root{--lm-hud-mc:' + _lmCssVal(S.hudMainColor, '#01d9cc') + ';--lm-hud-bg:' + _lmCssVal(S.hudColor, 'rgba(0,0,0,0.4)') + ';--lm-hud-tc:' + _lmCssVal(S.hudTextColor, '#ffffff') + '}';
             this.addCustomCSS('hudCSS', css);
         },
         setHudFont() {
@@ -49287,11 +49340,13 @@ function thelegendmodproject() {
             if (old) old.remove();
 
             /* Theme colors from user settings */
-            var mc = defaultSettings.menuMainColor || '#01d9cc';
-            var pc = defaultSettings.menuPanelColor || '#00243e';
-            var pc2 = defaultSettings.menuPanelColor2 || '#002f52';
-            var tc = defaultSettings.menuTextColor || '#ffffff';
-            var tc2 = defaultSettings.menuTextColor2 || '#8096a7';
+            /* the colours shown (a theme Dying Light shows for a while included) */
+            var _ts = lmThemeEffective();
+            var mc = _ts.menuMainColor || '#01d9cc';
+            var pc = _ts.menuPanelColor || '#00243e';
+            var pc2 = _ts.menuPanelColor2 || '#002f52';
+            var tc = _ts.menuTextColor || '#ffffff';
+            var tc2 = _ts.menuTextColor2 || '#8096a7';
 
             /* Format time helper */
             function fmtTime(secs) {

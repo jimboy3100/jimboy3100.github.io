@@ -114,8 +114,9 @@ async function dyingLightLifecycle() {
      * hooks, timer chains, quote toasts, page audio, the old defaults reset, any Discord address */
     check('extras/dyinglight.js has none of the old payloads',
         !/import-settings|pushState|[Ff]ullscreen|core\.disconnect|olddeath|btnmgs|aab\d|createElement\(['"]audio|legenddefaultsettings|discord|webhook|playSound|toastr\["error"\]/i.test(dl) &&
-        /* the picture wait and the spawn burst's one later try (dlfx.js) */
-        (dl.match(/setTimeout\(/g) || []).length === 2);
+        /* the picture wait and the spawn burst's one later try (dlfx.js); the director (after
+         * LMDyingLight) has its one-shot clock */
+        (dl.slice(0, dl.indexOf('/* The Dying Light director')).match(/setTimeout\(/g) || []).length === 2 && (dl.match(/setTimeout\(/g) || []).length === 3);
     check('old banner files: static markup, no ga() or inline script',
         ['banners/bannerDyingLight', 'banners/bannerStopDyingLight'].every(f => { const t = rd(f); return /data-lm-dl="toggle"/.test(t) && !/ga\(|<script|onclick/.test(t); }));
 
@@ -146,12 +147,13 @@ async function dyingLightLifecycle() {
     vm.createContext(ctx);
     vm.runInContext(cutIn(main, '(function () {\n    if (window.LMEvents && window.LMEvents._lm === 1) return;', '\nwindow.spects'), ctx);
     vm.runInContext(cutIn(main, 'var defaultmapsettings = {', '\n};') + '\n};\nvar LM_SETTINGS_DEFAULTS = Object.freeze(Object.assign({}, defaultmapsettings));\n' +
-        cutIn(main, 'var _lmSettingsSeen = null', '\n/* The settings export carries'), ctx);
+        cutIn(main, 'var LM_SETTINGS_SCHEMA', '\n/* "Video skins volume"') + cutIn(main, 'var _lmSettingsSeen = null', '\n/* The settings export carries'), ctx);
     vm.runInContext('var application = { saveSettings: function (o, n) { var v = lmSettingsUserView(); localStorage.setItem(n, JSON.stringify(v)); lmSettingsCommit(v); } };' +
         'lmSettingsCommit(lmSettingsUserView()); var dyinglight1load = localStorage.getItem("dyinglight1load");', ctx);
     vm.runInContext(lmxText + cutIn(lmx, '/* Dying Light expansion (extras/dyinglight.js, window.LMDyingLight)', '\nfunction bluebtns()'), ctx);
     const states = [];
-    ctx.LMEvents.on('dyingLightChange', d => states.push(d.state));
+    /* the state changes (an intensity change is sent with the same state) */
+    ctx.LMEvents.on('dyingLightChange', d => { if (states[states.length - 1] !== d.state) states.push(d.state); });
     const tick = () => new Promise(r => setImmediate(r));
     const runScript = async () => { const s = scripts.shift(); vm.runInContext(dl, ctx); s.onload(); await tick(); };
     const D = ctx.defaultmapsettings;
@@ -180,6 +182,19 @@ async function dyingLightLifecycle() {
     check('on after the pictures', (await p) === true && ctx.LMDyingLight.isEnabled() && D.dyingLight === true && JSON.parse(store.ogarioSettings).dyingLight === true);
     check('on: the old readers see the flag (no global zombie picture), the scoped style is there, the banner turns it off',
         ctx.dyinglight1load === 'yes' && ctx.cimgDyingLight === undefined && cls.has('lm-dl') && head.kids.some(n => n.id === 'lm-dl-style') && /dyinglightbanner3/.test(box.innerHTML));
+    check('on: its controls under the banner with the saved values', /data-lm-dl-opt="dyingLightIntensity"/.test(box.innerHTML) &&
+        /value="immersive" selected/.test(box.innerHTML) && /data-lm-dl-opt="dyingLightCycle" checked/.test(box.innerHTML) &&
+        /data-lm-dl-opt="dyingLightScares" checked/.test(box.innerHTML) && /value="100" data-lm-dl-opt="dyingLightVolume"/.test(box.innerHTML));
+    {
+        const opt = (key, type, value, checked) => vm.runInContext('lmDyingLightOpt', ctx)({ getAttribute: () => key, type, value, checked });
+        const ok1 = opt('dyingLightIntensity', 'select-one', 'nightmare') && D.dyingLightIntensity === 'nightmare' && ctx.LMDyingLight.intensity() === 'nightmare' &&
+            JSON.parse(store.ogarioSettings).dyingLightIntensity === 'nightmare';
+        const ok2 = !opt('dyingLightIntensity', 'select-one', 'party') && D.dyingLightIntensity === 'nightmare' && !opt('dyingLight', 'checkbox', '', false) && D.dyingLight === true;
+        const ok3 = opt('dyingLightScares', 'checkbox', '', false) && D.dyingLightScares === false && opt('dyingLightVolume', 'range', '40') && D.dyingLightVolume === 0.4;
+        opt('dyingLightIntensity', 'select-one', 'immersive'); opt('dyingLightScares', 'checkbox', '', true); opt('dyingLightVolume', 'range', '100');
+        check('a control saves its setting (only its own keys and values), the intensity follows', ok1 && ok2 && ok3 && D.dyingLightIntensity === 'immersive' &&
+            ctx.LMDyingLight.intensity() === 'immersive' && D.dyingLightVolume === 1 && D.dyingLightScares === true);
+    }
     const L = ctx.LMDyingLight;
     const other = { mass: 200, targetNick: 'enemy' };
     check('fallback skin only for another real player body', !!L.getFallbackSkinKey(other) && L.getFallbackSkinKey(other) === L.getFallbackSkinKey({ mass: 50, targetNick: 'enemy' }) &&

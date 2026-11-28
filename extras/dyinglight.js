@@ -12,7 +12,7 @@
  *   particlePalette(), effect(name), setEffect(name, on): the themed death particle colours,
  *     the spawn burst and the Game Over card, each can be suppressed on its own
  *   getBackground(): { url, img, alpha } of the map scene while on, else null
- *   hasForegroundFx(), needsThreatData(), addPart({ name, start(gen, api), stop(), fx, threat })
+ *   hasForegroundFx(), needsThreatData(), addPart({ name, start(gen, api), stop(), fx, threat, background() })
  * LMEvents 'dyingLightChange' { state, enabled, generation } is sent on every state change. */
 (function () {
     'use strict';
@@ -49,6 +49,11 @@
     var INTENSITIES = { competitive: 1, immersive: 1, nightmare: 1 };
 
     var state = 'off', generation = 0, intensityV = 'immersive';
+    /* the player's choice (setting dyingLightIntensity, changed by its control under the banner) */
+    try {
+        var si = W.defaultmapsettings && W.defaultmapsettings.dyingLightIntensity;
+        if (INTENSITIES[si] === 1) intensityV = si;
+    } catch (e) { }
     var job = null;           /* the enable in progress (one at a time) */
     var assets = {};          /* url -> Image: the fixed small set above, kept for the next enable */
     var bg = null;            /* frozen { url, img, alpha } while on */
@@ -349,7 +354,18 @@
             return true;
         },
         getFallbackSkinKey: getFallbackSkinKey,
-        getBackground: function () { return state === 'on' ? bg : null; },
+        getBackground: function () {
+            if (state !== 'on') return null;
+            /* a part's scene (the day / night director), else the fixed one; asked every frame */
+            for (var i = 0; i < running.length; i++) {
+                var f = running[i].background;
+                if (typeof f === 'function') {
+                    var b = f();
+                    if (b) return b;
+                }
+            }
+            return bg;
+        },
         /* the zombie designs { id, key } (the keys getFallbackSkinKey gives) */
         variants: VARIANTS,
         /* the death particles' colours while on (unless suppressed), else null: the renderer
@@ -379,4 +395,444 @@
     Object.defineProperty(api, 'generation', { get: function () { return generation; }, enumerable: true });
     Object.freeze(api);
     W.LMDyingLight = api;
+})();
+
+/* The Dying Light director, a part of LMDyingLight started with each activation and stopped by its
+ * turn-off. One clock (performance.now, counted only while the tab is visible) and one one-shot
+ * timer once a second, no animation frame of its own:
+ *   - a local 10 minute scene cycle, scenery only (no game day / night): day 0-3 min, dusk 3-4,
+ *     night 4-8, deep night 8-9, dawn 9-10; the next scene loads in the last 30 s of a phase and is
+ *     shown once it is there (the renderer cross-fades), a scene that fails is skipped;
+ *   - rare events at a slow roll with a cooldown each and a minimum gap between any two: a radio
+ *     call (sound and a short story line), a shadow at the edge of the screen (400-800 ms), a watcher
+ *     in a corner; the night falling (once a cycle) and a real death (its signal) or a dropped
+ *     connection while playing;
+ *   - its sounds through the Legend mixer (LMNotifications.play, Gameplay channel x master x gain),
+ *     at most 2 at a time, never added to the page.
+ * Intensity: competitive = the fixed scene, only the death / connection signals; immersive = the
+ * cycle and rare events; nightmare = the same, more often. Nothing happens while the tab is hidden
+ * (paused, no catch-up after), in a replay, in the menu or spectating, while typing or on the Game
+ * Over window, just after a spawn; no scares with the system's reduced motion or a busy page (ticks
+ * coming late, or under 30 FPS when the FPS counter is on), which also keeps the scene as it is, and
+ * only the slow watcher with Legend's Reduced motion. While on, the
+ * menu and HUD show its colours over the player's theme (lmThemeOverride, never saved). */
+(function () {
+    'use strict';
+    var W = window, DL = W.LMDyingLight;
+    if (!DL || DL._lm !== 1 || typeof DL.addPart !== 'function' || W.LMDyingLightDirector) return;
+
+    var BASE = 'https://www.legendmod.ml/';
+    var CYCLE_MS = 600000, TICK_MS = 1000, LATE_MS = 250, PRELOAD_MS = 30000;
+    /* the scenes of banners/dyinglight/manifest.json for each phase, one per cycle in turn */
+    var PHASES = [
+        { id: 'day', at: 0, scenes: ['back9', 'back8'] },
+        { id: 'dusk', at: 180000, scenes: ['back7', 'back3'] },
+        { id: 'night', at: 240000, scenes: ['back0', 'back1'] },
+        { id: 'deepNight', at: 480000, scenes: ['back5', 'back2'] },
+        { id: 'dawn', at: 540000, scenes: ['back10', 'back6'] }
+    ];
+    var NIGHT = PHASES[2];
+    /* [full, small] widths of the manifest's variants (1920 / 1280 unless listed) */
+    var SCENE_W = { back7: [1800, 1200], back8: [1800, 1200] };
+    var GHOSTS = ['zombie2', 'zombie3', 'zombie4', 'zombiebig', 'volatile'];
+    /* the manifest's suggestedGain (levels the files to one loudness) ... */
+    var SOUNDS = { 'radio-join': 0.5, 'radio-spectate': 0.39, 'radio-profile': 0.87, chime: 0.24, 'death-1': 0.15, 'death-2': 1, 'death-3': 1, 'signal-lost': 1 };
+    var RADIO = ['radio-join', 'radio-spectate', 'radio-profile'];
+    /* ... times the level of its kind (inside the Gameplay channel and master volume) */
+    var LEVEL = { radio: 0.32, nightfall: 0.38, death: 0.42 };
+    var PROFILES = {
+        competitive: { cycle: false, events: false, toasts: false },
+        immersive: { cycle: true, events: true, toasts: true, rollMs: 30000, chance: 0.35, gapMs: 150000 },
+        nightmare: { cycle: true, events: true, toasts: true, rollMs: 20000, chance: 0.6, gapMs: 75000 }
+    };
+    /* cooldown of each event and its weight in each phase (none = not then); visual = a scare */
+    var EVENTS = {
+        radio: { cooldownMs: 120000, w: { day: 1, dusk: 2, night: 2, deepNight: 1, dawn: 1 } },
+        shadow: { cooldownMs: 120000, visual: true, sudden: true, w: { dusk: 1, night: 2, deepNight: 3 } },
+        watcher: { cooldownMs: 180000, visual: true, w: { night: 1, deepNight: 2 } }
+    };
+    var NIGHTFALL_MS = 300000, SPAWN_QUIET_MS = 8000, DEATH_GAP_MS = 10000, SIGNAL_GAP_MS = 30000, MAX_SOUNDS = 2;
+    /* the handoff's palette over the player's menu / HUD colours */
+    var COLORS = {
+        menuMainColor: '#a12b30', menuPanelColor: '#090c0d', menuPanelColor2: '#171d20',
+        menuTextColor: '#d4d8d5', menuTextColor2: '#c5a365',
+        hudMainColor: '#c5a365', hudColor: 'rgba(9,12,13,0.55)', hudTextColor: '#d4d8d5'
+    };
+    var CSS = /* i18n-ok: CSS */
+        '#toast-container>.lm-dl-toast{background-color:#171d20;background-image:none;border-left:3px solid #a12b30;color:#d4d8d5;' +
+        'width:auto;max-width:min(92vw,360px);opacity:.95}' +
+        '.lm-dl-ghost{position:fixed;bottom:-5vmin;width:30vmin;height:30vmin;background:center/contain no-repeat;filter:brightness(0);' +
+        'opacity:0;pointer-events:none;z-index:1;animation:lm-dl-ghost .6s ease-in-out forwards}' +
+        '.lm-dl-ghost-l{left:-7vmin}.lm-dl-ghost-r{right:-7vmin}' +
+        '.lm-dl-watcher{top:7vh;bottom:auto;width:14vmin;height:14vmin}.lm-dl-watcher.lm-dl-ghost-l{left:1vmin}.lm-dl-watcher.lm-dl-ghost-r{right:1vmin}' +
+        '@keyframes lm-dl-ghost{0%{opacity:0}35%{opacity:var(--lm-dl-a,.35)}65%{opacity:var(--lm-dl-a,.35)}100%{opacity:0}}';
+
+    function tx(key) { return typeof W.lmT === 'function' ? W.lmT(key) : key; }
+    function warn(what, e) { try { console.warn('[Dying Light] ' + what, e); } catch (e2) { } }
+    function rnd() { return Math.random(); }
+    function setting(k) { var s = W.defaultmapsettings; return s && typeof s === 'object' ? s[k] : undefined; }
+    function phaseAt(ms) {
+        var t = ((ms % CYCLE_MS) + CYCLE_MS) % CYCLE_MS;
+        for (var i = PHASES.length - 1; i > 0; i--) if (t >= PHASES[i].at) return PHASES[i];
+        return PHASES[0];
+    }
+    function profile() {
+        var p = null;
+        try { p = PROFILES[DL.intensity()]; } catch (e) { }
+        return p || PROFILES.immersive;
+    }
+
+    /* -- state of one activation (reset by start and stop) -- */
+    var on = false, live = false, gen = 0, timer = 0, acc = 0, runAt = 0, lastTick = 0, late = 0, okTicks = 0, busy = false;
+    var phase = null, nextRollAt = 0, lastEventAt = -Infinity, lastAt = {}, lastMajorAt = -Infinity;
+    var quietUntil = 0, lastDeathAt = -Infinity, lastSignalAt = -Infinity, deathN = 0, radioN = 0;
+    var shown = null, pend = null, failed = {};
+    var audios = [], subs = [], onVis = null, styleEl = null, ghostEl = null, ghostUntil = 0;
+
+    function now() { return W.performance.now(); }
+    /* the director's clock: ms of visible time since this activation */
+    function clock(t) { return acc + (live ? t - runAt : 0); }
+    function hidden() { var d = W.document; return !!(d && d.hidden); }
+
+    function arm() {
+        clearTimeout(timer);
+        timer = setTimeout(tick, TICK_MS);
+    }
+    function pause(t) {
+        if (live) { acc += t - runAt; live = false; }
+        clearTimeout(timer);
+        timer = 0;
+        stopSounds();
+        hideGhost();
+    }
+    function resume(t) {
+        if (!on || live) return;
+        live = true;
+        runAt = t;
+        lastTick = t;
+        late = okTicks = 0;
+        /* back from a hidden tab: the next roll is a full period away (no burst) */
+        var p = profile();
+        if (p.events) nextRollAt = Math.max(nextRollAt, clock(t) + p.rollMs);
+        arm();
+    }
+    function tick() {
+        timer = 0;
+        if (!on) return;
+        var t = now();
+        if (hidden()) { pause(t); return; }
+        /* a busy page: three late ticks in a row (or a low FPS counter); ten on time end it */
+        var lateBy = t - lastTick - TICK_MS;
+        lastTick = t;
+        if (lateBy > LATE_MS) { okTicks = 0; if (++late >= 3) busy = true; }
+        else { late = 0; if (++okTicks >= 10) busy = false; }
+        var dr = W.drawRender;
+        var slow = !!(dr && setting('showStatsFPS') && dr.fps > 0 && dr.fps < 30);
+        try { step(clock(t), busy || slow); } catch (e) { warn('director', e); }
+        if (on && live) arm();
+    }
+
+    function step(E, constrained) {
+        var p = profile(), cyc = p.cycle && setting('dyingLightCycle') !== false;
+        var ph = cyc ? phaseAt(E) : NIGHT;
+        if (ph !== phase) {
+            var prev = phase;
+            phase = ph;
+            if (prev && cyc && ph === NIGHT) nightfall(E, p);
+        }
+        scenes(E, cyc, ph, constrained);
+        if (ghostEl && E > ghostUntil) hideGhost();
+        if (p.events && E >= nextRollAt) {
+            nextRollAt = E + p.rollMs * (0.7 + 0.6 * rnd());
+            roll(E, p, ph, constrained);
+        }
+    }
+
+    /* -- scenes -- */
+    function sceneFor(ph, E) { return ph.scenes[Math.floor(E / CYCLE_MS) % ph.scenes.length]; }
+    function sceneUrl(id, small) {
+        var w = SCENE_W[id] || [1920, 1280];
+        return BASE + 'banners/dyinglight/backgrounds/' + id + '-' + w[small ? 1 : 0] + '.webp';
+    }
+    function small(constrained) {
+        var s = W.screen, px = s ? Math.max(+s.width || 0, +s.height || 0) * (+W.devicePixelRatio || 1) : 0;
+        return constrained || !(px > 1500);
+    }
+    function scenes(E, cyc, ph, constrained) {
+        /* no cycle: the fixed scene of the activation */
+        if (!cyc) { shown = null; dropPend(); return; }
+        /* a busy page keeps the scene it shows */
+        if (constrained && shown) return;
+        var want = sceneUrl(sceneFor(ph, E), small(constrained));
+        if (!shown || shown.url !== want) {
+            if (pend && pend.url === want) {
+                if (pend.ok) { shown = Object.freeze({ url: want, img: pend.img, alpha: 1 }); pend = null; }
+            } else load(want);
+            return;
+        }
+        /* the next phase's scene, in the last 30 s of this one */
+        var i = PHASES.indexOf(ph), nx = PHASES[(i + 1) % PHASES.length];
+        var end = E - (E % CYCLE_MS) + (i + 1 < PHASES.length ? nx.at : CYCLE_MS);
+        if (end - E <= PRELOAD_MS) {
+            var nu = sceneUrl(sceneFor(nx, end), small(constrained));
+            if (nu !== shown.url && (!pend || pend.url !== nu)) load(nu);
+        }
+    }
+    function dropPend() {
+        if (pend) { pend.img.onload = pend.img.onerror = null; pend = null; }
+    }
+    /* one picture at a time besides the one shown; a failed one is not asked again this activation */
+    function load(url) {
+        if (failed[url]) return;
+        dropPend();
+        var g = gen, im = new W.Image(), p = { url: url, img: im, ok: false };
+        pend = p;
+        im.crossOrigin = 'anonymous';
+        im.onload = function () {
+            im.onload = im.onerror = null;
+            if (g !== gen || pend !== p) return;
+            p.ok = im.naturalWidth > 0;
+            if (!p.ok) { failed[url] = 1; pend = null; }
+        };
+        im.onerror = function () {
+            im.onload = im.onerror = null;
+            if (g !== gen) return;
+            failed[url] = 1;
+            if (pend === p) pend = null;
+        };
+        im.src = url;
+    }
+
+    /* -- events -- */
+    /* the system asks for reduced motion: no figures at all */
+    function noMotion() {
+        try { return !!(W.matchMedia && W.matchMedia('(prefers-reduced-motion: reduce)').matches); } catch (e) { return false; }
+    }
+    function replay() { var lm = W.legendmod; return !!((lm && lm._isReplay) || W._lmReplayQuiet); }
+    /* no rare event now */
+    function quiet(E) {
+        if (hidden() || E < quietUntil || replay()) return true;
+        var lm = W.legendmod;
+        if (!lm || !lm.play) return true;
+        var d = W.document, a = d && d.activeElement;
+        if (a && (a.tagName === 'INPUT' || a.tagName === 'TEXTAREA' || a.tagName === 'SELECT' || a.isContentEditable)) return true;
+        return !!(d && typeof d.getElementById === 'function' && d.getElementById('lm-gameover-modal'));
+    }
+    function roll(E, p, ph, constrained) {
+        if (E - lastEventAt < p.gapMs || quiet(E) || rnd() >= p.chance) return;
+        var scares = setting('dyingLightScares') !== false && !constrained && !noMotion();
+        /* Legend's Reduced motion (on by default): no sudden figure, only the slow faint watcher */
+        var calm = !!setting('reducedMotion');
+        var total = 0, k, pick = null;
+        for (k in EVENTS) total += weight(k, E, ph, scares, calm);
+        if (!(total > 0)) return;
+        var r = rnd() * total;
+        for (k in EVENTS) {
+            var w = weight(k, E, ph, scares, calm);
+            if (w > 0) { pick = k; if (r < w) break; r -= w; }
+        }
+        k = pick;
+        lastAt[k] = E;
+        lastEventAt = E;
+        if (k === 'radio') {
+            radioN = radioN % RADIO.length;
+            play(RADIO[radioN], LEVEL.radio);
+            radioN++;
+            if (p.toasts) toast(tx('pkg.dlv3dir.radio' + radioN));
+        } else ghost(k === 'watcher', E);
+    }
+    function weight(k, E, ph, scares, calm) {
+        var ev = EVENTS[k], w = ev.w[ph.id] || 0;
+        if (!w || (ev.visual && !scares) || (ev.sudden && calm) || (lastAt[k] != null && E - lastAt[k] < ev.cooldownMs)) return 0;
+        return w;
+    }
+    function nightfall(E, p) {
+        if (E - lastMajorAt < NIGHTFALL_MS || quiet(E)) return;
+        lastMajorAt = E;
+        play('chime', LEVEL.nightfall);
+        if (p.toasts) toast(tx('pkg.dlv3dir.nightfall'));
+    }
+    /* a short story line in the Legend toasts (info, its own colours while on) */
+    function toast(text) {
+        var t = W.toastr;
+        if (!t || typeof t.info !== 'function' || !text) return;
+        var s = String(text).slice(0, 200).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+        try { t.info(s, '', { toastClass: 'toast lm-dl-toast', timeOut: 6000 }); } catch (e) { }
+    }
+
+    /* a dark figure at the edge of the screen (decorative, under the HUD, no clicks) */
+    function ghost(watcher, E) {
+        var d = W.document;
+        if (!d || !d.body || typeof d.createElement !== 'function') return;
+        hideGhost();
+        var el = d.createElement('div'), ms = watcher ? 2500 : 400 + Math.round(400 * rnd());
+        var skin = GHOSTS[Math.floor(rnd() * GHOSTS.length) % GHOSTS.length];
+        el.className = 'lm-dl-ghost ' + (watcher ? 'lm-dl-watcher ' : '') + (rnd() < 0.5 ? 'lm-dl-ghost-l' : 'lm-dl-ghost-r');
+        el.setAttribute('aria-hidden', 'true');
+        el.style.backgroundImage = 'url("' + BASE + 'banners/dyinglight/skins/' + skin + '-256.webp")';
+        el.style.animationDuration = ms + 'ms';
+        if (watcher) el.style.setProperty('--lm-dl-a', '0.18');
+        el.addEventListener('animationend', hideGhost);
+        d.body.appendChild(el);
+        ghostEl = el;
+        ghostUntil = E + ms + 500;
+    }
+    function hideGhost() {
+        var el = ghostEl;
+        ghostEl = null;
+        if (!el) return;
+        try { el.removeEventListener('animationend', hideGhost); } catch (e) { }
+        if (el.parentNode) el.parentNode.removeChild(el);
+    }
+
+    /* -- sounds: the Legend mixer, at most MAX_SOUNDS elements, reused -- */
+    function userGain() {
+        var v = Number(setting('dyingLightVolume'));
+        return Number.isFinite(v) ? Math.max(0, Math.min(1, v)) : 1;
+    }
+    /* force: a real death / lost connection takes the oldest element when both play */
+    function play(id, level, force) {
+        var mix = W.LMNotifications;
+        if (!on || !mix || typeof mix.play !== 'function' || hidden() || !SOUNDS[id]) return false;
+        var gain = SOUNDS[id] * level * userGain();
+        if (!(gain > 0)) return false;
+        var a = null;
+        for (var i = 0; i < audios.length; i++) if (audios[i].paused || audios[i].ended) { a = audios[i]; break; }
+        if (!a && force && audios.length >= MAX_SOUNDS) {
+            a = audios[0];
+            try { a.pause(); } catch (e) { }
+        }
+        if (!a) {
+            if (audios.length >= MAX_SOUNDS || typeof W.Audio !== 'function') return false;
+            a = new W.Audio();
+            a.preload = 'auto';
+            audios.push(a);
+        }
+        var url = BASE + 'sounds/dyinglight/' + id + '.mp3';
+        if (a._lmUrl !== url) { a.src = url; a._lmUrl = url; }
+        mix.play(a, 'gameplay', gain);
+        return true;
+    }
+    function stopSounds() {
+        for (var i = 0; i < audios.length; i++) { try { audios[i].pause(); } catch (e) { } }
+    }
+    function releaseSounds() {
+        stopSounds();
+        for (var i = 0; i < audios.length; i++) {
+            var a = audios[i];
+            try { a.removeAttribute('src'); a._lmUrl = null; a.load(); } catch (e) { }
+        }
+        audios.length = 0;
+    }
+
+    /* -- game events -- */
+    function onDeath(d) {
+        /* a multibox unit lost while another lives is no Game Over */
+        if (!on || !live || (d && d.scope === 'unit') || replay()) return;
+        var E = clock(now());
+        if (E - lastDeathAt < DEATH_GAP_MS) return;
+        lastDeathAt = E;
+        deathN = deathN % 3 + 1;
+        play('death-' + deathN, LEVEL.death, true);
+    }
+    function onSpawn() {
+        /* a quick respawn ends the last life's sound and figure; a short calm after */
+        stopSounds();
+        hideGhost();
+        if (on) quietUntil = clock(now()) + SPAWN_QUIET_MS;
+    }
+    function onDisconnect(d) {
+        if (!on || !live || !d || !d.playing || replay()) return;
+        var E = clock(now());
+        if (E - lastSignalAt < SIGNAL_GAP_MS) return;
+        lastSignalAt = E;
+        play('signal-lost', LEVEL.death, true);
+    }
+    function onServer() {
+        stopSounds();
+        hideGhost();
+    }
+    function sub(name, fn) {
+        var ev = W.LMEvents;
+        if (!ev || typeof ev.on !== 'function') return;
+        ev.on(name, fn);
+        subs.push([name, fn]);
+    }
+
+    function reset() {
+        clearTimeout(timer);
+        timer = 0; acc = 0; runAt = 0; live = false; lastTick = 0; late = 0; okTicks = 0; busy = false;
+        phase = null; nextRollAt = 0; lastEventAt = -Infinity; lastAt = {}; lastMajorAt = -Infinity;
+        quietUntil = 0; lastDeathAt = -Infinity; lastSignalAt = -Infinity; deathN = 0; radioN = 0;
+        shown = null; dropPend(); failed = {};
+    }
+    function start(g) {
+        var d = W.document;
+        /* needs a monotonic clock and a page to listen to */
+        if (!(W.performance && typeof W.performance.now === 'function') || !d || typeof d.addEventListener !== 'function') return;
+        stop();
+        reset();
+        gen = g;
+        on = true;
+        var p = profile();
+        if (p.events) nextRollAt = p.rollMs;
+        if (typeof d.createElement === 'function' && (d.head || d.documentElement)) {
+            styleEl = d.createElement('style');
+            styleEl.id = 'lm-dl-director-style';
+            styleEl.textContent = CSS;
+            (d.head || d.documentElement).appendChild(styleEl);
+        }
+        onVis = function () { if (hidden()) pause(now()); else resume(now()); };
+        d.addEventListener('visibilitychange', onVis);
+        sub('death', onDeath);
+        sub('spawn', onSpawn);
+        sub('disconnect', onDisconnect);
+        sub('serverChange', onServer);
+        if (!hidden()) resume(now());
+    }
+    function stop() {
+        on = false;
+        gen = -1;
+        clearTimeout(timer);
+        timer = 0;
+        var ev = W.LMEvents;
+        while (subs.length) {
+            var s = subs.pop();
+            try { ev.off(s[0], s[1]); } catch (e) { }
+        }
+        var d = W.document;
+        if (onVis && d && typeof d.removeEventListener === 'function') d.removeEventListener('visibilitychange', onVis);
+        onVis = null;
+        releaseSounds();
+        hideGhost();
+        if (styleEl && styleEl.parentNode) styleEl.parentNode.removeChild(styleEl);
+        styleEl = null;
+        shown = null;
+        dropPend();
+        live = false;
+    }
+
+    DL.addPart({
+        name: 'director',
+        start: function (g) { start(g); },
+        stop: stop,
+        background: function () { return on ? shown : null; }
+    });
+    /* its colours over the menu / HUD theme, while on (any intensity) */
+    DL.addPart({
+        name: 'theme',
+        start: function () { if (typeof W.lmThemeOverride === 'function') W.lmThemeOverride('dyinglight', COLORS); },
+        stop: function () { if (typeof W.lmThemeOverride === 'function') W.lmThemeOverride('dyinglight', null); }
+    });
+    /* read-only view for diagnostics and tests */
+    W.LMDyingLightDirector = Object.freeze({
+        phaseAt: function (ms) { return phaseAt(+ms || 0).id; },
+        info: function () {
+            return {
+                running: on && live, on: on, clock: on ? clock(now()) : 0, phase: phase ? phase.id : null,
+                busy: busy, scene: shown ? shown.url : null, loading: pend ? pend.url : null,
+                sounds: audios.length, timer: !!timer, listeners: subs.length + (onVis ? 1 : 0), ghost: !!ghostEl
+            };
+        }
+    });
 })();
