@@ -7,6 +7,7 @@
  *   hudRelativeMass    other players' mass as a ratio to your biggest cell (1.75x, 0.40x, "=")
  *   massFormat         1 exact, 2 12.3k, 3 auto (Settings > Mass: "Mass format"; 0 of older
  *                      versions was "as Short mass"); the core draws 1 and 2 itself
+ * Hotkey (no default key): hold for precision zoom.
  *
  * ogario.v4.js calls frame() once per rendered frame after the cell overlays; it returns at once
  * while every option is off. Drawing reuses objects and cached strings: no garbage per frame.
@@ -186,6 +187,7 @@
 
     var _wasOn = false;
     function frame(render, ctx, LM) {
+        if (_precisionSaved !== null) precisionCheck();
         var s = S();
         if (!anyOn(s)) {
             if (_wasOn) {
@@ -202,6 +204,46 @@
         if (s.hudMergeSound) mergeFrame(LM, now);
     }
 
+    /* ───────────────────────── 6. zoom hotkeys ───────────────────────── */
+
+    /* Precision zoom: while the key is held the zoom is the zoom to return to times
+     * _precisionMultiplier. The zoom to return to is always the current zoom divided by it, so a
+     * wheel zoom while held is kept on release.
+     * Held for one connection and unit: a reconnect, server switch or unit switch releases it. */
+    var _precisionSaved = null;     /* not null while held (the zoom when it was pressed) */
+    var _precisionMultiplier = 1;
+    var _precisionSock = null, _precisionUnit = 0;
+    function clampZoom(z) { return Math.min(40, Math.max(0.01, z > 0 && Number.isFinite(z) ? z : 1)); }
+    function precisionBase(LM) { return clampZoom(LM.zoomValue / _precisionMultiplier); }
+    function precisionZoom(down) {
+        var LM = window.legendmod;
+        if (!LM) return;
+        if (down) {
+            if (_precisionSaved !== null || !(LM.zoomValue > 0)) return;
+            _precisionSaved = clampZoom(LM.zoomValue);
+            _precisionMultiplier = Math.min(_precisionSaved * 2.5, 40) / _precisionSaved;
+            _precisionSock = LM.socket || null;
+            _precisionUnit = window.multiboxPlayerEnabled | 0;
+            LM.zoomValue = _precisionSaved * _precisionMultiplier;
+        } else if (_precisionSaved !== null) {
+            /* P1 fix #64: preserve any wheel zoom adjustments made during precision mode.
+             * Instead of restoring the absolute saved value, divide by the multiplier
+             * so manual wheel changes are kept. */
+            LM.zoomValue = precisionBase(LM);
+            _precisionSaved = null;
+            _precisionMultiplier = 1;
+            _precisionSock = null;
+        }
+    }
+    /* every frame while held */
+    function precisionCheck() {
+        var LM = window.legendmod;
+        if (!LM || (LM.socket || null) !== _precisionSock || (window.multiboxPlayerEnabled | 0) !== _precisionUnit) {
+            if (LM) precisionZoom(false);
+            else { _precisionSaved = null; _precisionMultiplier = 1; _precisionSock = null; }
+        }
+    }
+
     api = window.LMHudHelpers = {
         frame: frame,
         massText: massText,
@@ -209,6 +251,7 @@
         formatMass: formatMass,
         /* the unit the relative mass compares with (0 = main player) */
         refUnit: function () { return refOwner; },
+        precisionZoom: precisionZoom,
         /* pure parts, for the tests */
         _pure: {
             mergeDuration: mergeDuration,

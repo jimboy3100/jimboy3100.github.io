@@ -21365,16 +21365,17 @@ function lmEndPerfMode(s) {
 }
 /* Hotkey commands merged into others: "Go to zoom bookmark 1-3" are the zoom level hotkeys 1-3,
  * "Screenshot mode" is Show/hide HUD. An old command's key goes to the new one when that has no
- * key of its own, else it is free again; the key of a removed command (Hotkey conflicts; Save the
- * current zoom as zoom level 1-5; Skin collections, part of the player profiles now; the Command
- * Centre, deleted; precision zoom; enlarge the minimap; next / previous profile and Undo profile; the instant replay; Switch server [public/private], whose private relay never had an address; Show/hide quest, whose box nothing filled; the old Multibox toggle back;
+ * key of its own, else it is free again; the key of a removed command (Hotkey conflicts, a list in
+ * the Hotkeys window now; Save the current zoom as zoom level 1-5; Skin collections, part of the
+ * player profiles now; the Command Centre, deleted; next / previous profile and Undo profile, deleted
+ * with the settings profiles; the instant replay; Switch server [public/private], whose private relay never had an address; Show/hide quest, whose box nothing filled; the old Multibox toggle back;
  * Open the Lab; the keys that only opened a window or a panel or switched a rarely changed setting
  * (their window, panel or switch stays); Reconnect to the previous server; the Settings profiles
  * window, deleted with the settings profiles; Show / hide performance diagnostics and the net graph
  * before it, deleted with the diagnostics window) is free. For the stored hotkeys (loadHotkeys). Returns true when map changed. */
 function lmRenameOldHotkeys(map) {
     if (!map || typeof map !== 'object') return false;
-    var gone = /^hk-(?:lmLab|analytics|performanceMode|perfDiag|netGraph|mergeRings|el(?:Leagues|Shop|Challenges|Potions|ClaimAll)|replay(?:Pause|Faster|Slower|Fwd|Back|Studio)|middleMultiView|gamepadWindow|lmProfilesWindow|copyServerLink|chatSounds|lmPlugins|hudEditor|prevServer)$/;
+    var gone = /^hk-(?:lmLab|analytics|performanceMode|perfDiag|netGraph|mergeRings|el(?:Leagues|Shop|Challenges|Potions|ClaimAll)|replay(?:Pause|Faster|Slower|Fwd|Back|Studio)|gamepadWindow|lmProfilesWindow|copyServerLink|chatSounds|lmPlugins|hudEditor|prevServer)$/;
     var own = function (k) { return Object.prototype.hasOwnProperty.call(map, k); };
     var bound = function (cmd) {
         for (var x in map) if (own(x) && map[x] === cmd) return true;
@@ -21384,7 +21385,7 @@ function lmRenameOldHotkeys(map) {
     for (var k in map) {
         if (!own(k)) continue;
         var v = String(map[k]), to = '', z;
-        if (v === 'hk-hotkeyConflicts' || v === 'hk-skinCollections' || v === 'hk-commandCentre' || v === 'hk-mbRings' || /^hk-zoomSave[1-5]$/.test(v) || /^hk-(precisionZoom|bigMinimap|lmProfile(Next|Prev|Undo)|instantReplay|switchServerMode|showQuest|multiboxback)$/.test(v) || gone.test(v)) { delete map[k]; changed = true; continue; }
+        if (v === 'hk-hotkeyConflicts' || v === 'hk-skinCollections' || v === 'hk-commandCentre' || v === 'hk-mbRings' || /^hk-zoomSave[1-5]$/.test(v) || /^hk-(lmProfile(Next|Prev|Undo)|instantReplay|switchServerMode|showQuest|multiboxback)$/.test(v) || gone.test(v)) { delete map[k]; changed = true; continue; }
         /* the spectator director's commands and camera lock (removed) */
         if (v === 'hk-cameraLock' || /^hk-dir(?:ector|Auto|Broadcast|WatchNext|WatchPrev|WatchAdd|MarkSave|Mark[1-5])$/.test(v)) { delete map[k]; changed = true; continue; }
         /* removed: the radial menu and its editor, the screenshot window and its Capture hotkey,
@@ -21794,7 +21795,31 @@ function thelegendmodproject() {
             }
         },
         saveThemeSettings() {
-            window.localStorage.setItem('ogarioThemeSettings', JSON.stringify(defaultSettings));
+            var _lmTs = defaultSettings;
+            if (this._lmMiniBigOrig) {
+                /* the enlarged minimap (hotkey) is temporary: save the normal width */
+                _lmTs = $.extend({}, defaultSettings);
+                _lmTs.miniMapWidth = this._lmMiniBigOrig;
+                _lmTs.miniMapTop = Math.round(20 * this._lmMiniBigOrig / 200);
+            }
+            window.localStorage.setItem('ogarioThemeSettings', JSON.stringify(_lmTs));
+        },
+        /* Hotkey (no default key): enlarge the minimap to ~1.8x, press again to restore.
+         * Not saved; moving the width slider ends it. */
+        lmToggleBigMinimap() {
+            if (this._lmMiniBigOrig) {
+                defaultSettings.miniMapWidth = this._lmMiniBigOrig;
+                this._lmMiniBigOrig = 0;
+            } else {
+                var _lmO = defaultSettings.miniMapWidth;
+                var _lmB = Math.min(Math.round(_lmO * 1.8), 600, Math.floor(Math.min(window.innerWidth, window.innerHeight) * 0.8));
+                if (!(_lmB > _lmO)) return;
+                this._lmMiniBigOrig = _lmO;
+                defaultSettings.miniMapWidth = _lmB;
+            }
+            if (ogario.hasOwnProperty('miniMapWidth')) ogario.miniMapWidth = defaultSettings.miniMapWidth;
+            this._lmMiniBigBusy = true;
+            try { this.setMiniMapWidth(); } finally { this._lmMiniBigBusy = false; }
         },
         restoreThemeSettings() {
             /* a Theme Workshop preview ends first */
@@ -22503,6 +22528,8 @@ function thelegendmodproject() {
             }
         },
         setMiniMapWidth() {
+            /* a slider change replaces the temporary enlarged width */
+            if (!this._lmMiniBigBusy) this._lmMiniBigOrig = 0;
             var t = defaultSettings.miniMapWidth / 200;
             defaultSettings.miniMapTop = Math.round(20 * t);
             $('#minimap-hud').css({
@@ -24809,13 +24836,22 @@ function thelegendmodproject() {
             window.localStorage.setItem(name, JSON.stringify(option));
         },
         exportSettings() {
+            /* Issue #12: if the minimap is enlarged via hotkey, export the original width.
+             * The hotkey keeps it on Settings (this is application, which has no such field). */
+            var _expTheme = defaultSettings;
+            var _expMiniOrig = Settings._lmMiniBigOrig;
+            if (_expMiniOrig) {
+                _expTheme = $.extend({}, defaultSettings);
+                _expTheme.miniMapWidth = _expMiniOrig;
+                _expTheme.miniMapTop = Math.round(20 * _expMiniOrig / 200);
+            }
             let options = {
                 ogarioCommands: chatCommand,
                 ogarioHotkeys: hotkeys,
                 /* profiles hidden by a lower profile count were left out (lost on a new browser) */
                 ogarioPlayerProfiles: profiles.concat((function () { var x = readLocalStorageJSON('ogarioPlayerProfilesExtra', []); return Array.isArray(x) ? x : []; })()),
                 ogarioSettings: defaultmapsettings,
-                ogarioThemeSettings: defaultSettings
+                ogarioThemeSettings: _expTheme
 
             };
             for (const option in options) {
@@ -25869,7 +25905,7 @@ function thelegendmodproject() {
             $(section).append('<label data-lm-key=\"' + option + '\">' + this._lmMenuText(option) + ' <input type=\"checkbox\" class=\"js-switch\" id=\"' + option + '\"></label>');
             $('#' + option).prop('checked', defaultmapsettings[option]);
         },
-        /* The gamepad in the Hotkeys window, above the keys: every input
+        /* The gamepad and the conflict list in the Hotkeys window, above the keys: every input
          * binding is there and none is in Settings (owner's rule). Mouse buttons are bound in the
          * key fields themselves (hotkeysSetup.mouseKeys), gamepad buttons too ('PAD A', pressed on
          * the pad; ogario/gamepad.js); gamepad support is always on. */
@@ -25896,6 +25932,27 @@ function thelegendmodproject() {
                     else if (window.toastr) toastr.info(lmT('game1.set.gamepadLoading'));
                 });
             box.append(gpRow);
+            /* All conflicts at once: keys and mouse buttons bound twice, kept by the browser or
+             * taken by another setting, gamepad buttons that run a command a key runs too, each
+             * with a jump to its row (the list:
+             * LMSmallTools.renderConflicts, ogario/modules/smalltools.js; built again after each
+             * key change while it is shown) */
+            box.append(head('settings.hk-hotkeyConflicts', 'lmHkConflicts'));
+            var cfRow = $('<div class="row lm-hk-ctl lm-hk-btnrow"></div>');
+            var cfList = $('<div id="lm-hk-conf-list" style="display:none;text-align:left;font-size:12px;padding:0 2% 6px;"></div>');
+            $('<button type="button" id="lm-hk-conf-btn" class="btn btn-sm btn-block btn-warning"></button>')
+                .attr('data-i18n', 'pkg.pt.hkCheck').text(lmT('pkg.pt.hkCheck'))
+                .appendTo(cfRow)
+                .on('click', function (e) {
+                    e.preventDefault();
+                    var st = window.LMSmallTools;
+                    if (!st || typeof st.renderConflicts !== 'function') { if (window.toastr) toastr.info(lmT('pkg.pt.hkLoading')); return; }
+                    if (cfList.is(':visible')) { cfList.hide().empty(); return; }
+                    cfList.show();
+                    st.renderConflicts(cfList[0]);
+                    try { cfg.perfectScrollbar('update'); } catch (eP) { }
+                });
+            box.append(cfRow, cfList);
             cfg.prepend(box);
             box.after(head('pkg.hk.keyboard', 'lmHkKeyboard'));
             if (!document.getElementById('lm-hk-controls-style')) {
@@ -82826,8 +82883,6 @@ function pickPlayerCellBySize(players, selectBiggest) {
             }
             /* the old mouse button settings (also those of an import) */
             this.migrateMouseControls();
-            /* the notes of buttons the old mouse settings moved were only shown in the removed conflict list */
-            try { window.localStorage.removeItem('lmHkMouseMoved'); } catch (eMn) { }
 
             var storedCommands =
                 readLocalStorageJSON(
@@ -82947,16 +83002,34 @@ function pickPlayerCellBySize(players, selectBiggest) {
          * command that no longer exists gets what the button then did (split for the left and
          * right button, multibox swap for the wheel). A button another command had (the wheel:
          * quick chat 10 by default) goes to the old setting, which is what it did while the
-         * switch was on.
+         * switch was on; that change is kept for the conflict list, not made silently.
          * Returns how many buttons were bound.
          */
+        mouseNotesKey: 'lmHkMouseMoved',
+        mouseNotes() {
+            var raw = readLocalStorageJSON(this.mouseNotesKey, null);
+            var list = raw && typeof raw === 'object' && Array.isArray(raw.items) ? raw.items : [];
+            var setup = this;
+            return list.filter(function (n) {
+                return n && setup.isMouseKey(n.key) && typeof n.to === 'string' && typeof n.from === 'string' && /^hk-[A-Za-z0-9_-]{1,60}$/.test(n.to) && /^hk-[A-Za-z0-9_-]{1,60}$/.test(n.from);
+            }).slice(0, 5);
+        },
+        saveMouseNotes(list) {
+            try {
+                if (list.length) window.localStorage.setItem(this.mouseNotesKey, JSON.stringify({ v: 1, items: list }));
+                else window.localStorage.removeItem(this.mouseNotesKey);
+            } catch (e) { }
+        },
+        dismissMouseNote(key) {
+            this.saveMouseNotes(this.mouseNotes().filter(function (n) { return n.key !== key; }));
+        },
         migrateMouseControls() {
             var s = typeof defaultmapsettings === 'object' ? defaultmapsettings : null;
             if (!s || !hotkeys || typeof hotkeys !== 'object') return 0;
             var old = [['mouseSplit', 'leftClick', 1, 'hk-split'], ['mouseFeed', 'rightClick', 3, 'hk-split'], ['mouseWheelClick', 'middleClick', 2, 'hk-multiboxswap'], ['mouseCommand4', 'mouse4Click', 4, ''], ['mouseCommand5', 'mouse5Click', 5, '']];
             var on = old.filter(function (m) { return s[m[0]] === true; });
             if (!on.length) return 0;
-            var setup = this, bound = 0;
+            var setup = this, bound = 0, notes = this.mouseNotes(), noted = false;
             var exists = function (c) { return typeof c === 'string' && hotkeysCommand.hasOwnProperty(c) && !!hotkeysCommand[c] && typeof hotkeysCommand[c].keyDown === 'function'; };
             on.forEach(function (m) {
                 var cmd = exists(s[m[1]]) ? s[m[1]] : m[3];
@@ -82965,6 +83038,11 @@ function pickPlayerCellBySize(players, selectBiggest) {
                 if (had === cmd) return;
                 hotkeys[key] = cmd;
                 bound++;
+                if (typeof had === 'string' && had) {
+                    notes = notes.filter(function (n) { return n.key !== key; });
+                    notes.push({ key: key, from: had, to: cmd });
+                    noted = true;
+                }
             });
             this.syncMessageKey();
             try {
@@ -82974,13 +83052,14 @@ function pickPlayerCellBySize(players, selectBiggest) {
                 /* storage full: the buttons work now, the switches stay on and the next load tries again */
                 return bound;
             }
+            if (noted) this.saveMouseNotes(notes.slice(-5));
             on.forEach(function (m) { s[m[0]] = false; });
             try {
                 if (window.application && typeof application.saveSettings === 'function') application.saveSettings(s, 'ogarioSettings');
             } catch (e) { }
             if (bound && window.toastr) {
                 setTimeout(function () {
-                    try { toastr.info(lmT('pkg.mb.migrated', [bound])); } catch (e) { }
+                    try { toastr.info(lmT('pkg.mb.migrated', [bound]) + (noted ? ' ' + lmT('pkg.mb.migratedNotes') : '')); } catch (e) { }
                 }, 4000);
             }
             return bound;
@@ -83056,6 +83135,12 @@ function pickPlayerCellBySize(players, selectBiggest) {
         showAllKeys() {
             var setup = this;
             $('#hotkeys-cfg .custom-key-in').each(function () { if (hotkeysCommand[this.id]) setup.showKeys(this.id); });
+            this.refreshConflicts();
+        },
+        /* the conflict list of this window, when it is shown: after each change of the keys
+         * (Restore defaults, a key pressed) and of the gamepad buttons (ogario/gamepad.js) */
+        refreshConflicts() {
+            if (window.LMSmallTools && typeof window.LMSmallTools.refreshConflicts === 'function') { try { window.LMSmallTools.refreshConflicts(); } catch (eRc) { } }
         },
         /* ogario/gamepad.js, when it is loaded and has the Hotkeys window's binding functions */
         pad() {
@@ -83088,7 +83173,7 @@ function pickPlayerCellBySize(players, selectBiggest) {
             });
             /* a field with a key and mouse buttons may be wider than its text */
             $('#hotkeys-cfg .custom-key-in').each(function () { if (this.id) setup.showKeys(this.id); });
-            /* the gamepad window button, above the keys */
+            /* gamepad and the conflict list, above the keys */
             if (application && typeof application.buildHotkeysControls === 'function') application.buildHotkeysControls();
             $(document).on('click', '#reset-hotkeys', function (event) {
                 event.preventDefault();
@@ -83108,6 +83193,8 @@ function pickPlayerCellBySize(players, selectBiggest) {
                 window.addEventListener('pagehide', function () { setup.flushSave(); }),
                 $(document).on('click', '.hotkeys-link', function (event) {
                     $('#hotkeys').fadeIn(500);
+                    /* a conflict list left open shows the keys as they are now */
+                    setup.refreshConflicts();
                     $('#hotkeys-cfg').perfectScrollbar('update');
                     resetonkeydown();
                 }),
@@ -83408,6 +83495,8 @@ function pickPlayerCellBySize(players, selectBiggest) {
                 }
                 /* also when the chat key was taken by another command or deleted */
                 this.syncMessageKey();
+                /* the conflict list of this window, when it is shown */
+                this.refreshConflicts();
                 this.queueSave();
             }
         },
@@ -83439,6 +83528,7 @@ function pickPlayerCellBySize(players, selectBiggest) {
                     $(this).val(chatCommand[id] == null ? '' : String(chatCommand[id]));
                 }
             });
+            hotkeysSetup.refreshConflicts();
         },
         init() {
             this.loadHotkeys();
@@ -87414,8 +87504,8 @@ Object.defineProperty(Array.prototype, 'stDev', {
             console.warn('[LM] Error loading the practice arena:', e);
         }
     };
-    /* Small tools: the Hotkeys window's key check and the HUD hide of Show/hide HUD (Alt+H) with
-     * its capture (nothing runs until one is used) */
+    /* Small tools: the Hotkeys window's key check and conflict list, and the HUD hide of Show/hide
+     * HUD (Alt+H) with its capture (nothing runs until one is used) */
     try {
         var smallToolsScript = document.createElement('script');
         smallToolsScript.type = 'text/javascript';

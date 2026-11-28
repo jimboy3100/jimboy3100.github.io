@@ -157,7 +157,7 @@ const same=(a,b)=>JSON.stringify(a)===JSON.stringify(b);
   check('merge: an old feed button holds macro feed',old.calls.join().indexOf('mf:down,mf:up')>=0);
   check('merge: key names',old.G.padIndex('PAD A')===0&&old.G.padIndex('PAD START')===9&&old.G.padIndex('PAD RIGHT')===15&&old.G.padIndex('PAD Z')===-1&&old.G.padIndex('A')===-1&&same(old.G.keysOf('hk-split'),['PAD A'])); }
 { /* removed or merged commands on a button: the core's rule, as for the keys */
-  const c=page({store:{lmGamepad:JSON.stringify({v:1,map:{0:'hk-precisionZoom',1:'hk-zoomRecall2',9:'hk-bigMinimap',3:'hk-tripleSplit'}})}},renameSrc);
+  const c=page({store:{lmGamepad:JSON.stringify({v:1,map:{0:'hk-lmProfileNext',1:'hk-zoomRecall2',9:'hk-lmProfileUndo',3:'hk-tripleSplit'}})}},renameSrc);
   const m=c.G.getMap();
   check('merge: a removed command frees its button (Start: the menu again)',m[0]==='none'&&m[9]==='menu'&&m[1]==='hk-zoom2'&&m[3]==='hk-tripleSplit'); }
 { const c=page();const G=c.G;

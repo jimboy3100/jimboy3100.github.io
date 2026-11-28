@@ -80,7 +80,7 @@ Legend Mod (entity: https://www.legendmod.ml/#app) is a SoftwareApplication and 
 Keys 1-9, 0, arrow keys (Left/Up/Right/Down), Ctrl+1-5, Ctrl+7-9, Ctrl+0, Ctrl+Z, Ctrl+X, Ctrl+Q, Ctrl+M, Ctrl+B, Ctrl+L, Ctrl+D, plus 20 additional unbound slots (comm31-50). Each slot holds a customizable message sent with one keypress.
 
 ### Hotkeys Without Default Keys (All Configurable)
-Triple split, crazy double split, line split, merge rings toggle, practice arena, Replay Studio, replay pause/speed/seek, gamepad window, copy server link, chat sounds toggle, team pings (Help/Danger/Go here/Virus), spectate next top player, scan trick (hold), limit position (hold), multibox swap, middle multi-view, auto zoom toggle, HUD editor, user scripts/plugins, transparent skins, hide teammates names, private minimap, in-game spectator, zoom save/recall 1-3, bot controls (feed/split/macro/double/pop/16-split).
+Triple split, crazy double split, line split, merge rings toggle, practice arena, Replay Studio, replay pause/speed/seek, gamepad window, copy server link, chat sounds toggle, team pings (Help/Danger/Go here/Virus), spectate next top player, scan trick (hold), limit position (hold), multibox swap, middle multi-view, auto zoom toggle, precision zoom (hold), enlarge minimap, HUD editor, user scripts/plugins, transparent skins, hide teammates names, private minimap, in-game spectator, zoom save/recall 1-3, bot controls (feed/split/macro/double/pop/16-split).
 
 ### Mouse
 | Button | Default Action |
@@ -217,6 +217,7 @@ Sound switches: chatSounds, virusSound (a virus is shot, or you pop or eat one).
 - **Ghost cells**: Show death locations on the minimap
 - **Trail**: Last ~60 seconds of your movement path traced on the minimap
 - **Click-to-spectate**: Click on the minimap to move the spectator camera (Expanding Land World Spectate)
+- **Enlarge minimap**: Hotkey to temporarily enlarge to ~1.8x
 - **Private minimap**: Hotkey to hide minimap from view
 - **One-coloured teammates**: All teammates shown in same colour on minimap
 - **Customizable theming**: Sections colour, sector colour, guides colour, nick colour/stroke, cell colours, death location colour, font, sizes
@@ -230,6 +231,7 @@ Sound switches: chatSounds, virusSound (a virus is shot, or you pop or eat one).
 - **Mass format**: one choice: exact, short (12.3k, the former Short mass switch) or auto (exact below 10000, then 12.3k, 123k, 1.2M)
 - **Virus range circles**: Rings showing virus ejection range
 - **Game stats**: configurable stats elements (placed with the HUD editor)
+- **Precision zoom**: Hold-action for fine zoom control
 
 ### 13. HUD Editor
 Drag and resize HUD elements with named layouts (the one place for HUD positions: chat popups, stats line and the rest). Features:

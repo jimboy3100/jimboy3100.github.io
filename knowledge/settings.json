@@ -78,6 +78,7 @@
         "minimapExtraGuides",
         "minimapGhostCells",
         "minimapTrail",
+        "enlargeMinimap",
         "privateMinimap",
         "oneColouredTeammates"
       ]
@@ -288,7 +289,8 @@
       "description": "Camera zoom settings.",
       "settings": [
         "autoZoom",
-        "massWeightedCamera"
+        "massWeightedCamera",
+        "precisionZoom"
       ]
     },
     {

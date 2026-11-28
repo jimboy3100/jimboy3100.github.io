@@ -2123,6 +2123,24 @@
     "ja": "質量の表示形式",
     "it": "Formato massa"
   },
+  "settings.hk-precisionZoom": {
+    "en": "Hold: precision zoom (zooms in, release to go back)",
+    "el": "Κράτα πατημένο: ζουμ ακριβείας (άφησέ το για επιστροφή)",
+    "es": "Mantener: zoom de precisión (acerca, suelta para volver)",
+    "bg": "Задръж: прецизно приближаване (пусни, за да се върнеш)",
+    "fr": "Maintenir : zoom de précision (zoome, relâche pour revenir)",
+    "ar": "اضغط مطولًا: تكبير دقيق (يقرّب، اترك للعودة)",
+    "zh": "按住：精準縮放（放大，放開即返回）",
+    "ru": "Удерживать: точный масштаб (приближает, отпустите для возврата)",
+    "de": "Halten: Präzisionszoom (zoomt hinein, Loslassen kehrt zurück)",
+    "tr": "Basılı tut: hassas zoom (yakınlaştırır, bırakınca geri döner)",
+    "pl": "Przytrzymaj: precyzyjny zoom (przybliża, puść, by wrócić)",
+    "nl": "Ingedrukt houden: precisiezoom (zoomt in, loslaten om terug te gaan)",
+    "pt": "Segurar: zoom de precisão (aproxima, solte para voltar)",
+    "id": "Tahan: zoom presisi (memperbesar, lepas untuk kembali)",
+    "ja": "長押し：精密ズーム（拡大、離すと戻る）",
+    "it": "Tieni premuto: zoom di precisione (avvicina, rilascia per tornare)"
+  },
   "settings.virusesRange": {
     "en": "Viruses range",
     "el": "Εμβέλεια ιών",
@@ -3530,6 +3548,24 @@
     "ja": "セルの影（セルの下に影、重くなる）",
     "it": "Ombre delle cellule (ombra sotto le cellule, più lento)"
   },
+  "settings.hk-hotkeyConflicts": {
+    "en": "Hotkey conflicts",
+    "el": "Συγκρούσεις πλήκτρων",
+    "es": "Conflictos de atajos",
+    "bg": "Конфликти на бързи клавиши",
+    "fr": "Conflits de raccourcis",
+    "ar": "تعارضات الاختصارات",
+    "zh": "快捷鍵衝突",
+    "ru": "Конфликты горячих клавиш",
+    "de": "Hotkey-Konflikte",
+    "tr": "Kısayol çakışmaları",
+    "pl": "Konflikty skrótów",
+    "nl": "Sneltoetsconflicten",
+    "pt": "Conflitos de atalhos",
+    "id": "Konflik hotkey",
+    "ja": "ショートカットの重複",
+    "it": "Conflitti tra tasti rapidi"
+  },
   "settings.hotkeys": {
     "en": "Hotkeys",
     "el": "Πλήκτρα συντόμευσης",
@@ -4609,6 +4645,24 @@
     "id": "Spectate bebas: ikuti pemain berikutnya di leaderboard",
     "ja": "自由観戦：ランキングの次のプレイヤーを追跡",
     "it": "Spettatore libero: segui il prossimo giocatore in classifica"
+  },
+  "settings.hk-bigMinimap": {
+    "en": "Enlarge / restore minimap",
+    "el": "Μεγέθυνση / επαναφορά minimap",
+    "es": "Ampliar / restaurar minimapa",
+    "bg": "Увеличи / възстанови миникартата",
+    "fr": "Agrandir / restaurer la mini-carte",
+    "ar": "تكبير / استعادة الخريطة المصغرة",
+    "zh": "放大 / 還原小地圖",
+    "ru": "Увеличить / вернуть миникарту",
+    "de": "Minimap vergrößern / zurücksetzen",
+    "tr": "Mini haritayı büyüt / geri al",
+    "pl": "Powiększ / przywróć minimapę",
+    "nl": "Minimap vergroten / herstellen",
+    "pt": "Ampliar / restaurar minimapa",
+    "id": "Perbesar / kembalikan minimap",
+    "ja": "ミニマップを拡大 / 元に戻す",
+    "it": "Ingrandisci / ripristina minimappa"
   },
   "settings.hk-showTargeting": {
     "en": "Show/hide targeting panel",
@@ -9256,6 +9310,24 @@
     "id": "Statistik",
     "ja": "統計",
     "it": "Statistiche"
+  },
+  "settings.hk-middleMultiView": {
+    "en": "Toggle multibox middle view",
+    "el": "Εναλλαγή κάμερας στη μέση (multibox)",
+    "es": "Alternar vista central de multibox",
+    "bg": "Превключи средния изглед на мултибокс",
+    "fr": "Activer/désactiver la vue centrale multibox",
+    "ar": "تشغيل/إيقاف عرض Multibox في المنتصف",
+    "zh": "切換 Multibox 中間視角",
+    "ru": "Мультибокс: вкл./выкл. камеру между обоими",
+    "de": "Multibox-Mittelansicht umschalten",
+    "tr": "Multibox orta görünümünü aç/kapat",
+    "pl": "Przełącz widok środka multiboxa",
+    "nl": "Multibox-middenbeeld aan/uit",
+    "pt": "Ativar/desativar visão central do multibox",
+    "id": "Aktifkan/nonaktifkan tampilan tengah multibox",
+    "ja": "マルチボックスの中間表示を切り替え",
+    "it": "Attiva/disattiva visuale centrale multibox"
   },
   "settings.hudRoundedCorners": {
     "en": "Rounded corners (menu and HUD)",

@@ -45,7 +45,7 @@ function loadTheme(storedTheme, oldKey, full) {
         lmHudAdoptOld: () => false
     };
     vm.createContext(ctx);
-    const St = vm.runInContext('({\n' + cut('        loadThemeSettings() {', '        restoreThemeSettings() {') + '\n})', ctx);
+    const St = vm.runInContext('({\n' + cut('        loadThemeSettings() {', '        /* Hotkey (no default key): enlarge the minimap') + '\n})', ctx);
     St.loadThemeSettings();
     return { d, ls, saved: JSON.parse(ls.getItem('ogarioThemeSettings') || 'null') };
 }

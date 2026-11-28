@@ -99,10 +99,48 @@ check('the merge countdown in seconds is gone', !('countdownText' in P) && !('me
     check('massText: off, as before', H.massText(700, {}) === '700');
 }
 
-// the zoom bookmarks / saved zoom levels, precision zoom and camera lock were removed
+// precision zoom (the zoom bookmarks / saved zoom levels and camera lock were removed)
 {
-    check('the saved zoom levels and the precision zoom are gone', !('zoomSave' in H) && !('zoomRecall' in H) && !('precisionZoom' in H));
+    ctx.legendmod = { zoomValue: 0.25, play: false, playerCellsMulti: [] };
+    check('the saved zoom levels are gone', !('zoomSave' in H) && !('zoomRecall' in H));
+    H.precisionZoom(true); H.precisionZoom(true); /* key repeat must not stack */
+    check('precision zoom zooms in once', near(ctx.legendmod.zoomValue, 0.625));
+    H.precisionZoom(false);
+    check('precision zoom release restores', ctx.legendmod.zoomValue === 0.25);
     check('camera lock is gone', !('toggleCamLock' in H) && !('camLockTarget' in H) && !('camLocked' in H));
+}
+
+// precision zoom while it is held (audit A6)
+{
+    ctx.legendmod = { zoomValue: 1, play: true, socket: { id: 1 }, playerCellsMulti: [] };
+    H.precisionZoom(true);
+    check('precision: held zoom 2.5x', near(ctx.legendmod.zoomValue, 2.5));
+    H.precisionZoom(false);
+    check('precision: release goes back (1)', near(ctx.legendmod.zoomValue, 1));
+    ctx.legendmod.zoomValue = 1;
+    H.precisionZoom(true);
+    ctx.legendmod.zoomValue = 5; /* wheel while held: returns to 2 */
+    H.precisionZoom(false);
+    check('precision: wheel change kept on release', near(ctx.legendmod.zoomValue, 2));
+    ctx.legendmod.zoomValue = 30;
+    H.precisionZoom(true);
+    ctx.legendmod.zoomValue = 1e6; /* a broken value while held */
+    H.precisionZoom(false);
+    check('precision: release clamped to the zoom range', ctx.legendmod.zoomValue <= 40 && ctx.legendmod.zoomValue >= 0.01);
+    ctx.legendmod.zoomValue = 1;
+    H.precisionZoom(true);
+    /* the connection changes while the key is held: the zoom goes back at once */
+    ctx.legendmod.socket = { id: 2 };
+    H.frame({}, null, ctx.legendmod);
+    check('precision: released on a socket change', near(ctx.legendmod.zoomValue, 1));
+    ctx.legendmod.zoomValue = 1.5;
+    H.precisionZoom(false); /* the key comes up later: nothing more */
+    check('precision: the late key up changes nothing', ctx.legendmod.zoomValue === 1.5);
+    H.precisionZoom(true);
+    ctx.multiboxPlayerEnabled = 2;
+    H.frame({}, null, ctx.legendmod);
+    check('precision: released on a multibox unit switch', near(ctx.legendmod.zoomValue, 1.5));
+    ctx.multiboxPlayerEnabled = null;
 }
 
 // the reference unit is the one you control, as compareCells uses it (audit A15)

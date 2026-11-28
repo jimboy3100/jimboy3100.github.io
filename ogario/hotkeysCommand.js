@@ -139,6 +139,30 @@
 				keyUp: null,
 				type: 'normal'
 			},
+			'hk-middleMultiView': {
+				get label() {
+					return lmT('settings.hk-middleMultiView');
+				},
+				defaultKey: '',
+				keyDown() {
+					if (!application || typeof defaultmapsettings === 'undefined') return;
+					defaultmapsettings.middleMultiView = !defaultmapsettings.middleMultiView;
+					if (typeof application.syncHotkeyOption === 'function') application.syncHotkeyOption('middleMultiView');
+				},
+				keyUp: null,
+				type: 'normal'
+			},
+			'hk-bigMinimap': {
+				get label() {
+					return lmT('settings.hk-bigMinimap');
+				},
+				defaultKey: '',
+				keyDown() {
+					if (typeof Settings !== 'undefined' && Settings && typeof Settings.lmToggleBigMinimap === 'function') Settings.lmToggleBigMinimap();
+				},
+				keyUp: null,
+				type: 'normal'
+			},
 			'hk-pingHelp': {
 				get label() {
 					return lmT('settings.hk-pingHelp');
@@ -613,6 +637,18 @@
                     application && application.setZoom(0.05);
                 },
                 keyUp: null,
+                type: 'normal'
+            },
+            /* HUD helpers (ogario/modules/hudhelpers.js); no default keys */
+            'hk-precisionZoom': {
+                get label() { return lmT('settings.hk-precisionZoom'); },
+                defaultKey: '',
+                keyDown() {
+                    window.LMHudHelpers && window.LMHudHelpers.precisionZoom(true);
+                },
+                keyUp() {
+                    window.LMHudHelpers && window.LMHudHelpers.precisionZoom(false);
+                },
                 type: 'normal'
             },
             'hk-voiceChat': {

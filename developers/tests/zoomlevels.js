@@ -64,10 +64,10 @@ function loadCommands() {
     check('other keys stay', h.Q === 'hk-feed');
     h = run({ 'K': 'hk-zoomSave1', 'ALT+5': 'hk-zoom5', 'L': 'hk-zoomSave5', 'Q': 'hk-feed' });
     check('a key on a removed "Save the current zoom as zoom level" is free again', !('K' in h) && !('L' in h) && h['ALT+5'] === 'hk-zoom5' && h.Q === 'hk-feed');
-    h = run({ 'Z': 'hk-precisionZoom', 'MOUSE 4': 'hk-bigMinimap', 'F7': 'hk-lmProfileNext', 'F8': 'hk-lmProfilePrev', 'F9': 'hk-lmProfileUndo', 'F10': 'hk-lmProfilesWindow', 'Q': 'hk-feed' });
-    check('keys on the removed precision zoom, enlarge minimap and profile next / previous / Undo are free again', JSON.stringify(h) === JSON.stringify({ 'Q': 'hk-feed' }));
+    h = run({ 'F7': 'hk-lmProfileNext', 'F8': 'hk-lmProfilePrev', 'F9': 'hk-lmProfileUndo', 'F10': 'hk-lmProfilesWindow', 'Z': 'hk-precisionZoom', 'MOUSE 4': 'hk-bigMinimap', 'M': 'hk-middleMultiView', 'Q': 'hk-feed' });
+    check('keys on the removed profile next / previous / Undo are free again; precision zoom, enlarge minimap and middle view keep theirs', JSON.stringify(h) === JSON.stringify({ 'Z': 'hk-precisionZoom', 'MOUSE 4': 'hk-bigMinimap', 'M': 'hk-middleMultiView', 'Q': 'hk-feed' }));
     /* hotkeys that only opened a window or a panel or switched a rarely changed setting */
-    const goneIds = ['hk-analytics', 'hk-performanceMode', 'hk-perfDiag', 'hk-netGraph', 'hk-mergeRings', 'hk-elLeagues', 'hk-elShop', 'hk-elChallenges', 'hk-elPotions', 'hk-elClaimAll', 'hk-replayPause', 'hk-replayFaster', 'hk-replaySlower', 'hk-replayFwd', 'hk-replayBack', 'hk-replayStudio', 'hk-middleMultiView', 'hk-mbRings', 'hk-gamepadWindow', 'hk-lmProfilesWindow', 'hk-lmThemeWorkshop', 'hk-copyServerLink', 'hk-chatSounds', 'hk-notifCentre', 'hk-lmPlugins', 'hk-hudEditor', 'hk-lmLab'];
+    const goneIds = ['hk-analytics', 'hk-performanceMode', 'hk-perfDiag', 'hk-netGraph', 'hk-mergeRings', 'hk-elLeagues', 'hk-elShop', 'hk-elChallenges', 'hk-elPotions', 'hk-elClaimAll', 'hk-replayPause', 'hk-replayFaster', 'hk-replaySlower', 'hk-replayFwd', 'hk-replayBack', 'hk-replayStudio', 'hk-mbRings', 'hk-gamepadWindow', 'hk-lmProfilesWindow', 'hk-lmThemeWorkshop', 'hk-copyServerLink', 'hk-chatSounds', 'hk-notifCentre', 'hk-lmPlugins', 'hk-hudEditor', 'hk-lmLab'];
     const st = { 'Q': 'hk-feed', 'ALT+R': 'hk-dance', 'MOUSE 5': 'hk-scanTrick' };
     goneIds.forEach((id, n) => { st['F' + n] = id; });
     h = run(st);
