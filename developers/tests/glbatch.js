@@ -1085,9 +1085,8 @@ function pageLib() {
         c.width = W; c.height = H;
         var x = c.getContext('2d');
         x.setTransform(sc, 0, 0, sc, W / 2 - R.camX * sc, H / 2 - R.camY * sc);
-        /* [cell, radius]: edges; [cell, r0, r1]: the jelly skin border's outer half (GL draws it
-         * outside the body too, with or without contours: left out, as the whole border with
-         * cellsAlpha, see below) */
+        /* [cell, radius]: edges; [cell, r0, r1]: left out (the jelly skin border with cellsAlpha,
+         * see below) */
         var edges = [], rims = [];
         function path(cl) {
             x.beginPath();
@@ -1117,10 +1116,11 @@ function pageLib() {
                 x.lineWidth = lw;
                 x.strokeStyle = cl.color;
                 x.stroke();
-                edges.push([cl, cl.size + lw / 2], [cl, cl.size - lw / 2]);
-                /* with cellsAlpha the whole border: the GL bands pass draws it after every body,
-                 * so a later transparent ring hides it (also without contours) */
-                rims.push([cl, cfg.alpha ? cl.size - lw / 2 : cl.size, cl.size + lw / 2]);
+                /* the border clipped to the body: GL draws only its inner half with contours */
+                edges.push([cl, cl.size - lw / 2]);
+                /* with cellsAlpha: the GL bands pass draws the border after every body, so a
+                 * later transparent ring hides it (also without contours) */
+                if (cfg.alpha) rims.push([cl, cl.size - lw / 2, cl.size]);
             } else x.drawImage(img, cl.x - cl.size, cl.y - cl.size, 2 * cl.size, 2 * cl.size);
             x.restore();
         }
