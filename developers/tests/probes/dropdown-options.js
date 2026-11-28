@@ -1,5 +1,5 @@
-// Dropdown lists in the game: the open list of every select (Settings, Theme, Hotkeys, Discover "This
-// server" and the other windows) has fixed readable colours, dark text on white, under a dark theme,
+// Dropdown lists in the game: the open list of every select (Settings, Theme, Hotkeys and the other
+// windows) has fixed readable colours, dark text on white, under a dark theme,
 // the light 'Agar.io' preset and grey panels with light grey text. Chrome draws a select's open list
 // from the option's computed background and colour (an option without one shows the select's, over
 // white). Until 3.699 the list took the panel and text colours of the theme, unreadable with grey
@@ -25,10 +25,7 @@
   var boxes = ['lm-dir-panel', 'lm-he-p', 'lm-notif-panel', 'lm-dc', 'lm-ed', 'lm-gp-modal', 'lm-me-p', 'lm-pr', 'lm-tw', 'specialShopModal'];
   var tmp = document.createElement('div');
   tmp.className = 'agario-panel';
-  for (var w = 0; w < 40 && !(window.LMDiscovery && LMDiscovery.open); w++) await sleep(250);
-  var DC = window.LMDiscovery, dcWas = DC && DC.isOpen && DC.isOpen();
   try {
-    if (DC && DC.open) { DC.open('server'); await sleep(200); }
     boxes.forEach(function (id) {
       if (document.getElementById(id)) return;
       var b = document.createElement('div');
@@ -38,7 +35,6 @@
     });
     tmp.style.cssText = 'position:fixed;left:-9999px;top:0';
     document.body.appendChild(tmp);
-    info.discover = !!document.getElementById('lm-dc-type');
     var looks = {};
     for (var name in THEMES) {
       KEYS.forEach(function (k, i) { defaultSettings[k] = THEMES[name][i]; });
@@ -83,7 +79,6 @@
     try { tmp.remove(); } catch (e) { }
     KEYS.forEach(function (k, i) { defaultSettings[k] = before[i]; });
     try { Settings.setMenu(); } catch (e) { }
-    try { if (DC && DC.close && !dcWas) DC.close(); } catch (e) { }
   }
   return { fail: fail, info: info };
 })()

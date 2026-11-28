@@ -3570,7 +3570,7 @@ if (window.LMi18n && typeof window.LMi18n.onChange === 'function') window.LMi18n
     var n = window.LMi18n.num();
     if (from !== 'peer' || String(languagemod) === n) return;
     languagemod = n;
-    if (typeof $ === 'function') $('#legendlanguages, #legendlanguages2').val(n);
+    if (typeof $ === 'function') $('#legendlanguages').val(n);
     _lmRunLanguageHandler();
 });
 function _lmEscLang(s) {
@@ -6319,8 +6319,7 @@ function initializeLM(modVersion) {
             var _lmSeenVer = localStorage.getItem('lmLastSeenOgVer');
             if (_lmSeenVer && _lmSeenVer !== String(window.OgVer) && window.toastr) {
                 toastr.info('<b>' + _lmxE('lmx.ex.updatedTitle', [String(window.OgVer)]) + '</b><br>' +
-                    _lmxT('lmx.ex.updatedNews') + '<br>' +
-                    '<a href="#" class="lm-dc-toast-link" style="text-decoration:underline;">' + _lmxE('lmx.ex.discoverFeatures') + '</a>', '', { timeOut: 14000, extendedTimeOut: 4000 });
+                    _lmxT('lmx.ex.updatedNews'), '', { timeOut: 14000, extendedTimeOut: 4000 });
             }
             localStorage.setItem('lmLastSeenOgVer', String(window.OgVer));
         } catch (e) { }

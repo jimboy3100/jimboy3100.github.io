@@ -1,6 +1,7 @@
 // Discover features: does not open by itself on a first visit, is listed in the Command Centre, opens,
-// fits the screen, shows the feature cards with NEW badges, a switch flips the real option and back,
-// the server tab lists the capabilities, and the close button (touch size) closes it and marks the cards seen.
+// fits the screen, shows the feature cards with NEW badges (no server tab: the What works on this
+// server table is removed), a switch flips the real option and back, and the close button (touch
+// size) closes it and marks the cards seen.
 (async () => {
   var fail = [], info = {};
   var sleep = function (ms) { return new Promise(function (r) { setTimeout(r, ms); }); };
@@ -25,11 +26,6 @@
         await sleep(150);
         var txt = (document.getElementById('lm-cc-list') || {}).textContent || '';
         if (txt.indexOf(lmT('modules.commandcentre.discover')) < 0 && txt.indexOf(lmT('modules.discovery.title')) < 0) fail.push('Command Centre does not list Discover features');
-        q.value = 'what works on this server';
-        q.dispatchEvent(new Event('input', { bubbles: true }));
-        await sleep(150);
-        txt = (document.getElementById('lm-cc-list') || {}).textContent || '';
-        if (txt.indexOf(lmT('modules.commandcentre.serverCaps')) < 0 && txt.indexOf(lmT('modules.discovery.serverTitle')) < 0) fail.push('Command Centre does not list the server capabilities');
       }
       if (typeof CC.close === 'function') CC.close();
       await sleep(100);
@@ -65,22 +61,7 @@
       if (dms.hudMoveDir !== before) fail.push('switch did not turn it back');
     }
 
-    root.querySelector('.lm-dc-tab[data-tab="server"]').click();
-    await sleep(80);
-    var rows = root.querySelectorAll('.lm-dc-caps li');
-    info.caps = rows.length;
-    if (rows.length < 10) fail.push(rows.length + ' capability rows');
-    var sel = document.getElementById('lm-dc-type');
-    if (!sel || sel.options.length !== 9) fail.push('server type select');
-    else {
-      sel.value = 'expandingland';
-      sel.dispatchEvent(new Event('change', { bubbles: true }));
-      await sleep(80);
-      var ws = root.querySelector('.lm-dc-caps li[data-cap="worldSpectate"] .lm-dc-v');
-      if (!ws || !ws.classList.contains('y')) fail.push('World Spectate not shown as working on Expanding Land');
-    }
-    pr = panel.getBoundingClientRect();
-    if (pr.bottom > innerHeight + 1 || pr.right > innerWidth + 1) fail.push('server tab does not fit the screen');
+    if (root.querySelector('.lm-dc-tab, .lm-dc-caps, #lm-dc-type')) fail.push('the removed server tab is back');
 
     var x = root.querySelector('.lm-dc-x');
     var xr = x.getBoundingClientRect();

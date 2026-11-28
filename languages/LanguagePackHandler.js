@@ -3,8 +3,6 @@
 //v1.4: a function, run again by every language change
 
 //Legend Mod By Jimboy3100
-var Languagetimesused;
-var Languagetimesused1;
 
 /* Puts the texts of the chosen language into the menus by id. The texts are the old globals
  * (Languageletter*, Premadeletter*, Externalletter*, translator), which languages/lm-i18n.js keeps
@@ -446,21 +444,8 @@ $("#opennamechars").attr("data-original-title", Languageletter359);
 $("#openskinchanger").attr("data-original-title", Languageletter360);
 $("#MorefpsText").text(Languageletter361);
 
-$("#Infobtn11").text(Externalletter1);
 $("#TemplatesBtn").text(Externalletter2);
-$("#ManualyTemplatesBtn").text(Externalletter3);
-$("#LanguagesTempBtn").text(Externalletter0a);
-$("#chooselangtext1").text(Externalletter0b);
 
-if (Languagetimesused=="1"){
-	Languagestimeusedplus1();
-	if (Languagetimesused1==1){
-toastr["info"](Externalletter0c, "", {
-    timeOut: 5000,
-    extendedTimeOut: 5000
-     }).css("width", "300px");
-	}
-}
 setTimeout(function () {
 $("#Backtomenu").text(Languageletter283);
 $("#userscripter1").text(Externalletter6);
@@ -478,9 +463,5 @@ $("#block-warn").replace('Temporary unblock', Languageletter348);
 }, 1500);
 };
 
-function Languagestimeusedplus1(){
-Languagetimesused1++;
-return Languagetimesused1;
-}
 
 window.lmApplyLanguagePack();

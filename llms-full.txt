@@ -80,7 +80,7 @@ Legend Mod (entity: https://www.legendmod.ml/#app) is a SoftwareApplication and 
 Keys 1-9, 0, arrow keys (Left/Up/Right/Down), Ctrl+1-5, Ctrl+7-9, Ctrl+0, Ctrl+Z, Ctrl+X, Ctrl+Q, Ctrl+M, Ctrl+B, Ctrl+L, Ctrl+D, plus 20 additional unbound slots (comm31-50). Each slot holds a customizable message sent with one keypress.
 
 ### Hotkeys Without Default Keys (All Configurable)
-Triple split, crazy double split, line split, practice arena, notification centre, team pings (Help/Danger/Go here/Virus), spectate next top player, spectator director (open, auto, broadcast, next / previous / add watched player, save mark, marks 1-5), scan trick (hold), radial menu, radial editor, screenshot capture/window, limit position (hold), multibox swap, middle multi-view, auto zoom toggle, precision zoom (hold), enlarge minimap, transparent skins, hide teammates names, private minimap, in-game spectator (and its follow / free camera switch), auto respawn, targeting, bot controls (double/pop/16-split).
+Triple split, crazy double split, line split, practice arena, team pings (Help/Danger/Go here/Virus), spectate next top player, spectator director (open, auto, broadcast, next / previous / add watched player, save mark, marks 1-5), scan trick (hold), radial menu, screenshot capture, limit position (hold), multibox swap, middle multi-view, auto zoom toggle, precision zoom (hold), enlarge minimap, transparent skins, hide teammates names, private minimap, in-game spectator (and its follow / free camera switch), auto respawn, targeting, bot controls (double/pop/16-split).
 
 ### Mouse
 | Button | Default Action |
@@ -318,7 +318,7 @@ Automatic camera system for spectating. Features:
 Hold-point-release radial command menu. Features:
 - **Up to 8 slots**: Assign any hotkey command to a slot
 - **Quick access**: Hold radial menu key, point to slot, release to activate
-- **Radial editor**: Customize slot assignments
+- **Radial editor**: Customize slot assignments (opens when the ring is empty)
 - Opens via hotkey (no default key)
 
 ### 25. User Scripts / Plugins
@@ -339,8 +339,7 @@ Toggle experimental features with on/off switches. Features:
 ### 27. Discovery / Feature Guide
 Feature guide cards that introduce Legend Mod features. Features:
 - **One-tap option switches**: Try features directly from guide cards
-- **Auto-opens**: Shows after updates for returning players
-- **Server compatibility table**: "What works on this server" per server type (agar.io, Expanding Land, private servers)
+- Opens from the Command Centre (never by itself)
 
 ### 28. Additional Presets
 Beyond Streamer, Legend Mod offers one-click presets:

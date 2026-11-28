@@ -1,6 +1,4 @@
 //v1.0
-var Languagetimesused;
-var Languagetimesused1=0;
 /* Texts from the language packs (developers/i18n/src: pack.* are the old Externalletter texts,
  * misc.* this window's own), escaped for the HTML below. data-i18n marks let a language change
  * update the window while it is open. */
@@ -38,10 +36,7 @@ $('body').append(
 
     '<div class="modal-footer" style="text-align:left;border-top:1px solid rgba(255,255,255,.1);">' +
     '<button type="button" id="LegendHelperBacktomenu" onclick="return closeLegendHelper(event);" class="btn btn-danger">' + _lmHTx('misc.close') + '</button>' +
-    '<button id="Infobtn11" onclick="Infobtn11(); return false" class="btn btn-success" style="margin-left:10px;">' + _lmHTx('pack.information') + '</button>' +
     '<button id="TemplatesBtn" onclick="templatesIframe(); return false" class="btn btn-success" style="margin-left:10px;">' + _lmHTx('pack.templates') + '</button>' +
-    '<button id="ManualyTemplatesBtn" onclick="manualytemplatesIframe(); return false" class="btn btn-success" style="margin-left:10px;">' + _lmHTx('pack.manualTemplates') + '</button>' +
-    '<button id="LanguagesTempBtn" onclick="LanguagesTempIframe(); return false" class="btn btn-success" style="margin-left:10px;">' + _lmHTx('pack.languages') + '</button>' +
     '</div>' +
 
     '</div>' +
@@ -93,32 +88,6 @@ $("#Userscriptshud3").html('<div id="tutorial9" style="display:block;" width="82
 	'<div class="lm-dl-template"><a class="lm-dl-banner" href="#" role="button" data-lm-dl="on"><img height="70" src="https://www.legendmod.ml/banners/dyinglightbanner2.jpg" alt="Dying Light" style="width: 40%"></a><a href="#" role="button" data-lm-dl="on" style="color:var(--lm-tc,#fff); font-size:13px; text-decoration:underline;">Dying Light</a></div>'+	   
 	'<br><br></div></div>');
 //$('#TemplatesBtn').hide();	
-}
-
-function LanguagesTempIframe(){
-$("#Userscriptshud3").html('<div id="tutorial10" style="display:block;" width="820" height="490">'+
-	'<p id="chooselangtext1" style="color:var(--lm-mc,#fff); font-size:15px; margin:6px 0;" align="middle"><b>' + _lmHTx('pack.chooseALanguage') + '</b></p>'+
-	'<br><br><select id="legendlanguages2" class="form-control" onchange="changeModLanguage2();" required="" data-original-title="" title="" style="display:inline; width: 50%">' + _lmLangOptions() + '</select>'+
-	'</div>');
-	$('#legendlanguages2').val(languagemod);
-}
-
-/* the Choose Language list: every language by its own name, value = languagemod (1 English ... 16 Italian) */
-function _lmLangOptions() {
-    var names = (window.LMi18n && window.LMi18n.names) || ['English'], out = '';
-    for (var i = 0; i < names.length; i++) out += '<option value="' + (i + 1) + '">' + names[i] + '</option>';
-    return out;
-}
-
-function Infobtn11(){
-
-$("#Userscriptshud3").html('<iframe id="customskinsIframe2" src="' + _lmHelperSrc() + '" width="920" height="490" style="border:0;max-width:100%;display:block;">'+
-    '<p>' + _lmHTx('misc.noIframes') + '</p>'+
-	'</iframe>');
-//$('#TemplatesBtn').hide();	
-}
-function manualytemplatesIframe(){
-window.open(typeof lmThemeUrl === 'function' ? lmThemeUrl('https://www.legendmod.ml/themes/') : 'https://www.legendmod.ml/themes/','_blank');
 }
 
 /* A theme template must not replace the player's own profiles (nicks, tags, skins), hotkeys and
@@ -191,18 +160,3 @@ $("#import-settings-btn").attr('class', 'btn btn-success');document.getElementBy
 /* openbleedmod / openrotatingmod (the nick easter eggs) live in LMexpress.js only: copies here
  * replaced them once this window was opened (extras/bleedmod.js is not there, and the load-once
  * guard was lost) */
-
-function changeModLanguage2() {
-    /* the same path as the main Choose Language list: loads the language file, updates every text
-     * (this window included) and saves languagemod */
-    var v = $("#legendlanguages2").val();
-    if ($("#legendlanguages").length && typeof changeModLanguage === "function") {
-        $("#legendlanguages").val(v);
-        changeModLanguage(true);
-    } else if (window.LMi18n) {
-        window.LMi18n.setLang(v);
-    } else {
-        try { localStorage.setItem("languagemod", v); } catch (e) { }
-    }
-    return Languagetimesused = "1";
-}

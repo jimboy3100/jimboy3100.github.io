@@ -16,7 +16,7 @@
   var OPTS = ['a11yTextScale', 'a11yHudTextScale'], keep = {};
   OPTS.forEach(function (k) { keep[k] = s[k]; });
   var inBox = function (r) { return r.width > 0 && r.left >= -1 && r.top >= -1 && r.right <= innerWidth + 1 && r.bottom <= innerHeight + 1; };
-  var HK = ['hk-radialMenu', 'hk-radialEditor', 'hk-screenshotCapture', 'hk-screenshotTool'];
+  var HK = ['hk-radialMenu', 'hk-screenshotCapture'];
   try {
     need('options off by default', LM_SETTINGS_DEFAULTS.a11yTextScale === 1 && LM_SETTINGS_DEFAULTS.a11yHudTextScale === 1 && LM_THEME_DEFAULTS.gameBrightness === 100 && LM_THEME_DEFAULTS.gameSaturation === 100);
     /* the sector symbol is removed */

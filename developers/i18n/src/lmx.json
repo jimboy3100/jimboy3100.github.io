@@ -10334,24 +10334,6 @@
     "ja": "• Expanding Land：デイリーチャレンジ、カウントダウン付きのサーバーイベント、アカウントの対戦履歴<br>• 設定プリセット（元に戻す機能付き）、12言語対応の設定<br>• チームピン（助けて、危険、ここへ行こう、ここにウイルス）とゲームパッド対応<br>• リプレイ：一時停止、速度、シーク、進行バー、Game Overカードの追加情報<br>• 新しいオプションはオフになっています。設定の検索に単語を入力して探してください",
     "it": "• Expanding Land: sfide giornaliere, eventi del server con conto alla rovescia, cronologia partite sul tuo account<br>• Preset delle impostazioni (con Annulla); impostazioni in 12 lingue<br>• Ping di squadra (Aiuto, Pericolo, Vai qui, Virus qui) e supporto gamepad<br>• Replay: pausa, velocità, salto e barra di avanzamento; extra nella scheda Game Over<br>• Le nuove opzioni sono disattivate: scrivi una parola nella ricerca delle impostazioni per trovarle"
   },
-  "lmx.ex.discoverFeatures": {
-    "en": "Discover features",
-    "el": "Ανακάλυψε λειτουργίες",
-    "es": "Descubrir funciones",
-    "bg": "Открий функциите",
-    "fr": "Découvrir les fonctions",
-    "ar": "اكتشف الميزات",
-    "zh": "探索功能",
-    "ru": "Открыть функции",
-    "de": "Funktionen entdecken",
-    "tr": "Özellikleri keşfet",
-    "pl": "Odkryj funkcje",
-    "nl": "Functies ontdekken",
-    "pt": "Descobrir recursos",
-    "id": "Jelajahi fitur",
-    "ja": "機能を見てみる",
-    "it": "Scopri le funzioni"
-  },
   "lmx.ex.serverNotFound": {
     "en": "Server not found!",
     "el": "Ο server δεν βρέθηκε!",

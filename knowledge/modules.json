@@ -108,8 +108,8 @@
     {
       "id": "discovery",
       "file": "ogario/modules/discovery.js",
-      "lines": 613,
-      "description": "Feature guide cards introducing Legend Mod features. One-tap option switches; opened from the Command Centre or the \"What's new\" toast link (never by itself).",
+      "lines": 416,
+      "description": "Feature guide cards introducing Legend Mod features. One-tap option switches; opened from the Command Centre (never by itself).",
       "feature": "Discovery"
     },
     {

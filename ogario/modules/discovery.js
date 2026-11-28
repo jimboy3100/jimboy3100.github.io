@@ -1,4 +1,4 @@
-/* Legend Mod "Discover features" guide and "What works on this server".
+/* Legend Mod "Discover features" guide.
  *
  * Discover features: one short card per optional feature (Command Centre, HUD helpers, Replay Studio,
  * Analytics, ...) with what it does, one-tap switches for its options (the real menu checkboxes, so
@@ -6,14 +6,12 @@
  * settings", which opens the menu at the option and makes it blink (the Command Centre reveal). A
  * switch with a HUD part (quick bar, bell, cell panel) highlights where it appeared.
  *
- * It never opens by itself: after an update the one notice is the "What's new" toast (LMexpress),
- * whose link opens it (it used to open once by itself as well, with a "Show after updates" switch).
+ * It never opens by itself (it used to open once after an update, with a "Show after updates"
+ * switch, and from a link in the "What's new" toast).
  * Cards the player has not seen are marked NEW (a card changed since gets cv: 2, 3... and is NEW
  * again); the card ids seen and the last version are in localStorage 'lmDiscover' (validated on read).
- * Reachable from the Command Centre and that link.
- *
- * What works on this server: a static table, checked against the code, of which features work on
- * each server type (window.legendmod.serverType). It is only a guide: nothing is gated by it.
+ * Reachable from the Command Centre. (Its "What works on this server" table window is removed;
+ * Settings keeps its own table for the dimmed "Not available on this server" notes.)
  *
  * The pure parts are in LMDiscovery.core (developers/tests/discovery.js runs this file in a vm).
  */
@@ -25,94 +23,10 @@
 
     var KEY = 'lmDiscover';
     var MAX_SEEN = 100;
-    var own = Object.prototype.hasOwnProperty;
 
     /* texts from the language packs (developers/i18n/src) */
     var P = 'modules.discovery.';
     function t(k, vars) { return typeof W.lmT === 'function' ? W.lmT(P + k, vars) : k; }
-
-    /* ═══ Server types and what works on them ═══ */
-
-    /* name: proper names (not translated); private servers have a text in the packs (type.private) */
-    var SERVER_TYPES = [
-        { id: 'agario', name: 'agar.io' },
-        { id: 'expandingland', name: 'Expanding Land' },
-        // i18n-ok: server proper name
-        { id: 'senpa', name: 'Senpa' },
-        // i18n-ok: server proper name
-        { id: 'garix', name: 'Garix' },
-        { id: 'sigmally', name: 'Sigmally' },
-        { id: 'imsolo', name: 'Imsolo' },
-        // i18n-ok: server proper name
-        { id: 'agar2', name: 'Agar2' },
-        { id: 'deltio', name: 'delt.io' },
-        { id: 'private', name: '' }
-    ];
-    /* label: the text cap.<id> of the packs (a note: note.<key>).
-     * v: y works, n does not, p partly (see the note), u not verified. Types not listed are n.
-     * Where in ogario.v4.js (or the module) the behaviour comes from is in the comment. */
-    var CAPS = [
-        /* recording is in _lmHandlePacket, called from handleMessage; Sigmally and Senpa packets are
-         * decoded by their own paths in onMessage, which return before handleMessage */
-        { id: 'replays', v: { agario: 'y', expandingland: 'y', garix: 'y', imsolo: 'y', agar2: 'y', deltio: 'y', private: 'y' } },
-        /* spect.js: the extra unit sends only the classic 254/255 handshake (no Senpa / Sigmally login,
-         * no Garix subprotocol) */
-        { id: 'multibox', v: { agario: 'y', expandingland: 'y', imsolo: 'y', agar2: 'y', private: 'y', garix: 'u', deltio: 'u' } },
-        /* hudhelpers.js mergeFrame: LM.integrity && !LM.isLegendWorld (agar.io merge times) */
-        { id: 'mergeCountdown', v: { agario: 'y' } },
-        /* split prediction: LM.integrity && !LM.isLegendWorld */
-        { id: 'splitPrediction', v: { agario: 'y' } },
-        /* sendPlayerPosition / setParty have no server gate (relay, or ogarioWS on private) */
-        { id: 'teammates', v: { agario: 'y', expandingland: 'y', senpa: 'y', garix: 'y', sigmally: 'y', imsolo: 'y', agar2: 'y', deltio: 'y', private: 'y' } },
-        /* chat opcode 99: !integrity && not Sigmally / Senpa && no clan tag; Expanding Land uses its team
-         * chat (202) with a tag or in Teams */
-        { id: 'serverChat', v: { expandingland: 'p', garix: 'y', imsolo: 'y', agar2: 'y', private: 'y', deltio: 'u' },
-            note: { expandingland: 'noClanTag' } },
-        /* doubleSplit / tripleSplit / split16: Senpa opcode 22, Imsolo / Agar2 / Garix / private 26-28;
-         * the others send quick single splits */
-        { id: 'splitMacros', v: { senpa: 'y', garix: 'y', imsolo: 'y', agar2: 'y', private: 'y', agario: 'p', expandingland: 'p', sigmally: 'p', deltio: 'p' },
-            note: { '*': 'singleSplits' } },
-        /* freeze: sendAction(32) only for the same four types */
-        { id: 'freeze', v: { garix: 'y', imsolo: 'y', agar2: 'y', private: 'y' } },
-        /* free spectate: Senpa and Sigmally have their own spectate paths, the others opcode 1 / 18 */
-        { id: 'spectate', v: { agario: 'y', expandingland: 'y', senpa: 'y', garix: 'y', sigmally: 'y', imsolo: 'y', agar2: 'y', deltio: 'y', private: 'y' } },
-        /* the World Spectate button is shown only for expandingland */
-        { id: 'worldSpectate', v: { expandingland: 'y' } },
-        /* social login buttons enabled only for agario and expandingland; the token is sent to no other */
-        { id: 'login', v: { agario: 'y', expandingland: 'y' } },
-        /* agar.io parties go through the official API */
-        { id: 'party', v: { agario: 'y' } },
-        /* server option 5003: wss://api.legendmod.ml/el-room/... */
-        { id: 'rooms', v: { expandingland: 'y' } },
-        /* claimDailyChallenge, server events and the account match history need isLegendWorld */
-        { id: 'elAccount', v: { expandingland: 'y' } }
-    ];
-    var TYPE_IDS = SERVER_TYPES.map(function (s) { return s.id; });
-
-    /* the server type of a connection object (window.legendmod), '' when unknown / not connected */
-    function serverTypeOf(LM) {
-        if (!LM || typeof LM !== 'object') return '';
-        if (LM.isLegendWorld === true) return 'expandingland';
-        var t = typeof LM.serverType === 'string' ? LM.serverType : '';
-        return TYPE_IDS.indexOf(t) >= 0 ? t : '';
-    }
-    function capValue(row, type) {
-        var v = row && row.v && own.call(row.v, type) ? row.v[type] : 'n';
-        return v === 'y' || v === 'p' || v === 'u' ? v : 'n';
-    }
-    /* the note of a row that works partly on this type, in the chosen language ('' for none) */
-    function capNote(row, type) {
-        if (!row || !row.note || capValue(row, type) !== 'p') return '';
-        var n = own.call(row.note, type) ? row.note[type] : row.note['*'];
-        return n ? t('note.' + n) : '';
-    }
-    /* the rows for one type: works first, then partly, not verified, does not */
-    function capsFor(type) {
-        var order = { y: 0, p: 1, u: 2, n: 3 };
-        return CAPS.map(function (r, i) {
-            return { id: r.id, label: t('cap.' + r.id), v: capValue(r, type), note: capNote(r, type), i: i };
-        }).sort(function (a, b) { return order[a.v] - order[b.v] || a.i - b.i; });
-    }
 
     /* ═══ Stored state ═══ */
 
@@ -212,8 +126,7 @@
 
     var core = {
         toggleBox: toggleBox,
-        SERVER_TYPES: SERVER_TYPES, CAPS: CAPS, CARDS: CARDS, KEY: KEY, MAX_SEEN: MAX_SEEN,
-        serverTypeOf: serverTypeOf, capValue: capValue, capNote: capNote, capsFor: capsFor,
+        CARDS: CARDS, KEY: KEY, MAX_SEEN: MAX_SEEN,
         parseStore: parseStore, serializeStore: serializeStore, unseenIds: unseenIds,
         seenKey: seenKey, markSeen: markSeen, t: t
     };
@@ -248,8 +161,7 @@
 
     /* ═══ Window ═══ */
 
-    var root = null, body = null, tab = 'features', msgTimer = null, lastFocus = null, viewType = '';
-    var VKEYS = { y: 'works', p: 'partly', u: 'unverified', n: 'notHere' };
+    var root = null, body = null, msgTimer = null, lastFocus = null;
     function mk(tag, cls, text) {
         var e = D.createElement(tag);
         if (cls) e.className = cls;
@@ -271,8 +183,6 @@
             'border:1px solid var(--lm-pc2,#333);border-top:3px solid var(--dc-mc);border-radius:var(--lm-radius,6px);box-shadow:0 8px 32px rgba(0,0,0,.5);overflow:hidden}' +
             '#lm-dc .lm-dc-head{display:flex;align-items:center;gap:6px;padding:var(--lm-w-hpad,6px 6px 6px 12px);border-bottom:1px solid var(--lm-pc2,#333);background:var(--lm-w-head,linear-gradient(180deg,var(--lm-pc2,transparent) 0%,var(--lm-pc,transparent) 100%));flex:0 0 auto}' +
             '#lm-dc .lm-dc-title{flex:1 1 auto;min-width:0;font-size:var(--lm-w-title,15px);font-weight:700;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;color:var(--dc-mc,inherit);text-transform:uppercase;letter-spacing:1px}' +
-            '#lm-dc .lm-dc-tab{flex:0 0 auto;height:var(--lm-w-ctl,34px);padding:0 10px;border:1px solid var(--lm-pc2,#444);border-radius:var(--lm-radius-s,4px);background:var(--lm-w-btn,rgba(255,255,255,.05));color:var(--lm-tc2,#ccc);font-size:var(--lm-w-fs,12px);cursor:pointer}' +
-            '#lm-dc .lm-dc-tab.on{border-color:var(--dc-mc);color:var(--lm-w-acc,var(--dc-mc))}' +
             '#lm-dc .lm-dc-x{flex:0 0 auto;width:var(--lm-w-x,40px);height:var(--lm-w-x,40px);border:0;border-radius:var(--lm-radius-s,4px);background:var(--lm-w-btn,rgba(255,255,255,.05));color:var(--lm-tc2,#eee);font-size:18px;line-height:1;cursor:pointer}' +
             '#lm-dc .lm-dc-body{flex:1 1 auto;overflow-y:auto;padding:var(--lm-w-pad,8px 10px);-webkit-overflow-scrolling:touch;overscroll-behavior:contain}' +
             '#lm-dc .lm-dc-intro{font-size:var(--lm-w-fs-s,11px);color:var(--lm-tc2,#aaa);margin:0 0 6px}' +
@@ -288,21 +198,14 @@
             '#lm-dc .lm-dc-chip:disabled{opacity:.45;cursor:default}' +
             '#lm-dc .lm-dc-acts{display:flex;flex-wrap:wrap;gap:4px;margin-top:auto}' +
             '#lm-dc .lm-dc-btn{min-height:var(--lm-w-ctl,30px);padding:2px 10px;border:1px solid var(--lm-pc2,#555);border-radius:var(--lm-radius-s,4px);background:var(--lm-w-btn,rgba(255,255,255,.05));color:var(--lm-tc,#eee);font-size:var(--lm-w-fs,11px);cursor:pointer;touch-action:manipulation}' +
-            '#lm-dc .lm-dc-btn:hover,#lm-dc .lm-dc-tab:hover{background:var(--lm-w-btn-h,rgba(255,255,255,.12))}' +
+            '#lm-dc .lm-dc-btn:hover{background:var(--lm-w-btn-h,rgba(255,255,255,.12))}' +
             '#lm-dc .lm-dc-btn.pri{border-color:var(--dc-mc);color:var(--lm-w-acc,var(--dc-mc))}' +
             '#lm-dc .lm-dc-msg{font-size:11px;color:var(--dc-mc);min-height:0}' +
             '#lm-dc .lm-new-badge{display:inline-block;background:#e74c3c;color:#fff;font-size:9px;font-weight:700;line-height:1;padding:2px 4px;border-radius:var(--lm-radius-s,3px);vertical-align:middle;margin-left:5px}' +
-            '#lm-dc .lm-dc-srv{display:flex;flex-wrap:wrap;align-items:center;gap:6px;margin-bottom:6px;font-size:12px}' +
-            '#lm-dc .lm-dc-srv select{height:var(--lm-w-ctl,32px);background:var(--lm-w-field,var(--lm-pc2,#2a2d33));color:var(--lm-tc,#eee);border:1px solid var(--lm-pc2,#555);border-radius:var(--lm-radius-s,4px);font-size:var(--lm-w-fs,12px)}' +
-            '#lm-dc .lm-dc-caps{display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:2px 10px;list-style:none;margin:0;padding:0}' +
-            '#lm-dc .lm-dc-caps li{display:flex;align-items:baseline;gap:6px;font-size:12px;padding:3px 0;border-bottom:1px solid var(--lm-pc2,#2a2d33)}' +
-            '#lm-dc .lm-dc-v{flex:0 0 auto;width:86px;font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.3px}' +
-            '#lm-dc .lm-dc-v.y{color:#5fd35f}#lm-dc .lm-dc-v.p{color:#e6c23c}#lm-dc .lm-dc-v.u{color:#9aa}#lm-dc .lm-dc-v.n{color:#e26a6a}' +
-            '#lm-dc .lm-dc-note{color:var(--lm-tc2,#999);font-size:11px}' +
             '.lm-dc-flash{outline:3px solid var(--lm-dc-mc,#01d9cc)!important;outline-offset:3px;animation:lmdcflash .6s ease-in-out 5}' +
             '@keyframes lmdcflash{50%{outline-color:transparent}}' +
             '@media (max-height:500px){#lm-dc{padding:4px}#lm-dc .lm-dc-head{padding:3px 3px 3px 10px}#lm-dc .lm-dc-body{padding:6px 8px}}' +
-            '@media (pointer:coarse){#lm-dc .lm-dc-chip,#lm-dc .lm-dc-btn{min-height:38px}#lm-dc .lm-dc-tab{height:40px}}';
+            '@media (pointer:coarse){#lm-dc .lm-dc-chip,#lm-dc .lm-dc-btn{min-height:38px}}';
         (D.head || D.documentElement).appendChild(st);
     }
     function stop(e) { e.stopPropagation(); }
@@ -331,13 +234,6 @@
         var panel = mk('div', 'lm-dc-panel lm-modal-container lm-w');
         var head = mk('div', 'lm-dc-head');
         head.appendChild(mk('div', 'lm-dc-title'));
-        ['features', 'server'].forEach(function (id) {
-            var b = mk('button', 'lm-dc-tab');
-            b.type = 'button';
-            b.setAttribute('data-tab', id);
-            b.addEventListener('click', function () { show(id); });
-            head.appendChild(b);
-        });
         var x = mk('button', 'lm-dc-x', '\u00d7');
         x.type = 'button';
         x.addEventListener('click', function () { close(); });
@@ -353,8 +249,6 @@
         root.setAttribute('aria-label', t('title'));
         try { root.setAttribute('dir', W.LMi18n && W.LMi18n.dir ? W.LMi18n.dir() : 'ltr'); } catch (e) { }
         root.querySelector('.lm-dc-title').textContent = t('title');
-        var tabs = root.querySelectorAll('.lm-dc-tab');
-        for (var i = 0; i < tabs.length; i++) tabs[i].textContent = t(tabs[i].getAttribute('data-tab') === 'features' ? 'tabFeatures' : 'tabServer');
         var x = root.querySelector('.lm-dc-x');
         x.title = t('close');
         x.setAttribute('aria-label', t('close'));
@@ -470,56 +364,6 @@
         });
         body.appendChild(grid);
     }
-    function typeName(id) {
-        for (var i = 0; i < SERVER_TYPES.length; i++) if (SERVER_TYPES[i].id === id) return SERVER_TYPES[i].name || t('type.' + id);
-        return id;
-    }
-    function renderServer() {
-        body.innerHTML = '';
-        var cur = serverTypeOf(W.legendmod);
-        var connected = !!(W.legendmod && W.legendmod.ws);
-        if (!viewType) viewType = connected && cur ? cur : 'agario';
-        var row = mk('div', 'lm-dc-srv');
-        row.appendChild(mk('b', null, t('serverTitle')));
-        var sel = mk('select');
-        sel.id = 'lm-dc-type';
-        SERVER_TYPES.forEach(function (s) {
-            var o = mk('option', null, typeName(s.id));
-            o.value = s.id;
-            if (s.id === viewType) o.selected = true;
-            sel.appendChild(o);
-        });
-        /* the list is drawn again with a new select: the focus goes to it (it fell to the page) */
-        sel.addEventListener('change', function () {
-            viewType = sel.value;
-            renderServer();
-            var ns = D.getElementById('lm-dc-type');
-            try { if (ns) ns.focus(); } catch (e) { }
-        });
-        row.appendChild(sel);
-        row.appendChild(mk('span', 'lm-dc-note', connected && cur ? t('current', typeName(cur)) : t('notConnected')));
-        body.appendChild(row);
-        var ul = mk('ul', 'lm-dc-caps');
-        capsFor(viewType).forEach(function (r) {
-            var li = mk('li');
-            li.setAttribute('data-cap', r.id);
-            li.appendChild(mk('span', 'lm-dc-v ' + r.v, t(VKEYS[r.v])));
-            var txt = mk('span', null, r.label);
-            if (r.note) txt.appendChild(mk('span', 'lm-dc-note', ' (' + r.note + ')'));
-            li.appendChild(txt);
-            ul.appendChild(li);
-        });
-        body.appendChild(ul);
-        body.appendChild(mk('p', 'lm-dc-intro', t('serverHint')));
-    }
-    function show(which) {
-        tab = which === 'server' ? 'server' : 'features';
-        if (!root) return;
-        var tabs = root.querySelectorAll('.lm-dc-tab');
-        for (var i = 0; i < tabs.length; i++) tabs[i].classList.toggle('on', tabs[i].getAttribute('data-tab') === tab);
-        if (tab === 'server') renderServer(); else renderFeatures();
-        body.scrollTop = 0;
-    }
     function isOpen() { return !!(root && root.parentNode); }
     W.addEventListener('keydown', function (e) {
         if (!(e.key === 'Escape' || e.keyCode === 27) || e.ctrlKey || e.altKey || e.metaKey || !isOpen()) return;
@@ -530,17 +374,17 @@
         e.stopPropagation();
         close();
     }, true);
-    function open(which) {
+    function open() {
         if (!D.body) return;
         if (!root) build();
         root.style.setProperty('--dc-mc', mainColor());
         applyTexts();
-        viewType = '';
         if (!isOpen()) {
             lastFocus = D.activeElement;
             D.body.appendChild(root);
         }
-        show(which || 'features');
+        renderFeatures();
+        body.scrollTop = 0;
         var x = root.querySelector('.lm-dc-x');
         try { if (x) x.focus(); } catch (e) { }
     }
@@ -555,29 +399,18 @@
         lastFocus = null;
     }
 
-    /* the link in the "What's new" toast (LMexpress) */
-    D.addEventListener('click', function (e) {
-        var a = e.target && e.target.closest ? e.target.closest('.lm-dc-toast-link') : null;
-        if (!a) return;
-        e.preventDefault();
-        open('features');
-    }, false);
-
     /* another language: the open window is drawn again */
     if (W.LMi18n && typeof W.LMi18n.onChange === 'function') {
         W.LMi18n.onChange(function () {
             if (!isOpen()) return;
             applyTexts();
             var top = body.scrollTop;
-            show(tab);
+            renderFeatures();
             body.scrollTop = top;
         });
     }
 
-    api.open = open;
+    api.open = function () { open(); };
     api.close = close;
     api.isOpen = isOpen;
-    api.openServer = function () { open('server'); };
-    api.serverType = function () { return serverTypeOf(W.legendmod); };
-    api.capabilities = function (type) { return capsFor(type || serverTypeOf(W.legendmod) || 'agario'); };
 })();

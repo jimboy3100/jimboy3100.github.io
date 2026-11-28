@@ -22318,10 +22318,11 @@ function lmEndPerfMode(s) {
  * Open the Lab; the keys that only opened a window or a panel or switched a rarely changed setting
  * (their window, panel or switch stays); Reconnect to the previous server; the Settings profiles
  * window, deleted with the settings profiles; Show / hide performance diagnostics and the net graph
- * before it, deleted with the diagnostics window) is free. For the stored hotkeys (loadHotkeys). Returns true when map changed. */
+ * before it, deleted with the diagnostics window; Open the notification centre, Radial menu: choose
+ * commands and Screenshot window, whose window or bell stays) is free. For the stored hotkeys (loadHotkeys). Returns true when map changed. */
 function lmRenameOldHotkeys(map) {
     if (!map || typeof map !== 'object') return false;
-    var gone = /^hk-(?:lmLab|analytics|performanceMode|perfDiag|netGraph|mergeRings|el(?:Leagues|Shop|Challenges|Potions|ClaimAll)|replay(?:Pause|Faster|Slower|Fwd|Back|Studio)|gamepadWindow|lmProfilesWindow|copyServerLink|chatSounds|lmPlugins|hudEditor|prevServer)$/;
+    var gone = /^hk-(?:lmLab|analytics|performanceMode|perfDiag|netGraph|mergeRings|el(?:Leagues|Shop|Challenges|Potions|ClaimAll)|replay(?:Pause|Faster|Slower|Fwd|Back|Studio)|gamepadWindow|lmProfilesWindow|copyServerLink|chatSounds|lmPlugins|hudEditor|prevServer|notifCentre|radialEditor|screenshotTool)$/;
     var own = function (k) { return Object.prototype.hasOwnProperty.call(map, k); };
     var bound = function (cmd) {
         for (var x in map) if (own(x) && map[x] === cmd) return true;

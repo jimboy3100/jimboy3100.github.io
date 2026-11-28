@@ -37,7 +37,7 @@ function makeDom() {
         _lmHT: k => k, _lmHTx: k => k, _lmHelperSrc: () => 'x', languagemod: 1, JSON };
     ctx.window.document = d.document;
     vm.createContext(ctx);
-    vm.runInContext('var history = window.history; ' + cutIn(helper, 'function templatesIframe()', '\nfunction changeModLanguage2()'), ctx);
+    vm.runInContext('var history = window.history; ' + cutIn(helper, 'function templatesIframe()', '\n/* openbleedmod'), ctx);
     vm.runInContext('templatesIframe()', ctx);
     const page = d.log.html['#Userscriptshud3'] || '';
     const looks = ['agariowhitesettings', 'nosoups', 'vanillabetter', 'galaxysettings', 'legenddefaultsettings', 'vanillalike'];
@@ -52,10 +52,15 @@ function makeDom() {
         check(f + ': a settings file is imported (Import clicked)', !!o && d.log.clicks.indexOf('#import-settings-btn') !== -1);
         check(f + ': the profiles, hotkeys and chat commands of the player are kept', !!o && !('ogarioPlayerProfiles' in o) && !('ogarioHotkeys' in o) && !('ogarioCommands' in o));
     }
-    vm.runInContext('LanguagesTempIframe()', ctx);
-    check('Languages page: a list of every language, the current one chosen', /legendlanguages2/.test(d.log.html['#Userscriptshud3']) && d.log.vals['#legendlanguages2'] === 1);
-    check('Mod Info footer: Information, Templates, Manual templates and Languages buttons',
-        ['Infobtn11', 'TemplatesBtn', 'ManualyTemplatesBtn', 'LanguagesTempBtn'].every(id => helper.indexOf('<button id="' + id + '"') !== -1));
+    /* removed: Information, Manual templates, Languages (its list, its sync and its once-only toast) */
+    check('Mod Info footer: Close and Templates only', helper.indexOf('<button id="TemplatesBtn"') !== -1 &&
+        !/Infobtn11|ManualyTemplatesBtn|LanguagesTempBtn|LanguagesTempIframe|manualytemplatesIframe|changeModLanguage2|legendlanguages2|Languagetimesused/.test(helper));
+    const lph = rd('languages/LanguagePackHandler.js');
+    check('language handler: no Languages page texts and no language changed toast', !/Infobtn11|ManualyTemplatesBtn|LanguagesTempBtn|chooselangtext1|Languagetimesused|Externalletter0c/.test(lph) && /#TemplatesBtn/.test(lph));
+    check('LMexpress: no #legendlanguages2 sync', !/legendlanguages2/.test(lmx));
+    const en = rd('languages/lm-en.js');
+    /* (their old Externalletter* globals stay defined for old scripts, see i18n.js) */
+    check('window title Mod Info', /"pack\.modInfoTemplates": "Mod Info",/.test(en));
 }
 
 /* ═══ Dying Light expansion and nick easter eggs (LMexpress) ═══ */
@@ -85,7 +90,7 @@ function makeDom() {
     vm.createContext(ctx2);
     vm.runInContext(cutIn(lmx, 'function openbleedmod()', '\nfunction languagemodfun()'), ctx2);
     vm.runInContext(eggs, ctx2);
-    vm.runInContext(cutIn(helper, 'function templatesIframe()', '\nfunction changeModLanguage2()'), ctx2);
+    vm.runInContext(cutIn(helper, 'function templatesIframe()', '\n/* openbleedmod'), ctx2);
     vm.runInContext('nickPlay("EasterEgg1"); nickPlay("EasterEgg1")', ctx2);
     check('after Mod Info was opened: EasterEgg1 still loads extras/BleedingMod.js once',
         d2.log.scripts.length === 1 && d2.log.scripts[0] === 'https://www.legendmod.ml/extras/BleedingMod.js');

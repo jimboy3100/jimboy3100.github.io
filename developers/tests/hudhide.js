@@ -34,7 +34,7 @@ function load(withTools) {
 {
     const { hc, calls } = load(true);
     check('Screenshot mode is not listed any more', Object.keys(hc).indexOf('hk-screenshotMode') < 0);
-    check('Show/hide HUD keeps Alt+H; Capture and the Screenshot window stay', hc['hk-showHUD'].defaultKey === 'ALT+H' && !!hc['hk-screenshotCapture'] && !!hc['hk-screenshotTool']);
+    check('Show/hide HUD keeps Alt+H; Capture stays, the Screenshot window hotkey is gone', hc['hk-showHUD'].defaultKey === 'ALT+H' && !!hc['hk-screenshotCapture'] && !hc['hk-screenshotTool']);
     hc['hk-showHUD'].keyDown();
     check('Alt+H hides the whole HUD (the former Screenshot mode, with its Capture chip)', J(calls) === J([['hide all']]));
     calls.length = 0;

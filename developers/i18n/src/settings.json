@@ -2828,24 +2828,6 @@
     "ja": "オーディオダッキング（チャット音の再生中は動画スキンの音を下げる）",
     "it": "Audio ducking (abbassa le skin video mentre suona un suono della chat)"
   },
-  "settings.hk-notifCentre": {
-    "en": "Open the notification centre",
-    "el": "Άνοιγμα κέντρου ειδοποιήσεων",
-    "es": "Abrir el centro de notificaciones",
-    "bg": "Отвори центъра за известия",
-    "fr": "Ouvrir le centre de notifications",
-    "ar": "فتح مركز الإشعارات",
-    "zh": "開啟通知中心",
-    "ru": "Открыть центр уведомлений",
-    "de": "Benachrichtigungszentrale öffnen",
-    "tr": "Bildirim merkezini aç",
-    "pl": "Otwórz centrum powiadomień",
-    "nl": "Meldingencentrum openen",
-    "pt": "Abrir a central de notificações",
-    "id": "Buka pusat notifikasi",
-    "ja": "通知センターを開く",
-    "it": "Apri il centro notifiche"
-  },
   "settings.hk-director": {
     "en": "Spectator director: open / close the panel",
     "el": "Σκηνοθέτης θέασης: άνοιγμα / κλείσιμο πάνελ",
@@ -3944,24 +3926,6 @@
     "ja": "ラジアルコマンドメニュー（長押し）",
     "it": "Menu radiale dei comandi (tieni premuto)"
   },
-  "settings.hk-radialEditor": {
-    "en": "Radial menu: choose commands",
-    "el": "Κυκλικό μενού: επιλογή εντολών",
-    "es": "Menú radial: elegir comandos",
-    "bg": "Радиално меню: избор на команди",
-    "fr": "Menu radial : choisir les commandes",
-    "ar": "القائمة الدائرية: اختيار الأوامر",
-    "zh": "環形選單：選擇指令",
-    "ru": "Радиальное меню: выбор команд",
-    "de": "Radialmenü: Befehle wählen",
-    "tr": "Dairesel menü: komutları seç",
-    "pl": "Menu kołowe: wybierz komendy",
-    "nl": "Radiaal menu: commando's kiezen",
-    "pt": "Menu radial: escolher comandos",
-    "id": "Menu radial: pilih perintah",
-    "ja": "ラジアルメニュー：コマンドを選ぶ",
-    "it": "Menu radiale: scegli i comandi"
-  },
   "settings.hk-screenshotCapture": {
     "en": "Capture screenshot (PNG)",
     "el": "Λήψη στιγμιότυπου (PNG)",
@@ -3979,24 +3943,6 @@
     "id": "Ambil tangkapan layar (PNG)",
     "ja": "スクリーンショットを撮る（PNG）",
     "it": "Cattura screenshot (PNG)"
-  },
-  "settings.hk-screenshotTool": {
-    "en": "Screenshot window",
-    "el": "Παράθυρο στιγμιότυπου",
-    "es": "Ventana de capturas",
-    "bg": "Прозорец за скрийншоти",
-    "fr": "Fenêtre de capture d'écran",
-    "ar": "نافذة لقطة الشاشة",
-    "zh": "截圖視窗",
-    "ru": "Окно скриншотов",
-    "de": "Screenshot-Fenster",
-    "tr": "Ekran görüntüsü penceresi",
-    "pl": "Okno zrzutów ekranu",
-    "nl": "Screenshotvenster",
-    "pt": "Janela de capturas de tela",
-    "id": "Jendela tangkapan layar",
-    "ja": "スクリーンショットウィンドウ",
-    "it": "Finestra screenshot"
   },
   "settings.hotkeys": {
     "en": "Hotkeys",

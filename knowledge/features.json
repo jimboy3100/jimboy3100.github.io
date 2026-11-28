@@ -113,7 +113,7 @@
     {
       "id": "radialmenu",
       "name": "Radial menu",
-      "description": "Hold-point-release radial command menu with up to 8 slots. Assign any hotkey command to a slot. Radial editor for customization. Quick access to frequent commands without memorising keys.",
+      "description": "Hold-point-release radial command menu with up to 8 slots. Assign any hotkey command to a slot. Radial editor (opens when the ring is empty) for customization. Quick access to frequent commands without memorising keys.",
       "url": "https://www.legendmod.ml/features.html"
     },
     {
@@ -131,7 +131,7 @@
     {
       "id": "discovery",
       "name": "Discovery / Feature Guide",
-      "description": "19 feature guide cards with one-tap option switches. Opened from the Command Centre or the link in the \"What's new\" toast after an update (never by itself). Server compatibility table: 9 server types × 14 capabilities (replays, multibox, merge countdown, spectate, chat, etc.). Shows 'What works on this server' per connection.",
+      "description": "Feature guide cards with one-tap option switches. Opened from the Command Centre (never by itself).",
       "url": "https://www.legendmod.ml/features.html"
     },
     {

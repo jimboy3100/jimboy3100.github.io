@@ -4,7 +4,7 @@
  * (success / info / warning / error) is also kept, as plain text, in localStorage
  * 'lmNotifications' (last 200). A bell shows the unread count and opens a list that can be
  * filtered, marked read, cleared, and can stop the toasts of a category from showing (they
- * are still recorded). The hotkey "Open the notification centre" has no default key.
+ * are still recorded). It opens from its bell (it has no hotkey).
  * While the option is off the toasts pass straight through and nothing is stored.
  *
  * Mixer: volume per channel (chat, commands, gameplay effects, notifications) times the master

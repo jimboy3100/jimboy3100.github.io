@@ -19,7 +19,7 @@
   if (!$('#videoSkinSoundLevel-slider').closest('.options-box.skinsGroup').length) fail.push('video skin sound level slider not in Skins');
   if (!document.getElementById('audioDucking')) fail.push('audioDucking switch missing');
   if (!document.getElementById('notificationCentre')) fail.push('notificationCentre switch missing');
-  if (!hotkeysCommand['hk-notifCentre'] || hotkeysCommand['hk-notifCentre'].defaultKey !== '') fail.push('hk-notifCentre missing or has a default key');
+  if (hotkeysCommand['hk-notifCentre']) fail.push('the removed hk-notifCentre hotkey is back');
 
   var before = N.items().length;
   try {

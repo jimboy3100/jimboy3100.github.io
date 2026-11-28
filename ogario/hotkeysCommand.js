@@ -163,18 +163,6 @@
 				keyUp: null,
 				type: 'normal'
 			},
-			'hk-notifCentre': {
-				get label() {
-					return lmT('settings.hk-notifCentre');
-				},
-				defaultKey: '',
-				keyDown() {
-					/* opens / closes the list (ogario/modules/notifications.js), also while its option is off */
-					if (window.LMNotifications) window.LMNotifications.toggle();
-				},
-				keyUp: null,
-				type: 'normal'
-			},
 			'hk-pingHelp': {
 				get label() {
 					return lmT('settings.hk-pingHelp');
@@ -420,17 +408,6 @@
 				},
 				type: 'normal'
 			},
-			'hk-radialEditor': {
-				get label() {
-					return lmT('settings.hk-radialEditor');
-				},
-				defaultKey: '',
-				keyDown() {
-					if (window.LMSmallTools) window.LMSmallTools.toggle('radial');
-				},
-				keyUp: null,
-				type: 'normal'
-			},
 			'hk-screenshotCapture': {
 				get label() {
 					return lmT('settings.hk-screenshotCapture');
@@ -438,17 +415,6 @@
 				defaultKey: '',
 				keyDown() {
 					if (window.LMSmallTools) window.LMSmallTools.capture();
-				},
-				keyUp: null,
-				type: 'normal'
-			},
-			'hk-screenshotTool': {
-				get label() {
-					return lmT('settings.hk-screenshotTool');
-				},
-				defaultKey: '',
-				keyDown() {
-					if (window.LMSmallTools) window.LMSmallTools.toggle('screenshot');
 				},
 				keyUp: null,
 				type: 'normal'

@@ -82,10 +82,10 @@ check('radial store: garbage gives an empty ring', J(C.cleanRadial('x')) === '[]
     const a = v4.indexOf('function lmRenameOldHotkeys(map) {'), b = v4.indexOf('\n}', a);
     const hk = { R: 'hk-radialMenu', T: 'hk-radialEditor', P: 'hk-screenshotCapture', O: 'hk-screenshotTool', M: 'hk-customMacro1', N: 'hk-customMacro3', B: 'hk-notifCentre', 'ALT+H': 'hk-showHUD', W: 'hk-feed' };
     vm.runInNewContext(v4.slice(a, b + 2) + '\nlmRenameOldHotkeys(hk);', { hk });
-    check('a key on the custom macros is free again; the radial menu, screenshot, Alt+H and notification centre keys stay', J(hk) === J({ R: 'hk-radialMenu', T: 'hk-radialEditor', P: 'hk-screenshotCapture', O: 'hk-screenshotTool', B: 'hk-notifCentre', 'ALT+H': 'hk-showHUD', W: 'hk-feed' }));
+    check('a key on the custom macros, the radial editor, the screenshot window and the notification centre is free again; the radial menu, Capture and Alt+H keys stay', J(hk) === J({ R: 'hk-radialMenu', P: 'hk-screenshotCapture', 'ALT+H': 'hk-showHUD', W: 'hk-feed' }));
     const hc = fs.readFileSync(path.join(dir, '..', 'hotkeysCommand.js'), 'utf8');
-    check('the radial menu, its editor, Capture screenshot and the screenshot window are hotkeys again (no default keys); the custom macro ones are gone',
-        ['hk-radialMenu', 'hk-radialEditor', 'hk-screenshotCapture', 'hk-screenshotTool'].every(id => { const i = hc.indexOf("'" + id + "': {"); return i >= 0 && hc.slice(i, i + 200).indexOf("defaultKey: ''") >= 0; }) && !/'hk-customMacro[1-3]'/.test(hc) && /'hk-showHUD'/.test(hc));
+    check('the radial menu and Capture screenshot are hotkeys (no default keys); the radial editor, screenshot window, notification centre and custom macro ones are gone',
+        ['hk-radialMenu', 'hk-screenshotCapture'].every(id => { const i = hc.indexOf("'" + id + "': {"); return i >= 0 && hc.slice(i, i + 200).indexOf("defaultKey: ''") >= 0; }) && !/'hk-(customMacro[1-3]|radialEditor|screenshotTool|notifCentre)'/.test(hc) && /'hk-showHUD'/.test(hc));
     /* the phone M1-M3 option's label (named by the settings profiles' phone list) is not shipped */
     const en = fs.readFileSync(path.join(dir, '..', '..', 'languages', 'lm-en.js'), 'utf8');
     check('removed: the phone custom macro buttons text is not shipped', en.indexOf('pkg.agm.') >= 0 && en.indexOf('pkg.agm.m_macroBtns') < 0);
