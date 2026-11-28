@@ -72,7 +72,7 @@ function boot(lang) {
     $: jq, _tag: '', _nick: 'Me',
     toastr: { success: (h) => toasts.push(h), warning: (h) => toasts.push(h) },
     document: { getElementById: () => null, hidden: false, createElement: () => ({}), head: { appendChild() {} } },
-    defaultmapsettings: { showChat: true, showChatBox: true, hideChat: true, chatSounds: false, coloredNicks: false, chatShowId: false, showChatMyOwn: false },
+    defaultmapsettings: { showChat: true, showChatBox: true, hideChat: true, chatSounds: false, coloredNicks: false, showChatMyOwn: false },
     legendmod: { cellcolors: {} },
     LM: { time: 0 },
     consoleMsgLM: '',
@@ -88,7 +88,6 @@ function boot(lang) {
     playerID: 1, chatHistory: [], commandHistory: [], chatUsers: {},
     escapeHTML: (t) => String(t).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;'),
     parseMessage(t) { return this.escapeHTML(t); },
-    _lmChatHidden: () => false,
     addChatUser(id, nick) { this.chatUsers[id] = nick; },
     isChatUserMuted: () => false,
     serverChatUserId: (nick) => 0x40000000 + nick.length

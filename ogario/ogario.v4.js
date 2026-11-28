@@ -1406,9 +1406,8 @@ window._lmRoomOpen = _lmRoomOpen;
 function _lmBorderColorNow() {
     var base = (typeof defaultSettings !== 'undefined' && defaultSettings.bordersColor) || '#ff0000';
     if (typeof defaultmapsettings === 'undefined' || !defaultmapsettings.rainbowMapBorders) return base;
-    var sp = +defaultmapsettings.rainbowBorderSpeed;
-    if (!(sp >= 1 && sp <= 50)) sp = 5;
-    var h = ((Date.now() * sp / 100) % 360) / 60, x = 1 - Math.abs(h % 2 - 1), r = 0, g = 0, b = 0;
+    /* the original speed (its slider is gone) */
+    var h = ((Date.now() * 5 / 100) % 360) / 60, x = 1 - Math.abs(h % 2 - 1), r = 0, g = 0, b = 0;
     if (h < 1) { r = 1; g = x; } else if (h < 2) { r = x; g = 1; } else if (h < 3) { g = 1; b = x; }
     else if (h < 4) { g = x; b = 1; } else if (h < 5) { r = x; b = 1; } else { r = 1; b = x; }
     var hx = function (v) { return ('0' + Math.round(v * 255).toString(16)).slice(-2); };
@@ -21376,7 +21375,6 @@ var defaultmapsettings = {
     mbFreeze: false,
     mbAutoRespawn: true,
     cameraSmoothLerp: true,
-    centerWeightCamera: false,    /* camera target = mass-weighted centre of the own cells (like Delta) */
     /* optimizedMass is gone: the mass text is always redrawn on a 2% change (exact numbers: Mass format);
      * a saved value is ignored */
     shortMass: true,              /* copy of massFormat === 2 for scripts and older versions (lmFoldLegacySettings) */
@@ -21437,7 +21435,6 @@ var defaultmapsettings = {
     showMiniMapGuides: true,
     showExtraMiniMapGuides: true,
     showMiniMapGhostCells: true,
-    showMiniMapTrail: false,      /* last ~60 s of the own path on the minimap */
     oneColoredTeammates: false,
     //optimizedFood: true,
     rainbowFood: true,
@@ -21447,8 +21444,6 @@ var defaultmapsettings = {
     splitRange: false,
     qdsplitRange: true, //Sonia2
     sdsplitRange: false, //Sonia2
-    splitPrediction: false,       /* agar.io: dim cursor lines of own cells that will not split */
-    tripleSplitRange: false,      /* rings at 3*size+760 around enemies that can triple-split onto you */
     hudMergeSound: false,         /* HUD helpers (ogario/modules/hudhelpers.js): short sound when two own cells can merge (agar.io estimate) */
     hudRelativeMass: false,       /* other players' mass as a ratio to your biggest cell */
     massFormat: 2,                /* mass text: 1 exact, 2 12.3k from 1000 (was Short mass), 3 auto; 0 of older versions = Short mass */
@@ -21481,7 +21476,6 @@ var defaultmapsettings = {
     showTop5: true,
     showTargeting: true,
     showLbData: true,
-    lbHideBots: false,
     showTime: false,
     showStopwatch: false,         /* start / pause / stop stopwatch above the minimap (was the Tools tab button "Show Timer Calc.") */
     showDevConsole: false,        /* developer console: render time by the FPS, profiler box, packet log; its switch is in the Performance diagnostics window */
@@ -21504,10 +21498,7 @@ var defaultmapsettings = {
     showStatsAlive: false,        /* stats HUD: time alive in this life */
     mergeRings: true,             /* merge progress rings on own cells (shown before this setting existed) */
     /* mentionNotify (desktop notification on a nick mention) is gone: a saved value is skipped on load */
-    chatShowId: false,            /* chat: dim #id before the nick (relay player id) */
-    chatHideWords: '',            /* chat lines (nick or text) containing one of these words are not shown; empty = off */
     rainbowMapBorders: false,     /* map border colour cycles through the rainbow */
-    rainbowBorderSpeed: 5,        /* 5 = the original speed */
     /* timeFormat (clock format) is gone: the clock always shows the browser's date and time; saved values are skipped on load */
     showStatsPPS: true,
     showStatsServerHz: true,
@@ -21552,14 +21543,12 @@ var defaultmapsettings = {
     //                commandSound: 'https://www.legendmod.ml/sounds/notification_02.mp3'
     commandSound: 'https://www.legendmod.ml/sounds/chat-message.mp3',
     virusSoundurl: 'https://www.legendmod.ml/sounds/sound-gunshot.mp3',
-    x16Sound: false,              /* sound when the own cells reach 16 pieces */
-    non16Sound: false,            /* sound when they merge back below 16 */
     agarToolTeam: false,          /* AgarTool players with my tag as teammates: team list, minimap, chat (ogario/modules/agartool.js) */
     /* Settings > Sounds volumes, 0..1: the sound's own volume x master; 1 = unchanged */
     volMaster: 1,
     volChat: 1,                   /* chat message sound */
     volCommands: 1,               /* command sound */
-    volGameplay: 1,               /* virus shot, 16 pieces, virus pop / eat */
+    volGameplay: 1,               /* virus shot, virus pop / eat, merge ready */
     //
     leftClick: 'hk-macroFeed',
     rightClick: 'hk-split',
@@ -21595,7 +21584,6 @@ var LM_SETTINGS_SCHEMA = Object.freeze({
     gamepadTrigger: [0.1, 0.95, 0.05],
     /* 0 ("as Short mass") of older versions is folded before the check (lmFoldLegacySettings) */
     massFormat: [1, 3, 1],
-    rainbowBorderSpeed: [1, 20, 1],
     animation: [5, 200, 1],
     macroFeeding: [1, 160, 1],
     macroSplitDelay: [20, 120, 1],
@@ -25427,9 +25415,7 @@ function thelegendmodproject() {
                 /* its switch or dropdown shows the value without running anything (a slider: below) */
                 this._lmOptionUi(id);
                 switch (id) {
-                    /* the optional sounds are loaded once they are on (also "true" from a script) */
-                    case 'x16Sound':
-                    case 'non16Sound':
+                    /* the optional sound is loaded once it is on (also "true" from a script) */
                     case 'hudMergeSound':
                         if (checked) this._lmLoadOptSounds();
                         break;
@@ -25489,10 +25475,6 @@ function thelegendmodproject() {
                         break;
                     case 'showMiniMapGrid':
                         if (!_lmSame) this.resetMiniMapSectors();
-                        break;
-                    /* Issue #19: clear trail data when the minimap trail is turned off */
-                    case 'showMiniMapTrail':
-                        if (!checked && this._lmTrail) this._lmTrail.length = 0;
                         break;
                     case 'disableChat':
                         this.setDisableChat();
@@ -26711,9 +26693,9 @@ function thelegendmodproject() {
                 /* The one list of starter setups: this row applies one (application.lmPresets for
                  * scripts and checks). lbl: text keys of settings that have no menu label. */
                 var presets = {
-                    /* with the switches its options need: Stats for FPS / PPS, Cursor tracking for
-                     * split prediction (its line or bubble look stays the player's) */
-                    competitive: { key: 'lmPresetCompetitive', en: 'Competitive', set: { oppColors: true, oppRings: true, virColors: true, splitRange: true, virusesRange: true, virMassShots: true, showMass: true, mergeRings: true, showStats: true, showStatsFPS: true, showStatsPPS: true, cursorTracking: true, splitPrediction: true } },
+                    /* with the switches its options need: Stats for FPS / PPS; Cursor tracking (its
+                     * line, with split prediction, or bubble look stays the player's) */
+                    competitive: { key: 'lmPresetCompetitive', en: 'Competitive', set: { oppColors: true, oppRings: true, virColors: true, splitRange: true, virusesRange: true, virMassShots: true, showMass: true, mergeRings: true, showStats: true, showStatsFPS: true, showStatsPPS: true, cursorTracking: true } },
                     battery: { key: 'lmPresetBattery', en: 'Battery saver', set: { fpsLimit: 60, jellyPhisycs: false, videoSkins: false, animatedRainbowColor: false, rainbowMapBorders: false, borderGlow: false, virusGlow: false, suckAnimation: false, showGhostCells: false, highDPI: false, showBgSectors: false } },
                     /* tip: what it changes and what it leaves (not a privacy guarantee: nothing drawn
                      * in the game is hidden) */
@@ -26878,7 +26860,7 @@ function thelegendmodproject() {
              * a developer facility rather than a player setting. */
             this.addOptions(["performanceMode"], "perfGroup");
 
-            this.addOptions(["autoZoom", "centerWeightCamera"], "zoomGroup");
+            this.addOptions(["autoZoom"], "zoomGroup");
             this.addOptions([], "boardGroup");
             /* "Spawn special effects" is gone: its effect was taken out, and the switch only made every frame use the Canvas renderer */
             this.addOptions(["quickResp", "autoResp"], "respGroup");
@@ -26889,23 +26871,23 @@ function thelegendmodproject() {
             this.addOptions(["autoHideFood", "autoHideFoodOnZoom", "rainbowFood"], "foodGroup");
             this.addOptions(["noColors", "myCustomColor", "myTransparentSkin", "transparentSkins", "transparentCells", "transparentViruses", "virusGlow", 'cellContours', "showCellShadows", "animatedRainbowColor"], "transparencyGroup");
             this.addOptions(["showGrid", "showBgSectors", "showMapBorders", "borderGlow", "rainbowMapBorders"], "gridGroup");
-            this.addOptions(["disableChat", "chatSounds", "chatEmoticons", "showChatImages", "showChatVideos", "showChatBox", "showChat", "showChatMyOwn", "showChatTranslation", "coloredNicks", "hidecountry", "agarToolTeam", "chatShowId"], "chatGroup");
+            this.addOptions(["disableChat", "chatSounds", "chatEmoticons", "showChatImages", "showChatVideos", "showChatBox", "showChat", "showChatMyOwn", "showChatTranslation", "coloredNicks", "hidecountry", "agarToolTeam"], "chatGroup");
             //this.addOptions(["disableChat", "chatSounds", "chatEmoticons", "showChatImages", "showChatVideos", "showChatBox", "showChat", "showChatMyOwn", "showChatTranslation", "coloredNicks", "hidecountry"], "chatGroup"); // OLD: without universalChat
             /* Sounds: each sound's switch, file and volume, and the master volume, applied where each
              * sound plays (playSound, lmSoundVolume; the video skin volume timer); all 1 = unchanged.
              * The virus sound is one switch: a virus shot, and an own cell popping or eating one
              * (the separate virusPopSound / virusEatSound switches became it, lmFoldLegacySettings). */
-            this.addOptions(["virusSound", "x16Sound", "non16Sound"], "soundsGroup");
+            this.addOptions(["virusSound"], "soundsGroup");
             this.addSliderBox(".soundsGroup", "volMaster", 0, 1, 0.01);
             this.addSliderBox(".soundsGroup", "volChat", 0, 1, 0.01);
             this.addSliderBox(".soundsGroup", "volCommands", 0, 1, 0.01);
             this.addSliderBox(".soundsGroup", "volGameplay", 0, 1, 0.01);
             /* no "Rotate Map" switch: it only started the old map orientation server (SLGconnect), long
              * gone; teammates' map orientation is matched without it */
-            this.addOptions(["showMiniMap", "showMiniMapGrid", "showMiniMapGuides", "showExtraMiniMapGuides", "showMiniMapGhostCells", "showMiniMapTrail", "oneColoredTeammates"], "miniMapGroup");
+            this.addOptions(["showMiniMap", "showMiniMapGrid", "showMiniMapGuides", "showExtraMiniMapGuides", "showMiniMapGhostCells", "oneColoredTeammates"], "miniMapGroup");
             //            this.addOptions(["oppColors", "oppRings", "virColors", "splitRange", "qdsplitRange", "sdsplitRange", "virusesRange", "cursorTracking", "FBTracking", "bubbleInd", "bubbleCursorTracker", "onlineStatus", "teammatesInd", "showGhostCells", "showGhostCellsInfo", "reverseTrick", "showPartyBots"], "helpersGroup"); //Sonia2
             //this.addOptions(["oppColors", "oppRings", "virColors", "splitRange", "qdsplitRange", "sdsplitRange", "virusesRange", "cursorTracking", "FBTracking", "bubbleInd", "bubbleCursorTracker", "onlineStatus", "teammatesInd", "showGhostCells", "showGhostCellsInfo", "showPartyBots"], "helpersGroup"); //Sonia2
-            this.addOptions(["oppColors", "oppRings", "virColors", "splitRange", "qdsplitRange", "sdsplitRange", "tripleSplitRange", "virusesRange", "cursorTracking", "splitPrediction", "bubbleCursorTracker", "bubbleInd", "onlineStatus", "teammatesInd", "showGhostCells"], "helpersGroup"); //Sonia2
+            this.addOptions(["oppColors", "oppRings", "virColors", "splitRange", "qdsplitRange", "sdsplitRange", "virusesRange", "cursorTracking", "bubbleCursorTracker", "bubbleInd", "onlineStatus", "teammatesInd", "showGhostCells"], "helpersGroup"); //Sonia2
             /* Sticky cells: what the left and right button do on cells (a behaviour, not a binding,
              * so here and not in the Hotkeys window) */
             this.addOptionTo('.helpersGroup', 'stickyCell');
@@ -26915,7 +26897,7 @@ function thelegendmodproject() {
             /* The mouse buttons, sticky cells and gamepad support are in the Hotkeys window
              * (buildHotkeysControls): all input bindings live there, none in Settings. */
             //this.addOptions(["showTop5", "showTargeting", "showLbData", "centeredLb", "normalLb", "fpsAtTop", "tweenMaxEffect"], "hudGroup"),
-            this.addOptions(["showTop5", "showTargeting", "showLbData", "lbHideBots", "centeredLb", "tweenMaxEffect", "top5skins"], "hudGroup");
+            this.addOptions(["showTop5", "showTargeting", "showLbData", "centeredLb", "tweenMaxEffect", "top5skins"], "hudGroup");
             this.addOptions(["showStats", "showStatsMass", "showStatsESTE", "showStatsEMTE", "showStatsMTE", "showStatsSTE", "showStatsTTE", "showStatsPTE", "showStatsN16", "showStatsFPS", "showStatsPPS", "showStatsAlive", "gameOverStats", "showTime", "showStopwatch", "analytics"], "statsGroup");
             /* Replays and history */
             this.addOptions(["recordReplays", "matchHistory"], "replayGroup");
@@ -26973,7 +26955,6 @@ function thelegendmodproject() {
                 .on('click', function () { if (window.LMPerf) window.LMPerf.openDiag(); return false; });
             /* one choice for the mass text ("Short mass" was a second switch for the same) */
             this.addChoiceBox(".massGroup", "massFormat", "settings.massFormat", [[1, 'pkg.mg.massExact'], [2, 'pkg.mg.massShort'], [3, 'pkg.mg.massAuto']]);
-            this.addSliderBox(".gridGroup", "rainbowBorderSpeed", 1, 20, 1);
 
             this.addSliderBox(".zoomGroup", "zoomSpeedValue2", -0.90, 0.90, 0.01);
             this.addSliderBox(".skinsGroup", "videoSkinSoundLevel", 0, 1, 0.01);
@@ -26993,24 +26974,23 @@ function thelegendmodproject() {
             (function (app) {
                 var DEPS = {
                     showStats: ['showStatsMass', 'showStatsWorldSize', 'showStatsDecayInfo', 'showStatsServerHz', 'showStatsESTE', 'showStatsEMTE', 'showStatsMTE', 'showStatsSTE', 'showStatsTTE', 'showStatsPTE', 'showStatsN16', 'showStatsFPS', 'showStatsPPS', 'showStatsAlive'],
-                    showMiniMap: ['showMiniMapGrid', 'showMiniMapGuides', 'showExtraMiniMapGuides', 'showMiniMapGhostCells', 'showMiniMapTrail'],
+                    showMiniMap: ['showMiniMapGrid', 'showMiniMapGuides', 'showExtraMiniMapGuides', 'showMiniMapGhostCells'],
                     /* not Mass format: it also sets the team list, leaderboard and target
                      * mass texts (shortMassFormat), which show with the cell mass off too */
                     showMass: ['autoHideMass', 'hideMyMass', 'hideEnemiesMass', 'hudRelativeMass'],
                     videoSkins: ['videoDestorted', 'videoSkinsMusic2', 'videoOthersSkinSoundLevelproportion', 'videoSkinSoundLevel'],
-                    /* Settings > Helpers: the bubble style of the opponent rings, the bubble look of
-                     * Cursor tracking and the dimming of its line are drawn only with these on */
+                    /* Settings > Helpers: the bubble style of the opponent rings and the bubble look of
+                     * Cursor tracking are drawn only with these on */
                     oppRings: ['bubbleInd'],
-                    cursorTracking: ['splitPrediction', 'bubbleCursorTracker'],
+                    cursorTracking: ['bubbleCursorTracker'],
                     /* the rainbow colour is used only where the map border is drawn */
-                    showMapBorders: ['rainbowMapBorders'],
-                    rainbowMapBorders: ['rainbowBorderSpeed']
+                    showMapBorders: ['rainbowMapBorders']
                 };
-                /* option -> the server types it works on (checked against the code): the merge sound and
-                 * split prediction need agar.io's merge times (LM.integrity && !LM.isLegendWorld); replays are
+                /* option -> the server types it works on (checked against the code): the merge sound
+                 * needs agar.io's merge times (LM.integrity && !LM.isLegendWorld); replays are
                  * recorded in _lmHandlePacket, which Sigmally and Senpa packets never reach */
                 var SRV_AGARIO = ['agario'], SRV_REPLAYS = ['agario', 'expandingland', 'garix', 'imsolo', 'agar2', 'deltio', 'private'];
-                var SRV = { hudMergeSound: SRV_AGARIO, splitPrediction: SRV_AGARIO, recordReplays: SRV_REPLAYS };
+                var SRV = { hudMergeSound: SRV_AGARIO, recordReplays: SRV_REPLAYS };
                 /* server type (window.legendmod.serverType) -> its name; private servers: pkg.n56.protoPriv */
                 // i18n-ok: server proper names
                 var SRV_NAMES = { agario: 'agar.io', expandingland: 'Expanding Land', senpa: 'Senpa', garix: 'Garix', sigmally: 'Sigmally', imsolo: 'Imsolo', agar2: 'Agar2', deltio: 'delt.io', private: '' };
@@ -27019,10 +26999,6 @@ function thelegendmodproject() {
                     DEPS[p].forEach(function (c) { parentOf[c] = p; if (keys.indexOf(c) < 0) keys.push(c); });
                 });
                 Object.keys(SRV).forEach(function (k) { if (keys.indexOf(k) < 0) keys.push(k); });
-                /* option -> switch that stops it while on: Split prediction dims the line of Cursor
-                 * tracking, which its bubble look does not draw */
-                var OFF_WHILE = { splitPrediction: 'bubbleCursorTracker' };
-                Object.keys(OFF_WHILE).forEach(function (k) { if (keys.indexOf(k) < 0) keys.push(k); });
                 var plain = function (s) { return String(s == null ? '' : s).replace(/<[^>]*>/g, '').trim(); };
                 var itemOf = function (k) {
                     var el = document.getElementById(k + '-slider') || document.getElementById(k);
@@ -27065,13 +27041,7 @@ function thelegendmodproject() {
                         for (var p = parentOf[k], n = 0; p && n < 5; p = parentOf[p], n++) {
                             if (defaultmapsettings.hasOwnProperty(p) && !defaultmapsettings[p]) off = p;
                         }
-                        /* a switch that is on and stops it or one of the switches it needs */
-                        var stop = '';
-                        for (var q = k, m = 0; q && m < 5 && !stop; q = parentOf[q], m++) {
-                            if (OFF_WHILE[q] && defaultmapsettings[OFF_WHILE[q]]) stop = OFF_WHILE[q];
-                        }
                         if (off) why = app._lmMenuText('lmDepNeeds') + ': ' + plain(app._lmMenuText(off));
-                        else if (stop) why = lmT('pkg.s3xvw.depOffWhile') + ': ' + plain(app._lmMenuText(stop));
                         else if (SRV[k]) why = srvNote(SRV[k]);
                         mark(it, why);
                     });
@@ -27104,7 +27074,6 @@ function thelegendmodproject() {
             /* Bug reports: copy versions, browser, GPU, server and the last errors to the
              * clipboard. Nothing is sent anywhere; the player pastes it into Discord. */
             $("#og-settings").append('<div class="restore-settings"><a href="#" id="lm-copy-debug">' + _lmG1s('game1.set.copyDebug') + '</a></div>');
-            this.addInputBox(".chatGroup", "chatHideWords", "game1.ph.chatWords", "setChatHideWords");
             /* The sound files are in Settings > Sounds next to their switch or volume (one place for the
              * sounds; they were a separate Sounds panel in the old Youtube & Sounds tab). Same ids and keys. */
             this.addInputBox(".soundsGroup", "messageSound", "game1.ph.soundUrl", "setMessageSound");
@@ -30652,36 +30621,6 @@ function thelegendmodproject() {
                         }
                     }
                     //				
-                    /* optional own trail: a point every 500 ms, last 120 (~60 s); cleared when not
-                     * playing, on a map size change and on a jump (respawn, multibox swap) */
-                    if (defaultmapsettings.showMiniMapTrail) {
-                        var _lmTr = this._lmTrail || (this._lmTrail = []);
-                        if (!ogario.play || this._lmTrailMap !== LM.mapSize) {
-                            _lmTr.length = 0;
-                            this._lmTrailMap = LM.mapSize;
-                        } else {
-                            var _lmTrNow = Date.now();
-                            if (_lmTrNow - (this._lmTrailT || 0) >= 500) {
-                                this._lmTrailT = _lmTrNow;
-                                var _lmTrLast = _lmTr[_lmTr.length - 1];
-                                if (_lmTrLast && Math.abs(_lmTrLast.x - ogario.playerX) + Math.abs(_lmTrLast.y - ogario.playerY) > (LM.mapSize || 14000) / 4) _lmTr.length = 0;
-                                _lmTr.push({ x: ogario.playerX, y: ogario.playerY });
-                                if (_lmTr.length > 120) _lmTr.shift();
-                            }
-                            if (_lmTr.length > 1) {
-                                this.miniMapCtx.save();
-                                this.miniMapCtx.globalAlpha = 0.45;
-                                this.miniMapCtx.lineWidth = 1.5;
-                                this.miniMapCtx.strokeStyle = defaultSettings.miniMapMyCellColor;
-                                this.miniMapCtx.beginPath();
-                                this.miniMapCtx.moveTo((_lmTr[0].x + r) * n, (_lmTr[0].y + l) * n);
-                                for (var _lmTi2 = 1; _lmTi2 < _lmTr.length; _lmTi2++) this.miniMapCtx.lineTo((_lmTr[_lmTi2].x + r) * n, (_lmTr[_lmTi2].y + l) * n);
-                                this.miniMapCtx.lineTo((ogario.playerX + r) * n, (ogario.playerY + l) * n);
-                                this.miniMapCtx.stroke();
-                                this.miniMapCtx.restore();
-                            }
-                        }
-                    }
                     if (this.miniMapCtx.beginPath(),
                         this.miniMapCtx.arc((ogario.playerX + r) * n, (ogario.playerY + l) * n,
                             defaultSettings.miniMapMyCellSize, 0, this.pi2, false),
@@ -34147,19 +34086,6 @@ function thelegendmodproject() {
             });
 
         },
-        setChatHideWords() { this._lmHideWordsSrc = null; },
-        /* chat word filter: the list is parsed again only when the setting text changes */
-        _lmChatHidden(text) {
-            var src = String(defaultmapsettings.chatHideWords || '');
-            if (!src.trim()) return false;
-            if (this._lmHideWordsSrc !== src) {
-                this._lmHideWordsSrc = src;
-                this._lmHideWords = src.split(',').map(function (w) { return w.trim().toLowerCase(); }).filter(function (w) { return w.length >= 2; });
-            }
-            var s = String(text || '').toLowerCase();
-            for (var i = 0; i < this._lmHideWords.length; i++) if (s.indexOf(this._lmHideWords[i]) !== -1) return true;
-            return false;
-        },
         /* unnamed: the label of an Expanding Land guest with no nick (_lmElChatSender), else empty.
          * srvName: the sender name from the Expanding Land chat packet's own name field, else empty */
         displayChatMessage(time, caseof, plId, msg, unnamed, srvName) {
@@ -34219,14 +34145,10 @@ function thelegendmodproject() {
                      * nickHtml/messageHtml are the escaped versions for HTML insertion. */
                     var rawNick = a;
                     var rawText = msg.replace(a + ': ', '');
-                    /* optional word filter (never your own lines) */
-                    if (plId != this.playerID && this._lmChatHidden(rawNick + ' ' + rawText)) return;
                     if ((101 === caseof || 102 === caseof) && window.LMEvents._has('chat')) {
                         window.LMEvents.emit('chat', { nick: String(rawNick).slice(0, 60), text: String(rawText).slice(0, 500), type: 102 === caseof ? 'command' : 'chat', own: plId == this.playerID });
                     }
                     var r = '';
-                    /* optional dim #id before the nick: relay player ids only (not 0 / server lines, whose ids are made up per nick from 0x40000001) */
-                    var _lmIdTag = defaultmapsettings.chatShowId && +plId > 0 && +plId < 0x40000000 ? '<span class="lm-chat-id" style="opacity:.5;font-size:85%;font-weight:normal;">#' + (+plId) + '</span> ' : '';
                     if (0 != plId && plId != this.playerID && (this.addChatUser(plId, a), r = '<a href=\"#\" data-user-id=\"' + plId + '\" class=\"mute-user ogicon-user-minus\"></a> '), a = this.escapeHTML(a), 101 === caseof) {
 
                         /* pushed first: the chat-box path returns early, so bubbles never appeared */
@@ -34256,7 +34178,7 @@ function thelegendmodproject() {
                         /* scroll only if the reader is already at the bottom (it pulled readers back down) */
                         var _lmBoxEl = document.getElementById('chat-box');
                         var _lmAtBottom = !_lmBoxEl || (_lmBoxEl.scrollHeight - _lmBoxEl.scrollTop - _lmBoxEl.clientHeight < 40);
-                        if (defaultmapsettings.showChatBox) return $('#chat-box').append('<div class=\"message' + (_lmMention ? ' lm-mention' : '') + '\"' + _lmRpA + '><span class=\"message-time\">[' + time + '] </span>' + r + _lmIdTag + '<span class=\"message-nick\" style = "color:' + mcolor + '">' + _lmNickOut(a) + ': </span><span class=\"message-text\">' + n + '</span></div>'),
+                        if (defaultmapsettings.showChatBox) return $('#chat-box').append('<div class=\"message' + (_lmMention ? ' lm-mention' : '') + '\"' + _lmRpA + '><span class=\"message-time\">[' + time + '] </span>' + r + '<span class=\"message-nick\" style = "color:' + mcolor + '">' + _lmNickOut(a) + ': </span><span class=\"message-text\">' + n + '</span></div>'),
                             /* keep the last 200 lines: the box was never trimmed and grew for the whole session */
                             $('#chat-box .message').slice(0, -200).remove(),
                             $('#chat-box').perfectScrollbar('update'),
@@ -34266,7 +34188,7 @@ function thelegendmodproject() {
                             }, 200) : 0),
                             void (defaultmapsettings.chatSounds && !defaultmapsettings.hideChat && plId != this.playerID && this.playSound(this.messageSound)); /* own messages: no sound */ /* hidden chat box: silent, like the popups */
                         /* the chat popups (the default chat) mark a mention too: only the chat box did */
-                        defaultmapsettings.hideChat || ((function (to) { if (_lmMention && to && to.addClass) to.addClass('lm-mention'); })(toastr.success(_lmIdTag + '<span class=\"message-nick\" style = "color:' + mcolor + '">' + _lmNickOut(a) + ': </span><span class=\"message-text\">' + n + '</span>' + r)),
+                        defaultmapsettings.hideChat || ((function (to) { if (_lmMention && to && to.addClass) to.addClass('lm-mention'); })(toastr.success('<span class=\"message-nick\" style = "color:' + mcolor + '">' + _lmNickOut(a) + ': </span><span class=\"message-text\">' + n + '</span>' + r)),
                             defaultmapsettings.chatSounds && plId != this.playerID && this.playSound(this.messageSound));
                         // this.chatHistory.length > 15 && this.chatHistory.shift();
                         window._lmTrimChatToasts && window._lmTrimChatToasts();
@@ -34284,7 +34206,7 @@ function thelegendmodproject() {
                         /* scroll only if the reader is already at the bottom (it pulled readers back down) */
                         var _lmBoxEl = document.getElementById('chat-box');
                         var _lmAtBottom = !_lmBoxEl || (_lmBoxEl.scrollHeight - _lmBoxEl.scrollTop - _lmBoxEl.clientHeight < 40);
-                        if (defaultmapsettings.showChatBox) return $('#chat-box').append('<div class=\"message command\"' + _lmRpA + '><span class=\"command-time\">[' + time + '] </span>' + r + _lmIdTag + '<span class=\"command-nick\" style = "color:' + mcolor + '">' + _lmNickOut(a) + ': </span><span class=\"command-text\">' + n + '</span></div>'),
+                        if (defaultmapsettings.showChatBox) return $('#chat-box').append('<div class=\"message command\"' + _lmRpA + '><span class=\"command-time\">[' + time + '] </span>' + r + '<span class=\"command-nick\" style = "color:' + mcolor + '">' + _lmNickOut(a) + ': </span><span class=\"command-text\">' + n + '</span></div>'),
                             /* keep the last 200 lines: the box was never trimmed and grew for the whole session */
                             $('#chat-box .message').slice(0, -200).remove(),
                             $('#chat-box').perfectScrollbar('update'),
@@ -34293,7 +34215,7 @@ function thelegendmodproject() {
                                 'scrollTop': $('#chat-box').prop('scrollHeight')
                             }, 200) : 0),
                             void (defaultmapsettings.chatSounds && !defaultmapsettings.hideChat && plId != this.playerID && this.playSound(this.commandSound));
-                        defaultmapsettings.hideChat || (toastr.warning(_lmIdTag + '<span class=\"command-nick\" style = "color:' + mcolor + '">' + _lmNickOut(a) + ': </span><span class=\"command-text\">' + n + '</span>' + r),
+                        defaultmapsettings.hideChat || (toastr.warning('<span class=\"command-nick\" style = "color:' + mcolor + '">' + _lmNickOut(a) + ': </span><span class=\"command-text\">' + n + '</span>' + r),
                             defaultmapsettings.chatSounds && plId != this.playerID && this.playSound(this.commandSound));
                         window._lmTrimChatToasts && window._lmTrimChatToasts();
                     } else {
@@ -34327,10 +34249,8 @@ function thelegendmodproject() {
             this.setvirusSound();
             this._lmLoadOptSounds();
         },
-        /* optional sounds (16 pieces, merge ready): loaded only when their option is on */
+        /* optional sound (merge ready): loaded only when its option is on */
         _lmOptSoundUrls: {
-            x16: 'https://www.legendmod.ml/sounds/notification_02.mp3',
-            non16: 'https://www.legendmod.ml/sounds/notification-close.mp3',
             mergeReady: 'https://www.legendmod.ml/sounds/notification_01.mp3'
         },
         _lmOptSound(k) {
@@ -34339,8 +34259,6 @@ function thelegendmodproject() {
             return c[k] || null;
         },
         _lmLoadOptSounds() {
-            if (defaultmapsettings.x16Sound) this._lmOptSound('x16');
-            if (defaultmapsettings.non16Sound) this._lmOptSound('non16');
             if (defaultmapsettings.hudMergeSound) this._lmOptSound('mergeReady');
         },
         setChatSoundsBtn() {
@@ -40246,7 +40164,6 @@ function thelegendmodproject() {
         leaderboard: [],
         botNicks: [],
         biggerSTEDCellsCache: [], //Sonia
-        biggerTSTECellsCache: [], /* enemies >= 8x dominationRate (triple split range) */
         biggerSTECellsCache: [],
         biggerCellsCache: [],
         smallerCellsCache: [],
@@ -51531,16 +51448,6 @@ function thelegendmodproject() {
             	
             }*/
             //			
-            /* optional: a nick seen 3+ times (bots, same rule as the bot counter) is listed once
-             * as "name x N"; own, teammate and friend rows are never collapsed */
-            var _lmBotCnt = null, _lmBotSeen = null, _lmLbHidden = null;
-            if (defaultmapsettings.lbHideBots) {
-                _lmBotCnt = Object.create(null); _lmBotSeen = Object.create(null); _lmLbHidden = Object.create(null);
-                for (var _lmBi = 0; _lmBi < this.leaderboard.length; _lmBi++) {
-                    var _lmBk = '#' + this.leaderboard[_lmBi].nick;
-                    _lmBotCnt[_lmBk] = (_lmBotCnt[_lmBk] || 0) + 1;
-                }
-            }
             for (var temp = 0; temp < this.leaderboard.length && defaultmapsettings.leaderboardlimit != temp; temp++) {
                 var html = '<span>';
                 if (this.leaderboard[temp].id === 'isPlayer') {
@@ -51555,17 +51462,8 @@ function thelegendmodproject() {
                     }
 
                 }
-                var _lmBotSuffix = '';
-                if (_lmBotCnt && html === '<span>') {
-                    var _lmBk2 = '#' + this.leaderboard[temp].nick;
-                    if (_lmBotCnt[_lmBk2] > 2) {
-                        if (_lmBotSeen[_lmBk2]) { _lmLbHidden[temp] = 1; continue; }
-                        _lmBotSeen[_lmBk2] = 1;
-                        _lmBotSuffix = ' <span class="top5-mass-color">\u00d7' + _lmBotCnt[_lmBk2] + '</span>';
-                    }
-                }
                 /* <bdi>: a name's right-to-left text or direction marks stay inside the name (rank and bot count keep their place) */
-                teamText += html + (temp + 1) + '. <bdi>' + application.escapeHTML(this.leaderboard[temp].nick) + '</bdi>' + _lmBotSuffix + '</span>';
+                teamText += html + (temp + 1) + '. <bdi>' + application.escapeHTML(this.leaderboard[temp].nick) + '</bdi></span>';
             }
             //
             if (LM.multiBoxPlayerExists && profiles[application.selectedOldProfile] && profiles[application.selectedProfile]) {
@@ -51656,7 +51554,6 @@ function thelegendmodproject() {
             }
             if (defaultmapsettings.showLbData) {
                 for (var l2ngth = 0; l2ngth < this.ghostCells.length && l2ngth < defaultmapsettings.leaderboardlimit; l2ngth++) {
-                    if (_lmLbHidden && _lmLbHidden[l2ngth]) continue; /* row collapsed (lbHideBots) */
                     //
                     var w = this.ghostCells[l2ngth].x;
                     var u = this.ghostCells[l2ngth].y;
@@ -54926,28 +54823,18 @@ function thelegendmodproject() {
             var y = 0;
             var minSize = Infinity, maxSize = 0;
             playersLength = this.playerCells.length;
-            /* optional 16-pieces sounds (like Delta): played once when the count crosses 16 */
-            if (this.play && window.application && (defaultmapsettings.x16Sound || defaultmapsettings.non16Sound)) {
-                var _lmPrev16 = this._lmPrevCells | 0;
-                if (defaultmapsettings.x16Sound && _lmPrev16 < 16 && playersLength >= 16) application.playSound(application._lmOptSound('x16'));
-                else if (defaultmapsettings.non16Sound && _lmPrev16 >= 16 && playersLength < 16 && playersLength > 0) application.playSound(application._lmOptSound('non16'));
-            }
-            this._lmPrevCells = playersLength;
             /* LMEvents 'merge': own merges counted in updateCells(), reported here once per frame */
             if (this._lmEvMergeN) {
                 var _lmEvMn = this._lmEvMergeN;
                 this._lmEvMergeN = 0;
                 if (window.LMEvents._has('merge')) window.LMEvents.emit('merge', { merged: _lmEvMn, cells: playersLength });
             }
-            var _lmWS = 0, _lmWX = 0, _lmWY = 0;
             for (let length = 0; length < playersLength; length++) {
                 var n = this.playerCells[length];
                 size += n.size;
                 targetSize += n.targetSize * n.targetSize;
                 x += n.x / playersLength;
                 y += n.y / playersLength;
-                var _lmW = n.size * n.size;
-                _lmWS += _lmW; _lmWX += n.x * _lmW; _lmWY += n.y * _lmW;
                 /* Track min/max inline to avoid redundant sort in recalculatePlayerMass */
                 if (n.size < minSize) minSize = n.size;
                 if (n.size > maxSize) maxSize = n.size;
@@ -54957,9 +54844,6 @@ function thelegendmodproject() {
             this.viewY = y;
             this.viewXTrue = x;
             this.viewYTrue = y;
-            /* mass-weighted centre, used only for the camera with "centerWeightCamera" */
-            this._lmWeightX = _lmWS > 0 ? _lmWX / _lmWS : x;
-            this._lmWeightY = _lmWS > 0 ? _lmWY / _lmWS : y;
 
             this.playerSize = size;
             this.playerMass = ~~(targetSize / 100);
@@ -54996,7 +54880,7 @@ function thelegendmodproject() {
         },
         recalculatePlayerMass() {
             if (this.playerScore = Math.max(this.playerScore, this.playerMass),
-                defaultmapsettings.virColors || defaultmapsettings.splitRange || defaultmapsettings.oppColors || defaultmapsettings.oppRings || defaultmapsettings.showStatsSTE || defaultmapsettings.tripleSplitRange) {
+                defaultmapsettings.virColors || defaultmapsettings.splitRange || defaultmapsettings.oppColors || defaultmapsettings.oppRings || defaultmapsettings.showStatsSTE) {
                 /* Use min/max tracked in calculatePlayerMassAndPosition — eliminates
                  * redundant Array.sort of playerCells (1–16 cells) every frame. */
                 var minS = this._playerMinSize || 0;
@@ -55042,11 +54926,8 @@ function thelegendmodproject() {
         },
         compareCells() {
             var _isPlaying = (this.play && this.playerCells && this.playerCells.length > 0) || (window.multiboxPlayerEnabled && getActiveSpect && getActiveSpect(window.multiboxPlayerEnabled) && LM.playerCellsMulti && LM.playerCellsMulti.length > 0);
-            if (_isPlaying && (defaultmapsettings.oppColors || defaultmapsettings.oppRings || defaultmapsettings.splitRange || defaultmapsettings.tripleSplitRange)) {
+            if (_isPlaying && (defaultmapsettings.oppColors || defaultmapsettings.oppRings || defaultmapsettings.splitRange)) {
                 var _splitOrRings = defaultmapsettings.splitRange || defaultmapsettings.oppRings;
-                /* Triple split range: separate pooled cache of enemies >= 8x (can triple-split onto you) */
-                var _triple = !!defaultmapsettings.tripleSplitRange, _wTSTE = 0;
-                var _tsteArr = this.biggerTSTECellsCache || (this.biggerTSTECellsCache = []);
                 /* Reset cache write cursors instead of .length=0 + push(new obj).
                  * Reuses pooled objects to avoid GC pressure (~200 allocs/frame → 0). */
                 var _wBSTED = 0, _wBSTE = 0, _wB = 0, _wSS = 0, _wS = 0, _wSTE = 0, _wSTED = 0;
@@ -55158,17 +55039,8 @@ function thelegendmodproject() {
                             _obj.targetX = cell.targetX; _obj.targetY = cell.targetY;
                             _obj.size = _cs;
                         }
-                        if (_triple && !cell.isPlayerCell && fixMass >= _thr8) {
-                            if (!_tsteArr._pool) _tsteArr._pool = [];
-                            var _tObj = _tsteArr._pool[_wTSTE] || (_tsteArr._pool[_wTSTE] = { x: 0, y: 0, targetX: 0, targetY: 0, size: 0 });
-                            _tsteArr[_wTSTE++] = _tObj;
-                            _tObj.x = _cx; _tObj.y = _cy;
-                            _tObj.targetX = cell.targetX; _tObj.targetY = cell.targetY;
-                            _tObj.size = _cs;
-                        }
                     }
                 }
-                _tsteArr.length = _wTSTE;
                 /* Truncate arrays to actual count (no splice, just length assignment) */
                 if (_splitOrRings) {
                     this.biggerSTEDCellsCache.length = _wBSTED;
@@ -55180,7 +55052,6 @@ function thelegendmodproject() {
                     this.STEDCellsCache.length = _wSTED;
                 }
             } else {
-                if (this.biggerTSTECellsCache) this.biggerTSTECellsCache.length = 0;
                 if (this.biggerSTEDCellsCache) {
                     this.biggerSTEDCellsCache.length = 0;
                     this.biggerSTECellsCache.length = 0;
@@ -55525,17 +55396,6 @@ function thelegendmodproject() {
              * Calculate the ordinary cursor every time so key release can
              * return to normal movement immediately.
              */
-            /* "Camera on the centre of mass": the screen centre is the weighted centre (the
-             * point the camera follows), so the world point under the mouse is what goes out.
-             * Same test as the camera; multibox views that take the camera over keep viewX. */
-            if (defaultmapsettings.centerWeightCamera && this.play && this.playerCells && this.playerCells.length &&
-                Number.isFinite(this._lmWeightX) && Number.isFinite(this._lmWeightY) &&
-                !defaultmapsettings.middleMultiView &&
-                !(window.multiboxPlayerEnabled && typeof spects !== "undefined" && spects && getActiveSpect(window.multiboxPlayerEnabled))) {
-                viewX = this._lmWeightX;
-                viewY = this._lmWeightY;
-            }
-
             var normalCursorX =
                 screenDX /
                 viewScale +
@@ -77320,20 +77180,11 @@ function pickPlayerCellBySize(players, selectBiggest) {
             if (LM.playerCells && LM.playerCells.length) {
                 LM.calculatePlayerMassAndPosition(); /* includes the units */
             } else {
-                /* no cells: the next spawn must not count as a split (non16Sound) */
-                LM._lmPrevCells = 0;
                 LM.updateMultiboxUnitPositions();
             }
 
             var targetCamX = LM.viewX;
             var targetCamY = LM.viewY;
-            /* optional: follow the mass-weighted centre (viewX itself is unchanged: the minimap,
-             * sectors and multibox read it); multibox views below still take over */
-            if (defaultmapsettings.centerWeightCamera && LM.play && LM.playerCells && LM.playerCells.length &&
-                Number.isFinite(LM._lmWeightX) && Number.isFinite(LM._lmWeightY)) {
-                targetCamX = LM._lmWeightX;
-                targetCamY = LM._lmWeightY;
-            }
 
             /* ═══ World Spectate: mouse-driven panning with center dead zone ═══
              * When in World Spectate on an Expanding Land server, the mouse
@@ -80052,11 +79903,6 @@ function pickPlayerCellBySize(players, selectBiggest) {
                         }
                     }
                 }
-
-                /* Triple split range: 3 * size + 760 around enemies >= 8x your mass */
-                if (defaultmapsettings.tripleSplitRange && LM.biggerTSTECellsCache && LM.biggerTSTECellsCache.length) {
-                    this.drawWebGLRingsBatch(LM.biggerTSTECellsCache, 760, '#4000ff', 0.8, 3.0, 8);
-                }
             }
         },
 
@@ -80069,8 +79915,9 @@ function pickPlayerCellBySize(players, selectBiggest) {
             var ctx = fxCtx || this.ctx;
             if (LM.play || (LM.playerCellsMulti && LM.playerCellsMulti.length)) {
                 if (defaultmapsettings.cursorTracking && !defaultmapsettings.bubbleCursorTracker) {
-                    /* Split prediction (agar.io protocol only, as Delta) */
-                    this._lmSplitPred = !!(defaultmapsettings.splitPrediction && LM.integrity && !LM.isLegendWorld);
+                    /* Split prediction, part of the cursor line (agar.io protocol only, as Delta):
+                     * the lines of cells that will not split are dimmed */
+                    this._lmSplitPred = !!(LM.integrity && !LM.isLegendWorld);
                     if (this._lmSplitPred) {
                         this.markSplitPrediction(LM);
                         if (typeof spects !== 'undefined' && spects) {

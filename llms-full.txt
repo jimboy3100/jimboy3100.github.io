@@ -192,8 +192,6 @@ In-game text chat with rich features:
 - **Chat sounds**: Configurable notification sounds for messages and commands
 - **Chat history**: Up/Down arrow recalls last 20 sent messages
 - **Chat popups limited**: Maximum 6 chat popups on screen (prevents spam)
-- **Hide words filter**: Block chat lines containing specific words
-- **Player ID display**: Show player relay IDs before nicknames
 - **Chat box toggle**: Show/hide the persistent chat panel
 - **Coloured nicks**: Different colours for different users
 - **Hide country**: Hide country flag from chat
@@ -210,10 +208,10 @@ Settings > Sounds: each sound's switch, file and volume, all multiplied by the m
 | Master | volMaster | Overall volume multiplier (0-100%) |
 | Chat | volChat | Chat message sounds |
 | Commands | volCommands | Chat command sounds |
-| Gameplay | volGameplay | Virus sound, 16 pieces sounds |
+| Gameplay | volGameplay | Virus sound, merge sound |
 | Video skins | videoSkinSoundLevel (Settings > Skins) | Video skin audio |
 
-Sound switches: chatSounds, virusSound (a virus is shot, or you pop or eat one), x16Sound, non16Sound.
+Sound switches: chatSounds, virusSound (a virus is shot, or you pop or eat one).
 
 ### 11. Minimap Features
 - **Rotating minimap**: Rotates to match camera orientation
@@ -221,15 +219,14 @@ Sound switches: chatSounds, virusSound (a virus is shot, or you pop or eat one),
 - **Guides**: Lines showing cardinal directions and cell position
 - **Extra guides**: Additional positional reference lines
 - **Ghost cells**: Show death locations on the minimap
-- **Trail**: Last ~60 seconds of your movement path traced on the minimap
 - **Click-to-spectate**: Click on the minimap to move the spectator camera (Expanding Land World Spectate)
 - **Private minimap**: Hotkey to hide minimap from view
 - **One-coloured teammates**: All teammates shown in same colour on minimap
 - **Customizable theming**: Sections colour, sector colour, guides colour, nick colour/stroke, cell colours, death location colour, font, sizes
 
 ### 12. HUD Helpers
-- **Split range circles**: Rings showing split distance around enemies (single, double, triple, and quad split)
-- **Split prediction**: Dim cursor lines on own cells that cannot split
+- **Split range circles**: Rings showing split distance around enemies (single, double and quad split)
+- **Split prediction**: Cursor tracking's lines are dimmed on own cells that cannot split (agar.io)
 - **Merge sound**: Audio cue when cells can merge
 - **Merge progress rings**: Visual progress rings on own cells
 - **Relative mass display**: Other players' mass shown as ratio to your biggest cell (e.g. 1.75x, 0.40x)
@@ -250,7 +247,6 @@ Drag and resize HUD elements with named layouts (the one place for HUD positions
 - **Configurable limit**: Show top 5-20 entries
 - **Top 5 skins**: Display skins of leaderboard leaders
 - **Centred leaderboard**: Position leaderboard at centre-right
-- **Hide bots**: Filter server-controlled bots from the leaderboard
 - **Click-to-spectate**: Click a leaderboard entry to follow that player in spectate
 
 ### 15. Stats and Analytics
@@ -325,7 +321,7 @@ Legend Mod organises its 300+ settings into the following categories accessible 
 - **Privacy/Extras**: Streamer mode, hide skin URL, hide name, hide country, block popups
 - **Stats**: Game Over card stats, mass graph, death recap, analytics, match history
 - **Merge**: Sound, progress rings
-- **Indicators**: Opponent colours, rings, virus colours, split range (single/double/triple/quad), virus range, cursor tracking, split prediction, bubble indicators, teammates indicators
+- **Indicators**: Opponent colours, rings, virus colours, split range (single/double/quad), virus range, cursor tracking (with split prediction), bubble indicators, teammates indicators
 - **Expanding Land**: Reduced motion (no Expanding Land death shake, death particles or entrance spin)
 - **Accessibility**: Menu text scale (1.0-1.6x)
 - **Grid/Borders**: Grid, sectors, map borders, border glow, rainbow borders
@@ -516,7 +512,7 @@ Legend Mod offers one-click presets: Competitive (enables rings, mass, split ran
 An Expanding Land-exclusive feature. When you die, a transparent cell appears at your death location, visible on the minimap. Ghost cells help you track where deaths occurred and avoid dangerous areas.
 
 **How do sound controls work?**
-Settings > Sounds has each sound's switch, sound file and volume: chat message and command sounds (with their volumes), the virus sound (a virus is shot, or you pop or eat one), the 16 pieces sounds, a gameplay effects volume and a master volume (0-100%) that also scales the video skins (their own level is in Settings > Skins).
+Settings > Sounds has each sound's switch, sound file and volume: chat message and command sounds (with their volumes), the virus sound (a virus is shot, or you pop or eat one), a gameplay effects volume and a master volume (0-100%) that also scales the video skins (their own level is in Settings > Skins).
 
 ## Glossary of Key Terms
 

@@ -19,7 +19,7 @@
     if (label && Number(label.textContent) !== S[k]) off.push(k + ' label ' + label.textContent);
   });
   info.sliders = sliders;
-  if (sliders < 20) fail.push('only ' + sliders + ' schema sliders in the menu');
+  if (sliders < 15) fail.push('only ' + sliders + ' schema sliders in the menu');
   off.slice(0, 6).forEach(function (m) { fail.push(m); });
   var got = [];
   var onSet = function (e) { got.push(e.key + '=' + e.value); };
@@ -32,9 +32,9 @@
     if (got.join() !== 'lineSplitCount=' + other) fail.push('slider events: ' + got.join());
     // a value between the steps set from a script: the slider and the game agree
     got.length = 0;
-    var mf = $('#rainbowBorderSpeed-slider'), mfWas = S.rainbowBorderSpeed;
-    mf.val(1.7).trigger('input').trigger('change');
-    if (Number(mf.val()) !== S.rainbowBorderSpeed || S.rainbowBorderSpeed % 1 !== 0) fail.push('rainbowBorderSpeed slider ' + mf.val() + ' game ' + S.rainbowBorderSpeed);
+    var mf = $('#macroSplitDelay-slider'), mfWas = S.macroSplitDelay;
+    mf.val(41.7).trigger('input').trigger('change');
+    if (Number(mf.val()) !== S.macroSplitDelay || S.macroSplitDelay % 1 !== 0) fail.push('macroSplitDelay slider ' + mf.val() + ' game ' + S.macroSplitDelay);
     mf.val(mfWas).trigger('input').trigger('change');
     sl.val(was).trigger('input').trigger('change');
     got.length = 0;
@@ -52,13 +52,13 @@
     $('#lineSplitCount-slider').trigger('change');
     if (got.length) fail.push('events without a change: ' + got.join());
     // a text box (applied on change)
-    var tb = document.getElementById('chatHideWords');
+    var tb = document.getElementById('messageSound');
     if (tb) {
       var t0 = tb.value;
-      tb.value = t0 + 'zzprobe'; $(tb).trigger('change');
+      tb.value = t0 + '?zzprobe'; $(tb).trigger('change');
       tb.value = t0; $(tb).trigger('change');
-      if (got.join() !== 'chatHideWords=' + t0 + 'zzprobe,chatHideWords=' + t0) fail.push('text box events: ' + got.join());
-    }
+      if (got.join() !== 'messageSound=' + t0 + '?zzprobe,messageSound=' + t0) fail.push('text box events: ' + got.join());
+    } else fail.push('no #messageSound text box');
     got.length = 0;
     // setSettings from a script: put on the schema
     var mfa = S.macroFeeding;

@@ -36,7 +36,7 @@ const g = { console, Math, Number, Infinity, NaN };
 g.window = g;
 vm.createContext(g);
 vm.runInContext([
-    'var defaultmapsettings = { oppColors: true, oppRings: true, splitRange: true, tripleSplitRange: false, dominationRate: 1.33, dominatedRate: 0.75 };',
+    'var defaultmapsettings = { oppColors: true, oppRings: true, splitRange: true, dominationRate: 1.33, dominatedRate: 0.75 };',
     'var defaultSettings = { enemyBSTEDColor: "bsted", enemyBSTEColor: "bste", enemyBColor: "b", enemySColor: "s", enemySSTEColor: "sste", enemySSTEDColor: "ssted" };',
     'var ogarcopythelb = { color: "own" };',
     'function getActiveSpect() { return null; }',

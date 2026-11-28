@@ -1093,7 +1093,6 @@ const noReset = (log) => log.filter((x, i) => !(x === 'globalAlpha=1' && log[i +
     LM.playerCells = [{ x: 1, y: 1, size: 50, isInView: () => true }];
     LM.cursorX = 300; LM.cursorY = 300;
     const S = D.defaultmapsettings;
-    S.splitPrediction = false;
     const run = (ct, bubble) => {
         calls.length = 0; S.cursorTracking = ct; S.bubbleCursorTracker = bubble;
         R.drawPostCellOverlays(R.ctx); R.drawMiscRings();

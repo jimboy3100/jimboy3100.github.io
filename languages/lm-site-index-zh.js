@@ -203,7 +203,7 @@
 "site.index.expandingLandInTeams": "<b>Expanding Land</b>：在 Teams 中，隊伍聊天（Enter 與手機快速聊天按鈕）不需戰隊標籤即可傳給隊友；遊戲結束卡片的「被吃掉」列新增 <b>觀看擊殺者</b>按鈕，可觀戰並跟隨吃掉你的細胞。",
 "site.index.leaguesTheLeaderboardsWindow": "<b>聯賽</b>：排行榜視窗會倒數至每週重設（「Resets in 2d 5h」），玩家個人資料統計會顯示你的平均質量，「passed you」提示會說明是哪個排行榜（World、Country、你的聯賽或 Friends）。",
 "site.index.directionOnTouchMobile": "<b>觸控方向</b>（行動版，齒輪面板，預設關閉）：如同 agar.io，細胞會朝手指觸碰的位置移動，而不是使用搖桿；拖曳即可轉向，放開後繼續前進。",
-"site.index.splitPredictionAgarIo": "<b>分裂預測</b>（agar.io，輔助工具，預設關閉）：開啟游標追蹤時，下次分裂時不會分裂的細胞（16 個細胞上限、質量低於 35）其分裂線會變暗。<b>三重分裂範圍</b>（輔助工具，預設關閉）：在質量為你 8 倍以上、可對你三重分裂的敵人周圍顯示圓環。",
+"site.index.splitPredictionAgarIo": "<b>分裂預測</b>（agar.io，輔助工具，預設關閉）：開啟游標追蹤時，下次分裂時不會分裂的細胞（16 個細胞上限、質量低於 35）其分裂線會變暗。",
 "site.index.hudHelpersEachOff": "<b>HUD 輔助工具</b>（皆預設關閉）：在細胞上以秒數顯示的<b>合併倒數</b>，可合併時可選擇播放音效（agar.io，估計值）、以你最大細胞為基準的<b>敵人質量比例</b>（1.75x、=），以及<b>質量格式</b>滑桿（精確、12.3k、自動）。",
 "site.index.phonesTheSplitFeed": "<b>手機</b>：開啟選單時，右側的分裂、吐球、4x 與 16x 按鈕再次保持顯示（只是在選單上會忽略點擊，因此選單仍可正常使用）。",
 "site.index.closeRoomThePlayer": "<b>關閉房間</b>：建立私人房間的玩家可以為所有人關閉房間（房間視窗 → Close room → 確認），即使在同一台裝置上重新載入頁面後也可以。",

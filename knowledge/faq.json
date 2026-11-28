@@ -171,7 +171,7 @@
     },
     {
       "question": "How do sound controls work?",
-      "answer": "Settings > Sounds has each sound's switch, sound file and volume: chat message and command sounds (with their volumes), the virus sound (a virus is shot, or you pop or eat one), the 16 pieces sounds, a gameplay effects volume and a master volume (0-100%) that also scales the video skins (their own level is in Settings > Skins)."
+      "answer": "Settings > Sounds has each sound's switch, sound file and volume: chat message and command sounds (with their volumes), the virus sound (a virus is shot, or you pop or eat one), a gameplay effects volume and a master volume (0-100%) that also scales the video skins (their own level is in Settings > Skins)."
     }
   ]
 }

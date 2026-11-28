@@ -48,7 +48,12 @@ check('profileNumber 1000000 -> 54', V('profileNumber', 1000000) === 54);
 check('fpsLimit -1 -> 0 (off), 0 stays 0', V('fpsLimit', -1) === 0 && V('fpsLimit', 0) === 0);
 /* removed or merged settings (mass-loss alert, kill feed, the event countdown's hide option, HUD helper arrows and cell panel, the removed 25 FPS menu cap, the
  * automatic Performance mode's own target / message / resolution options, the size symbols in Relative mass) */
-const GONE = ['hudMergeCountdown', 'menuFpsCap', 'adaptivePerfTarget', 'adaptivePerfToasts', 'adaptivePerfRes', 'hudMoveDir', 'hudEdgeTeammates', 'hudEdgeThreats', 'hudCellPanel', 'massLossAlert', 'massLossPct', 'killFeed', 'a11yIndicators', 'hideEventBanner'];
+const GONE = ['hudMergeCountdown', 'menuFpsCap', 'adaptivePerfTarget', 'adaptivePerfToasts', 'adaptivePerfRes', 'hudMoveDir', 'hudEdgeTeammates', 'hudEdgeThreats', 'hudCellPanel', 'massLossAlert', 'massLossPct', 'killFeed', 'a11yIndicators', 'hideEventBanner',
+  /* options that tuned a detail or were gimmicks: the camera on the centre of mass, the rainbow border speed (fixed at
+   * the original 5), the chat #id and word filter, the 16 pieces sounds, the minimap trail, the triple split range,
+   * the Split prediction switch (always part of the cursor line), and the collapsed leaderboard bots */
+  'centerWeightCamera', 'rainbowBorderSpeed', 'chatShowId', 'chatHideWords', 'x16Sound', 'non16Sound', 'showMiniMapTrail', 'tripleSplitRange',
+  'splitPrediction', 'lbHideBots'];
 check('removed settings are no settings any more (a saved value is ignored)', GONE.every(k => !(k in D) && !(k in SCH) && V(k, true) === undefined && V(k, 30) === undefined));
 check('gamepadMoveCurve 100 -> 3', V('gamepadMoveCurve', 100) === 3);
 check('massFormat 1.7 -> 2 (a mode, not a fraction)', V('massFormat', 1.7) === 2);
@@ -63,7 +68,7 @@ check('no Scan Trick setting is left (default, schema, value)', SCAN_OLD.every(k
 check('the old toast position (positionClass, no menu row) is no setting: the HUD editor places the popups', V('positionClass', 'toast-top-right') === undefined);
 check('settings without a slider have a range too (domination rate)', V('dominationRate', 4 / 3) === 4 / 3 && V('dominationRate', 0) === 1 && V('dominationRate', 9) === 4 && V('dominatedRate', 0.6) === 0.6);
 check('booleans: "true"/"false" converted, other values refused', V('showMass', 'false') === false && V('showMass', 1) === undefined && V('showMass', true) === true);
-check('free text kept, unknown keys refused', V('chatHideWords', 'a,b') === 'a,b' && V('chatHideWords', 5) === undefined && V('noSuchSetting', 1) === undefined && V('__proto__', 1) === undefined);
+check('free text kept, unknown keys refused', V('messageSound', 'a,b') === 'a,b' && V('messageSound', 5) === undefined && V('noSuchSetting', 1) === undefined && V('__proto__', 1) === undefined);
 check('the old multibox count 3-4 is still read (ensureMbSlots maps it to 2)', V('multiboxAmount', 4) === 4 && V('multiboxAmount', 9) === 4);
 
 // ── S1 the import path of the settings file (the real loop of importSettings)
@@ -79,11 +84,11 @@ check('import: an old export with the second video volume keeps its loudness', J
 // ── S1 loading (the real loadSettings): a damaged save is fitted, the rest kept
 const app = vm.runInContext('({\n' + cut('        loadSettings() {', '        exportSettings() {') + '\n})', ctx);
 ctx.ogario = {};
-const saved = Object.assign({}, D, { fpsLimit: 145, massFormat: 1.7, macroFeeding: 3, hudBlur: 3, showMass: !D.showMass, positionClass: 'toast-middle', scanTrickDirections: 8, scanTrickDistance: 20000, scanTrickRounded: false, chatHideWords: 'spam' });
+const saved = Object.assign({}, D, { fpsLimit: 145, massFormat: 1.7, macroFeeding: 3, hudBlur: 3, showMass: !D.showMass, positionClass: 'toast-middle', scanTrickDirections: 8, scanTrickDistance: 20000, scanTrickRounded: false, messageSound: 'spam.mp3' });
 ctx.localStorage.setItem('ogarioSettings', JSON.stringify(saved));
 app.loadSettings();
 const S = ctx.defaultmapsettings;
-check('load: off-range/off-step values fitted, invalid choice keeps the default, valid values kept', S.fpsLimit === 150 && S.massFormat === 2 && S.macroFeeding === 3 && S.showMass === !D.showMass && S.positionClass === D.positionClass && S.chatHideWords === 'spam');
+check('load: off-range/off-step values fitted, invalid choice keeps the default, valid values kept', S.fpsLimit === 150 && S.massFormat === 2 && S.macroFeeding === 3 && S.showMass === !D.showMass && S.positionClass === D.positionClass && S.messageSound === 'spam.mp3');
 check('the removed HUD background blur: an old saved value is ignored quietly', !('hudBlur' in D) && !('hudBlur' in SCH) && !('hudBlur' in S) && V('hudBlur', 3) === undefined);
 check('load: old saved Scan Trick settings are skipped quietly', SCAN_OLD.every(k => !(k in S)) || (console.log('   kept: ' + SCAN_OLD.filter(k => k in S).join(', ')), false));
 // ── one video skin volume: the removed second slider (volVideo) is folded into the level once
@@ -250,9 +255,10 @@ check('full again later: warned again', toasts.length === 2);
 delete ctx.toastr; delete ctx.lmT;
 events.length = 0;
 const long = 'x'.repeat(800);
-S.chatHideWords = long;
+S.messageSound = long;
 app.saveSettings(S, 'ogarioSettings');
-check('text values in events are cut at 500 characters, the save keeps the whole text', events.length === 1 && events[0][2].length === 500 && JSON.parse(ctx.localStorage.getItem('ogarioSettings')).chatHideWords === long);
+check('text values in events are cut at 500 characters, the save keeps the whole text', events.length === 1 && events[0][2].length === 500 && JSON.parse(ctx.localStorage.getItem('ogarioSettings')).messageSound === long);
+S.messageSound = D.messageSound;
 
 // ── S5 the real setSettings: validates script values, no event for the same value
 const ss = cut('        setSettings(id, checked) {', '        profiling() {');
@@ -370,9 +376,9 @@ check('setSettings on and off: two events, the new value each time', J(events) =
     presetSet('highDPI', false);
     check('a preset without the menu: High DPI through setSettings (canvas resized, copy in ogario)', S.highDPI === false && ctx.ogario.highDPI === false && rs === 3);
     /* values checked before their effects */
-    fx.length = 0; S.x16Sound = false;
-    H.setSettings('x16Sound', 'true');
-    check('an optional sound switched on with "true" (a script): stored as true and loaded', S.x16Sound === true && fx.indexOf('_lmLoadOptSounds') >= 0);
+    fx.length = 0; S.hudMergeSound = false;
+    H.setSettings('hudMergeSound', 'true');
+    check('an optional sound switched on with "true" (a script): stored as true and loaded', S.hudMergeSound === true && fx.indexOf('_lmLoadOptSounds') >= 0);
     S.massFormat = 3;
     [false, ' ', [], [0]].forEach(v => H.setSettings('massFormat', v));
     check('mass format: false, " ", [] and [0] are refused (auto stays), not read as the old 0', S.massFormat === 3);
@@ -382,7 +388,7 @@ check('setSettings on and off: two events, the new value each time', J(events) =
     check('mass format 0 and "0" of older scripts still mean 12.3k or exact', mf0 === 2 && S.massFormat === 1);
   } finally {
     ctx.document.getElementById = getWas; ctx.Event = evWas;
-    S.highDPI = D.highDPI; S.massFormat = D.massFormat; S.x16Sound = D.x16Sound; S.performanceMode = false; S.jellyPhisycs = D.jellyPhisycs;
+    S.highDPI = D.highDPI; S.massFormat = D.massFormat; S.hudMergeSound = D.hudMergeSound; S.performanceMode = false; S.jellyPhisycs = D.jellyPhisycs;
     ['showTop5', 'showStats', 'autoResp'].forEach(k => { S[k] = D[k]; });
     ctx.localStorage.removeItem('lmPerfBackup');
     delete ctx.drawRender;
@@ -550,10 +556,9 @@ const dmsDep = vm.runInContext('defaultmapsettings', ctx);
 const depWhy = k => (rows[k] && rows[k].cls.has('lm-dep-off') ? rows[k].at['data-lm-why'] : '');
 const depRun = set => { Object.assign(dmsDep, D, set); depRefresh(); };
 depRun({ showMapBorders: false, rainbowMapBorders: true });
-check('Map borders off: rainbow borders and their speed are dimmed (only the border uses them)',
-  depWhy('rainbowMapBorders') === 'Needs: showMapBorders' && depWhy('rainbowBorderSpeed') === 'Needs: showMapBorders');
-depRun({ rainbowMapBorders: false });
-check('rainbow borders off: only their speed is dimmed', depWhy('rainbowMapBorders') === '' && depWhy('rainbowBorderSpeed') === 'Needs: rainbowMapBorders');
+check('Map borders off: rainbow borders are dimmed (only the border uses them)', depWhy('rainbowMapBorders') === 'Needs: showMapBorders');
+depRun({ showMapBorders: true, rainbowMapBorders: false });
+check('Map borders on: rainbow borders not dimmed', depWhy('rainbowMapBorders') === '');
 depRun({ showMass: false });
 /* Mass format also sets the HUD mass texts (team list, leaderboard), shown without cell mass */
 check('Show mass off: the cell mass options are dimmed, Mass format is not (it still sets the HUD mass texts)',

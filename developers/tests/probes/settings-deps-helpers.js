@@ -19,7 +19,7 @@
       window.__lmInput(JSON.stringify({ id: id, type: window.LM_IS_MOBILE ? 'tap' : 'click', x: x, y: y }));
     });
   };
-  var pairs = [['oppRings', 'bubbleInd'], ['cursorTracking', 'splitPrediction'], ['cursorTracking', 'bubbleCursorTracker']];
+  var pairs = [['oppRings', 'bubbleInd'], ['cursorTracking', 'bubbleCursorTracker']];
   var keep = { showStats: defaultmapsettings.showStats, bubbleCursorTracker: defaultmapsettings.bubbleCursorTracker };
   pairs.forEach(function (p) { keep[p[0]] = defaultmapsettings[p[0]]; keep[p[1]] = defaultmapsettings[p[1]]; });
   var needs = application._lmMenuText('lmDepNeeds');
@@ -72,19 +72,17 @@
     ['showStatsFPS'].forEach(function (k) {
       if (info.statsOff[k] !== needs + ': ' + plain('showStats')) fail.push(k + ' with Stats off says ' + (info.statsOff[k] || 'nothing'));
     });
-    /* the bubble look of Cursor tracking: while it is on, Split prediction (it dims the line) says
-     * it has no effect and Cursor tracking is not dimmed; turned off again nothing is dimmed for it */
-    var offWhile = lmT('pkg.s3xvw.depOffWhile') + ': ' + plain('bubbleCursorTracker');
+    /* the bubble look of Cursor tracking: Cursor tracking is never dimmed for it (split prediction
+     * has no switch: it is part of the line) */
     if (!defaultmapsettings.cursorTracking) await flip('cursorTracking');
     if (defaultmapsettings.bubbleCursorTracker) await flip('bubbleCursorTracker');
-    var bt0 = { cursorTracking: why('cursorTracking'), splitPrediction: why('splitPrediction') };
+    var bt0 = { cursorTracking: why('cursorTracking') };
     await flip('bubbleCursorTracker');
-    var bt1 = { cursorTracking: why('cursorTracking'), splitPrediction: why('splitPrediction') };
+    var bt1 = { cursorTracking: why('cursorTracking') };
     await flip('bubbleCursorTracker');
-    var bt2 = { cursorTracking: why('cursorTracking'), splitPrediction: why('splitPrediction') };
+    var bt2 = { cursorTracking: why('cursorTracking') };
     info.bubbleTracker = { off: bt0, on: bt1 };
-    if (bt1.splitPrediction !== offWhile) fail.push('splitPrediction with the bubble look on says ' + (bt1.splitPrediction || 'nothing'));
-    if (bt0.splitPrediction === offWhile || bt2.splitPrediction === offWhile) fail.push('splitPrediction says the bubble look stops it while that is off');
+    if (document.getElementById('splitPrediction')) fail.push('the Split prediction switch is still there');
     if (bt0.cursorTracking || bt1.cursorTracking || bt2.cursorTracking) fail.push('Cursor tracking is dimmed (' + [bt0.cursorTracking, bt1.cursorTracking, bt2.cursorTracking].join(' / ') + ')');
     /* Cursor tracking off takes the bubble look off; choosing the look turns Cursor tracking on */
     await flip('bubbleCursorTracker');

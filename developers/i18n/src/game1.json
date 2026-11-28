@@ -1385,24 +1385,6 @@
     "ja": "カーソル画像の URL",
     "it": "URL dell'immagine del cursore"
   },
-  "game1.ph.chatWords": {
-    "en": "e.g. spam, discord.gg",
-    "el": "π.χ. spam, discord.gg",
-    "es": "p. ej. spam, discord.gg",
-    "bg": "напр. spam, discord.gg",
-    "fr": "ex. spam, discord.gg",
-    "ar": "مثال: spam, discord.gg",
-    "zh": "例如 spam, discord.gg",
-    "ru": "напр. spam, discord.gg",
-    "de": "z. B. spam, discord.gg",
-    "tr": "örn. spam, discord.gg",
-    "pl": "np. spam, discord.gg",
-    "nl": "bijv. spam, discord.gg",
-    "pt": "ex.: spam, discord.gg",
-    "id": "mis. spam, discord.gg",
-    "ja": "例：spam, discord.gg",
-    "it": "es. spam, discord.gg"
-  },
   "game1.ph.soundUrl": {
     "en": "Sound URL",
     "el": "URL ήχου",

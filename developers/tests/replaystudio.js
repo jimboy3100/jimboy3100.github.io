@@ -329,7 +329,7 @@ function driverEnv(packets, opts) {
     const app = vm.runInContext('with (__env) { ({' + [sideSrc.chat, sideSrc.sound, sideSrc.spawn, coreSrc.death, sideSrc.resp, sideSrc.menu].join('').replace(/,\s*$/, '') + '}) }', g);
     Object.assign(g.application, app, {
       chatHistory: [], commandHistory: [], teamPlayers: [], messageSound: { currentTime: 0, pause() { }, play() { hooks.push('sound'); } },
-      parseMessage: x => x, escapeHTML: x => String(x), _lmChatHidden: () => false, addChatUser: noop, isChatUserMuted: () => false,
+      parseMessage: x => x, escapeHTML: x => String(x), addChatUser: noop, isChatUserMuted: () => false,
       sendPlayerSpawn: () => hooks.push('spawn'), sendPlayerDeath: () => hooks.push('death'), setAutoResp: noop,
       updateDeathLocations: noop, unlockButtons: noop, clearOwnCustomSkin: noop, cacheCustomSkin: noop
     });

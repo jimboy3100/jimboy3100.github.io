@@ -109,10 +109,9 @@
     var LMc = window.legendmod;
     if (!LMc) fail.push('no window.legendmod');
     else {
-      var st0 = LMc.serverType, lw0 = LMc.isLegendWorld, ct0 = defaultmapsettings.cursorTracking, spWhy = function () { return String($('#splitPrediction').closest('label').attr('data-lm-why') || ''); };
+      var st0 = LMc.serverType, lw0 = LMc.isLegendWorld, spWhy = function () { return String($('#hudMergeSound').closest('label').attr('data-lm-why') || ''); };
       try {
-        /* Split prediction also needs Cursor tracking: that note comes first while it is off */
-        defaultmapsettings.cursorTracking = true;
+        /* the merge sound works on agar.io only */
         LMc.isLegendWorld = false;
         LMc.serverType = 'senpa';
         application._lmDepRefresh();
@@ -125,11 +124,9 @@
         if ($('#recordReplays').closest('label').attr('data-lm-why')) fail.push('replays dimmed on a private server');
         LMc.serverType = 'agario';
         application._lmDepRefresh();
-        if (spWhy()) fail.push('split prediction dimmed on agar.io: ' + spWhy());
-        defaultmapsettings.cursorTracking = false;
-        application._lmDepRefresh();
-        if (spWhy().indexOf(application._lmMenuText('lmDepNeeds')) !== 0) fail.push('split prediction without cursor tracking: ' + spWhy());
-      } finally { LMc.serverType = st0; LMc.isLegendWorld = lw0; defaultmapsettings.cursorTracking = ct0; application._lmDepRefresh(); }
+        if (spWhy()) fail.push('merge sound dimmed on agar.io: ' + spWhy());
+        if ($('#splitPrediction').length) fail.push('the Split prediction switch is still there (it is part of the cursor line)');
+      } finally { LMc.serverType = st0; LMc.isLegendWorld = lw0; application._lmDepRefresh(); }
     }
     // the Game Over card is one switch: no switch per part of it
     ['massGraph', 'showKiller', 'deathRecap'].forEach(function (k) {
