@@ -41788,11 +41788,11 @@ function thelegendmodproject() {
             this._lmBorderTraceAdd('close', 0);
             /* A dropped connection ends the life (the server forgets the player): the menu comes
              * back with Play, as after a death. It stayed hidden over the reconnected world, with
-             * the player no longer in the game, until Esc. Not while a multibox unit lives on. */
+             * the player no longer in the game, until Esc. The multibox units end with it:
+             * flushCellsData() above closed them all (flushSpecsData), so none lives on here. */
             if (this === window.legendmod && this.play && !window._lmReplayQuiet) {
                 this.play = false;
-                var _lmMbAlive = (window.spects || []).some(function (s) { return s && s.player && s.active; });
-                if (!_lmMbAlive && window.application && typeof application.showMenu === 'function') application.showMenu(300);
+                if (window.application && typeof application.showMenu === 'function') application.showMenu(300);
             }
             this.isLegendWorld = false;
             LM.isLegendWorld = false;

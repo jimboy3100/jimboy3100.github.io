@@ -1586,8 +1586,11 @@ class Spect {
 
                 break;
             case 87:
+                var _lm87Sock = this.socket, _lm87Gen = this.connectionGeneration;
                 window.agarCaptcha.requestCaptchaV3("play", (a) => {
                     if (!a) return; /* as the main client */
+                    /* only to the socket that asked: after a reconnect the token went to the new socket unasked */
+                    if (this.socket !== _lm87Sock || this.connectionGeneration !== _lm87Gen) return;
                     const b = this.createView(2 + a.length);
                     b.setUint8(0, 88);
                     for (let c = 0; c < a.length; c++) b.setUint8(1 + c, a.charCodeAt(c));
@@ -2284,6 +2287,17 @@ class Spect {
         this.playerCellIDs = [];
         if (this.positionController) clearInterval(this.positionController);
         this.positionController = null;
+        /* the life ended, as application.onPlayerDeath resets the main player: the HUD kept the
+         * dead unit's score (the next life showed the best score of all lives) and mass numbers */
+        if (this.player) {
+            this.playerScore = 0;
+            this.playerMass = 0;
+            this.playerSize = 0;
+            this.playerMinMass = 0;
+            this.playerMaxMass = 0;
+            this.playerSplitCells = 0;
+            this.STE = this.MTE = this.BMTE = this.BSTE = this.TTE = this.PTE = 0;
+        }
 
         // Auto-switch active camera to surviving multibox unit if available
         if (window.multiboxPlayerEnabled === this.number) {
@@ -2739,7 +2753,11 @@ class Spect {
                 /* first spawn of this unit, a spawn the player asked for (Tab), or the main
                  * cell is dead: focus it. A background reconnect + auto-respawn used to take
                  * the focus mid-fight and freeze the main cell. */
-                if (!this._lmSpawnedOnce || this._lmFocusOnSpawn || !legendmod.play) lmSetMbUnit(this.number);
+                if (!this._lmSpawnedOnce || this._lmFocusOnSpawn || !legendmod.play) {
+                    lmSetMbUnit(this.number);
+                    /* the death menu (terminate: last player died) stayed up over the unit now played */
+                    if (!legendmod.play && typeof application !== 'undefined' && application && typeof application.hideMenu === 'function') application.hideMenu();
+                }
                 this._lmSpawnedOnce = true;
                 this._lmFocusOnSpawn = false;
             }
@@ -2831,8 +2849,10 @@ class Spect {
             this.playerSplitCells = CellLength;
         }
         const mass = (legendmod.selectBiggestCell ? this.playerMaxMass : this.playerMinMass) || 0;
-        this.STE = Math.floor(mass * defaultmapsettings.dominationRate / 4);
-        this.MTE = Math.floor(mass * defaultmapsettings.dominationRate / 2);
+        /* the main player's formula (recalculatePlayerMass in ogario.v4.js): the unit's HUD showed
+         * other split / move-to-eat numbers for the same mass */
+        this.STE = Math.floor(mass * defaultmapsettings.dominatedRate / 2);
+        this.MTE = Math.floor(mass * defaultmapsettings.dominatedRate);
         this.BMTE = Math.ceil(mass * defaultmapsettings.dominationRate);
         this.BSTE = Math.ceil(mass * defaultmapsettings.dominationRate * 2);
         this.TTE = Math.ceil(mass / 6);

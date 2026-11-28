@@ -7,7 +7,10 @@
  * - Opcode 17 with no multibox frame (both players dead, spectating, "View on middle of both"):
  *   the camera follows the server's view (it stayed frozen).
  * - A unit that dies and respawns on the same socket while the main player is dead takes the
- *   focus again (terminate, beforecalculation); with the main player alive it does not.
+ *   focus again (terminate, beforecalculation) and hides the death menu; with the main player alive it
+ *   does not. A dead unit's score, mass and split / eat numbers are 0, the next life shows its own score.
+ * - The whole spect.js: a unit's split / eat numbers equal the main player's (recalculatePlayerMass)
+ *   for one mass; the opcode 87 token is sent only on the socket that asked (not after a reconnect).
  * node developers/tests/mbdeath.js [ogario.v4.js] [spect.js] */
 'use strict';
 const fs = require('fs'), path = require('path'), vm = require('vm');
@@ -123,31 +126,96 @@ function death(o) {
     check('a multibox frame drives the camera: opcode 17 leaves the view centre to it', view(true, 1, true) === '100,100', view(true, 1, true));
 }
 
-/* 4. a unit that dies and respawns on the same socket (spect.js terminate, beforecalculation) */
+/* 4. a unit that dies and respawns on the same socket (spect.js terminate, beforecalculation,
+ * calculatePlayerMassAndPosition, recalculatePlayerMass) */
 {
     const term = block(sp, '    terminate() {'), before = block(sp, '    beforecalculation() {');
-    if (!term || !before) { console.log('FAIL terminate / beforecalculation not found'); process.exit(1); }
+    const calc = block(sp, '    calculatePlayerMassAndPosition(ownCells) {'), recalc = block(sp, '    recalculatePlayerMass(ownCells) {');
+    if (!term || !before || !calc || !recalc) { console.log('FAIL terminate / beforecalculation / calculatePlayerMassAndPosition / recalculatePlayerMass not found'); process.exit(1); }
     const life = (mainAlive) => {
-        const ctx = { console: { log: noop, warn: noop }, toastr: {}, Date, menuShown: 0 };
+        const ctx = { console: { log: noop, warn: noop }, toastr: {}, Date, Math, menuShown: 0, menuHidden: 0 };
         ctx.window = ctx;
         vm.createContext(ctx);
         vm.runInContext(v4.slice(a, b), ctx);
-        vm.runInContext('window.Unit = class Unit { constructor(n) { this.number = n; this.player = true; this.active = true; this.cells = 0; this.openSecond = false; }\n' +
-            'getOwnPlayerCells() { return new Array(this.cells); }\ncalculatePlayerMassAndPosition() { }\n' + term + '\n' + before + '\n}\n' +
-            'var application = window.application = { showMenu() { window.menuShown++; } };\n' +
-            'var legendmod = window.legendmod = { play: ' + mainAlive + ' }, LM = legendmod;', ctx);
+        vm.runInContext('window.Unit = class Unit { constructor(n) { this.number = n; this.player = true; this.active = true; this.cells = []; this.openSecond = false; this.playerScore = 0; }\n' +
+            'getOwnPlayerCells() { return this.cells.slice(); }\n' + term + '\n' + before + '\n' + calc + '\n' + recalc + '\n}\n' +
+            'var application = window.application = { showMenu() { window.menuShown++; }, hideMenu() { window.menuHidden++; } };\n' +
+            'var defaultmapsettings = window.defaultmapsettings = { showStatsSTE: true, dominationRate: 4 / 3, dominatedRate: 3 / 4 };\n' +
+            'var legendmod = window.legendmod = { play: ' + mainAlive + ', selectBiggestCell: false }, LM = legendmod;', ctx);
         const u = new ctx.Unit(1);
+        const cells = (size, n) => Array.from({ length: n }, () => ({ size: size, targetSize: size, x: 0, y: 0 }));
         ctx.spects.length = 0; ctx.spects.push(u);
         ctx.multiboxPlayerEnabled = null;
-        u.cells = 3; u.beforecalculation();          /* first life: focus */
-        const first = +ctx.multiboxPlayerEnabled || 0;
-        u.cells = 0; u.terminate();                  /* dies */
-        const dead = +ctx.multiboxPlayerEnabled || 0;
-        u.active = true; u.cells = 3; u.beforecalculation();  /* background auto-respawn, same socket */
-        return [first, dead, +ctx.multiboxPlayerEnabled || 0].join(',');
+        u.cells = cells(300, 3); u.beforecalculation();          /* first life: focus, 2700 mass */
+        const first = +ctx.multiboxPlayerEnabled || 0, score1 = u.playerScore;
+        u.cells = []; u.terminate();                             /* dies */
+        const dead = +ctx.multiboxPlayerEnabled || 0, menuAtDeath = ctx.menuShown;
+        const stats = [u.playerScore, u.playerMass, u.playerSize, u.playerMinMass, u.playerMaxMass, u.playerSplitCells, u.STE, u.MTE, u.BMTE, u.BSTE, u.TTE, u.PTE];
+        const hiddenBefore = ctx.menuHidden;
+        u.active = true; u.cells = cells(40, 1); u.beforecalculation();  /* background auto-respawn, same socket: 16 mass */
+        return {
+            focus: [first, dead, +ctx.multiboxPlayerEnabled || 0].join(','), score1: score1, stats: stats.join(','), score2: u.playerScore,
+            menu: [menuAtDeath, hiddenBefore, ctx.menuHidden].join(',')
+        };
     };
-    check('main dead: a unit that respawns on its socket takes the focus again (mouse and keys went to the dead main)', life(false) === '1,0,1', life(false));
-    check('main alive: a background respawn of the unit does not take the focus', life(true) === '1,0,0', life(true));
+    const dead = life(false), alive = life(true);
+    check('main dead: a unit that respawns on its socket takes the focus again (mouse and keys went to the dead main)', dead.focus === '1,0,1', dead.focus);
+    check('main alive: a background respawn of the unit does not take the focus', alive.focus === '1,0,0', alive.focus);
+    check('a unit that dies: score, mass, sizes, cell count and split / eat numbers are 0 (kept the dead life\'s)',
+        dead.score1 === 2700 && dead.stats === '0,0,0,0,0,0,0,0,0,0,0,0', dead.score1 + ' / ' + dead.stats);
+    check('the next life shows only its own score (showed the best score of every life)', dead.score2 === 16 && alive.score2 === 16, dead.score2 + ',' + alive.score2);
+    check('main dead: the death menu shown when the last unit died is hidden when the unit respawns and takes the focus',
+        dead.menu === '1,1,2', 'shown at death, hidden before, hidden after the respawn = ' + dead.menu);
+    check('main alive: a background respawn does not touch the menu', alive.menu === '0,0,0', alive.menu);
+}
+
+/* 5. the whole ogario/spect.js: the unit's split / eat numbers against the main player's
+ * recalculatePlayerMass, and the opcode 87 (reCAPTCHA v3) answer after a reconnect */
+{
+    const rec = block(v4, '        recalculatePlayerMass() {');
+    if (!rec) { console.log('FAIL recalculatePlayerMass not found'); process.exit(1); }
+    const ctx = {
+        console: { log: noop, warn: noop, error: noop }, Date, Math, JSON, Object, Array, Map, Set, Number, String, Boolean, Infinity, NaN, isFinite,
+        setInterval: () => 1, clearInterval: noop, setTimeout: () => 1, clearTimeout: noop, toastr: { warning: noop, error: noop },
+        WebSocket: { CONNECTING: 0, OPEN: 1 }
+    };
+    ctx.window = ctx;
+    vm.createContext(ctx);
+    vm.runInContext(v4.slice(a, b), ctx);
+    vm.runInContext('var legendmod = window.legendmod = { play: false, multiBoxPlayerExists: true, playerCellsMulti: [], cells: [], foodMulti: [], viruses: [], indexedCells: {}, removedCells: [], selectBiggestCell: false };\n' +
+        'var defaultmapsettings = window.defaultmapsettings = { dominationRate: 4 / 3, dominatedRate: 3 / 4, showStatsSTE: true };\n' +
+        'var application = window.application = { showMenu() { }, hideMenu() { }, mbSlots: [0, 1], selectedOldProfile: 0 };\n' +
+        'var profiles = [];\nfunction lmUnitCellId(id, n) { return id + n * 4294967296; }\n' + sp + '\nwindow.Spect = Spect;', ctx);
+    const u = Object.create(ctx.Spect.prototype);
+    u.number = 1; u.player = true; u.socket = null; u.connectionGeneration = 1; u.integrity = true;
+    u.resetConnectionState();
+    ctx.spects.push(u);
+    const diffs = [];
+    for (const mass of [100, 1000, 7777, 22500]) {
+        const size = Math.sqrt(mass * 100);
+        u.active = true; u.playerScore = 0;
+        u.calculatePlayerMassAndPosition([{ size: size, targetSize: size, x: 0, y: 0, spectator: 1, removed: false }]);
+        const m = vm.runInContext('(function(){ var o = { playerScore: 0, playerMass: ' + mass + ', _playerMinSize: ' + size + ', _playerMaxSize: ' + size + ', selectBiggestCell: false, playerCells: [1],\n' +
+            rec.trim().replace(/^recalculatePlayerMass\(\)/, 'recalc: function ()') + '}; window.multiboxPlayerEnabled = null; o.recalc(); return o; })()', ctx);
+        for (const k of ['STE', 'MTE', 'BMTE', 'BSTE', 'TTE', 'PTE']) if (u[k] !== m[k]) diffs.push(mass + ' ' + k + ' unit ' + u[k] + ' main ' + m[k]);
+    }
+    check('the unit\'s split / eat numbers equal the main player\'s for the same mass (STE, MTE used other rates)', !diffs.length, diffs.join('; '));
+
+    /* opcode 87: the token answers the socket that asked, never a newer one */
+    const sent = [];
+    let answer = null;
+    ctx.agarCaptcha = { requestCaptchaV3(action, cb) { answer = cb; } };
+    u.sendMessage = () => sent.push(u.socket);
+    const ask = () => { const v = new DataView(new ArrayBuffer(1)); v.setUint8(0, 87); u.handleMessage(v); };
+    const s1 = { id: 1 }, s2 = { id: 2 };
+    u.socket = s1; u.connectionGeneration = 5; ask(); answer('tok');
+    const same = sent.length === 1 && sent[0] === s1;
+    sent.length = 0;
+    u.socket = s1; u.connectionGeneration = 5; ask();
+    u.socket = s2; u.connectionGeneration = 6;            /* dropped and reconnected before reCAPTCHA answered */
+    answer('tok');
+    check('opcode 87: the token goes to the socket that asked', same, sent.length + ' sent');
+    check('opcode 87: after a reconnect the late token is not sent on the new socket', sent.length === 0, sent.length + ' sent');
 }
 
 console.log(failed ? failed + ' failed' : 'all multibox death checks passed');
