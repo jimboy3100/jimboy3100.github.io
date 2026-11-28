@@ -131,7 +131,7 @@
             styleEl.textContent = 'html.lm-dl #minimap-sectors{background-image:url("' + MINIMAP_URL + '");background-size:cover;background-position:center;}' +
                 /* the Game Over card in the theme's colours (its own inline colours need
                  * !important); the stat values keep their colours, the buttons and the layout stay */
-                'html.lm-dl-go #lm-gameover-modal .lm-go-card{background:#090c0d!important;border-color:#171d20!important;border-top-color:#a12b30!important;' +
+                'html.lm-dl-go #lm-gameover-modal .lm-go-card{background:#090c0d!important;border-color:#171d20!important;border-top-color:#a12b30!important;' + /* i18n-ok: CSS */
                 'box-shadow:0 8px 32px rgba(0,0,0,.75),inset 0 0 48px rgba(161,43,48,.14)!important;}' +
                 'html.lm-dl-go #lm-gameover-modal .lm-go-card>div:first-child{background:linear-gradient(180deg,#171d20 0%,#090c0d 100%)!important;border-bottom-color:#3b1215!important;}' +
                 'html.lm-dl-go #lm-gameover-modal .lm-go-card>div:first-child>div:last-child{color:#c4383d!important;text-shadow:0 0 8px rgba(161,43,48,.5);}' +
