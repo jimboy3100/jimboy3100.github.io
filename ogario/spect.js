@@ -447,11 +447,21 @@ window.lmPlayerViewScale = lmPlayerViewScale;
  * (the earlier centred 3 x 5 cut gave seams 357 / 143 and spent 178 / 72 past each map edge).
  */
 var LM_FULLMAP_EDGE = 8, LM_FULLMAP_MIN_SEAM = 64, LM_FULLMAP_MAX = 15;
-/* a tile camera within 16 of its target has arrived (live: they settle within 0.5); a target is
+/* a tile camera within 4 of its target has arrived (live: they settle within 0.5). At most half
+ * LM_FULLMAP_EDGE, so an arrived corner tile still reaches 4 past the map edge: with 16 a corner
+ * camera 16 inward counted as arrived and left 8 x 8 of the map edge unseen. One threshold for
+ * the box label and the sender's cadence below. A target is
  * sent at once when it changes, then every 500 ms while the camera glides there (it keeps
  * moving to the last target sent) and once a second once it has arrived: 2 packets a second
  * per spectator at most (it was 20 while gliding, 300 a second for 15 spectators) */
-var LM_TILE_SETTLED = 16, LM_TILE_MOVING_MS = 500, LM_TILE_REFRESH_MS = 1000;
+var LM_TILE_SETTLED = 4, LM_TILE_MOVING_MS = 500, LM_TILE_REFRESH_MS = 1000;
+/* A spectator's server view counts (coverage, "arrived", the drawn box) only while it is fresh:
+ * its camera (opcode 17, sent with every update of a spectating connection) at most
+ * LM_CAM_FRESH_MS old and its world (opcode 16) at most LM_TILE_STALE_MS. A camera from a minute
+ * ago still counted as the tile's view and hid the ghost cells inside it. */
+var LM_CAM_FRESH_MS = 1000, LM_TILE_STALE_MS = 3000;
+/* a tile target waits this long after the border for the orientation (Spect._lmTileRaw) */
+var LM_TILE_UNVERIFIED_MS = 5000;
 /* tiles on one axis: the fewest views of length view covering map + 2 * edge with seams >= seam */
 function lmFullMapAxis(map, view, seam) {
     var span = map + 2 * LM_FULLMAP_EDGE;
@@ -482,35 +492,63 @@ function lmFullMapPlan(mapW, mapH, viewW, viewH, budget) {
 }
 window.lmFullMapPlan = lmFullMapPlan;
 
-/*
- * Planned from the validated map border only (the main connection's mapOffsetFixed): with a
- * provisional one nothing opens yet, and LM.addSpect, which runs on every border packet, tries
- * again. It used a fixed 2400 / 1000 start, 1024 x 600 x 4.95 steps that only touched (no overlap)
- * and left the grid off centre, from the main connection's raw border.
- */
-function addFullSpectator() {
-    var LM = legendmod;
-    if (!LM.integrity) {
-        toastr.error(lmT('game2.spPrivateNoFull'))
-        window.fullSpectator = false
-        return
-    }
-    /* tiles are world coordinates (lmRawToWorld): the full agar.io map is LM_WORLD_SIZE wide and
-     * high in them, whatever the main connection's own scale (its border is 14073..14211 wide) */
-    var mapW = LM_WORLD_SIZE, mapH = LM_WORLD_SIZE;
-    if (!LM.mapOffsetFixed) return;
+/* The Full Map plan (null: the map needs more than LM_FULLMAP_MAX views). Tiles are world
+ * coordinates (lmRawToWorld): the full agar.io map is LM_WORLD_SIZE wide and high in them,
+ * whatever the main connection's own scale (its border is 14073..14211 wide), so the plan never
+ * changes and is made once (LM.addSpect asks for it on every border packet). */
+function lmFullMapTilePlan() {
+    if (window.lmFullMapLastPlan) return window.lmFullMapLastPlan;
     var view = lmServerViewSize(LM_SPECT_FREE_SCALE);
-    var plan = lmFullMapPlan(mapW, mapH, view[0], view[1], LM_FULLMAP_MAX);
-    if (!plan) {
-        toastr.error(lmT('game2.spPrivateNoFull'))
-        window.fullSpectator = false
-        return
-    }
-    window.lmFullMapLastPlan = plan;
-    for (var i = 0; i < plan.tiles.length; i++) {
-        spects.push(new Spect({ staticX: plan.tiles[i].x, staticY: plan.tiles[i].y, tile: plan.tiles[i].index }));
-    }
+    var plan = lmFullMapPlan(LM_WORLD_SIZE, LM_WORLD_SIZE, view[0], view[1], LM_FULLMAP_MAX);
+    if (plan) window.lmFullMapLastPlan = plan;
+    return plan;
 }
+
+/*
+ * Opens Full Map tile `index` of the plan: one free spectator held on that tile. Which tiles open,
+ * and when, is decided by LM._lmSpecReconcile (ogario.v4.js): only from the validated main border
+ * (mapOffsetFixed), only the planned tiles that have no spectator yet. It used a fixed 2400 / 1000
+ * start, 1024 x 600 x 4.95 steps that only touched (no overlap) and left the grid off centre.
+ */
+function addFullSpectator(index) {
+    var plan = lmFullMapTilePlan(), t = plan && plan.tiles[index];
+    if (!t) return null;
+    var spect = new Spect({ staticX: t.x, staticY: t.y, tile: t.index });
+    spects.push(spect);
+    return spect;
+}
+
+/* Full Map state per tile, for the console: lmFullMapHealth() counts the tiles per state
+ * (Spect._lmTileStateNow) and lists them; perTile ages are ms (-1: none yet). */
+window.lmFullMapHealth = function () {
+    var plan = window.lmSpecMode === 'full' ? lmFullMapTilePlan() : null, now = Date.now();
+    var h = { planned: plan ? plan.tiles.length : 0, live: 0, moving: 0, calibrating: 0, stalled: 0, connecting: 0, failed: 0, refused: 0, captcha: 0, perTile: [] };
+    var list = window.spects || [];
+    for (var i = 0; i < list.length; i++) {
+        var s = list[i];
+        if (!s || s.player || s.tile == null || typeof s._lmTileStateNow !== 'function') continue;
+        var st = s._lmTileStateNow(now), w = s._lmWorldStamp();
+        h[st]++;
+        h.perTile.push({ tile: s.tile, number: s.number, state: st, reason: s._lmTileReason || '',
+            camAge: s._lmCamAt > 0 ? now - s._lmCamAt : -1, worldAge: w > 0 ? now - w : -1 });
+    }
+    h.perTile.sort(function (a, b) { return a.tile - b.tile; });
+    return h;
+};
+/* Reconnects the Full Map tiles that gave up (8 failed reconnects), on the same spectator
+ * objects: no new tile, no second socket. Refused (114) and captcha (85) tiles wait for Full Map
+ * off / on. Returns how many were restarted. */
+window.lmFullMapRetry = function () {
+    var list = window.spects || [], n = 0;
+    for (var i = 0; i < list.length; i++) {
+        var s = list[i];
+        if (!s || s.player || s.tile == null || s._lmTileState !== 'failed' || s.socket) continue;
+        s._reconnectAttempts = 0;
+        s.connect();
+        n++;
+    }
+    return n;
+};
 
 if (!window.spects) window.spects = [];
 spects = window.spects;
@@ -539,6 +577,10 @@ class Spect {
         this.fixX = 1
         this.fixY = 1
         this.closedByUser = false
+        /* spectator state (_lmTileStateNow): failed / refused / captcha are kept here, with
+         * the reason, by the code that stopped the connection; the others are read live */
+        this._lmTileState = 'connecting'
+        this._lmTileReason = ''
         if (!legendmod.playerCellsMulti) legendmod.playerCellsMulti = []
         this.integrity = null;
         this.resetConnectionState();
@@ -588,6 +630,7 @@ class Spect {
         this.mapOffsetX = 0
         this.mapOffsetY = 0
         this.mapOffsetFixed = false
+        this._lmPendingBorder = null
         this.ghostFixed = false
         this.active = null
         this.targetX = null
@@ -595,6 +638,9 @@ class Spect {
         this._lmCamAt = 0
         /* a new socket starts with no run of bad world updates (the totals stay) */
         this._lmBadRun = 0
+        /* the last world packet (_lmWorldStamp) was the old socket's */
+        this.time = 0
+        if (this._lmWorldAt !== undefined) this._lmWorldAt = 0
         this.playerCellIDs = []
         this.playerScore = 0
         this.fix3x = 0
@@ -643,6 +689,7 @@ class Spect {
     connect() {
         this.resetConnectionState()
         this.closedByUser = false
+        if (!this.player) { this._lmTileState = 'connecting'; this._lmTileReason = ''; }
         this.timeStarted = Date.now()
         this.ws = legendmod.ws
         /* A second connect() (Tab on a unit that is still connecting) left the old socket
@@ -777,6 +824,9 @@ class Spect {
             this._reconnectAttempts = (this._reconnectAttempts || 0) + 1;
             if (this._reconnectAttempts > 8) {
                 console.warn('[SPECT] Unit ' + this.number + ' gave up reconnecting after 8 attempts');
+                /* a spectator stays in spects and holds its slot (a Full Map tile is not opened
+                 * again by LM.addSpect); window.lmFullMapRetry reconnects it */
+                if (!this.player) { this._lmTileState = 'failed'; this._lmTileReason = 'gave up after 8 reconnects'; }
                 return;
             }
             var reconnectDelay = Math.min(30000, 1000 * Math.pow(2, this._reconnectAttempts - 1));
@@ -1127,9 +1177,9 @@ class Spect {
 
     /* Show viewports: this connection's server view around its server camera, drawn where its
      * cells are drawn. out: an array to fill instead of a new one (the ghost cells' coverage,
-     * every frame) */
-    _lmServerViewDisplay(out) {
-        return this._lmWorldRectDisplay(this._lmServerViewWorld(_lmSvWorld), out);
+     * every frame); anyAge: also from a camera that is not fresh (_lmServerViewWorld) */
+    _lmServerViewDisplay(out, anyAge) {
+        return this._lmWorldRectDisplay(this._lmServerViewWorld(_lmSvWorld, anyAge), out);
     }
 
     /* The tile centre in the main connection's display space (world -> main frame with its
@@ -1144,28 +1194,85 @@ class Spect {
     }
 
     /* The tile centre in this connection's raw frame (what opcode 16 carries); null until this
-     * connection's border is fixed too. */
-    _lmTileRaw() {
+     * connection's border is fixed too, and until its orientation is verified or
+     * LM_TILE_UNVERIFIED_MS after its border (sent with the PROVISIONAL "not mirrored" guess, a
+     * mirrored connection flew to the mirror tile first; the timed fallback still sends it so
+     * food-only verification can happen). */
+    _lmTileRaw(now) {
         if (!this.mapOffsetFixed || this.staticX == null || this.staticY == null || !legendmod || !legendmod.mapOffsetFixed) return null;
+        if (!this._lmFeedOk() && !((now || Date.now()) - (this._lmOffsetFixedAt || 0) >= LM_TILE_UNVERIFIED_MS)) return null;
         /* canonical world -> this connection's raw (scale, mirror and offset; Rotate Map is
          * display only, so it does not move the tile) */
         var x = Math.round(this.worldToRawX(this.staticX)), y = Math.round(this.worldToRawY(this.staticY));
         return (Number.isFinite(x) && Number.isFinite(y)) ? [x, y] : null;
     }
 
-    /* is the server camera (opcode 17) on the tile (raw target, default the current one)? */
-    _lmTileArrived(raw) {
-        raw = raw || this._lmTileRaw();
-        return !!(raw && this._lmCamAt && Number.isFinite(this.viewX) && Number.isFinite(this.viewY) &&
+    /* is the server camera (opcode 17) on the tile (raw target, default the current one)? Only a
+     * fresh camera: an old one is where the camera was, not where it is. */
+    _lmTileArrived(raw, now) {
+        raw = raw || this._lmTileRaw(now);
+        return !!(raw && this._lmCamFresh(now) && Number.isFinite(this.viewX) && Number.isFinite(this.viewY) &&
             Math.abs(this.viewX - raw[0]) <= LM_TILE_SETTLED && Math.abs(this.viewY - raw[1]) <= LM_TILE_SETTLED);
+    }
+
+    /* the server camera (opcode 17) is at most LM_CAM_FRESH_MS old */
+    _lmCamFresh(now) {
+        return this._lmCamAt > 0 && (now || Date.now()) - this._lmCamAt <= LM_CAM_FRESH_MS;
+    }
+
+    /* time of the last world packet: _lmWorldAt (a parsed update), or the time updateCells
+     * started (this.time) where _lmWorldAt is not kept */
+    _lmWorldStamp() {
+        return (this._lmWorldAt !== undefined ? this._lmWorldAt : this.time) || 0;
+    }
+
+    /* socket open, camera fresh and a world packet within LM_TILE_STALE_MS */
+    _lmFresh(now) {
+        now = now || Date.now();
+        var w = this._lmWorldStamp();
+        return this.isSocketOpen() && this._lmCamFresh(now) && w > 0 && now - w <= LM_TILE_STALE_MS;
+    }
+
+    /* May this connection's server view stand for what is there (ghost cells, the settled
+     * viewport box)? Fresh (_lmFresh) and its transform verified (_lmFeedOk). */
+    _lmCoverageOk(now) {
+        return this._lmFresh(now) && this._lmFeedOk();
+    }
+
+    /* A spectator's state: failed / refused / captcha as stored (the connection was stopped);
+     * otherwise connecting (no open socket, or open without a fresh view for less than
+     * LM_TILE_STALE_MS), stalled (open, no fresh view after that), calibrating (orientation not
+     * verified), moving (a Full Map tile on its way) or live. */
+    _lmTileStateNow(now) {
+        var st = this._lmTileState;
+        if (st === 'failed' || st === 'refused' || st === 'captcha') return st;
+        now = now || Date.now();
+        if (!this.isSocketOpen()) st = 'connecting';
+        else if (!this._lmFresh(now)) st = this._openedAt && now - this._openedAt > LM_TILE_STALE_MS ? 'stalled' : 'connecting';
+        else if (!this._lmFeedOk()) st = 'calibrating';
+        else if (this.tile != null && !this._lmTileArrived(null, now)) st = 'moving';
+        else st = 'live';
+        this._lmTileState = st;
+        return st;
+    }
+
+    /* A spectator the server will not serve (114 spectate mode full, 85 captcha): closed without
+     * a reconnect but kept in spects with its state, so its Full Map slot is not opened again
+     * until Full Map goes off and on. One toast per grid: the first tile stopped for this reason. */
+    _lmSpectStop(state, reason, text) {
+        var first = !spects.some(function (s) { return s && s !== this && !s.player && s._lmTileState === state; }, this);
+        this.closeConnection();
+        this._lmTileState = state;
+        this._lmTileReason = reason;
+        if (first) toastr.warning("<b>[" + Premadeletter123 + "]:</b> " + lmT(text));
     }
 
     _lmTileTick(now) {
         now = now || Date.now();
-        var raw = this._lmTileRaw();
+        var raw = this._lmTileRaw(now);
         if (!raw) return;
         var changed = raw[0] !== this._lmTileSentX || raw[1] !== this._lmTileSentY;
-        var settled = !changed && this._lmCamAt > this._lmTileSentAt && this._lmTileArrived(raw);
+        var settled = !changed && this._lmCamAt > this._lmTileSentAt && this._lmTileArrived(raw, now);
         if (!changed && now - this._lmTileSentAt < (settled ? LM_TILE_REFRESH_MS : LM_TILE_MOVING_MS)) return;
         if (this.sendPosition(raw[0], raw[1])) {
             this._lmTileSentAt = now;
@@ -1582,7 +1689,23 @@ class Spect {
                 break;
             case 18:
                 /* No key rotation on 18 (same as the main client since PROTO-3 and Delta). */
-                this.flushCellsData();
+                if (this.player) this.flushCellsData();
+                else {
+                    /* A spectator is still (free) spectating on the server: only its entities go.
+                     * Its flags were cleared (the in-game spectator's cursor then stopped following
+                     * while the server stayed in free spectate), and its old camera and world kept
+                     * counting as coverage. Coverage waits for a new camera and world, and the
+                     * tile target goes out again at the next tick. */
+                    var spOn = this.isSpectateEnabled, freeOn = this.isFreeSpectate;
+                    this.flushCellsData();
+                    this.isSpectateEnabled = spOn;
+                    this.isFreeSpectate = freeOn;
+                    this._lmCamAt = 0;
+                    this.time = 0;
+                    if (this._lmWorldAt !== undefined) this._lmWorldAt = 0;
+                    this._lmTileSentAt = 0;
+                    this._lmTileSentX = this._lmTileSentY = NaN;
+                }
                 console.log('[SPECT] case 18');
 
                 break;
@@ -1715,8 +1838,15 @@ class Spect {
                 break;
 
             case 85:
-                toastr.warning("<b>[" + Premadeletter123 + "]:</b> " + lmT('game2.spCaptchaClosed'));
                 console.log('[SPECT] case 85');
+                /* A spectator: no unit died and nothing to spawn, so no terminate / menu. It was
+                 * removed from spects, and LM.addSpect then opened its Full Map tile again (and
+                 * met the captcha again) on the next border packet. */
+                if (!this.player) {
+                    this._lmSpectStop('captcha', 'captcha requested (opcode 85)', 'pkg.fmg4w.spCaptcha');
+                    break;
+                }
+                toastr.warning("<b>[" + Premadeletter123 + "]:</b> " + lmT('game2.spCaptchaClosed'));
                 this.terminate()
                 /* The v2 captcha is not answered on this socket, so really close the
                  * unit: left connected it stayed in multibox switching and every
@@ -1780,6 +1910,9 @@ class Spect {
             case 114:
                 console.error('[Agario] Spectate mode is full')
                 console.log('[SPECT] case 114');
+                /* the server takes no more spectators: the socket stayed open (and counted
+                 * toward the per-IP limit) with a tile sender that reached nobody */
+                if (!this.player) this._lmSpectStop('refused', 'spectate mode is full (opcode 114)', 'pkg.fmg4w.spRefused');
 
                 break;
             case 160:
@@ -2341,10 +2474,12 @@ class Spect {
      * This connection's server view in world coordinates: its camera (opcode 17, raw) and
      * the measured view for its scale (lmServerViewSize): where a pellet's centre is seen (a
      * bigger cell is sent while its circle reaches into it, isOutsideServerView). null until
-     * the border and a camera are known.
+     * the border and a camera are known, and while the camera is not fresh (_lmCamFresh) unless
+     * anyAge (Show viewports draws an old one as "stale").
      */
-    _lmServerViewWorld(out) {
+    _lmServerViewWorld(out, anyAge) {
         if (!this.mapOffsetFixed || !this._lmCamAt || !Number.isFinite(this.viewX) || !Number.isFinite(this.viewY)) return null;
+        if (!anyAge && !this._lmCamFresh()) return null;
         var v = lmServerViewSize(this.scale, _lmSvSize);
         var x = this.rawToWorldX(this.viewX), y = this.rawToWorldY(this.viewY);
         if (!Number.isFinite(x) || !Number.isFinite(y)) return null;
@@ -2381,13 +2516,25 @@ class Spect {
      * fixes the offset for this connection.
      */
     setMapOffset(left, top, right, bottom) {
-        var pWidth = Math.abs(right - left);
-        var pHeight = Math.abs(bottom - top);
-        if (!Number.isFinite(pWidth) || !Number.isFinite(pHeight) || !pWidth || !pHeight) return;
+        /* four finite numbers with max at least 1 above min on both axes, as the main client's
+         * _lmBorderValid: Math.abs took a reversed border (min > max) and fixed a frame from it */
+        if (!(Number.isFinite(left) && Number.isFinite(top) && Number.isFinite(right) && Number.isFinite(bottom) &&
+            right - left >= 1 && bottom - top >= 1)) return;
+        var pWidth = right - left;
+        var pHeight = bottom - top;
         if (this.mapOffsetFixed) return;
         var fullMap = pWidth > 14000 && pHeight > 14000;
         var official = this.integrity && !legendmod.isLegendWorld && legendmod.serverType !== 'deltio';
         if (official && !fullMap) return;
+        /* main border not known yet (server switch: the main waits for its old socket while this
+         * one is already in): the frame would be taken from the main's fallback centre and scale,
+         * and nothing moved its cells when the real one came (thousands of units off for their
+         * life). Kept until the main border is fixed: LM.addSpect applies it. */
+        if (official && !legendmod.mapOffsetFixed) {
+            this._lmPendingBorder = [left, top, right, bottom];
+            return;
+        }
+        this._lmPendingBorder = null;
 
         if (legendmod.isLegendWorld) {
             /* Expanding Land: no per-connection offset and its own map convention:
@@ -2432,8 +2579,12 @@ class Spect {
             this.mapMaxY = bottom;
         }
 
-        this.viewX = (right + left) / 2;
-        this.viewY = (bottom + top) / 2;
+        /* the map centre is only a start: a camera (opcode 17) that came before the border is
+         * kept (replaced by the centre, it put the view and "arrived" thousands of units off) */
+        if (!this._lmCamAt) {
+            this.viewX = (right + left) / 2;
+            this.viewY = (bottom + top) / 2;
+        }
         var placedBefore = this._lmXf(); /* identity: cells that came before the border */
         this.mapOffsetFixed = true;
         if (typeof lmFoodRefInvalidate === 'function') lmFoodRefInvalidate();

@@ -17,7 +17,8 @@
  * connection's transform; "Keep moving" keeps the world direction across a reconnect on a mirrored socket;
  * the calibration evidence (section 11: one entity per pellet, second
  * clusters, d only from verified d, liveness in the cached reference, per-transform snaps, the
- * whole anchor ring).
+ * whole anchor ring); a reversed / NaN border is refused, a camera before the border kept, a unit
+ * border before the main one waits for it (applied by LM.addSpect), a tile target waits for the orientation.
  * node developers/tests/spectcoords.js [spect.js] */
 'use strict';
 const fs = require('fs'), path = require('path'), vm = require('vm');
@@ -604,6 +605,72 @@ for (const [d, vnr] of [[0, 0], [3, 2]]) {
         const t0 = T();
         for (let k = 1; k <= 4; k++) sp._lmCalibrate(t0 + k * 3100);
         check('11i a wrong-d neighbour (40 shared pellets) neither verifies nor moves d (fix3 ' + sp.fix3x + ', ' + sp.fix3y + ')', !sp.foodCalibrated && sp.fix3x === 0 && sp.fix3y === 0);
+    }
+}
+
+/* 12. border check and camera: a reversed, NaN or empty border is not taken (as the main client's
+ *     _lmBorderValid; Math.abs took a reversed one), a camera that came before the border is kept
+ *     (it was replaced by the map centre), a unit border before the main one waits for it (it was
+ *     fixed from the main fallback frame and its cells stayed thousands of units off), and a Full
+ *     Map tile target waits for the orientation (a mirrored PROVISIONAL tile flew to the mirror tile) */
+{
+    const core = fs.readFileSync(path.join(__dirname, '..', '..', 'ogario', 'ogario.v4.js'), 'utf8').replace(/\r\n/g, '\n');
+    const cut = (text, start) => { const i = text.indexOf(start); if (i < 0) return null; let d = 0; for (let k = text.indexOf('{', i); k < text.length; k++) { if (text[k] === '{') d++; else if (text[k] === '}' && !--d) return text.slice(i, k + 1); } return null; };
+    const bare = (ctx, n, extra) => { const sp = Object.create(ctx.window.Spect.prototype); Object.assign(sp, { number: n, player: false, integrity: true, connectionGeneration: 1, staticX: null, staticY: null }, extra || {}); sp.resetConnectionState(); ctx.window.spects.push(sp); return sp; };
+    const op17 = (x, y, sc) => { const v = new DataView(new ArrayBuffer(13)); v.setUint8(0, 17); v.setFloat32(1, x, true); v.setFloat32(5, y, true); v.setFloat32(9, sc, true); return v; };
+    {
+        const LM = mainClient(-7071.067811865476, -7071.067811865476), ctx = load(LM);
+        const sp = bare(ctx, 4);
+        sp.setMapOffset(100 + W / 2, 200 + W / 2, 100 - W / 2, 200 - W / 2);
+        check('a reversed border (min > max) is not taken', !sp.mapOffsetFixed);
+        sp.setMapOffset(NaN, 0, W, W); sp.setMapOffset(0, -Infinity, W, W); sp.setMapOffset(0, 0, 0.5, W);
+        check('a NaN, infinite or empty border is not taken', !sp.mapOffsetFixed);
+        sp.setMapOffset(100 - W / 2, 200 - W / 2, 100 + W / 2, 200 + W / 2);
+        check('the ordered full border is taken', sp.mapOffsetFixed && sp.mapMinX < sp.mapMaxX && near(sp.mapOffsetX, -100));
+        const c = bare(ctx, 5);
+        c.handleMessage(op17(3100, -1300, 0.4));
+        c.setMapOffset(100 - W / 2, 200 - W / 2, 100 + W / 2, 200 + W / 2);
+        const v = c._lmServerViewWorld();
+        check('camera before the border: kept (not the map centre), the view around it', c.viewX === 3100 && c.viewY === -1300 && v && near((v[0] + v[2]) / 2, c.rawToWorldX(3100), 1e-3),
+            [c.viewX, c.viewY, v && (v[0] + v[2]) / 2]);
+        c.staticX = 0; c.staticY = 0;
+        check('  ... so a tile at the map centre is not "arrived" 3354 units away', !c._lmTileArrived());
+        const n = bare(ctx, 6);
+        n.setMapOffset(100 - W / 2, 200 - W / 2, 100 + W / 2, 200 + W / 2);
+        check('no camera yet: the map centre is the start', n.viewX === 100 && n.viewY === 200);
+    }
+    {
+        /* main connected, no border yet (connection flush: centre -7071, no _lmBorder*) */
+        const LM = mainClient(-7324.6, -6192.66, 14189.596, 14102.0957);
+        const real = { _lmBorderCX: LM._lmBorderCX, _lmBorderCY: LM._lmBorderCY, _lmBorderKX: LM._lmBorderKX, _lmBorderKY: LM._lmBorderKY, mapOffsetX: LM.mapOffsetX, mapOffsetY: LM.mapOffsetY,
+            mapMinX: LM.mapMinX, mapMaxX: LM.mapMaxX, mapMinY: LM.mapMinY, mapMaxY: LM.mapMaxY, mapOffsetFixed: true };
+        Object.assign(LM, { _lmBorderCX: null, _lmBorderCY: null, _lmBorderKX: null, _lmBorderKY: null, mapOffsetX: -7071, mapOffsetY: -7071, mapMinX: 0, mapMinY: 0, mapMaxX: 14142, mapMaxY: 14142, mapOffsetFixed: false });
+        const ctx = load(LM);
+        const sp = unitB(ctx, [-7508.71, -6418.95, 6589.78, 7677.44], { number: 1, player: true });
+        check('unit border before the main one: kept pending, the unit frame not fixed yet', !sp.mapOffsetFixed && !!sp._lmPendingBorder);
+        sp.time = Date.now();
+        sp.updateCells(packet([{ id: 1, x: 1000, y: 2000, size: 10, food: true }, { id: 2, x: -500, y: 300, size: 80 }]), 0);
+        const food = LM.indexedCells[1 + STEP], body = LM.indexedCells[2 + STEP];
+        /* the main border arrives: LM.setMapOffset ends with addSpect, which applies the pending border */
+        Object.assign(LM, real);
+        ctx.$ = () => ({ val: () => '', show() { return this; }, hide() { return this; } });
+        const m = vm.runInContext('({' + cut(core, '        addSpect() {') + '})', ctx);
+        m.addSpect.call(LM);
+        check('main border fixed: the pending unit border is applied', sp.mapOffsetFixed && !sp._lmPendingBorder);
+        check('  ... the pellet and the cell that came before it are where the unit frame puts them', !!food && !!body && near(food.targetX, sp.getX(1000), 1e-6) && near(food.targetY, sp.getY(2000), 1e-6) &&
+            near(body.targetX, sp.getX(-500), 1e-6), food && [food.targetX - sp.getX(1000), food.targetY - sp.getY(2000)].map((x) => x.toFixed(1)).join());
+    }
+    {
+        const LM = mainClient(-7071.067811865476, -7071.067811865476), ctx = load(LM);
+        const cx = 812.5, cy = -433.25;
+        const t = bare(ctx, 7, { staticX: -4714, staticY: 5656.8 });
+        t.setMapOffset(cx - W / 2, cy - W / 2, cx + W / 2, cy + W / 2);
+        check('Full Map tile, orientation PROVISIONAL: no target yet (it went to the unmirrored guess)', t._lmOri === 'PROVISIONAL' && t._lmTileRaw() === null && t._lmTileRaw(t._lmOffsetFixedAt + 4900) === null);
+        const late = t._lmTileRaw(t._lmOffsetFixedAt + 5000);
+        check('  ... 5 s after the border without a verdict: the guess is sent (food-only verification needs a view)', !!late && near(late[0], Math.round(cx - 4714), 1));
+        t.setOrientation(-1, 1);
+        const raw = t._lmTileRaw();
+        check('  ... VERIFIED mirrored on x: the mirrored raw target', !!raw && raw[0] === Math.round(t.worldToRawX(-4714)) && near(raw[0], cx + 4714, 1) && near(raw[1], cy + 5656.8, 1), raw);
     }
 }
 

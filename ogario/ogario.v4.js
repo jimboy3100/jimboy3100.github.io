@@ -23981,23 +23981,13 @@ function thelegendmodproject() {
                 $('#minimap-hud').hide();
             }
         },
+        /* hotkeys hk-showSpectator / hk-showIngameSpectator; the top bar buttons are
+         * setFullSpectator / setIngameSpectator: the same modes (LM._lmSpecSetMode) */
         setShowFullSpectator() {
-            if (window.fullSpectator) {
-                window.fullSpectator = false;
-                LM.flushSpectatorsOnly();
-            } else if (!window.fullSpectator) {
-                window.fullSpectator = true;
-                LM.addSpect();
-            }
+            LM._lmSpecSetMode(window.lmSpecMode === 'full' ? 'off' : 'full');
         },
         setShowIngameSpectator() {
-            if (window.ingameSpectator) {
-                window.ingameSpectator = false;
-                LM.flushSpectatorsOnly();
-            } else if (!window.fullSpectator) {
-                window.ingameSpectator = true;
-                LM.addSpect();
-            }
+            LM._lmSpecSetMode(window.lmSpecMode === 'ingame' ? 'off' : 'ingame');
         },
         toggleAutoZoom() {
             this.setSettings('autoZoom', !defaultmapsettings.autoZoom);
@@ -24155,10 +24145,9 @@ function thelegendmodproject() {
         multiboxchange() {
             this.hideMenu();
             if (typeof spects === "undefined" || !spects || !spects.length || !legendmod.multiBoxPlayerExists) {
-                /* flushSpecsData closes the in-game spectator too: its switch goes off with it
+                /* starting multibox ends the spectator mode: its switch goes off with its sockets
                  * (left on, the next press only turned it off and opened nothing) */
-                window.fullSpectator = false;
-                window.ingameSpectator = false;
+                LM._lmSpecSetMode('off');
                 LM.flushSpecsData();
                 if (typeof window.addBox === "function") window.addBox();
                 else if (typeof addBox === "function") addBox();
@@ -24212,10 +24201,9 @@ function thelegendmodproject() {
         multiboxback() {
             this.hideMenu();
             if (typeof spects === "undefined" || !spects || !spects.length || !legendmod.multiBoxPlayerExists) {
-                /* flushSpecsData closes the in-game spectator too: its switch goes off with it
+                /* starting multibox ends the spectator mode: its switch goes off with its sockets
                  * (left on, the next press only turned it off and opened nothing) */
-                window.fullSpectator = false;
-                window.ingameSpectator = false;
+                LM._lmSpecSetMode('off');
                 LM.flushSpecsData();
                 if (typeof window.addBox === "function") window.addBox();
                 else if (typeof addBox === "function") addBox();
@@ -34536,23 +34524,12 @@ function thelegendmodproject() {
                 defaultmapsettings.debug = true
             }
         },
+        /* top bar buttons set-fullSpectator / set-ingameSpectator, as the hotkeys */
         setFullSpectator() {
-            if (window.fullSpectator) {
-                window.fullSpectator = false
-                LM.flushSpectatorsOnly()
-            } else {
-                window.fullSpectator = true
-                LM.addSpect()
-            }
+            LM._lmSpecSetMode(window.lmSpecMode === 'full' ? 'off' : 'full');
         },
         setIngameSpectator() {
-            if (window.ingameSpectator) {
-                window.ingameSpectator = false
-                LM.flushSpectatorsOnly()
-            } else {
-                window.ingameSpectator = true
-                LM.addSpect()
-            }
+            LM._lmSpecSetMode(window.lmSpecMode === 'ingame' ? 'off' : 'ingame');
         },
         setTargeting() {
             if (this.targetID) {
@@ -43043,9 +43020,7 @@ function thelegendmodproject() {
             /* Spawning ends the in-game and full spectator: close their sockets with the flags. Since
              * spawn flushes keep the multibox sockets only the flags were cleared here, the spectator
              * stayed open unseen and the next toggle did nothing (it found a socket, added none). */
-            if (typeof this._lmCloseSpectatorUnits === 'function') this._lmCloseSpectatorUnits();
-            window.fullSpectator = false;
-            window.ingameSpectator = false;
+            this._lmSpecSetMode('off');
             this.fullSpectator = false;
 
             // ===== Garix join: [0x00][tabID LE16][nick UTF-8 null-terminated] =====
@@ -52586,30 +52561,91 @@ function thelegendmodproject() {
                 this.flushSpecsData();
             }
         },
-        /* Spectator toggles: close only the spectators. With a multibox unit open, flushSpecsData
-         * also closed the unit (its socket dropped mid-fight). Without one: as before. */
-        flushSpectatorsOnly() {
-            var sp = window.spects || [];
-            var keep = [];
-            for (var i = 0; i < sp.length; i++) if (sp[i] && sp[i].player) keep.push(sp[i]);
-            if (!keep.length) return this.flushSpecsData();
-            this._lmCloseSpectatorUnits();
-        },
-        /* Close the spectator sockets (in-game / full spectator), keep the multibox units. */
-        _lmCloseSpectatorUnits() {
-            var sp = window.spects || [];
-            var keep = [];
+        /* Spectator toggles: the spectator mode, set here only: 'off', 'ingame' (one spectator following the cursor)
+         * or 'full' (the Full Map tiles). window.lmSpecMode holds it, window.fullSpectator /
+         * ingameSpectator follow it for their readers. The two are exclusive: pressing the active
+         * mode's hotkey or button turns it off, pressing the other one switches to it (Full Map
+         * already shows what the in-game spectator would; with the flags set independently,
+         * in-game on then Full Map on opened no grid, and in-game off then closed the grid).
+         * A change closes only the spectators of another role (tile set: Full Map tile; no tile:
+         * the in-game spectator), never a multibox unit, and leaves the main connection's own
+         * spectate state alone (it went through flushSpecsData when no unit was open). */
+        _lmSpecSetMode(mode) {
+            if (mode !== 'ingame' && mode !== 'full') mode = 'off';
+            window.lmSpecMode = mode;
+            window.fullSpectator = mode === 'full';
+            window.ingameSpectator = mode === 'ingame';
+            var sp = window.spects || [], keep = [], units = 0;
             for (var i = 0; i < sp.length; i++) {
-                if (sp[i] && sp[i].player) keep.push(sp[i]);
-                else if (sp[i] && typeof sp[i].closeConnection === 'function') sp[i].closeConnection();
+                var s = sp[i];
+                if (!s) continue;
+                if (s.player) { keep.push(s); units++; continue; }
+                if ((s.tile != null ? 'full' : 'ingame') === mode) { keep.push(s); continue; }
+                if (typeof s.closeConnection === 'function') s.closeConnection();
             }
             if (keep.length !== sp.length) window.spects = keep;
+            /* no unit left: a stale "a multibox player exists" made the next death spawn one */
+            if (!units && this.multiBoxPlayerExists) {
+                this.multiBoxPlayerExists = false;
+                if (window.legendmod) window.legendmod.multiBoxPlayerExists = false;
+            }
+            if (mode !== 'off') this.addSpect();
         },
-        /* An in-game or full spectator socket is open (multibox units are not spectators). */
-        _lmHasSpectatorUnit() {
-            var sp = window.spects || [];
-            for (var i = 0; i < sp.length; i++) if (sp[i] && !sp[i].player) return true;
-            return false;
+        /* Opens what the spectator mode lacks (LM.addSpect: every main border packet and mode
+         * change). In-game: one in-game spectator if there is none. Full Map: once the main border
+         * is fixed, a tile for every planned index without a spectator, at most LM_FULLMAP_MAX
+         * spectator sockets; a tile whose index left the plan is closed. A tile that gave up
+         * (failed), was refused (114) or asked for a captcha (85) keeps its slot and is not opened
+         * again (window.lmFullMapRetry reconnects the failed ones; off / on starts over). It
+         * checked only "is any spectator open": one lost tile was never replaced, and with a tile
+         * removed (captcha) the grid stayed one short. */
+        _lmSpecReconcile() {
+            var mode = window.lmSpecMode, sp = window.spects || [], i, s;
+            if (mode === 'ingame') {
+                for (i = 0; i < sp.length; i++) if (sp[i] && !sp[i].player && sp[i].tile == null) return;
+                addSpectator();
+                return;
+            }
+            if (mode !== 'full') return;
+            if (!this.integrity) {
+                /* a replay or Practice is no private server: wait quietly with the mode kept (the
+                 * "private server" toast turned Full Map off, so it stayed off back on agar.io) */
+                var ws = typeof this.ws === 'string' ? this.ws : '';
+                if ((window.LMPractice && window.LMPractice.on) || window._lmEvReplayOn ||
+                    ws.indexOf('replay') >= 0 || ws.indexOf('lm-practice:') === 0) return;
+                toastr.error(lmT('game2.spPrivateNoFull'));
+                this._lmSpecSetMode('off');
+                return;
+            }
+            if (!this.mapOffsetFixed) return;
+            var plan = typeof lmFullMapTilePlan === 'function' ? lmFullMapTilePlan() : null;
+            if (!plan) {
+                toastr.error(lmT('game2.spPrivateNoFull'));
+                this._lmSpecSetMode('off');
+                return;
+            }
+            var max = typeof LM_FULLMAP_MAX === 'number' ? LM_FULLMAP_MAX : 15;
+            var n = plan.tiles.length, have = this._lmSpecHave || (this._lmSpecHave = []), keep = [], open = 0;
+            for (i = 0; i < n; i++) have[i] = false;
+            for (i = 0; i < sp.length; i++) {
+                s = sp[i];
+                if (!s) continue;
+                if (!s.player && s.tile != null) {
+                    if (!(s.tile >= 0 && s.tile < n) || have[s.tile]) {
+                        if (typeof s.closeConnection === 'function') s.closeConnection();
+                        continue;
+                    }
+                    have[s.tile] = true;
+                }
+                if (!s.player) open++;
+                keep.push(s);
+            }
+            if (keep.length !== sp.length) window.spects = keep;
+            for (i = 0; i < n && open < max; i++) {
+                if (have[plan.tiles[i].index]) continue;
+                addFullSpectator(plan.tiles[i].index);
+                open++;
+            }
         },
         flushSpecsData() {
             this.isSpectateEnabled = false;
@@ -52915,17 +52951,18 @@ function thelegendmodproject() {
             this.addSpect();
         },
         addSpect() {
+            /* a unit / spectator border that came before the main one (spect.js setMapOffset) */
+            var pend = this.mapOffsetFixed && window.spects;
+            if (pend) for (var pi = 0; pi < pend.length; pi++) {
+                var pb = pend[pi] && pend[pi]._lmPendingBorder;
+                if (pb && typeof pend[pi].setMapOffset === 'function') pend[pi].setMapOffset(pb[0], pb[1], pb[2], pb[3]);
+            }
             if (($("#nick").val().includes('?') && $("#clantag").val() === window.clanTagLc) || window.proLicenceUID) {
                 if (true) { // LW: always show spectator buttons
                     $('#set-fullSpectator').show();
                     $('#set-ingameSpectator').show();
                 }
-                /* a multibox unit is in spects too: it blocked both spectators */
-                if (window.fullSpectator && !this._lmHasSpectatorUnit()) {
-                    addFullSpectator();
-                } else if (window.ingameSpectator && !this._lmHasSpectatorUnit()) {
-                    addSpectator();
-                }
+                this._lmSpecReconcile();
             } else {
                 $('#set-fullSpectator').hide();
                 $('#set-ingameSpectator').hide();
@@ -81140,6 +81177,8 @@ function pickPlayerCellBySize(players, selectBiggest) {
          *                       the middle of the overlap (_lmViewTrim), so their borders meet
          *   Viewport# n moving  the same while a Full Map spectator glides to its tile (10-35 s
          *                       after it connects, from the map centre where agar.io puts it)
+         *   Viewport# n stale   its socket is closed or its camera / world stopped coming (spect.js
+         *                       _lmFresh): where the view was, not what is there now
          *   ... unverified      its orientation is not verified (or in conflict): placed with the
          *                       guess, so maybe mirrored, and its cells are not drawn
          *   Viewport# n food    a spectator without a camera yet: the box of the food it got
@@ -81173,6 +81212,7 @@ function pickPlayerCellBySize(players, selectBiggest) {
             /* settled, verified spectator views: drawn after the loop, trimmed where they overlap
              * (_lmViewTrim; reused entries, nothing allocated per frame) */
             var grid = this._lmViewGrid || (this._lmViewGrid = []), gn = 0;
+            var rs = this._lmViewRect || (this._lmViewRect = [0, 0, 0, 0]), now = Date.now();
             for (var i = 0; i < list.length; i++) {
                 var sp = list[i];
                 if (!sp || sp.number == null) continue;
@@ -81195,18 +81235,22 @@ function pickPlayerCellBySize(players, selectBiggest) {
                 }
                 var name = 'Viewport# ' + sp.number;
                 var tiled = sp.staticX != null && sp.staticY != null;
-                var arrived = !tiled || (typeof sp._lmTileArrived === 'function' && sp._lmTileArrived());
+                var arrived = !tiled || (typeof sp._lmTileArrived === 'function' && sp._lmTileArrived(null, now));
                 /* orientation not verified yet (or in conflict): its box is placed with the guess,
                  * so it may be the mirror of where its camera really is, and its cells are not drawn */
                 var unv = typeof sp._lmFeedOk === 'function' && !sp._lmFeedOk() ? ' unverified' : '';
-                var r = typeof sp._lmServerViewDisplay === 'function' ? sp._lmServerViewDisplay() : null;
-                if (r && arrived && !unv) {
+                /* socket closed, camera or world not fresh (spect.js _lmFresh): the box is where the
+                 * view was, drawn as "stale" (an old camera was drawn as a settled view) */
+                var stale = typeof sp._lmFresh === 'function' && !sp._lmFresh(now);
+                var covered = typeof sp._lmCoverageOk === 'function' ? sp._lmCoverageOk(now) : !unv;
+                var r = typeof sp._lmServerViewDisplay === 'function' ? sp._lmServerViewDisplay(rs, true) : null;
+                if (r && arrived && covered && !stale && !unv) {
                     var gb = grid[gn] || (grid[gn] = { name: '', r: [0, 0, 0, 0], d: [0, 0, 0, 0] });
                     gb.name = name;
                     for (var q = 0; q < 4; q++) gb.r[q] = gb.d[q] = r[q];
                     gn++;
                 } else if (r) {
-                    this.drawViewport(ctx, name + (arrived ? '' : ' moving') + unv, r[0], r[1], r[2], r[3], estColor, 15);
+                    this.drawViewport(ctx, name + (stale ? ' stale' : arrived ? '' : ' moving') + unv, r[0], r[1], r[2], r[3], estColor, 15);
                 } else if (seen) {
                     this.drawViewport(ctx, name + ' food' + unv, seen.minX, seen.minY, seen.maxX, seen.maxY, estColor, 15);
                 }

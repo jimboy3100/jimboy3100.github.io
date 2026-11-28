@@ -1,0 +1,8 @@
+{
+  "pkg.fmg4w.spRefused": {
+    "en": "The server takes no more spectators: a Full Map or in-game spectator connection was closed. Turn it off and on to try again."
+  },
+  "pkg.fmg4w.spCaptcha": {
+    "en": "The server asked a Full Map or in-game spectator connection for a captcha: it was closed. Turn it off and on to try again."
+  }
+}

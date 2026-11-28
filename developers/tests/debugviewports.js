@@ -5,7 +5,8 @@
  * Boxes: 1 = the main connection's food box, 2, 3 ... = a multibox unit's (unit number + 1),
  * "n est." = a unit without food (estimated from its size), "Viewport# n" = a spectator's server
  * view around its server camera (measured size; settled views that overlap drawn up to the middle
- * of the overlap), "Viewport# n moving" = the same on its way to its tile, "... unverified" = its
+ * of the overlap), "Viewport# n moving" = the same on its way to its tile, "Viewport# n stale" = its
+ * socket closed or its camera (1 s) or world (3 s) not fresh, "... unverified" = its
  * orientation not verified, "Viewport# n food" = no camera yet, its food box, "map". No box
  * without a real view (no planned tile, nothing for a connecting or closed spectator).
  * Cases: no box changes with zoom, window size or the controlled unit; units are found by role
@@ -26,6 +27,9 @@ const fs = require('fs'), path = require('path'), vm = require('vm');
 const src = fs.readFileSync(process.argv[2] || path.join(__dirname, '..', '..', 'ogario', 'ogario.v4.js'), 'utf8').replace(/\r\n/g, '\n');
 const spectSrc = fs.readFileSync(path.join(__dirname, '..', '..', 'ogario', 'spect.js'), 'utf8').replace(/\r\n/g, '\n');
 let failed = 0;
+/* the clock of the vm (null: real time): drawViewPorts reads Date.now() for the freshness of each view */
+let NOW = null;
+class FDate extends Date { static now() { return NOW == null ? Date.now() : NOW; } }
 const check = (name, ok, info) => { console.log((ok ? 'ok   ' : 'FAIL ') + name + (ok || info === undefined ? '' : '  [' + info + ']')); if (!ok) failed++; };
 
 function block(start, from, text) {
@@ -40,14 +44,15 @@ function block(start, from, text) {
     return null;
 }
 const methods = ['        drawViewPorts(ctx) {', '        _lmViewTrim(g, n) {', '        _lmConnFoodBoxes(list) {', '        calMinMax() {'].map((m) => [m, block(m)]);
-const spectMethods = ['    getX(x) {', '    getY(y) {', '    convertX(x) {', '    convertY(y) {', '    _lmTileDisplay() {', '    _lmTileRaw() {', '    _lmTileTick(now) {',
-    '    _lmXf() {', '    worldToRawX(x) {', '    worldToRawY(y) {', '    rawToWorldX(x) {', '    rawToWorldY(y) {', '    _lmTileArrived(raw) {',
-    '    _lmWorldRectDisplay(r, out) {', '    _lmServerViewDisplay(out) {', '    _lmServerViewWorld(out) {', '    _lmFeedOk() {', '    isOutsideServerView(rawX, rawY, size) {']
+const spectMethods = ['    getX(x) {', '    getY(y) {', '    convertX(x) {', '    convertY(y) {', '    _lmTileDisplay() {', '    _lmTileRaw(now) {', '    _lmTileTick(now) {',
+    '    _lmXf() {', '    worldToRawX(x) {', '    worldToRawY(y) {', '    rawToWorldX(x) {', '    rawToWorldY(y) {', '    _lmTileArrived(raw, now) {',
+    '    _lmWorldRectDisplay(r, out) {', '    _lmServerViewDisplay(out, anyAge) {', '    _lmServerViewWorld(out, anyAge) {', '    _lmFeedOk() {', '    isOutsideServerView(rawX, rawY, size) {',
+    '    _lmCamFresh(now) {', '    _lmWorldStamp() {', '    _lmFresh(now) {', '    _lmCoverageOk(now) {', '    isSocketOpen() {']
     .map((m) => [m, block(m, 0, spectSrc)]);
 /* the coordinate contract (lmRawToWorld ... lmXfInv), top of spect.js, which those methods use */
 const xf0 = spectSrc.indexOf('var LM_WORLD_SIZE'), xf1 = spectSrc.indexOf('/* orientation candidates');
 /* the server view estimate and the planner: top of spect.js, up to addFullSpectator */
-const head0 = spectSrc.indexOf('var LM_VIEW_BASE_W'), head1 = spectSrc.indexOf('function addFullSpectator() {');
+const head0 = spectSrc.indexOf('var LM_VIEW_BASE_W'), head1 = spectSrc.indexOf('function addFullSpectator(');
 const dv = block('        drawViewport: function (ctx, text');
 /* the per-connection observation index (lmObsTrack, lmObsOfSource) the test pellets are tracked in */
 const obs0 = src.indexOf('var _lmSrcObs = new Map();'), obs1 = src.indexOf('/* Speed of a cell', obs0);
@@ -74,12 +79,12 @@ function env(o) {
     const win = { fullSpectator: !!o.full, spects: o.spects || [] };
     win.legendmod = LM;
     const c = { window: win, LM, legendmod: LM, spects: win.spects, defaultSettings: { foodSize: 5, bordersColor: '#ff0000' },
-        defaultmapsettings: { multiboxAmount: 3 }, Math, Number, String, console, document: { hidden: false } };
+        defaultmapsettings: { multiboxAmount: 3 }, Math, Number, String, console, document: { hidden: false }, Date: FDate };
     vm.createContext(c);
     vm.runInContext(src.slice(obs0, obs1) + spectSrc.slice(xf0, xf1) + spectSrc.slice(head0, head1) +
         'var drawRender = {' + methods.map((m) => m[1]).concat([dv]).join(',\n') + '};' +
         /* a spectator connection with spect.js's own coordinate and tile code */
-        'var SpectXY = class { constructor(p) { this.sent = []; Object.assign(this, p); }\n' +
+        'var SpectXY = class { constructor(p) { this.sent = []; this.socket = null; Object.assign(this, p); }\n' +
         'sendPosition(x, y) { if (this.offline) return; this.sent.push([x, y, this.clock]); return true; }\n' +
         spectMethods.map((m) => m[1]).join('\n') + '\n};', c);
     const dr = c.drawRender;
@@ -170,7 +175,8 @@ const MAP = 15957;
 
 /* ---- Full Map ---- */
 const spectAt = (number, sx, sy, o) => Object.assign({ number, player: false, staticX: sx, staticY: sy, isSpectateEnabled: true, isFreeSpectate: true,
-    mapOffsetFixed: false, mapOffsetX: 0, mapOffsetY: 0, fixX: 1, fixY: 1, fix3x: 0, fix3y: 0, _lmKX: 1, _lmKY: 1, _lmCamAt: 0 }, o || {});
+    mapOffsetFixed: false, mapOffsetX: 0, mapOffsetY: 0, fixX: 1, fixY: 1, fix3x: 0, fix3y: 0, _lmKX: 1, _lmKY: 1, _lmCamAt: 0,
+    socket: { readyState: 1, OPEN: 1 }, time: 0 }, o || {});
 const covers = (plan, vw, vh, half) => {
     for (let x = -half; x <= half; x += 37) for (let y = -half; y <= half; y += 37) {
         if (!plan.tiles.some((t) => Math.abs(x - t.x) <= vw / 2 && Math.abs(y - t.y) <= vh / 2)) return [x, y];
@@ -234,7 +240,10 @@ const covers = (plan, vw, vh, half) => {
     check('not again within 500 ms while the camera glides (it was every 50 ms)', s.sent.length === 1, s.sent.length);
     s._lmTileTick(1500);
     check('every 500 ms while the camera is on its way', s.sent.length === 2);
-    s.viewX = 3; s.viewY = -5645; s._lmCamAt = 1560; /* opcode 17: the camera is 12 off: there */
+    s.viewX = 3; s.viewY = -5645; s._lmCamAt = 1560; /* opcode 17: the camera is 12 off: not there (LM_TILE_SETTLED 4, it was 16) */
+    s._lmTileTick(1600);
+    check('camera 12 off the tile: not there (an arrived corner tile must still reach past the map edge)', s.sent.length === 2 && !s._lmTileArrived(null, 1600), s.sent.length);
+    s.viewY = -5654; /* 3 off: there */
     for (let t = 1600; t < 2500; t += 100) s._lmTileTick(t);
     check('camera on the tile: no resend for a second', s.sent.length === 2, s.sent.length);
     s._lmTileTick(2500);
@@ -261,7 +270,7 @@ const covers = (plan, vw, vh, half) => {
     check('connecting spectator: no box at all (its planned tile is no view; it drew "Tile 1")', first.length === 1 && first[0].label === 'map', JSON.stringify(first.map((b) => b.label)));
     s.mapOffsetFixed = true; s.viewX = 0; s.viewY = 0;
     check('a camera from the border centre only (no opcode 17): no box yet', !e.frame().some((b) => /^Viewport#/.test(b.label)));
-    s._lmCamAt = 1; s.scale = 0.4;
+    NOW = 5e11; s._lmCamAt = NOW; s.time = NOW; s.scale = 0.4;
     const mv = e.frame(), moving = byLabel(mv, 'Viewport# 1 moving');
     check('gliding from the map centre: "moving" box around the server camera, no tile box', moving && Math.abs((moving.minX + moving.maxX) / 2) < 1e-6 &&
         Math.abs(moving.maxX - moving.minX - 5071.75) < 1e-6 && mv.length === 2, moving && [moving.minX, moving.maxX, mv.length]);
@@ -285,6 +294,24 @@ const covers = (plan, vw, vh, half) => {
     }
     s._lmOri = 'VERIFIED';
     check('orientation VERIFIED: "Viewport# 1"', !!byLabel(e.frame(), 'Viewport# 1'));
+    /* freshness: a camera, world or socket that stopped is drawn where it was, as "stale" (a
+     * camera a minute old was the settled white box and counted as coverage) */
+    check('fresh camera and world, socket open: coverage (_lmCoverageOk) and the settled box', s._lmCoverageOk(NOW) && !!byLabel(e.frame(), 'Viewport# 1'));
+    s._lmCamAt = NOW - 1500;
+    const old = e.frame();
+    check('camera 1.5 s old: "Viewport# 1 stale" (not settled, not arrived, no coverage), still at the old camera', !!byLabel(old, 'Viewport# 1 stale') && !byLabel(old, 'Viewport# 1') &&
+        !s._lmTileArrived(null, NOW) && !s._lmCoverageOk(NOW) && s._lmServerViewWorld() === null && Math.abs(byLabel(old, 'Viewport# 1 stale').minX - box.minX) < 1e-6, JSON.stringify(old.map((b) => b.label)));
+    s._lmCamAt = NOW; s.time = NOW - 4000;
+    check('world 4 s old (camera fresh): stale, no coverage', !!byLabel(e.frame(), 'Viewport# 1 stale') && !s._lmCoverageOk(NOW));
+    s.time = NOW; s._lmWorldAt = 0;
+    check('_lmWorldAt kept but never set by a parsed update: no world, stale', !!byLabel(e.frame(), 'Viewport# 1 stale'));
+    s._lmWorldAt = NOW - 200;
+    check('_lmWorldAt 200 ms old: settled box again', !!byLabel(e.frame(), 'Viewport# 1') && s._lmCoverageOk(NOW));
+    s.socket = { readyState: 3, OPEN: 1 };
+    check('socket closed: stale, no coverage', !!byLabel(e.frame(), 'Viewport# 1 stale') && !s._lmCoverageOk(NOW));
+    s.socket = { readyState: 1, OPEN: 1 }; delete s._lmWorldAt;
+    check('LM_TILE_SETTLED is at most half LM_FULLMAP_EDGE (an arrived corner tile still reaches past the map edge)',
+        vm.runInContext('LM_TILE_SETTLED * 2 <= LM_FULLMAP_EDGE', e.c));
     s._lmOri = 'PROVISIONAL'; s.viewX = 0; s.viewY = 0;
     check('gliding and unverified: "Viewport# 1 moving unverified"', !!byLabel(e.frame(), 'Viewport# 1 moving unverified'));
     s._lmOri = 'VERIFIED';
@@ -303,7 +330,7 @@ const covers = (plan, vw, vh, half) => {
                 _lmBorderKX: 1.00268, _lmBorderKY: 1.00388, mapMinX: 2990 - 7052, mapMaxX: 2990 + 7052, mapMinY: 3148 - 7044, mapMaxY: 3148 + 7044 } });
             const cam = [1234, -2345];
             const s = e.spect(spectAt(1, 0, 0, { mapOffsetFixed: true, mapOffsetX: 1764, mapOffsetY: -2040, fixX: fx, fixY: fy, _lmKX: kx, _lmKY: ky,
-                viewX: cam[0], viewY: cam[1], scale: 0.4, _lmCamAt: 1, staticX: null, staticY: null }));
+                viewX: cam[0], viewY: cam[1], scale: 0.4, _lmCamAt: NOW, time: NOW, staticX: null, staticY: null }));
             const b = byLabel(e.frame(), 'Viewport# 1');
             if (!b) { bad.push('no box ' + [JSON.stringify(rot), fx, fy, kx].join()); continue; }
             /* raw points just inside / outside the server view (world half size / k), drawn by getX like the cells */
@@ -327,7 +354,7 @@ const covers = (plan, vw, vh, half) => {
         const liveEnv = () => env({ full: true, mb: false, vector: rot, main: { mapOffsetX: -(mb[0] + mb[2]) / 2, mapOffsetY: -(mb[1] + mb[3]) / 2, _lmBorderCX: (mb[0] + mb[2]) / 2, _lmBorderCY: (mb[1] + mb[3]) / 2,
             _lmBorderKX: W / (mb[2] - mb[0]), _lmBorderKY: W / (mb[3] - mb[1]), mapMinX: mb[0], mapMinY: mb[1], mapMaxX: mb[2], mapMaxY: mb[3] } });
         const liveSpect = (e, q) => e.spect(spectAt(q.n, q.staticX, q.staticY, { mapOffsetFixed: true, mapOffsetX: -(q.border[0] + q.border[2]) / 2, mapOffsetY: -(q.border[1] + q.border[3]) / 2,
-            fixX: q.s[0], fixY: q.s[1], _lmKX: W / (q.border[2] - q.border[0]), _lmKY: W / (q.border[3] - q.border[1]), viewX: q.cam[0], viewY: q.cam[1], scale: q.cam[2], _lmCamAt: 1 }));
+            fixX: q.s[0], fixY: q.s[1], _lmKX: W / (q.border[2] - q.border[0]), _lmKY: W / (q.border[3] - q.border[1]), viewX: q.cam[0], viewY: q.cam[1], scale: q.cam[2], _lmCamAt: NOW, time: NOW }));
         const e = liveEnv();
         const sps = L.sp.map((q) => liveSpect(e, q));
         const bs = e.frame();
@@ -410,7 +437,8 @@ const covers = (plan, vw, vh, half) => {
          * and with a fixed 2-unit test for edge neighbours, cameras 3 units apart drew the whole
          * seam (175 / 529 units) twice. */
         const settled = vm.runInContext('LM_TILE_SETTLED', e.c);
-        for (const [gone, jit] of [[[4], 0], [[7], 0], [[1], 0], [[3, 5], 0], [[], 3], [[], 8], [[], settled], [[4], settled]]) {
+        /* (a camera farther off than LM_TILE_SETTLED is not arrived: its whole box is drawn as moving) */
+        for (const [gone, jit] of [[[4], 0], [[7], 0], [[1], 0], [[3, 5], 0], [[], 3], [[], 8], [[], settled], [[4], settled]].filter((c) => c[1] <= settled)) {
             const e2 = liveEnv();
             const s2 = L.sp.filter((q) => gone.indexOf(q.tile) < 0).map((q) => liveSpect(e2, q));
             /* cameras alternately +-jit off their tile targets, per axis */
@@ -465,7 +493,7 @@ const covers = (plan, vw, vh, half) => {
         const e = env({ full: true, mb: false, vector: rot, main: { mapOffsetX: -(mb[0] + mb[2]) / 2, mapOffsetY: -(mb[1] + mb[3]) / 2, _lmBorderCX: (mb[0] + mb[2]) / 2, _lmBorderCY: (mb[1] + mb[3]) / 2,
             _lmBorderKX: W / (mb[2] - mb[0]), _lmBorderKY: W / (mb[3] - mb[1]), mapMinX: mb[0], mapMinY: mb[1], mapMaxX: mb[2], mapMaxY: mb[3] } });
         const sps = m.views.map((q) => e.spect(spectAt(q.n, null, null, { mapOffsetFixed: true, mapOffsetX: -(q.border[0] + q.border[2]) / 2, mapOffsetY: -(q.border[1] + q.border[3]) / 2,
-            fixX: q.s[0], fixY: q.s[1], _lmKX: W / (q.border[2] - q.border[0]), _lmKY: W / (q.border[3] - q.border[1]), viewX: q.cam[0], viewY: q.cam[1], scale: q.cam[2], _lmCamAt: 1 })));
+            fixX: q.s[0], fixY: q.s[1], _lmKX: W / (q.border[2] - q.border[0]), _lmKY: W / (q.border[3] - q.border[1]), viewX: q.cam[0], viewY: q.cam[1], scale: q.cam[2], _lmCamAt: NOW, time: NOW })));
         const bs = e.frame();
         const tag = ' (' + m.label + (rot ? ', Rotate Map ' + JSON.stringify(rot[0]) : '') + ')';
         const outside = [], far = [0, 0, 0, 0];

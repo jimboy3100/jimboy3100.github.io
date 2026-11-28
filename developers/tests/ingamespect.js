@@ -1,13 +1,15 @@
 /* In-game spectator toggle (hotkey hk-showIngameSpectator, top bar button set-ingameSpectator), with the
  * real code cut out of ogario/ogario.v4.js: application.setShowIngameSpectator / setIngameSpectator,
- * LM.addSpect (the premium gate and the "one spectator" rule), flushSpectatorsOnly,
- * _lmCloseSpectatorUnits, _lmHasSpectatorUnit, flushSpecsData and the start of sendNick (spawn).
+ * LM.addSpect (the premium gate), _lmSpecSetMode, _lmSpecReconcile, flushSpecsData and the start of
+ * sendNick (spawn).
  * Cases: toggle on/off, a multibox unit open (it blocked the spectator), spawn closes the
  * spectator with its flag (the flag alone was cleared and the next toggle did nothing), resuming
  * while alive keeps it, the multibox unit survives every spectator toggle and spawn, no premium:
  * no spectator socket. With a unit and a spectator open together: the multibox switch keys go only
  * between the main player and the units, the follow / free mode switch reaches the spectator, and
- * starting multibox turns the spectator switch off with its socket.
+ * starting multibox turns the spectator switch off with its socket. The in-game spectator and Full
+ * Map are one exclusive mode (LM._lmSpecSetMode / _lmSpecReconcile); section 11 runs the real spect.js
+ * tile lifecycle (failed / refused / captcha slots, lmFullMapHealth, lmFullMapRetry, opcode 18, replay).
  * node developers/tests/ingamespect.js [ogario.v4.js] */
 'use strict';
 const fs = require('fs'), path = require('path'), vm = require('vm');
@@ -25,8 +27,8 @@ function block(start, from) {
     }
     return null;
 }
-const appMethods = ['        setShowIngameSpectator() {', '        setShowFullSpectator() {', '        setIngameSpectator() {'].map((m) => [m, block(m)]);
-const lmMethods = ['        addSpect() {', '        flushSpectatorsOnly() {', '        _lmCloseSpectatorUnits() {', '        _lmHasSpectatorUnit() {', '        flushSpecsData() {'].map((m) => [m, block(m)]);
+const appMethods = ['        setShowIngameSpectator() {', '        setShowFullSpectator() {', '        setIngameSpectator() {', '        setFullSpectator() {'].map((m) => [m, block(m)]);
+const lmMethods = ['        addSpect() {', '        _lmSpecSetMode(mode) {', '        _lmSpecReconcile() {', '        flushSpecsData() {'].map((m) => [m, block(m)]);
 /* sendNick up to the first server-specific join (everything after it only builds the spawn packet) */
 const nickStart = src.indexOf('        sendNick(nick) {'), nickEnd = src.indexOf('            // ===== Garix join', nickStart);
 /* the helpers are new: an older file without them still runs (and shows the old failures) */
@@ -43,6 +45,7 @@ function env(o) {
     function Spect(opts) {
         this.number = nextNumber++;
         this.player = !!(opts && opts.player);
+        this.tile = opts && opts.tile != null ? opts.tile : null;
         this.closed = false;
         created.push(this);
     }
@@ -51,13 +54,16 @@ function env(o) {
         window: win, console,
         $: (sel) => ({ val: () => (sel === '#nick' ? 'player' : ''), show() { return this; }, hide() { return this; } }),
         addSpectator: () => win.spects.push(new Spect()),
-        addFullSpectator: () => { for (let i = 0; i < 3; i++) win.spects.push(new Spect()); },
+        /* spect.js: a plan of 3 tiles here, addFullSpectator(i) opens tile i */
+        lmFullMapTilePlan: () => ({ tiles: [0, 1, 2].map((index) => ({ index })) }),
+        addFullSpectator: (i) => win.spects.push(new Spect({ tile: i })),
+        toastr: { error() { win.toasts = (win.toasts || 0) + 1; } }, lmT: (k) => k,
         ogario: { play: !!o.playing },
         /* the page-level setter of the controlled multibox unit (ogario.v4.js lmSetMbUnit) */
         lmSetMbUnit: (u) => { win.multiboxPlayerEnabled = +u || null; }
     };
     vm.createContext(ctx);
-    vm.runInContext('var LM = window.legendmod = {' + lmMethods.map((m) => m[1]).join(',\n') + ',\n' + sendNick + '\n};' +
+    vm.runInContext('var LM = window.legendmod = { integrity: true, mapOffsetFixed: true,' + lmMethods.map((m) => m[1]).join(',\n') + ',\n' + sendNick + '\n};' +
         'var application = window.application = {' + appMethods.map((m) => m[1]).join(',\n') + '};', ctx);
     /* the global spects of the page is window.spects (top-level var in a classic script) */
     Object.defineProperty(ctx, 'spects', { get: () => win.spects, set: (v) => { win.spects = v; } });
@@ -110,13 +116,20 @@ for (const withUnit of [false, true]) {
     e.LM.sendNick('me');
     check('resume while alive keeps the spectator and its flag', e.win.ingameSpectator === true && !sp.closed && spectators(e.win).length === 1);
 }
-/* 5. the full spectator is closed by spawn as well, and the in-game one does not stack on it */
+/* 5. the modes are exclusive: the other mode's key switches to it (closing only the other role's
+ * sockets), and the full spectator is closed by spawn as well */
 {
     const e = env();
     e.app.setShowFullSpectator();
     check('full spectator opens its sockets', e.win.fullSpectator === true && spectators(e.win).length === 3);
+    const tiles = spectators(e.win);
     e.app.setShowIngameSpectator();
-    check('in-game spectator not added while the full spectator runs', spectators(e.win).length === 3);
+    check('in-game key while Full Map runs: switches (tiles closed, one in-game spectator, only its flag on)', e.win.lmSpecMode === 'ingame' && e.win.ingameSpectator === true &&
+        e.win.fullSpectator === false && tiles.every((t) => t.closed) && spectators(e.win).length === 1 && spectators(e.win)[0].tile === null);
+    const ing = spectators(e.win)[0];
+    e.app.setFullSpectator();
+    check('Full Map button while in-game runs: switches back (in-game closed, 3 tiles)', e.win.lmSpecMode === 'full' && ing.closed && spectators(e.win).length === 3 &&
+        spectators(e.win).every((t) => t.tile != null && !t.closed));
     e.LM.sendNick('me');
     check('spawn closes the full spectator sockets and flag', e.win.fullSpectator === false && e.win.spects.length === 0 && e.created.every((s) => s.closed));
 }
@@ -243,26 +256,22 @@ const addSpectatorOf = (e, extra) => { e.ctx.addSpectator(); const s = spectator
     check('the first press afterwards starts the spectator again', e.win.ingameSpectator === true && spectators(e.win).length === 1);
 }
 
-/* 10. Full Map with the real ogario/spect.js (Spect, addFullSpectator, addBox) under the same core
- * toggles: sockets and timers are counted. Toggled on and off repeatedly: never more than one
- * grid of sockets, none and no timer left after off (also with a reconnect pending), the main
- * border packets calling LM.addSpect again add nothing, nothing opens before the border is fixed,
- * and a multibox unit keeps its socket through every Full Map toggle. */
-{
+/* the real ogario/spect.js under the core toggles: sockets and timers are counted */
+function realEnv() {
     const spectSrc = fs.readFileSync(path.join(__dirname, '..', '..', 'ogario', 'spect.js'), 'utf8');
     const sockets = [], timers = new Map();
     let timerId = 0;
     const ctx = {
-        console: { log() { }, warn() { }, error: console.error }, Date, Math, Number, Object, JSON, Set, DataView, ArrayBuffer, Uint8Array, String, parseInt,
+        console: { log() { }, warn() { }, error: console.error }, Date, Math, Number, Object, JSON, Set, Map, Array, DataView, ArrayBuffer, Uint8Array, String, parseInt,
         setInterval: (fn, ms) => { timers.set(++timerId, { fn, ms, repeat: true }); return timerId; },
         setTimeout: (fn, ms) => { timers.set(++timerId, { fn, ms }); return timerId; },
         clearInterval: (id) => { timers.delete(id); }, clearTimeout: (id) => { timers.delete(id); },
-        toastr: { error() { ctx.toasts = (ctx.toasts || 0) + 1; } }, lmT: (k) => k,
+        toastr: { error() { ctx.toasts = (ctx.toasts || 0) + 1; }, warning(t) { (ctx.warnings = ctx.warnings || []).push(t); } }, lmT: (k) => k, Premadeletter123: 'LM',
         $: (sel) => ({ val: () => (sel === '#nick' ? 'player' : ''), show() { return this; }, hide() { return this; } }),
         lmSetMbUnit: (u) => { ctx.multiboxPlayerEnabled = +u || null; },
         WebSocket: { CONNECTING: 0, OPEN: 1 },
         defaultmapsettings: {}, profiles: [], master: { clientVersion: 1, protocolVersion: 1 },
-        application: { mbSlots: [0, 1, 2], writeUint32() { } },
+        application: { mbSlots: [0, 1, 2], writeUint32() { }, showMenu() { ctx.menuShown = (ctx.menuShown || 0) + 1; } },
         proLicenceUID: 'test', clanTagLc: 'ZZX'
     };
     ctx.window = ctx;
@@ -288,6 +297,15 @@ const addSpectatorOf = (e, extra) => { e.ctx.addSpectator(); const s = spectator
         s.sendSpectate(); s.startStaticPositionController(); s.sendFreeSpectate();
         s.mapOffsetFixed = true; s.mapOffsetX = 300 * i; s.mapOffsetY = -200 * i;
     };
+    return { ctx, sockets, timers, app, LM, open, fullOf, handshake };
+}
+/* 10. Full Map with the real ogario/spect.js (Spect, addFullSpectator, addBox) under the same core
+ * toggles: sockets and timers are counted. Toggled on and off repeatedly: never more than one
+ * grid of sockets, none and no timer left after off (also with a reconnect pending), the main
+ * border packets calling LM.addSpect again add nothing, nothing opens before the border is fixed,
+ * and a multibox unit keeps its socket through every Full Map toggle. */
+{
+    const { ctx, sockets, timers, app, LM, open, fullOf, handshake } = realEnv();
     let grid = 0;
     for (let round = 0; round < 4; round++) {
         app.setShowFullSpectator();
@@ -361,6 +379,189 @@ const addSpectatorOf = (e, extra) => { e.ctx.addSpectator(); const s = spectator
         let threw = null;
         try { app.changeSpectatorMode(); } catch (err) { threw = err; }
         check('no spectator: the switch does nothing and does not throw', !threw && app.spectatorFollow === false && timers.size === t1, threw);
+    }
+}
+
+/* 11. spectator modes and the Full Map tile lifecycle, with the real ogario/spect.js, each without
+ * and with a live multibox unit: the modes are exclusive (one LM._lmSpecSetMode), a mode change closes
+ * only the other role's spectators and never a unit nor the main spectate state, LM._lmSpecReconcile
+ * opens only the missing tiles, a tile that gave up / was refused (114) / got a captcha (85) keeps its
+ * slot with its state (lmFullMapHealth), lmFullMapRetry reconnects only the failed ones on the same
+ * objects, opcode 18 keeps a spectator spectating and makes its coverage wait, and a replay or
+ * Practice (no integrity) keeps Full Map on quietly */
+for (const withUnit of [false, true]) {
+    const tag = withUnit ? ' (with a live unit)' : ' (no unit)';
+    const mk = () => {
+        const e = realEnv();
+        let unit = null;
+        if (withUnit) {
+            e.ctx.addBox(); unit = e.ctx.spects[0]; unit.socket.readyState = 1; unit.active = true;
+            e.LM.multiBoxPlayerExists = true; e.ctx.multiboxPlayerEnabled = unit.number;
+        }
+        const tiles = () => e.ctx.spects.filter((s) => !s.player && s.tile != null);
+        const ingame = () => e.ctx.spects.filter((s) => !s.player && s.tile == null);
+        const unitOk = () => !unit || (e.ctx.spects.includes(unit) && !unit.socket.closed && !unit.closedByUser);
+        const live = (s, now) => { s._lmOri = 'VERIFIED'; const raw = s._lmTileRaw(now); s.viewX = raw[0]; s.viewY = raw[1]; s.scale = 0.4; s._lmCamAt = now; s.time = now; };
+        const drop = (s) => { s.socket.readyState = 3; s.socket.closed = true; s.socket.onclose(); };
+        const op = (code) => new DataView(Uint8Array.of(code).buffer);
+        return Object.assign(e, { unit, tiles, ingame, unitOk, live, drop, op });
+    };
+    /* (1) in-game on, then Full Map on: switches at once (it opened no grid, also after border packets) */
+    {
+        const e = mk();
+        e.app.setShowIngameSpectator();
+        const ig = e.ingame()[0];
+        e.app.setShowFullSpectator();
+        e.LM.addSpect(); e.LM.addSpect();
+        check('(1) in-game on, Full Map on: one mode (full), in-game closed, 15 tiles' + tag, e.ctx.lmSpecMode === 'full' && e.ctx.fullSpectator === true && e.ctx.ingameSpectator === false &&
+            ig.closedByUser && e.ingame().length === 0 && e.tiles().length === 15 && e.unitOk(), e.tiles().length);
+    }
+    /* (2) Full Map on, top bar in-game on, then off: in-game off closed the grid while Full Map stayed on */
+    {
+        const e = mk();
+        e.app.setShowFullSpectator();
+        const grid = e.tiles();
+        e.app.setIngameSpectator();
+        check('(2) Full Map on, top bar in-game on: switches (15 tiles closed, one in-game spectator)' + tag, e.ctx.lmSpecMode === 'ingame' && e.ctx.fullSpectator === false &&
+            grid.every((t) => t.closedByUser) && e.tiles().length === 0 && e.ingame().length === 1 && e.unitOk());
+        e.app.setIngameSpectator();
+        check('(3) the active mode pressed again: off, nothing left open, no flag on' + tag, e.ctx.lmSpecMode === 'off' && !e.ctx.fullSpectator && !e.ctx.ingameSpectator &&
+            e.ingame().length === 0 && e.tiles().length === 0 && e.open() === (withUnit ? 1 : 0) && e.unitOk(), e.open());
+        e.app.setShowFullSpectator(); e.app.setFullSpectator();
+        check('(4) hotkey on, top bar button off: the same mode (the button turns it off)' + tag, e.ctx.lmSpecMode === 'off' && e.tiles().length === 0);
+    }
+    /* (5) Full Map on / off while the main client spectates: its spectate and world pan state stay */
+    {
+        const e = mk();
+        Object.assign(e.LM, { isSpectateEnabled: true, isFreeSpectate: true, _isWorldSpectating: true, _worldSpecPanX: 120, _worldSpecPanY: -40 });
+        e.app.setShowFullSpectator(); e.app.setShowFullSpectator();
+        check('(5) Full Map on / off while spectating: the main spectate and world pan state kept' + tag, e.LM.isSpectateEnabled && e.LM.isFreeSpectate && e.LM._isWorldSpectating && e.LM._worldSpecPanX === 120 &&
+            e.unitOk() && !!e.LM.multiBoxPlayerExists === withUnit, [e.LM.isSpectateEnabled, e.LM._worldSpecPanX, e.LM.multiBoxPlayerExists].join());
+    }
+    /* (6) every toggle sequence: the unit keeps its socket; (7) no unit left: a stale multiBoxPlayerExists goes */
+    {
+        const e = mk();
+        const seq = ['setShowIngameSpectator', 'setShowFullSpectator', 'setShowIngameSpectator', 'setShowFullSpectator', 'setIngameSpectator', 'setFullSpectator', 'setIngameSpectator', 'setFullSpectator'];
+        let lost = '';
+        for (const m of seq) { e.app[m](); e.LM.addSpect(); if (!e.unitOk()) { lost = m; break; } }
+        check('(6) eight mode changes: the unit keeps its socket, one role at a time' + tag, !lost && e.tiles().length === 15 && e.ingame().length === 0, lost);
+        e.app.setFullSpectator();
+        if (!withUnit) {
+            e.LM.multiBoxPlayerExists = true;
+            e.app.setShowIngameSpectator();
+            check('(7) a mode change with no unit left clears a stale multiBoxPlayerExists', e.LM.multiBoxPlayerExists === false && e.ingame().length === 1);
+        } else check('(7) a mode change with a unit keeps multiBoxPlayerExists', e.LM.multiBoxPlayerExists === true && e.unitOk());
+    }
+    /* (8) a tile that keeps dropping: failed after 8 reconnects, kept with its reason, its slot not refilled */
+    {
+        const e = mk();
+        e.app.setShowFullSpectator();
+        e.tiles().forEach(e.handshake);
+        const t = e.tiles()[4], before = e.sockets.length;
+        let attempts = 0;
+        for (let k = 0; k < 12 && t.socket; k++) {
+            e.drop(t);
+            const rt = t.reconnectTimer && e.timers.get(t.reconnectTimer);
+            if (!rt) break;
+            e.timers.delete(t.reconnectTimer); rt.fn(); attempts++;
+        }
+        e.LM.addSpect(); e.LM.addSpect();
+        const h = e.ctx.lmFullMapHealth();
+        check('(8) tile dropped repeatedly: failed after 8 reconnects, kept in its slot with the reason, not opened again' + tag, attempts === 8 && t._lmTileState === 'failed' && /8/.test(t._lmTileReason) &&
+            e.ctx.spects.includes(t) && !t.socket && e.tiles().length === 15 && e.tiles().filter((s) => s.tile === t.tile).length === 1 && e.sockets.length === before + 8 && e.unitOk(), [attempts, t._lmTileState, e.tiles().length].join());
+        check('(9) lmFullMapHealth: 15 planned, 1 failed, 14 connecting, the failed tile listed with its reason' + tag, h.planned === 15 && h.failed === 1 && h.connecting === 14 && h.perTile.length === 15 &&
+            h.perTile[t.tile].state === 'failed' && h.perTile[t.tile].reason === t._lmTileReason, JSON.stringify(Object.assign({}, h, { perTile: h.perTile.length })));
+        const n0 = e.sockets.length;
+        const n = e.ctx.lmFullMapRetry();
+        check('(10) lmFullMapRetry: only the failed tile reconnects, on the same object (one new socket, no new tile)' + tag, n === 1 && e.sockets.length === n0 + 1 && !!t.socket && !t.socket.closed &&
+            t._lmTileState === 'connecting' && e.tiles().length === 15 && e.ctx.spects.includes(t) && e.ctx.lmFullMapRetry() === 0, [n, e.sockets.length - n0].join());
+        e.app.setShowFullSpectator();
+        check('    ... Full Map off: no tile socket, no tile timer, no tile state left' + tag, e.tiles().length === 0 && e.open() === (withUnit ? 1 : 0) && e.ctx.lmFullMapHealth().perTile.length === 0 &&
+            [...e.timers.values()].every((x) => x.ms !== 100));
+    }
+    /* (11) opcode 114 (spectate mode full): refused, closed with no retry, kept, one toast for the grid */
+    {
+        const e = mk();
+        e.app.setShowFullSpectator();
+        e.tiles().forEach(e.handshake);
+        const a = e.tiles()[2], b = e.tiles()[3], n0 = e.sockets.length;
+        a.handleMessage(e.op(114)); b.handleMessage(e.op(114));
+        e.LM.addSpect();
+        check('(11) opcode 114 on two tiles: refused, sockets closed, no reconnect or tile sender, kept in their slots, one toast' + tag, a._lmTileState === 'refused' && b._lmTileState === 'refused' &&
+            a.socket === null && b.socket === null && !a.reconnectTimer && !a.staticPositionController && e.tiles().length === 15 && e.sockets.length === n0 &&
+            (e.ctx.warnings || []).length === 1 && /spRefused/.test(e.ctx.warnings[0]) && e.ctx.lmFullMapHealth().refused === 2 && e.ctx.lmFullMapRetry() === 0 && e.unitOk(), (e.ctx.warnings || []).join());
+    }
+    /* (12) opcode 85 (captcha) on a tile: kept (it was spliced out and opened again on the next border packet), no menu, units untouched */
+    {
+        const e = mk();
+        e.app.setShowFullSpectator();
+        e.tiles().forEach(e.handshake);
+        const t = e.tiles()[7], n0 = e.sockets.length;
+        t.handleMessage(e.op(85));
+        e.LM.addSpect(); e.LM.addSpect();
+        check('(12) opcode 85 on a tile: captcha state, closed, kept in its slot, not reopened, no menu, one toast' + tag, t._lmTileState === 'captcha' && !t.socket && e.ctx.spects.includes(t) &&
+            e.tiles().length === 15 && e.sockets.length === n0 && !e.ctx.menuShown && (e.ctx.warnings || []).length === 1 && /spCaptcha/.test(e.ctx.warnings[0]) &&
+            e.ctx.lmFullMapRetry() === 0 && e.unitOk() && (!withUnit || e.ctx.multiboxPlayerEnabled === e.unit.number), [t._lmTileState, e.tiles().length, e.ctx.menuShown].join());
+        e.app.setShowFullSpectator(); e.app.setShowFullSpectator();
+        check('    ... Full Map off / on: a new grid of 15, every tile connecting again' + tag, e.tiles().length === 15 && !e.tiles().includes(t) && e.tiles().every((s) => s._lmTileState === 'connecting'));
+    }
+    /* (13) opcode 18 on a tile: still spectating, coverage waits for a new camera and world, the target goes out again */
+    {
+        const e = mk();
+        e.app.setShowFullSpectator();
+        e.tiles().forEach(e.handshake);
+        const t = e.tiles()[0], now = Date.now();
+        e.live(t, now);
+        t._lmTileTick(now); t._lmTileTick(now + 50);
+        const sent = t.socket.sent;
+        check('    a settled tile with a fresh camera and world: live, coverage' + tag, t._lmCoverageOk(now) && t._lmTileStateNow(now) === 'live');
+        t.handleMessage(e.op(18));
+        check('(13) opcode 18 on a tile: spectate / free spectate kept, no coverage until a new camera and world' + tag, t.isSpectateEnabled && t.isFreeSpectate && !t._lmCoverageOk(now) &&
+            t._lmCamAt === 0 && !t._lmServerViewWorld() && e.timers.has(t.staticPositionController));
+        t._lmTileTick(now + 60);
+        check('    ... the tile target is sent again at once' + tag, t.socket.sent === sent + 1, t.socket.sent - sent);
+        t._lmCamAt = now; t.time = now;
+        check('    ... camera and world again: coverage back' + tag, t._lmCoverageOk(now));
+        t._lmCamAt = now - 60000; t._openedAt = now - 10000;
+        check('    a camera a minute old: not arrived, no server view, no coverage, stalled' + tag, !t._lmTileArrived(null, now) && !t._lmServerViewWorld() && !t._lmCoverageOk(now) &&
+            t._lmTileStateNow(now) === 'stalled');
+    }
+    /* (14) opcode 18 on the in-game spectator in free mode: it keeps following the cursor */
+    {
+        const e = mk();
+        e.app.setShowIngameSpectator();
+        const s = e.ingame()[0];
+        s.socket.readyState = 1; s.socket.onopen(); s.protocolKey = 5; s.clientKey = 7; s.sendSpectate(); s.sendFreeSpectate();
+        const pc = s.positionController;
+        s.handleMessage(e.op(18));
+        check('(14) opcode 18 on the in-game spectator in free spectate: still free, its cursor sender kept' + tag, s.isFreeSpectate === true && s.isSpectateEnabled === true && !!pc && e.timers.has(pc));
+    }
+    /* (15) a duplicate tile and a tile index outside the plan are closed by the next border packet */
+    {
+        const e = mk();
+        e.app.setShowFullSpectator();
+        const dup = e.ctx.addFullSpectator(3), out = e.ctx.addFullSpectator(0);
+        out.tile = 99;
+        e.LM.addSpect();
+        check('(15) a duplicate tile and one outside the plan: closed, the grid is 15 again, at most LM_FULLMAP_MAX spectator sockets' + tag, dup.closedByUser && out.closedByUser &&
+            e.tiles().length === 15 && new Set(e.tiles().map((s) => s.tile)).size === 15 && e.ctx.spects.filter((s) => !s.player).length <= 15 && e.unitOk());
+    }
+    /* (16) a replay or Practice (integrity off): Full Map stays on quietly; back on agar.io the grid opens */
+    {
+        const e = mk();
+        e.app.setShowFullSpectator();
+        e.LM.flushSpecsData();
+        Object.assign(e.LM, { ws: 'wss://imsolo.pro.replay:2000', integrity: false });
+        e.LM.addSpect();
+        check('(16) replay border: no "private server" toast, Full Map kept on, no tile', !e.ctx.toasts && e.ctx.lmSpecMode === 'full' && e.ctx.fullSpectator === true && e.tiles().length === 0);
+        e.LM.ws = 'lm-practice://local'; e.LM.addSpect();
+        check('    ... Practice: the same', !e.ctx.toasts && e.ctx.lmSpecMode === 'full');
+        Object.assign(e.LM, { ws: 'wss://test', integrity: true });
+        e.LM.addSpect();
+        check('    ... back on agar.io: the 15 tiles open', e.tiles().length === 15);
+        Object.assign(e.LM, { ws: 'wss://private:443', integrity: false });
+        e.app.setShowFullSpectator(); e.app.setShowFullSpectator();
+        check('    ... a real private server: the toast, Full Map off', e.ctx.toasts === 1 && e.ctx.lmSpecMode === 'off');
     }
 }
 
