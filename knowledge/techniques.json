@@ -43,7 +43,7 @@
       "name": "Scan trick",
       "description": "While its key is held the cell heads far out toward the cursor at the exact angle; with the left mouse button held too, the direction snaps to one of 16 (22.5 degrees each). Provides precise cell positioning for split tricks.",
       "difficulty": "advanced",
-      "keys": "Hold Scan Trick (set it in the Hotkeys window, hold action)",
+      "keys": "Hold N (Hold Scan Trick in the Hotkeys window)",
       "tips": "Hold the left mouse button too for one of 16 fixed directions. It has no settings."
     },
     {

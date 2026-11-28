@@ -239,7 +239,7 @@
     {
       "input": "N",
       "action": "Scan trick (hold)",
-      "notes": "Scan trick while held with the left mouse button",
+      "notes": "Hold: the cell heads far toward the cursor; with the left mouse button too, one of 16 fixed directions",
       "category": "toggle"
     },
     {
