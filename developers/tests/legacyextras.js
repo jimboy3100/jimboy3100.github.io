@@ -114,7 +114,8 @@ async function dyingLightLifecycle() {
      * hooks, timer chains, quote toasts, page audio, the old defaults reset, any Discord address */
     check('extras/dyinglight.js has none of the old payloads',
         !/import-settings|pushState|[Ff]ullscreen|core\.disconnect|olddeath|btnmgs|aab\d|createElement\(['"]audio|legenddefaultsettings|discord|webhook|playSound|toastr\["error"\]/i.test(dl) &&
-        (dl.match(/setTimeout\(/g) || []).length === 1);
+        /* the picture wait and the spawn burst's one later try (dlfx.js) */
+        (dl.match(/setTimeout\(/g) || []).length === 2);
     check('old banner files: static markup, no ga() or inline script',
         ['banners/bannerDyingLight', 'banners/bannerStopDyingLight'].every(f => { const t = rd(f); return /data-lm-dl="toggle"/.test(t) && !/ga\(|<script|onclick/.test(t); }));
 
@@ -181,9 +182,9 @@ async function dyingLightLifecycle() {
         ctx.dyinglight1load === 'yes' && ctx.cimgDyingLight === undefined && cls.has('lm-dl') && head.kids.some(n => n.id === 'lm-dl-style') && /dyinglightbanner3/.test(box.innerHTML));
     const L = ctx.LMDyingLight;
     const other = { mass: 200, targetNick: 'enemy' };
-    check('fallback skin only for another real player body', !!L.getFallbackSkinKey(other) && L.getFallbackSkinKey(other) === L.getFallbackSkinKey({ mass: 50, targetNick: 'x' }) &&
+    check('fallback skin only for another real player body', !!L.getFallbackSkinKey(other) && L.getFallbackSkinKey(other) === L.getFallbackSkinKey({ mass: 50, targetNick: 'enemy' }) &&
         /* mass label not drawn (cell.mass 0): the size decides */
-        L.getFallbackSkinKey({ mass: 0, size: 60, targetNick: 'n' }) === L.getFallbackSkinKey(other) &&
+        L.getFallbackSkinKey({ mass: 0, size: 60, targetNick: 'enemy' }) === L.getFallbackSkinKey(other) &&
         [{ mass: 200, targetNick: 'me', isPlayerCell: true }, { mass: 200, targetNick: 'u', isPlayerCellMulti: true }, { mass: 200, targetNick: 'f', isFood: true },
          { mass: 200, targetNick: 'v', isVirus: true }, { mass: 20, targetNick: 'e', isEjected: true }, { mass: 10, targetNick: 's' }, { mass: 0, size: 34, targetNick: 'z' }, { mass: 200, targetNick: '' }, { mass: 200, targetNick: 'r', removed: true }]
             .every(c => L.getFallbackSkinKey(c) === null));

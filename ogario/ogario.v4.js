@@ -21609,7 +21609,7 @@ function _getParticleBlob(color) {
     return c;
 }
 
-function _spawnDeathBurst(wx, wy, victimSize, victimColor) {
+function _spawnDeathBurst(wx, wy, victimSize, victimColor, keepColour) {
     if (defaultmapsettings.reducedMotion) return;
     /*
      * During the final Expanding Land local-player cinematic, the dedicated
@@ -21636,6 +21636,13 @@ function _spawnDeathBurst(wx, wy, victimSize, victimColor) {
         return;
     }
     var col = victimColor || '#808080';
+    /* Dying Light on: its few colours instead of the victim's (a virus keeps its own); the same
+     * count and cap */
+    var _dlPal = null;
+    if (_lmDl && !keepColour && _lmDlApi && typeof _lmDlApi.particlePalette === 'function') {
+        try { _dlPal = _lmDlApi.particlePalette(); } catch (e) { _dlPal = null; }
+        if (!_dlPal || !_dlPal.length) _dlPal = null;
+    }
     var baseR = victimSize * _DEATH_PARTICLE_SIZE_RATIO;
     for (var i = 0; i < _DEATH_PARTICLE_COUNT; i++) {
         var angle = Math.random() * Math.PI * 2;
@@ -21646,7 +21653,7 @@ function _spawnDeathBurst(wx, wy, victimSize, victimColor) {
             vx: Math.cos(angle) * speed,
             vy: Math.sin(angle) * speed,
             r: baseR * (0.6 + Math.random() * 0.8),
-            color: col,
+            color: _dlPal ? _dlPal[i % _dlPal.length] : col,
             born: Date.now(),
             duration: _DEATH_PARTICLE_DURATION * (0.7 + Math.random() * 0.6)
         });
@@ -54605,7 +54612,8 @@ function thelegendmodproject() {
                             _victimStartY,
                             _victimStartSize,
                             victimID.color ||
-                            '#808080'
+                            '#808080',
+                            !!victimID.isVirus
                         );
                     }
 
@@ -55354,7 +55362,8 @@ function thelegendmodproject() {
                             _removeStartY,
                             _removeStartSize,
                             cell.color ||
-                            '#808080'
+                            '#808080',
+                            !!cell.isVirus
                         );
                     }
 

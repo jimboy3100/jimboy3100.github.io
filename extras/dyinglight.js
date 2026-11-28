@@ -7,7 +7,10 @@
  * window.LMDyingLight:
  *   state 'off' | 'loading' | 'on' | 'disabling', generation (a new number on every enable/disable)
  *   isEnabled(), enable({ confirm }), disable(), intensity(), setIntensity(name)
- *   getFallbackSkinKey(cell): the skin key for an eligible other player's body, else null
+ *   getFallbackSkinKey(cell): the skin key for an eligible other player's body (one of the six
+ *     zombie designs in variants, the same for every cell of one name), else null
+ *   particlePalette(), effect(name), setEffect(name, on): the themed death particle colours,
+ *     the spawn burst and the Game Over card, each can be suppressed on its own
  *   getBackground(): { url, img, alpha } of the map scene while on, else null
  *   hasForegroundFx(), needsThreatData(), addPart({ name, start(gen, api), stop(), fx, threat })
  * LMEvents 'dyingLightChange' { state, enabled, generation } is sent on every state change. */
@@ -19,10 +22,26 @@
 
     var IMG = 'https://www.legendmod.ml/banners/';
     /* the optimized copies (banners/dyinglight/manifest.json): the zombie of
-     * defaultSettings.commanderImageDyingLight at the 512 px of the WebGL skin layers, one
-     * fallback for every eligible body until a stable identity across Full Map / multibox copies
-     * is shared; the first scene of the old background chain */
+     * defaultSettings.commanderImageDyingLight at the 512 px of the WebGL skin layers; the first
+     * scene of the old background chain */
     var SKIN_KEY = IMG + 'dyinglight/skins/zombie-512.webp';
+    /* the six cosmetic zombie designs (pictures of the old icons, same 512 px copies). A player
+     * keeps one design by name, so all of its cells and its copies from other connections (Full
+     * Map, multibox) look the same and nothing changes with its mass; a design says nothing about
+     * how dangerous a player is. */
+    var VARIANTS = Object.freeze([
+        Object.freeze({ id: 'biter', key: SKIN_KEY }),
+        Object.freeze({ id: 'viral', key: IMG + 'dyinglight/skins/zombie5-512.webp' }),
+        Object.freeze({ id: 'volatile', key: IMG + 'dyinglight/skins/volatile-512.webp' }),
+        Object.freeze({ id: 'demolisher', key: IMG + 'dyinglight/skins/zombiebig-512.webp' }),
+        Object.freeze({ id: 'screamer', key: IMG + 'dyinglight/skins/zombie2-512.webp' }),
+        Object.freeze({ id: 'nightHunter', key: IMG + 'dyinglight/skins/zombie4-512.webp' })
+    ]);
+    /* the death particles' colours while on (a fixed few: the particle picture cache stays small) */
+    var PARTICLES = Object.freeze(['#a12b30', '#6e1a1d', '#3b0d10']);
+    var SPAWN_COLOUR = '#a12b30';
+    /* each effect can be suppressed on its own (setEffect); none of them does any work while off */
+    var FX = { variants: true, particles: true, spawn: true, gameOver: true };
     var SCENE_URL = IMG + 'dyinglight/backgrounds/back0-1920.webp';
     var MINIMAP_URL = IMG + 'dyinglightbabyteamboard.png';
     /* a picture that does not come is skipped, it never holds the theme back */
@@ -36,6 +55,8 @@
     var parts = [];           /* optional parts other files add (addPart) */
     var running = [];         /* the parts started by this activation, stopped in reverse order */
     var styleEl = null, onSettings = null;
+    var byNick = new Map();   /* nick -> design key, at most 512 names, emptied on disable */
+    var onSpawn = null, spawnTimer = 0, burstAt = 0;
 
     function tx(key) { return typeof W.lmT === 'function' ? W.lmT(key) : key; }
     function warn(what, e) { try { console.warn('[Dying Light] ' + what, e); } catch (e2) { } }
@@ -107,15 +128,89 @@
             styleEl.id = 'lm-dl-style';
             /* a minimap picture the player chose (an inline style) stays over this one.
              * i18n-ok: CSS, not a text */
-            styleEl.textContent = 'html.lm-dl #minimap-sectors{background-image:url("' + MINIMAP_URL + '");background-size:cover;background-position:center;}';
+            styleEl.textContent = 'html.lm-dl #minimap-sectors{background-image:url("' + MINIMAP_URL + '");background-size:cover;background-position:center;}' +
+                /* the Game Over card in the theme's colours (its own inline colours need
+                 * !important); the stat values keep their colours, the buttons and the layout stay */
+                'html.lm-dl-go #lm-gameover-modal .lm-go-card{background:#090c0d!important;border-color:#171d20!important;border-top-color:#a12b30!important;' +
+                'box-shadow:0 8px 32px rgba(0,0,0,.75),inset 0 0 48px rgba(161,43,48,.14)!important;}' +
+                'html.lm-dl-go #lm-gameover-modal .lm-go-card>div:first-child{background:linear-gradient(180deg,#171d20 0%,#090c0d 100%)!important;border-bottom-color:#3b1215!important;}' +
+                'html.lm-dl-go #lm-gameover-modal .lm-go-card>div:first-child>div:last-child{color:#a12b30!important;text-shadow:0 0 8px rgba(161,43,48,.5);}' +
+                'html.lm-dl-go #lm-gameover-modal .lm-go-label{color:#d4d8d5!important;}' +
+                'html.lm-dl-go #lm-gameover-modal .lm-go-row:hover{background:rgba(161,43,48,.12)!important;}';
         }
         if (!styleEl.parentNode) (d.head || d.documentElement).appendChild(styleEl);
         d.documentElement.classList.add('lm-dl');
     }
     function removeStyle() {
         var d = W.document;
-        if (d && d.documentElement) d.documentElement.classList.remove('lm-dl');
+        if (d && d.documentElement) {
+            d.documentElement.classList.remove('lm-dl');
+            d.documentElement.classList.remove('lm-dl-go');
+        }
         if (styleEl && styleEl.parentNode) styleEl.parentNode.removeChild(styleEl);
+    }
+
+    /* The effects (Game Over card, spawn burst; the skin designs and the particle colours are
+     * read by the renderers through getFallbackSkinKey / particlePalette) */
+    function syncGameOver() {
+        var d = W.document;
+        if (!d || !d.documentElement) return;
+        /* the style is on the page only while the theme is applied */
+        if (FX.gameOver && styleEl && styleEl.parentNode) d.documentElement.classList.add('lm-dl-go');
+        else d.documentElement.classList.remove('lm-dl-go');
+    }
+    /* the existing spawn burst (drawRender.startSpawnBurst) in the theme's colour at the own
+     * spawn. Expanding Land / Legend World start their own; nothing in a replay, the practice
+     * arena or with Reduced motion. The position can be 0 in the first frame: one try 150 ms later. */
+    function spawnBurst(g, again) {
+        spawnTimer = 0;
+        if (g !== generation || state !== 'on' || !FX.spawn) return;
+        var app = W.application, dr = W.drawRender, lm = W.legendmod, ms = W.defaultmapsettings;
+        if (!app || !dr || typeof dr.startSpawnBurst !== 'function' || typeof app.getPlayerX !== 'function') return;
+        if ((lm && (lm.isLegendWorld || lm.serverType === 'expandingland')) || (ms && ms.reducedMotion) ||
+            (W.LMPractice && W.LMPractice.on) || W._lmEvReplayOn) return;
+        var x = +app.getPlayerX(), y = +app.getPlayerY();
+        if (!isFinite(x) || !isFinite(y)) return;
+        if (!x && !y) {
+            if (!again) spawnTimer = setTimeout(function () { spawnBurst(g, true); }, 150);
+            return;
+        }
+        dr.startSpawnBurst(x, y, SPAWN_COLOUR);
+        burstAt = dr._spawnEffect ? dr._spawnEffect.startTime : 0;
+    }
+    function startFx(g) {
+        syncGameOver();
+        if (onSpawn || !W.LMEvents || typeof W.LMEvents.on !== 'function') return;
+        onSpawn = function () {
+            if (spawnTimer) clearTimeout(spawnTimer);
+            spawnBurst(g, false);
+        };
+        W.LMEvents.on('spawn', onSpawn);
+    }
+    function stopFx() {
+        if (onSpawn && W.LMEvents && typeof W.LMEvents.off === 'function') W.LMEvents.off('spawn', onSpawn);
+        onSpawn = null;
+        if (spawnTimer) clearTimeout(spawnTimer);
+        spawnTimer = 0;
+        /* a burst of ours still showing ends with the theme (another one is left alone) */
+        var fx = W.drawRender && W.drawRender._spawnEffect;
+        if (burstAt && fx && fx.active && fx.startTime === burstAt && fx.color === SPAWN_COLOUR && fx.el === false) fx.active = false;
+        burstAt = 0;
+        byNick.clear();
+    }
+
+    /* a player's design: by name (the same for all of its cells and copies), kept for the
+     * activation; a short FNV-1a over the name, once per name */
+    function designKey(nick) {
+        if (!FX.variants) return SKIN_KEY;
+        var k = byNick.get(nick);
+        if (k) return k;
+        var h = 2166136261;
+        for (var i = 0; i < nick.length; i++) h = Math.imul(h ^ nick.charCodeAt(i), 16777619);
+        k = VARIANTS[(h >>> 0) % VARIANTS.length].key;
+        if (byNick.size >= 512) byNick.clear();
+        byNick.set(nick, k);
+        return k;
     }
 
     function startPart(p, g) {
@@ -137,6 +232,7 @@
         W.dyinglight1load = 'yes';
         bg = scene ? Object.freeze({ url: SCENE_URL, img: scene, alpha: 1 }) : null;
         addStyle();
+        startFx(g);
         for (var i = 0; i < parts.length; i++) startPart(parts[i], g);
     }
     /* An import (or a script) that turns the switch off, also while the pictures still load: the
@@ -151,6 +247,7 @@
     /* everything this file put on the page, and only that */
     function teardown() {
         stopParts();
+        stopFx();
         if (onSettings && W.LMEvents && typeof W.LMEvents.off === 'function') W.LMEvents.off('settingsChange', onSettings);
         onSettings = null;
         removeStyle();
@@ -222,7 +319,8 @@
         if (typeof W.lmSkinsShown === 'function' && !W.lmSkinsShown()) return null;
         var lm = W.legendmod;
         if (lm && lm.gameMode === ':teams') return null;
-        return SKIN_KEY;
+        var nick = cell.targetNick;
+        return designKey(typeof nick === 'string' ? nick : String(nick));
     }
     function anyRunning(flag) {
         if (state !== 'on') return false;
@@ -247,6 +345,21 @@
         },
         getFallbackSkinKey: getFallbackSkinKey,
         getBackground: function () { return state === 'on' ? bg : null; },
+        /* the zombie designs { id, key } (the keys getFallbackSkinKey gives) */
+        variants: VARIANTS,
+        /* the death particles' colours while on (unless suppressed), else null: the renderer
+         * then keeps each victim's colour */
+        particlePalette: function () { return state === 'on' && FX.particles ? PARTICLES : null; },
+        /* an effect is on: variants, particles, spawn, gameOver */
+        effect: function (name) { return state === 'on' && FX[name] === true; },
+        /* suppress (false) or allow (true) one effect; it applies at once, the theme stays on */
+        setEffect: function (name, on) {
+            if (!Object.prototype.hasOwnProperty.call(FX, name)) return false;
+            FX[name] = !!on;
+            if (name === 'variants') byNick.clear();
+            if (name === 'gameOver') syncGameOver();
+            return true;
+        },
         hasForegroundFx: function () { return anyRunning('fx'); },
         needsThreatData: function () { return anyRunning('threat'); },
         /* a part is started with each activation (now, when on) and stopped by disable */
