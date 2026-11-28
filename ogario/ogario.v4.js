@@ -19657,25 +19657,6 @@ iconSpecialSkinEffectsPanicAtDisco.src = 'https://www.legendmod.ml/banners/iconS
 
 
 
-var SkinExplain = [{
-    name: "imgur.com",
-    url: "https://imgur.com/",
-    example: "https://i.imgur.com/xdmUp5N.png",
-    pattern: "https?://w+.imgur.com/w{6,}.(?:%file_ext%)??d*"
-},
-{
-    name: "put.re",
-    url: "https://put.re/",
-    example: "https://s.put.re/iYHAW65g.png",
-    pattern: "https?://w+.put.re/w{8,}.(?:%file_ext%)"
-},
-{
-    name: "postimages.org",
-    url: "https://postimages.org/",
-    example: "https://i.postimg.cc/zzK0sRPg/xdmUp5N.png",
-    pattern: "https?://w+.postimg.cc/w{8,}/w+.(?:%file_ext%)"
-}
-];
 /* ═══════════════════════════════════════════════════════════════════════
  * §3.1a  Death Particle Burst System
  * ═══════════════════════════════════════════════════════════════════════
