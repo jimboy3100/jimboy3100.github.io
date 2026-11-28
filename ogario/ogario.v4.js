@@ -24100,20 +24100,21 @@ function thelegendmodproject() {
             input.remove();
         },
         changeSpectatorMode() {
-            this.spectatorFollow = !this.spectatorFollow;
-            ogario.spectatorFollow = this.spectatorFollow;
             /* the in-game spectator when one is open (a multibox unit opened before it is spects[0]),
              * else the first connection as before */
-            var sp0 = spects[0];
-            for (var _sm = 0; _sm < spects.length; _sm++) {
-                if (spects[_sm] && !spects[_sm].player && spects[_sm].staticX == null) { sp0 = spects[_sm]; break; }
+            var list = typeof spects !== 'undefined' && spects ? spects : [];
+            var sp0 = list[0];
+            for (var _sm = 0; _sm < list.length; _sm++) {
+                if (list[_sm] && !list[_sm].player && list[_sm].staticX == null) { sp0 = list[_sm]; break; }
             }
-            if (this.spectatorFollow && sp0 && sp0.staticX == null && sp0.isSpectateEnabled === true /*&& sp0.isFreeSpectateEnabled===false*/) {
-                sp0.sendFreeSpectate();
-            } else if (!this.spectatorFollow && sp0 && sp0.staticX == null && sp0.isFreeSpectate === true) {
-                /* Turning it off must leave free spectate too (the unit kept following the cursor). */
-                sp0.sendFreeSpectate();
-            }
+            /* nothing spectating (no spectator, a Full Map tile, a playing unit): change nothing; the
+             * flag used to flip anyway and the next press, with a spectator open, did nothing */
+            if (!sp0 || sp0.staticX != null || typeof sp0.sendFreeSpectate !== 'function' || (sp0.isSpectateEnabled !== true && sp0.isFreeSpectate !== true)) return;
+            /* from the spectator's own mode (a spectator opened later starts following);
+             * turning it off must leave free spectate too (the unit kept following the cursor) */
+            this.spectatorFollow = sp0.isFreeSpectate !== true;
+            ogario.spectatorFollow = this.spectatorFollow;
+            sp0.sendFreeSpectate();
         },
         setPause() {
             if (window.autoPlay) {

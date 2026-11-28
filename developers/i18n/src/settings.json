@@ -4988,6 +4988,9 @@
     "ja": "ゲーム内観戦の表示/非表示（Premium）",
     "it": "Mostra/nascondi spettatore in partita (Premium)"
   },
+  "settings.hk-ingameSpectatorMode": {
+    "en": "In-game Spectator: follow the player / move with the cursor (Premium)"
+  },
   "settings.hk-doubleBotSplit": {
     "en": "Bots double split (Private servers)",
     "el": "Double split των bots (ιδιωτικοί servers)",

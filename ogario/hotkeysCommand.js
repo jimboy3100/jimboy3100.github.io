@@ -756,6 +756,16 @@
                 keyUp: null,
                 type: 'normal'
             },
+            /* the In-game Spectator's camera: follow the server's chosen player or steer it with the cursor */
+            'hk-ingameSpectatorMode': {
+                get label() { return lmT('settings.hk-ingameSpectatorMode'); },
+                defaultKey: '',
+                keyDown() {
+                    application && application.changeSpectatorMode();
+                },
+                keyUp: null,
+                type: 'normal'
+            },
             'hk-bots-ai': {
                 get label() { return lmT('settings.hk-bots-ai'); },
                 defaultKey: '', // 'P' was its old key; no default now (other commands use it)

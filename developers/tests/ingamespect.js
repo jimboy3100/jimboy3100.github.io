@@ -183,6 +183,54 @@ const addSpectatorOf = (e, extra) => { e.ctx.addSpectator(); const s = spectator
     e2.app.changeSpectatorMode();
     check('only a spectating unit: it switches to free spectate as before', u.isFreeSpectate === true);
 }
+/* 8b. no spectator and nothing spectating: the switch does nothing (no throw, the mode is not flipped:
+ * a flipped flag made the next press, with a spectator open, do nothing) */
+{
+    const e = mbEnv();
+    e.app.spectatorFollow = false;
+    let threw = null;
+    try { e.app.changeSpectatorMode(); } catch (err) { threw = err; }
+    check('no spectator: no throw and the mode is unchanged', !threw && e.app.spectatorFollow === false, threw);
+    const unit = Object.assign(e.ctx.addUnit(), { staticX: null, isSpectateEnabled: false, isFreeSpectate: false });
+    unit.sendFreeSpectate = () => { unit.wrong = true; };
+    e.app.changeSpectatorMode();
+    check('only a playing unit: it is left alone, the mode is unchanged', !unit.wrong && e.app.spectatorFollow === false);
+    const sp = addSpectatorOf(e, { isSpectateEnabled: true });
+    sp.sendFreeSpectate = () => { sp.isFreeSpectate = !sp.isFreeSpectate; };
+    e.app.spectatorFollow = true; /* left on by an earlier spectator */
+    e.app.changeSpectatorMode();
+    check('a new spectator: the first press switches it to free spectate', sp.isFreeSpectate === true && e.app.spectatorFollow === true);
+}
+/* 8c. the hotkey (ogario/hotkeysCommand.js): an entry with no default key whose keyDown calls
+ * application.changeSpectatorMode() */
+{
+    const hk = fs.readFileSync(path.join(__dirname, '..', '..', 'ogario', 'hotkeysCommand.js'), 'utf8').replace(/\r\n/g, '\n');
+    const re = /\n {12}'(hk-[\w-]+)': \{/g;
+    const found = [];
+    let m;
+    while ((m = re.exec(hk))) {
+        const i = m.index + 1;
+        let d = 0, body = null;
+        for (let k = hk.indexOf('{', i); k < hk.length; k++) {
+            if (hk[k] === '{') d++;
+            else if (hk[k] === '}' && !--d) { body = hk.slice(i, k + 1); break; }
+        }
+        if (body && body.indexOf('changeSpectatorMode') >= 0) found.push([m[1], body]);
+    }
+    check('one hotkey entry calls changeSpectatorMode', found.length === 1, found.map((f) => f[0]).join(','));
+    if (found.length === 1) {
+        const calls = [];
+        const c = vm.createContext({ lmT: (k) => k, application: { changeSpectatorMode() { calls.push('mode'); } } });
+        const entry = vm.runInContext('({' + found[0][1] + '})', c)[found[0][0]];
+        entry.keyDown();
+        check('the hotkey has no default key, a label and calls application.changeSpectatorMode()',
+            entry.defaultKey === '' && entry.label === 'settings.' + found[0][0] && entry.type === 'normal' && calls.join() === 'mode', found[0][0] + ' ' + JSON.stringify(entry.defaultKey) + ' ' + calls);
+        c.application = null;
+        let threw = null;
+        try { entry.keyDown(); } catch (err) { threw = err; }
+        check('the hotkey without application: no throw', !threw, threw);
+    }
+}
 /* 9. starting multibox ends the in-game spectator: its switch goes off with its socket */
 {
     const e = mbEnv();
@@ -287,6 +335,33 @@ const addSpectatorOf = (e, extra) => { e.ctx.addSpectator(); const s = spectator
     ctx.spects.length = 0;
     app.setShowFullSpectator();
     check('private server: no spectator, message shown, switch off', ctx.spects.length === 0 && ctx.toasts === 1 && ctx.fullSpectator === false);
+    /* the follow / free camera switch on a real in-game spectator: free spectate starts its cursor
+     * timer, the second press stops it; closed again, the switch does nothing */
+    LM.integrity = true;
+    ctx.ogario = ctx.ogario || {};
+    vm.runInContext('Object.assign(application, {' + mbMethods[2][1] + '});', ctx);
+    app.spectatorFollow = false;
+    app.setShowIngameSpectator();
+    const isp = ctx.spects.filter((s) => !s.player)[0];
+    check('in-game spectator open (real spect.js)', ctx.ingameSpectator === true && !!isp && isp.staticX == null);
+    if (isp) {
+        isp.socket.readyState = 1; isp.socket.onopen(); isp.protocolKey = 5; isp.clientKey = 7;
+        isp.sendSpectate();
+        const sentBefore = isp.socket.sent;
+        app.changeSpectatorMode();
+        const cursor = isp.positionController && timers.get(isp.positionController);
+        check('switch: free spectate with its cursor timer', isp.isFreeSpectate === true && !!cursor && cursor.repeat === true && app.spectatorFollow === true && isp.socket.sent > sentBefore,
+            isp.isFreeSpectate + ' ' + !!cursor);
+        const cursorId = isp.positionController;
+        app.changeSpectatorMode();
+        check('switch again: back to following, cursor timer stopped', isp.isFreeSpectate === false && isp.positionController == null && !timers.has(cursorId) && app.spectatorFollow === false);
+        app.setShowIngameSpectator();
+        check('in-game spectator closed', ctx.ingameSpectator === false && ctx.spects.length === 0);
+        const t1 = timers.size;
+        let threw = null;
+        try { app.changeSpectatorMode(); } catch (err) { threw = err; }
+        check('no spectator: the switch does nothing and does not throw', !threw && app.spectatorFollow === false && timers.size === t1, threw);
+    }
 }
 
 console.log(failed ? 'FAILED ' + failed : 'all ingamespect checks passed');
