@@ -38,5 +38,35 @@ check('truncated leaderboard 54 header', () => (h.handleMessage(pkt([54, 1])), h
 check('truncated private leaderboard 49', () => (h.handleMessage(pkt([49, 1, 0])), h.leaderboard.length === 1));
 check('truncated viewport information', () => (h.handleMessage(pkt([17, 0, 0, 0, 0])), true));
 check('no uncaught errors logged', () => !warns.some(w => w.startsWith('ERROR')));
+
+/* FB friend lookup (_lmFbFriend): the same entry as list.find(e => e.id === id), from an index */
+{
+    const a = src.indexOf('var _lmFbIdx = '), b = src.indexOf('\n}', src.indexOf('function _lmFbFriend(', a));
+    check('FB friend index found', () => a > 0 && b > a);
+    vm.runInContext(src.slice(a, b + 2), ctx);
+    const F = ctx._lmFbFriend;
+    const find = (list, id) => list.find((e) => e.id === id);
+    let same = true, seed = 7;
+    const rnd = (n) => (seed = (seed * 1103515245 + 12345) % 2147483648) % n;
+    const ids = [0, 1, 2, 3, 7, 4294967295, 'isPlayer', undefined, NaN, -0];
+    for (let round = 0; round < 300 && same; round++) {
+        const list = [];
+        for (let i = rnd(8); i > 0; i--) list.push({ id: ids[rnd(ids.length)], fbId: 'f' + round + '_' + i });
+        for (const id of ids) if (F(list, id) !== find(list, id)) same = false;
+        list.push({ id: 3, fbId: 'late' }); /* the list grew (opcode 5 pushes one by one) */
+        for (const id of ids) if (F(list, id) !== find(list, id)) same = false;
+        list.length = 0; /* a reset empties it in place */
+        if (F(list, 3) !== undefined) same = false;
+    }
+    check('FB friend index: same first match as find (duplicates, undefined, NaN, -0, growth, reset)', () => same);
+    /* through the handler: opcode 5 lists friend 7, the leaderboard names it with its fbId */
+    ctx.LM = h;
+    h.handleMessage(pkt([5, 7, 0, 0, 0, 120, 0]));
+    h.handleMessage(pkt([53, 6, 97, 0, 7, 0, 0, 0]));
+    check('FB friend on the leaderboard', () => h.fbOnline.length === 1 && h.leaderboard[0].isFBFriend === 'x');
+    h.handleMessage(pkt([5]));
+    h.handleMessage(pkt([53, 6, 97, 0, 7, 0, 0, 0]));
+    check('FB friends list replaced: the old friend is not found', () => h.fbOnline.length === 0 && h.leaderboard[0].isFBFriend === false);
+}
 console.log(failed ? failed + ' check(s) failed' : 'all packet checks passed');
 process.exit(failed ? 1 : 0);

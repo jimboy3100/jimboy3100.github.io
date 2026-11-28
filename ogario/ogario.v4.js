@@ -22629,6 +22629,22 @@ function defineChatCommand() {
         comm50: textLanguage.comm50
     }
 }
+/* The first entry of the FB friends list (LM.fbOnline) with this id, as list.find(e => e.id === id),
+ * from an index made once per list: opcode 5 builds a new list, a reset empties it, so the index is
+ * made again when the list or its length changes. Leaderboard and cell records asked with a scan each. */
+var _lmFbIdx = { list: null, n: -1, map: null };
+function _lmFbFriend(list, id) {
+    if (!list || !list.length || id !== id) return undefined;
+    var x = _lmFbIdx;
+    if (x.list !== list || x.n !== list.length) {
+        var m = new Map();
+        for (var i = 0; i < list.length; i++) if (list[i] && !m.has(list[i].id)) m.set(list[i].id, list[i]);
+        x.list = list;
+        x.n = list.length;
+        x.map = m;
+    }
+    return x.map.get(id);
+}
 //var thelegendmodproject = function(t, e, i) {
 function thelegendmodproject() {
     var application;
@@ -45063,9 +45079,7 @@ function thelegendmodproject() {
                             isFriend = true;
                             this.friends++;
                         }
-                        let friend = LM.fbOnline.find(element => {
-                            return element.id === id;
-                        });
+                        let friend = LM.fbOnline.length ? _lmFbFriend(LM.fbOnline, id) : undefined;
                         friend != undefined ? isFBFriend = friend.fbId : isFBFriend = false;
                         this.leaderboard.push({
                             nick: nick,
@@ -55269,9 +55283,7 @@ function thelegendmodproject() {
                 if (extendedFlags & 4) {
                     /* (accountID: read with the record above) */
                     cellUpdateCells.accID = accountID;
-                    let friend = LM.fbOnline.find(element => {
-                        return element.id === accountID
-                    });
+                    let friend = LM.fbOnline.length ? _lmFbFriend(LM.fbOnline, accountID) : undefined;
                     friend != undefined ? cellUpdateCells.fbID = friend.fbId : void (0);
                 }
                 if (extendedFlags & 2) {
