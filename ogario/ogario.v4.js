@@ -3426,18 +3426,33 @@ function lmMultiboxPositionTwin(cell) {
  * alone, LM.food is drawn as before.
  */
 var _lmSrcObs = new Map();
+/* Each connection's set also maps the raw id the connection sent to its cell (set._lmIds): the
+ * packet path finds a known cell by that number (lmObsIds). LM.indexedCells, keyed by the unit
+ * id (raw id + number * 2^32, above 2^32), made a string of every record's id for its lookup. */
 function lmObsTrack(cell, src) {
     var set = _lmSrcObs.get(src);
-    if (!set) _lmSrcObs.set(src, set = new Set());
+    if (!set) {
+        _lmSrcObs.set(src, set = new Set());
+        set._lmIds = new Map();
+    }
     set.add(cell);
     cell._lmObsSet = set;
+    if (cell._lmRawId != null) set._lmIds.set(cell._lmRawId, cell);
 }
 function lmObsUntrack(cell) {
     var set = cell._lmObsSet;
     if (set) {
         set.delete(cell);
         cell._lmObsSet = null;
+        /* only its own entry (a newer cell under the same raw id keeps its) */
+        var ids = set._lmIds;
+        if (ids && cell._lmRawId != null && ids.get(cell._lmRawId) === cell) ids.delete(cell._lmRawId);
     }
+}
+/* raw id -> cell of one connection's tracked cells (a Map, or null) */
+function lmObsIds(src) {
+    var set = _lmSrcObs.get(src);
+    return (set && set._lmIds) || null;
 }
 /* the cells of one connection (a Set, or null) */
 function lmObsOfSource(src) {
@@ -4087,6 +4102,7 @@ function lmObsResetAll() {
     _lmSrcObs.forEach(function (set) {
         set.forEach(function (c) { c._lmObsSet = null; });
         set.clear();
+        if (set._lmIds) set._lmIds.clear();
     });
     _lmSrcObs.clear();
     _lmFoodOff();
@@ -39313,6 +39329,22 @@ function thelegendmodproject() {
             /* a new cell: not the old one's physical cell (lmCellIdentity) */
             this._lmOwnProxy = this._lmCanonId = undefined;
 
+            return this;
+        };
+        /* A removed pellet of a spect.js connection made into that connection's next pellet
+         * (Spect._lmFoodRelease): the constructor runs again on it, so every field starts as on a
+         * new cell and in the same order (one object shape); the jelly point arrays are kept, empty. */
+        this._lmRenew = function (id, e, s, size, color, isFood, isVirus, isPlayer, shortMass, virusMassShots) {
+            var p = this.points, pv = this.pointsVel;
+            ogarbasicassembly.call(this, id, e, s, size, color, isFood, isVirus, isPlayer, shortMass, virusMassShots);
+            if (p) {
+                p.length = 0;
+                this.points = p;
+            }
+            if (pv) {
+                pv.length = 0;
+                this.pointsVel = pv;
+            }
             return this;
         };
 

@@ -1345,6 +1345,56 @@ reset();
     check('dense food: a lone pellet next to the dense place stays lone, its drawn copy leaving moves it (same entry and slot)', loneEnt && le.lone && le.slot === slot && le.rep.spectator === 14 && le.x === 2046 && stats().pellets === 37, le && le.lone + '/' + le.slot);
     vm.runInContext('_lmFoodGather = _tGather', g);
 }
+/* 17. the packet path: known cells found by the raw id (lmObsIds, no unit id string per record),
+ * LM.indexedCells kept as before; a removed pellet is the connection's next pellet (Spect
+ * _lmFoodRelease / _lmRenew): every field as on a new pellet, in the same order, its old anchor
+ * dead; one with a removal fade or drawn as a cell is not reused */
+reset();
+{
+    const prim = (c) => { const o = {}; for (const k of Object.keys(c)) if (k !== 'time' && k !== 'updateTime' && (c[k] === null || typeof c[k] !== 'object')) o[k] = c[k]; return JSON.stringify(o); };
+    const uid = (raw, n) => g.lmUnitCellId(raw, n);
+    let sp = spect(1);
+    sp._lmAnchors = []; sp._lmAnchorNext = 0;
+    sp.updateCells(packet([], [{ id: 70, x: 300, y: 300 }, { id: 71, x: 340, y: 300, size: 40, food: false, name: 'bob' }], []), 0);
+    const ids = vm.runInContext('lmObsIds(1)', g);
+    const p70 = LM.indexedCells[uid(70, 1)], b71 = LM.indexedCells[uid(71, 1)];
+    check('raw id index: each cell of the connection under its raw id, as in LM.indexedCells', ids && ids.get(70) === p70 && ids.get(71) === b71 && ids.size === 2);
+    sp.updateCells(packet([], [{ id: 71, x: 350, y: 300, size: 41, food: false }], []), 0);
+    check('raw id index: a known cell updated in place (no second cell)', LM.indexedCells[uid(71, 1)] === b71 && b71.targetX === 350 && LM.cells.length === 1 && ids.size === 2);
+    const a70 = p70._lmAnchored;
+    sp.updateCells(packet([], [], [70]), 0);
+    check('raw id index: a removed cell leaves it', !ids.has(70) && p70.removed && !LM.indexedCells[uid(70, 1)]);
+    sp.updateCells(packet([], [{ id: 72, x: 500, y: 520, size: 12 }], []), 0);
+    const p72 = LM.indexedCells[uid(72, 1)];
+    check('removed pellet reused for the next pellet of its connection', p72 === p70 && !p72.removed && p72._lmRawId === 72 && p72.x === 500 && p72.id === uid(72, 1) && ids.get(72) === p72);
+    check('reused pellet: its old anchor dead, the new one its own', a70 && !g.lmAnchorLive(a70, 1) && p72._lmAnchored && p72._lmAnchored.rawX === 500 && g.lmAnchorLive(p72._lmAnchored, 1));
+    check('reused pellet: listed once (foodMulti, the connection index, the food list)', LM.foodMulti.filter((c) => c === p72).length === 1 && vm.runInContext('lmObsOfSource(1)', g).has(p72) && p72._lmFoodEnt && drawList().filter((c) => c === p72).length === 1);
+    const keysReused = Object.keys(p72).join(), primReused = prim(p72);
+    /* eaten pellet reused too */
+    sp.updateCells(packet([[71, 72]], [], []), 0);
+    sp.updateCells(packet([], [{ id: 73, x: 600, y: 620, size: 12 }], []), 0);
+    check('eaten pellet reused for the next pellet', LM.indexedCells[uid(73, 1)] === p70 && !p70._lmEaten && !p70.removed);
+    /* the same pellet made new on a fresh world: same fields, values and order */
+    reset();
+    sp = spect(1);
+    sp._lmAnchors = []; sp._lmAnchorNext = 0;
+    sp.updateCells(packet([], [{ id: 71, x: 340, y: 300, size: 40, food: false, name: 'bob' }], []), 0);
+    sp.updateCells(packet([], [{ id: 72, x: 500, y: 520, size: 12 }], []), 0);
+    const fresh = LM.indexedCells[uid(72, 1)];
+    check('reused pellet: the fields of a new pellet, in the same order, with the same values', Object.keys(fresh).join() === keysReused && prim(fresh) === primReused, prim(fresh) + ' vs ' + primReused);
+    /* not reused: a pellet drawn as a cell, or one still fading in LM.removedCells */
+    fresh.redrawed = 1;
+    sp.updateCells(packet([], [], [72]), 0);
+    sp.updateCells(packet([], [{ id: 74, x: 700, y: 720, size: 12 }], []), 0);
+    check('a pellet drawn as a cell is not reused', LM.indexedCells[uid(74, 1)] !== fresh && fresh.removed);
+    /* LM.indexedCells replaced without the connection index (an outside reset): looked up there
+     * again, as before (a new cell, stored in the new object) */
+    const old74 = LM.indexedCells[uid(74, 1)];
+    LM.indexedCells = {};
+    sp.updateCells(packet([], [{ id: 74, x: 700, y: 720, size: 12 }], []), 0);
+    const new74 = LM.indexedCells[uid(74, 1)];
+    check('LM.indexedCells replaced: a record not found there makes a new cell, as before', new74 && new74 !== old74 && vm.runInContext('lmObsIds(1)', g).get(74) === new74);
+}
 
 console.log(fail ? fail + ' check(s) failed' : 'all fullmapfood checks passed');
 process.exit(fail ? 1 : 0);

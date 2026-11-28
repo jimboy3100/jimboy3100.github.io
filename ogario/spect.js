@@ -43,6 +43,9 @@ var _lmIdxPlain = {
 };
 function lmSpectIdx() { return window.lmCellIdx || _lmIdxPlain; }
 
+/* removed pellets a connection keeps for its next pellets (Spect._lmFoodRelease) */
+var LM_SPECT_FOOD_POOL = 256;
+
 /* Socket generations of every spect.js connection come from one counter: a new Spect that
  * reuses a number (Full Map off / on, a removed unit) started at 1 again, so (number,
  * generation) repeated and the old object's cells, anchors and colours passed as its own.
@@ -724,6 +727,10 @@ class Spect {
 
     resetConnectionState() {
         this.clearAsyncState();
+        /* the packet path's raw id index is checked again against LM.indexedCells (_lmIdsFor);
+         * the old socket's spare pellets go */
+        this._lmIdxSeen = null
+        this._lmFoodPool = []
         this.ws = null
         this.nick = null
         this.accessTokenSent = false
@@ -2567,6 +2574,7 @@ class Spect {
             this._lmAnchors[this._lmAnchorNext] = a;
             this._lmAnchorNext = (this._lmAnchorNext + 1) % LM_ANCHOR_MAX;
         }
+        return a;
     }
 
     /*
@@ -3016,13 +3024,16 @@ class Spect {
         }
         this.time = Date.now();
         this.removePlayerCell = false;
+        /* this connection's cells by the raw id it sent (no unit id string per record) */
+        const ids = this._lmIdsFor();
         let eatEventsLength = view.readUInt16LE(offset);
         offset += 2;
         for (length = 0; length < eatEventsLength; length++) {
-            const eaterKey = this.newID(view.readUInt32LE(offset));
-            const victimKey = this.newID(view.readUInt32LE(offset + 4));
-            const eaterCell = legendmod.indexedCells[eaterKey];
-            const victimCell = legendmod.indexedCells[victimKey];
+            const eaterRaw = view.readUInt32LE(offset), victimRaw = view.readUInt32LE(offset + 4);
+            const eaterKey = this.newID(eaterRaw);
+            const victimKey = this.newID(victimRaw);
+            const eaterCell = this._lmCellOf(ids, eaterRaw, eaterKey);
+            const victimCell = this._lmCellOf(ids, victimRaw, victimKey);
             /* an own cell eaten leaves this unit's index, playerCellsMulti and playerCellIDs
              * (once: removeCell() below finds it gone); an id still waiting for its record goes too */
             if (victimCell) {
@@ -3046,6 +3057,7 @@ class Spect {
                 victimCell.targetSize = victimCell.size;
                 victimCell.time = victimCell.updateTime = this.time;
                 victimCell.removeCell(true);
+                if (victimCell.isFood) this._lmFoodRelease(victimCell);
             }
         }
         for (length = 0; ;) {
@@ -3142,7 +3154,7 @@ class Spect {
              * cell already has, under which its nick colour and shared look are kept */
             let colName = name;
             if (!colName && rawColor && !isVirus && !isFood) {
-                const known = legendmod.indexedCells['' + id];
+                const known = this._lmCellOf(ids, rawId, id);
                 if (known && known._lmGen === this.connectionGeneration && known._lmSrvName) colName = known._lmSrvName;
             }
             if (!isVirus && !isFood && colName !== "") {
@@ -3184,9 +3196,14 @@ class Spect {
             /* every list push stores the cell's slot, so removeCell() never scans */
             var _idx = lmSpectIdx();
             /* A unit id (id + number * 2^32) is no array index: each use as a key turned the number
-             * into a string again (a has, a read and a store per cell per packet). Made once. */
-            const idKey = '' + id;
-            cell = legendmod.indexedCells[idKey] || null;
+             * into a string. A known cell is found by its raw id (_lmCellOf); the string is made
+             * only for a cell not known by it (looked up and stored in LM.indexedCells). */
+            let idKey = null;
+            cell = ids !== null ? ids.get(rawId) : undefined;
+            if (cell === undefined || cell.removed) {
+                idKey = '' + id;
+                cell = legendmod.indexedCells[idKey] || null;
+            }
             if (cell) {
                 /* a cell of an earlier socket of this unit under the same id is another cell */
                 if (cell._lmGen !== undefined && cell._lmGen !== this.connectionGeneration) {
@@ -3205,7 +3222,10 @@ class Spect {
                 }
             }
             if (!cell) {
-                cell = new window.legendmod1(id, x, y, size, color, isFood, isVirus, false, defaultmapsettings.shortMass, defaultmapsettings.virMassShots);
+                /* a pellet: one this connection removed before, made new (_lmFoodRelease) */
+                const spare = isFood ? this._lmFoodPool : undefined;
+                if (spare !== undefined && spare.length) cell = spare.pop()._lmRenew(id, x, y, size, color, isFood, isVirus, false, defaultmapsettings.shortMass, defaultmapsettings.virMassShots);
+                else cell = new window.legendmod1(id, x, y, size, color, isFood, isVirus, false, defaultmapsettings.shortMass, defaultmapsettings.virMassShots);
                 cell.time = this.time;
                 cell.spectator = this.number;
                 /* one observation of this connection: source, socket generation, raw id */
@@ -3234,7 +3254,7 @@ class Spect {
                     _idx.push(legendmod.foodMulti, cell, '_foodMultiIdx');
                 }
                 if (!isFood && !remove) _idx.push(legendmod.cells, cell, '_cellsIdx');
-                legendmod.indexedCells[idKey] = cell;
+                legendmod.indexedCells[idKey !== null ? idKey : '' + id] = cell;
             }
 
             if (name) {
@@ -3274,8 +3294,8 @@ class Spect {
              * checks use those, never the drawn (interpolated, mirrored or snapped) position.
              * Each pellet feeds the calibration anchors once. */
             if (isFood && !cell._lmAnchored) {
-                cell._lmAnchored = true;
-                this._lmAnchorPush(rawX, rawY, size, this.time, cell);
+                /* its anchor (let go when the cell is reused, _lmFoodRelease) */
+                cell._lmAnchored = this._lmAnchorPush(rawX, rawY, size, this.time, cell) || true;
             }
             if (isFood) {
                 /* pellets do not move: drawn at the packet position by the food pass */
@@ -3321,14 +3341,16 @@ class Spect {
         eatEventsLength = view.readUInt16LE(offset);
         offset += 2;
         for (length = 0; length < eatEventsLength; length++) {
-            id = this.newID(view.readUInt32LE(offset));
+            const goneRaw = view.readUInt32LE(offset);
+            id = this.newID(goneRaw);
             offset += 4;
-            cell = legendmod.indexedCells[id];
+            cell = this._lmCellOf(ids, goneRaw, id);
             /* an own cell leaves this unit's index and playerCellIDs once (removeCell() then
              * finds it gone); an id still waiting for its record goes too */
             if (cell) {
                 this._lmOwnDrop(cell);
                 cell.removeCell();
+                if (cell.isFood) this._lmFoodRelease(cell);
             } else this._lmOwnForget(id);
         }
         /* orientation and residual checks (each throttled; see the functions) */
@@ -3577,6 +3599,56 @@ class Spect {
         }
         own.length = 0;
         this.playerCellIDs = [];
+    }
+
+    /* This connection's raw id -> cell index (lmObsIds, ogario.v4.js), or null (an older core:
+     * the lookups go through LM.indexedCells). After LM.indexedCells was replaced (a flush keeps
+     * the connections' cells) each entry is checked once against it: one no longer stored there
+     * is looked up there again, as before. */
+    _lmIdsFor() {
+        const ids = typeof lmObsIds === 'function' ? lmObsIds(this.number) : null;
+        if (!ids) return null;
+        const idx = legendmod.indexedCells;
+        if (this._lmIdxSeen !== idx) {
+            ids.forEach(function (c, raw) { if (!idx || idx['' + c.id] !== c) ids.delete(raw); });
+            this._lmIdxSeen = idx;
+        }
+        return ids;
+    }
+
+    /* The cell this connection has under a raw id (id: its unit id), or null: the index first,
+     * LM.indexedCells for one it does not hold. */
+    _lmCellOf(ids, rawId, id) {
+        if (ids !== null) {
+            const c = ids.get(rawId);
+            if (c !== undefined && !c.removed) return c;
+        }
+        return legendmod.indexedCells['' + id] || null;
+    }
+
+    /* A pellet of this connection gone (eaten, out of its view): kept, at most LM_SPECT_FOOD_POOL,
+     * for its next pellet (_lmRenew runs the constructor on it again). Only when nothing holds it
+     * any more: removeCell() took it out of every list, the food list (_lmFoodEnt) and this
+     * connection's index; no removal fade (LM.removedCells); never drawn as a cell or seen by
+     * the hide step (no copy points at it); none of the fields a cell gets outside the
+     * constructor (account / friend). Its food anchor is let go (dead already: its cell is
+     * removed, lmAnchorLive), so the anchor never takes the next pellet as its own. */
+    _lmFoodRelease(cell) {
+        let pool = this._lmFoodPool;
+        if (pool === undefined) pool = this._lmFoodPool = [];
+        if (pool.length >= LM_SPECT_FOOD_POOL || !cell.removed || cell.spectator !== this.number || typeof cell._lmRenew !== 'function' ||
+            cell._lmFoodEnt || cell._lmObsSet || cell._lmOwner || cell.redrawed || cell._lmMbSeenF !== undefined || cell._lmMbTwin !== undefined ||
+            cell.accID !== undefined || cell.fbID !== undefined || cell.isFriend !== undefined) return;
+        const gone = legendmod.removedCells;
+        if (gone && cell._removedIdx >= 0 && gone[cell._removedIdx] === cell) return;
+        const a = cell._lmAnchored;
+        if (a && a.cell === cell) {
+            a.alive = false;
+            a.cell = null;
+        }
+        /* no connection's any more (kept once: a second release finds it so) */
+        cell.spectator = 0;
+        pool.push(cell);
     }
 
     newID(id) {
