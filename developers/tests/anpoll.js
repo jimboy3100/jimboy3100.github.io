@@ -26,6 +26,13 @@ function suite(label, src) {
   u.run(src);
   u.flush();
   res.undefinedOn = u.ctx.LMEvents._has('spawn') && u.ctx.LMEvents._has('death');
+  /* this file run before the core started (legendmod5 not set yet, defaultmapsettings is): recording on */
+  const p = makeEnv({}, { toastr: { info() {}, success() {}, warning() {} } });
+  i18n(p.ctx);
+  delete p.ctx.legendmod5;
+  p.run(src);
+  p.flush();
+  res.earlyOn = p.ctx.LMEvents._has('spawn') && p.ctx.LMEvents._has('death');
 
   const e = makeEnv({ recordReplays: false, analytics: true }, { toastr: { info() {}, success() {}, warning() {} } });
   i18n(e.ctx);
@@ -98,6 +105,18 @@ function suite(label, src) {
   for (let i = 0; i < 4; i++) E.emit('massUpdate', { mass: 700, cells: 1, context: 'live' });
   E.emit('death', { time: Date.now(), mass: 700, msAlive: 4000, context: 'live' });
   res.otherViewKept = host.children.length === 1 && !id('lm-analytics-tiles');
+  /* the saved "off" read after this file started listening (loadSettings announces no change):
+   * a live life stores nothing and the listeners go */
+  const before = stored();
+  S.recordReplays = false;
+  E.emit('spawn', { time: Date.now() - 4000, context: 'live' });
+  for (let i = 0; i < 4; i++) E.emit('massUpdate', { mass: 700, cells: 1, context: 'live' });
+  E.emit('death', { time: Date.now(), mass: 700, msAlive: 4000, context: 'live' });
+  e.flush();
+  res.silentOff = stored() === before && !E._has('spawn') && !E._has('death');
+  S.recordReplays = true;
+  E.emit('settingsChange', { key: 'recordReplays', value: true });
+  e.flush();
   /* Record replays off by an import: listeners gone at once; the Dashboard says recording is off */
   S.recordReplays = false;
   E.emit('settingsChange', { key: 'recordReplays', value: false });
@@ -113,6 +132,7 @@ function suite(label, src) {
 const r = suite('current', fs.readFileSync(srcPath, 'utf8'));
 check('no setInterval at all', r.noTimer && r.noTimerEnd);
 check('Record replays not set: recording on', r.undefinedOn);
+check('loaded before the core started (no legendmod5 yet): recording on', r.earlyOn);
 check('Record replays off: no listeners; the old Analytics switch records nothing', r.offQuiet && r.oldSwitchIgnored);
 check('settingsChange recordReplays on: listeners at once', r.onAtOnce);
 check('no profile button, footer link or window of its own; LMAnalytics.paint, no open / close', r.noEntryPoints && r.api);
@@ -122,6 +142,7 @@ check('Dashboard drawn into the given element, with the old match history merged
 check('a game that ends while the Dashboard is shown draws it again', r.dashRedrawn);
 check("Heatmaps: the heat canvas of the recorded lives; without data they say so", r.heatNote);
 check('another view shown in the element is not drawn over', r.otherViewKept);
+check('Record replays off without a settingsChange (saved value read late): nothing stored, listeners go', r.silentOff);
 check('settingsChange recordReplays off: listeners gone at once; the Dashboard says recording is off', r.offAtOnce && r.offNote);
 if (oldPath) {
   const o = suite('older', fs.readFileSync(oldPath, 'utf8'));

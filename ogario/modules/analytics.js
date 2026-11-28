@@ -3,7 +3,8 @@
  * ogario.v4.js _lmMatchHistoryPaint).
  * Games are recorded with "Record replays" (recordReplays, Settings > Replays, on by default), the one
  * switch for the replay packets, the match history and these stats. While it is off this file adds no
- * LMEvents listeners (checked again at every settings change); the views still show the games stored
+ * LMEvents listeners (checked again at every settings change, and at each game event: the saved
+ * value can be read after this file started); the views still show the games stored
  * before, the old match history (lmMatchHistory) and the all-time personal bests (highest mass,
  * longest time alive). Practice arena lives and replay playback are never recorded.
  * Everything stays in this browser (localStorage, capped and validated on every read). No network.
@@ -359,8 +360,13 @@
     /* practice arena lives (ogario/modules/practice.js) are not games */
     function practising() { return !!(window.LMPractice && window.LMPractice.on); }
     /* replays too: LMEvents says where an event comes from (context); older cores: the flags */
-    function notLive(e) { return e && e.context ? e.context !== 'live' : practising() || !!window._lmEvReplayOn; }
-    function onSpawn(e) { if (notLive(e)) { life = null; return; } beginLife(+e.time || Date.now()); }
+    /* and nothing while Record replays is off: this file can start listening before the saved
+     * settings are read, and reading them announces no settingsChange */
+    function notLive(e) { return !enabled() || (e && e.context ? e.context !== 'live' : practising() || !!window._lmEvReplayOn); }
+    function onSpawn(e) {
+        if (notLive(e)) { life = null; if (!enabled() && typeof setTimeout === 'function') setTimeout(tick, 0); return; }
+        beginLife(+e.time || Date.now());
+    }
     function onMass(e) {
         var now = Date.now(), m = +e.mass || 0;
         if (m <= 0 || notLive(e)) return;
@@ -454,8 +460,10 @@
         var host = typeof window._lmHostOnly === 'function' ? window._lmHostOnly(o.ws) : '';
         if (life.srv && host && host !== life.srv) life = null;
     }
-    /* Record replays: an undefined setting counts as on, as for the replay packets */
-    function enabled() { var s = window.legendmod5; return !!(s && s.recordReplays !== false); }
+    /* Record replays: an undefined setting counts as on, as for the replay packets. legendmod5 is set
+     * only when the core starts (after this file can have run); defaultmapsettings is the same object,
+     * there from the start, and the saved values are read into it */
+    function enabled() { var s = window.legendmod5 || window.defaultmapsettings; return !!(s && s.recordReplays !== false); }
 
     /* ------------------------------------------------------------------ views */
     var shown = null, heat = { layer: 'move', n: 25, map: 0 };
