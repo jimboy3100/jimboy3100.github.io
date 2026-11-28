@@ -370,7 +370,10 @@ urlIpWhenOpened();
 /* Legend Express update notice. The newest loader of each kind; the loaders since LMX_OWNER_SINCE write
  * the single-owner record (sessionStorage "lm-loader-owner", html[data-lm-loader]:
  * "<extension|userscript>:<performance.timeOrigin>") before they take over agar.io's page. */
-var LMX_LATEST = { userscript: '1.9', extension: '1.9' };
+/* The extension stays at the Chrome Web Store's version until 1.9.0 is published there: its notice tells
+ * a store install to unzip a new package over its folder, which a store install cannot do. Set it to '1.9'
+ * when the store has 1.9.0. */
+var LMX_LATEST = { userscript: '1.9', extension: '1.8.5' };
 var LMX_OWNER_SINCE = '1.9';
 var LMX_UPDATE_URL = { userscript: 'https://www.legendmod.ml/LMexpress/LMexpress.user.js', extension: 'https://www.legendmod.ml/LMexpress/LegendExpressExtension.zip' };
 
