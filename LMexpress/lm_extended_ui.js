@@ -171,7 +171,8 @@ window._lmRestoreWhenPurchaseSettled = function (purchaseId, restore) {
 
     // ─── Theme Resolver Helper ───
     function getTheme() {
-        var ds = window.defaultSettings || {};
+        /* the theme as shown (an expansion's colours while it is on), not only the saved one */
+        var ds = (typeof window.lmThemeEffective === 'function' && window.lmThemeEffective()) || window.defaultSettings || {};
         var external = {};
 
         if (typeof window.getShopTheme === 'function') {

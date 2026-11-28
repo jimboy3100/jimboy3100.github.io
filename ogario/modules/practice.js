@@ -38,7 +38,8 @@
     function L(fn) { relabels.push(fn); fn(); }
     function toast(kind, text) { if (window.toastr) toastr[kind](String(text).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;')); }
     function LM() { return window.legendmod || null; }
-    function accent() { var c = window.defaultSettings && defaultSettings.menuMainColor; return typeof c === 'string' && /^#[0-9a-f]{3,8}$/i.test(c) ? c : '#01d9cc'; }
+    /* the theme as shown (an expansion's colours while it is on), not only the saved one */
+    function accent() { var c = ((typeof window.lmThemeEffective === 'function' && window.lmThemeEffective()) || window.defaultSettings || {}).menuMainColor; return typeof c === 'string' && /^#[0-9a-f]{3,8}$/i.test(c) ? c : '#01d9cc'; }
 
     /* ------------------------------------------------------------------ */
     /* Storage                                                             */

@@ -733,7 +733,8 @@
     /* theme() gives CSS (var(--lm-x, current) so an open window follows a theme change);
      * theme(true) gives the resolved colours for SVG attributes and canvas */
     function theme(raw) {
-        var ds = window.defaultSettings || {};
+        /* the theme as shown (an expansion's colours while it is on), not only the saved one */
+        var ds = (typeof window.lmThemeEffective === 'function' && window.lmThemeEffective()) || window.defaultSettings || {};
         var r = { mc: ds.menuMainColor || '#01d9cc', pc: ds.menuPanelColor || '#00243e', pc2: ds.menuPanelColor2 || '#002f52', tc: ds.menuTextColor || '#ffffff', tc2: ds.menuTextColor2 || '#8096a7' };
         if (raw) return r;
         return { mc: 'var(--lm-mc,' + r.mc + ')', pc: 'var(--lm-pc,' + r.pc + ')', pc2: 'var(--lm-pc2,' + r.pc2 + ')', tc: 'var(--lm-tc,' + r.tc + ')', tc2: 'var(--lm-tc2,' + r.tc2 + ')' };

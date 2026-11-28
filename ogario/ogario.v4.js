@@ -20963,8 +20963,14 @@ var LM_THEME_OV_KEYS = ['menuMainColor', 'menuPanelColor', 'menuPanelColor2', 'm
 var _lmThemeOv = null;
 function lmThemeEffective() {
     if (!_lmThemeOv) return defaultSettings;
-    var o = Object.create(defaultSettings);
+    /* one view per override (canvas painters ask every frame); it reads the rest from the
+     * current defaultSettings, a new one only if that object was replaced */
+    var o = _lmThemeOv.eff;
+    if (o && _lmThemeOv.base === defaultSettings) return o;
+    o = Object.create(defaultSettings);
     for (var k in _lmThemeOv.map) o[k] = _lmThemeOv.map[k];
+    _lmThemeOv.eff = o;
+    _lmThemeOv.base = defaultSettings;
     return o;
 }
 function lmThemeOverride(owner, map) {
@@ -20995,6 +21001,8 @@ function lmThemeOverride(owner, map) {
     return true;
 }
 window.lmThemeOverride = lmThemeOverride;
+/* for the module windows that paint canvas / SVG with resolved theme colours */
+window.lmThemeEffective = lmThemeEffective;
 var defaultSettings = {
     checkonetimeLc2: false,
     darkTheme: true,
@@ -26297,12 +26305,13 @@ function thelegendmodproject() {
                              * worked out on the first row instead of once per row */
                             if (totalMass === undefined) {
                                 totalMass = this.top5.map(top5 => top5.mass).reduce((accumulator, playerMass) => accumulator + playerMass);
-                                barColor = $('#hudMainColor')[0].value;
+                                /* the HUD colour as shown (an expansion's while it is on) */
+                                barColor = _lmThemeOv ? lmThemeEffective().hudMainColor : $('#hudMainColor')[0].value;
                             }
 
                             t += (`<span class="top5-mass-color">
                                         [` + this.shortMassFormat(this.top5[o].mass) + `]
-                                        <div style="color: ` + defaultSettings.hudTextColor + `; display: inline-block">` + playersNickName + `</div>
+                                        <div style="color: ` + lmThemeEffective().hudTextColor + `; display: inline-block">` + playersNickName + `</div>
                                         <div class="top5-mass-bar-container">
                                             <div class="top5-mass-bar" style="width: ` + this.top5[o].mass / totalMass * 100 + `%; background-color:` + barColor + `"></div>
                                         </div>
@@ -40764,10 +40773,6 @@ function thelegendmodproject() {
                             style.shadowOffsetY = 0;
                         }
 
-                        /*if (dyinglight1load != "yes"){
-                                        style.globalAlpha = 1;
-                                        s = false;
-                                    }*/
                         //var node = null;
 
 

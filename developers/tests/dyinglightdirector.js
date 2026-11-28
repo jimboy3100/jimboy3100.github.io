@@ -267,6 +267,24 @@ check('the new settings: off by default with Dying Light, immersive, full sound,
     check('theme: only colours of the known keys, one owner at a time', ctx.lmThemeOverride('a', { menuMainColor: 'url(x)', menuBg: '#000' }) === false &&
         ctx.lmThemeOverride('a', { menuMainColor: '#123' }) === true && ctx.lmThemeOverride('b', { menuMainColor: '#456' }) === false &&
         ctx.lmThemeOverride('b', null) === false && ctx.lmThemeEffective().menuMainColor === '#123' && ctx.defaultSettings.menuMainColor === '#01d9cc');
+    check('theme: one view per override (canvas painters ask every frame, nothing made per call)', ctx.lmThemeEffective() === ctx.lmThemeEffective());
+    {
+        /* the windows that paint canvas / SVG / their own CSS with resolved colours show it too */
+        const fn = (file, a, end) => { const s = rd(file), i = s.indexOf(a); if (i < 0) throw new Error('not found: ' + a); return s.slice(i, s.indexOf(end, i) + end.length); };
+        vm.runInContext('var __t = {' +
+            'analytics: (function () {' + fn('ogario/modules/analytics.js', 'function theme(raw) {', '\n    }\n') + 'return theme; })(),' +
+            'gamepad: (function () {' + fn('ogario/modules/gamepad-ui.js', 'function colors(raw) {', '\n    }\n') + 'return colors; })(),' +
+            'practice: (function () {' + fn('ogario/modules/practice.js', 'function accent() {', '\n') + 'return accent; })(),' +
+            'studio: (function () {' + fn('ogario/modules/replaystudio.js', 'function accent() {', '\n') + 'return accent; })(),' +
+            'shop: (function () {' + fn('LMexpress/skinsAndDeals.js', 'function getShopTheme() {', '\n}\n') + 'return getShopTheme; })()' +
+            '};', ctx);
+        const t = ctx.__t, mc = () => [t.analytics(true).mc, t.gamepad(true).mc, t.practice(), t.studio(), t.shop().mc];
+        check('theme: Analytics, gamepad stick, practice and Replay Studio canvas, shop colours follow the override', mc().every(c => c === '#123'), mc().join());
+        ctx.lmThemeOverride('a', null);
+        check('...and the player theme once it is cleared', mc().every(c => c === '#01d9cc'), mc().join());
+        ctx.lmThemeOverride('a', { menuMainColor: '#123' });
+        painted.length = 1;
+    }
     ctx.defaultSettings.menuPanelColor = '#222';
     check('theme: a change to the player\'s theme while overridden shows when cleared', ctx.lmThemeEffective().menuPanelColor === '#222' &&
         ctx.lmThemeOverride('a', null) === true && ctx.lmThemeEffective() === ctx.defaultSettings && painted.length === 2);

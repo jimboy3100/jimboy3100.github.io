@@ -1731,7 +1731,8 @@
         b.addEventListener('click', function (e) { e.preventDefault(); e.stopPropagation(); fn(e); });
         return b;
     }
-    function accent() { return (window.defaultSettings && defaultSettings.menuMainColor) || '#01d9cc'; }
+    /* the theme as shown (an expansion's colours while it is on), not only the saved one */
+    function accent() { return ((typeof window.lmThemeEffective === 'function' && window.lmThemeEffective()) || window.defaultSettings || {}).menuMainColor || '#01d9cc'; }
     /* window chrome follows the menu theme live (CSS variables set by the theme); canvas keeps accent() */
     function cssMc() { return 'var(--lm-mc,' + accent() + ')'; }
     /* The window is moved by its title bar (mouse or touch), like the other Legend

@@ -69,7 +69,8 @@ if (window.agarversion) {
  * Used by functions outside the SpecialDeals() scope (populateDealsGrid, updateEquippedSkinUI, etc.)
  */
 function getShopTheme() {
-    var ds = window.defaultSettings || {};
+    /* the theme as shown (an expansion's colours while it is on), not only the saved one */
+    var ds = (typeof window.lmThemeEffective === 'function' && window.lmThemeEffective()) || window.defaultSettings || {};
     return {
         mc:  ds.menuMainColor   || '#01d9cc',
         pc:  ds.menuPanelColor  || '#00243e',
@@ -208,8 +209,8 @@ function SpecialDeals(defaultTab) {
     }
 
     // --- Inject skin shop CSS (theme-aware) ---
-        // Read the user's current theme settings so the modal matches
-        var ds = window.defaultSettings || {};
+        // Read the user's current theme settings so the modal matches (as shown: an expansion's colours while it is on)
+        var ds = (typeof window.lmThemeEffective === 'function' && window.lmThemeEffective()) || window.defaultSettings || {};
         var mc  = ds.menuMainColor   || '#01d9cc'; // accent color (title, active tabs, borders)
         var pc  = ds.menuPanelColor  || '#00243e'; // panel background
         var pc2 = ds.menuPanelColor2 || '#002f52'; // panel secondary (inputs, hover rows)

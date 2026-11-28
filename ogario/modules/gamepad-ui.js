@@ -45,7 +45,9 @@
     /* colors() gives CSS (var(--lm-x, current) so the open window follows a theme change);
      * colors(true) gives the resolved colours for the stick canvas */
     function colors(raw) {
-        var ds = typeof defaultSettings !== 'undefined' && defaultSettings ? defaultSettings : {};
+        /* the theme as shown (an expansion's colours while it is on), not only the saved one */
+        var ds = typeof window.lmThemeEffective === 'function' && window.lmThemeEffective() ||
+            (typeof defaultSettings !== 'undefined' && defaultSettings ? defaultSettings : {});
         var r = {
             mc: ds.menuMainColor || '#01d9cc', pc: ds.menuPanelColor || '#00243e', pc2: ds.menuPanelColor2 || '#002f52',
             tc: ds.menuTextColor || '#ffffff', tc2: ds.menuTextColor2 || '#8096a7'
