@@ -6155,24 +6155,6 @@
     "ja": "変化",
     "it": "Variazione"
   },
-  "modules.analytics.bestServers": {
-    "en": "Best servers",
-    "el": "Καλύτεροι server",
-    "es": "Mejores servidores",
-    "bg": "Най-добри сървъри",
-    "fr": "Meilleurs serveurs",
-    "ar": "أفضل السيرفرات",
-    "zh": "最佳伺服器",
-    "ru": "Лучшие серверы",
-    "de": "Beste Server",
-    "tr": "En iyi sunucular",
-    "pl": "Najlepsze serwery",
-    "nl": "Beste servers",
-    "pt": "Melhores servidores",
-    "id": "Server terbaik",
-    "ja": "得意なサーバー",
-    "it": "Server migliori"
-  },
   "modules.analytics.bestModes": {
     "en": "Best modes",
     "el": "Καλύτερες λειτουργίες",

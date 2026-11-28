@@ -159,7 +159,7 @@
     },
     {
       "question": "What is the Analytics Dashboard?",
-      "answer": "A statistics window with a dashboard (games, highest mass, survival, top-10 rate, weekly chart, best servers and modes), heatmaps and the match history, from up to 500 game summaries. It tracks position history (3,600 samples per game, 50 games)."
+      "answer": "A statistics window with a dashboard (games, highest mass, survival, top-10 rate, weekly chart, best modes), heatmaps and the match history, from up to 500 game summaries. It tracks position history (3,600 samples per game, 50 games)."
     },
     {
       "question": "How do presets work?",

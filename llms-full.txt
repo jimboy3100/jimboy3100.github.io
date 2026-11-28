@@ -507,7 +507,7 @@ A full playback tool for game replays with timeline, automatic bookmarks, variab
 A tool to drag and resize 15 HUD components (leaderboard, minimap, stats, chat, etc.) into named layouts. Up to 20 layouts with grid snapping (8/16/32px), lock/unlock, and edge-relative positioning for responsiveness.
 
 **What is the Analytics Dashboard?**
-A statistics window with a dashboard (games, highest mass, survival, top-10 rate, weekly chart, best servers and modes), heatmaps and the match history, from up to 500 game summaries. It tracks position history (3,600 samples per game, 50 games).
+A statistics window with a dashboard (games, highest mass, survival, top-10 rate, weekly chart, best modes), heatmaps and the match history, from up to 500 game summaries. It tracks position history (3,600 samples per game, 50 games).
 
 **How do presets work?**
 Legend Mod offers one-click presets: Competitive (enables rings, mass, split range), Battery Saver (caps FPS, disables effects), Streamer (hides personal info), Reduced Motion (no animations), and Clean HUD (minimal interface). Theme presets include 8 colour schemes.

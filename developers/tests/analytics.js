@@ -116,7 +116,7 @@ check('track validation', C.sanitizeTrack({ t: 1, p: 'AAB' }) === null && C.sani
     check('top-10 finish share over recorded games only', near(a.top10, 0.5));
     check('mass per minute = sum of peaks / sum of minutes (lives of 10 s+)', a.perMin === Math.round(9000 / 30));
     check('time in 1st adds up', a.firstMs === 90000);
-    check('best servers: b first, single-game server left out', a.servers.length === 2 && a.servers[0].name === 'b.example' && a.servers[0].avgPeak === 3000 && a.servers[1].n === 2);
+    check('no best servers list (agar.io hosts change with almost every join)', !('servers' in a));
     check('best modes', a.modes[0].name === 'Teams' && a.modes[0].n === 2);
     check('8 weeks, oldest first, this week last', a.weeks.length === 8 && a.weeks[7].start === ws && a.weeks[7].n === 2 && a.weeks[7].avgPeak === 3000 && a.weeks[6].n === 2 && a.weeks[6].avgPeak === 1500);
     check('week buckets are consecutive Mondays', a.weeks.every((w, i) => i === 0 || (w.start > a.weeks[i - 1].start && new RealDate(w.start).getDay() === 1)));

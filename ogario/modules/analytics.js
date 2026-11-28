@@ -200,7 +200,7 @@
             top10: lm.length ? lm.filter(function (g) { return g.lastPos > 0 && g.lastPos <= 10; }).length / lm.length : null
         };
     }
-    /* best servers / modes: highest average peak mass; with any group of 2+ games, single games are left out */
+    /* best modes: highest average peak mass; with any group of 2+ games, single games are left out */
     function groupBest(games, key) {
         var m = {}, list = [];
         games.forEach(function (g) {
@@ -230,7 +230,7 @@
         });
         res.perMin = sumMin > 0 ? Math.round(sumPeak / sumMin) : 0;
         res.firstMs = first;
-        res.servers = groupBest(games, 'srv');
+        /* no best servers: an agar.io game host (live-arena-<token>) changes with almost every join */
         res.modes = groupBest(games, 'mode');
         /* 8 calendar weeks, oldest first; a week without games has n 0 */
         var starts = [weekStart(now)];
@@ -627,7 +627,7 @@
         });
         body.appendChild(tb);
         var lists = el('div', 'display:flex;flex-wrap:wrap;gap:12px;');
-        [[T('bestServers'), a.servers], [T('bestModes'), a.modes]].forEach(function (x) {
+        [[T('bestModes'), a.modes]].forEach(function (x) {
             var box = el('div', 'flex:1 1 220px;min-width:0;');
             section(box, x[0]);
             if (!x[1].length) box.appendChild(el('div', 'color:' + t.tc2 + ';', T('none')));
