@@ -38,11 +38,7 @@
         { "from": "agarscripts/legendmod.user.js", "paths": ["old/oldskins.js", "AjaxData/accesstoken.html"], "why": "old userscript, kept for history" },
         { "from": "extras/legendhelper.js", "paths": ["legend.github.io/banners/grey-08.jpg"], "why": "old helper script" },
         { "from": "ogario/protocols/MultiOgar.md", "paths": ["ogario/ogario.test.v4.js"], "why": "protocol notes linking a test build that was removed" },
-        { "from": "lib/bootstrap-colorpicker.min.css", "paths": ["img/bootstrap-colorpicker/hue-horizontal.png", "img/bootstrap-colorpicker/alpha-horizontal.png"], "why": "vendor style sheet; these images are only requested by the horizontal colour picker, which is not used" },
-        { "from": "expandingland:knowledge/resources.json", "paths": ["skins/checker.html", "skins/rotator.html", "nicknames/"], "why": "copy of knowledge/resources.json from before its links were corrected (skins/skinchecker.html, skinrotator.html, nicks/)", "defect": true },
-        { "from": "legendworld-help:knowledge/resources.json", "paths": ["skins/checker.html", "skins/rotator.html", "nicknames/"], "why": "copy of knowledge/resources.json from before its links were corrected (skins/skinchecker.html, skinrotator.html, nicks/)", "defect": true },
-        { "from": "expandingland:knowledge/*.json", "paths": ["companion-guide.html"], "why": "copy of knowledge/ from before the stream companion (companion.html, companion-guide.html) was removed", "defect": true },
-        { "from": "legendworld-help:knowledge/*.json", "paths": ["companion-guide.html"], "why": "copy of knowledge/ from before the stream companion (companion.html, companion-guide.html) was removed", "defect": true }
+        { "from": "lib/bootstrap-colorpicker.min.css", "paths": ["img/bootstrap-colorpicker/hue-horizontal.png", "img/bootstrap-colorpicker/alpha-horizontal.png"], "why": "vendor style sheet; these images are only requested by the horizontal colour picker, which is not used" }
     ],
     "integrityIgnoreSources": [
         { "glob": "developers/tests/**", "why": "test fixtures use made-up addresses on purpose" },
