@@ -2009,6 +2009,10 @@
                 if (orig) {
                     expanded = !expanded;
                     orig.style.setProperty('display', expanded ? 'block' : 'none', 'important');
+                    /* the expanded stats (and the multibox roster in it) above the teamboard
+                     * (#top5-hud), which sits over their top rows */
+                    if (expanded) orig.style.setProperty('z-index', '100', 'important');
+                    else orig.style.removeProperty('z-index');
                 }
             }, { passive: false });
 
