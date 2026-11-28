@@ -6,7 +6,8 @@
  * Cases: a focused unit dies while the main player lives (back to 0) or is dead (to the next living
  * unit, one event, not 0 and then the unit), the first spawn of a unit takes the focus, a unit dying
  * without the focus and a respawn of the focused unit send nothing, swap / back send one event each,
- * a Full Map tile (player false) is never taken for a surviving unit.
+ * a Full Map tile (player false) is never taken for a surviving unit, a switch made while a unit's
+ * first spawn is held (spect.js _lmSpawnHold) is not undone when that spawn goes through.
  * node developers/tests/mbswap.js [ogario.v4.js] [spect.js] */
 'use strict';
 const fs = require('fs'), path = require('path'), vm = require('vm');
@@ -108,6 +109,29 @@ for (const how of ['terminate', 'beforecalculation']) {
     e.unit(2).openSecond = false;
     e.unit(2).beforecalculation();
     check('spawn of the already focused unit: no second event', e.got.length === 1, e.got.join());
+}
+/* the first spawn waits for the unit's place on the map (spect.js _lmSpawnHold, up to 3 s; a
+ * stand-in here): the switch key (the phone P1/P2 indicator) pressed meanwhile is not undone when
+ * it goes through; the indicator ended on P2 while P1 was controlled */
+{
+    const held = (u) => { u.cells = 3; u._lmHeld = true; u._lmSpawnHold = function () { return this._lmHeld; }; u.beforecalculation(); };
+    const go = (u) => { u._lmHeld = false; u.beforecalculation(); };
+    let e = env({ focus: null, mainAlive: true, units: 1, slots: true });
+    held(e.unit(1));
+    check('first spawn held: no event, P1 controlled', e.got.length === 0 && !e.ctx.multiboxPlayerEnabled, e.got.join());
+    go(e.unit(1));
+    check('    ... no choice meanwhile: the unit takes the focus when it goes through, one event', e.got.join() === '1<0' && e.ctx.multiboxPlayerEnabled === 1, e.got.join());
+    e = env({ focus: null, mainAlive: true, units: 1, slots: true });
+    held(e.unit(1));
+    e.ctx.application.multiboxchange(); e.ctx.application.multiboxchange();
+    go(e.unit(1));
+    check('switch key P2 then P1 while the first spawn is held: P1 stays controlled, no event after the last switch', e.got.join() === '1<0,0<1' && !e.ctx.multiboxPlayerEnabled &&
+        e.ctx.lmMbPlayers.activeSlot === 1, e.got.join() + ' focus=' + e.ctx.multiboxPlayerEnabled);
+    e = env({ focus: null, mainAlive: true, units: 1, slots: true });
+    held(e.unit(1));
+    e.ctx.application.multiboxchange();
+    go(e.unit(1));
+    check('switch key to P2 while its first spawn is held: P2 controlled, no second event at the spawn', e.got.join() === '1<0' && e.ctx.multiboxPlayerEnabled === 1, e.got.join());
 }
 /* swap / back hotkeys: one event each */
 {

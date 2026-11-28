@@ -15,7 +15,9 @@
  * - 1 to 6 playing clients x Full Map off / on (lib/mbplayers.js): deaths, focus, switch keys,
  *   profiles, enabling, Add Player (section 5); the player calls (enable, add, remove, select) against
  *   the Multibox 2.0 cases: six at most with the slot being made, remove / reuse a slot, stale epochs,
- *   the login slot, P1 dying while P4 plays, a reconnect while P5 plays, the last death's menu (5b).
+ *   the login slot, P1 dying while P4 plays, a reconnect while P5 plays, the last death's menu (5b);
+ *   a player chosen while a unit's first spawn is held (spect.js _lmSpawnHold) keeps the focus when
+ *   it goes through, with no choice the unit takes it (5b).
  *   lmMbPlayers.attach refuses a slot taken, a stale slotEpoch, a source registered; addBox's refusals
  *   (six players, a unit being made, attach refusing the unit made, a server change meanwhile) give
  *   null and leave the registry as it was; a Spect constructor that throws rolls the reservation back.
@@ -478,6 +480,66 @@ function death(o) {
         const u3 = app.mbAddPlayer();
         check('add one: P3 opens in slot 3 and the focus stays where it was (it takes it at its first spawn)', !!u3 && u3.slotId === 3 && units().length === 2 && s.focus() === units()[0].number);
         check('Settings "Multibox slots" 3 (the shipped default): no fourth player', app.mbAddPlayer() === null && units().length === 2);
+    }
+    /* a choice made while a unit's first spawn waits for its place on the map (spect.js _lmSpawnHold,
+     * up to 3 s; here a stand-in that holds while `held`): the player chosen keeps the focus when that
+     * spawn goes through (it took the focus back: P1 controlled, rings on the unit, the roster and the
+     * phone indicator on P2); with no choice the unit still takes it at its first spawn */
+    {
+        const pending = (o) => {
+            const { s, app, units } = fresh(o.cap || 3);
+            app.mbEnable();
+            const u = units()[units().length - 1];
+            u._lmHeld = true;
+            u._lmSpawnHold = function () { return this._lmHeld; };
+            u._lmOwn = [{ x: 0, y: 0, size: 60, targetSize: 60, spectator: u.number }]; u.active = true;
+            u.beforecalculation();
+            return { s, app, units, u, held: s.focus(), go() { u._lmHeld = false; u.beforecalculation(); return s.focus(); } };
+        };
+        let t = pending({});
+        check('first spawn held (orientation not verified): P1 controlled meanwhile', t.held === 0 && !t.u._lmSpawnedOnce, t.held);
+        check('    ... no choice made: the unit takes the focus when its spawn goes through (start of multibox)', t.go() === t.u.number);
+        t = pending({});
+        t.app.mbSelectPlayer(1);
+        check('P1 chosen (roster / mbSelectPlayer(1)) while the first spawn of P2 is held: P1 stays controlled when it goes through', t.go() === 0 && t.u._lmSpawnedOnce === true &&
+            t.s.ctx.lmMbPlayers.activeSlot === 1, t.s.focus());
+        t.app.mbSelectPlayer(2);
+        check('    ... P2 chosen afterwards: P2 controlled, its life unchanged (no respawn)', t.s.focus() === t.u.number && t.u.spawnRequests === 0, t.s.focus() + ' / ' + t.u.spawnRequests);
+        t.app.mbSelectPlayer(1);
+        t.u.openSecond = false; t.u.beforecalculation();
+        check('    ... a later background spawn of P2 does not take the focus from the living P1', t.s.focus() === 0, t.s.focus());
+        t = pending({});
+        t.app.mbSelectPlayer(2);
+        check('P2 itself chosen before its first spawn: it is controlled, and stays so when the spawn goes through', t.s.focus() === t.u.number && t.go() === t.u.number, t.s.focus());
+        t = pending({});
+        t.app.mbSelectPlayer(2); t.app.mbSelectPlayer(1);
+        check('P1 -> P2 -> P1 before the first spawn of P2: the last choice (P1) stays controlled', t.go() === 0, t.s.focus());
+        t = pending({});
+        t.app.multiboxchange(); t.app.multiboxchange();
+        check('the switch key twice (P2, back to P1) before the first spawn of P2: P1 stays controlled', t.go() === 0, t.s.focus());
+        t = pending({});
+        t.app.mbSelectPlayer(1);
+        t.s.LM.play = false; /* the main player chosen is not alive (dead, or still in the menu) */
+        check('P1 chosen but not alive when the first spawn of P2 goes through: P2 takes the focus', t.go() === t.u.number, t.s.focus());
+        /* a third player: P3 added while P2 is controlled; the player chooses P1 before P3 spawns */
+        {
+            const { s, app, units } = fresh(3);
+            app.mbEnable();
+            const p2 = units()[0];
+            p2._lmOwn = [{ x: 0, y: 0, size: 60, targetSize: 60, spectator: p2.number }]; p2.active = true;
+            p2.beforecalculation();
+            const p3 = app.mbAddPlayer();
+            p3._lmHeld = true; p3._lmSpawnHold = function () { return this._lmHeld; };
+            p3._lmOwn = [{ x: 9, y: 9, size: 60, targetSize: 60, spectator: p3.number }]; p3.active = true;
+            p3.beforecalculation();
+            app.mbSelectPlayer(1);
+            p3._lmHeld = false; p3.beforecalculation();
+            check('three players: P1 chosen while the first spawn of P3 is held: P1 stays controlled', s.focus() === 0 && p3._lmSpawnedOnce === true, s.focus());
+            const p4 = (s.ctx.defaultmapsettings.multiboxAmount = 4, app.mbAddPlayer());
+            p4._lmOwn = [{ x: 5, y: 5, size: 60, targetSize: 60, spectator: p4.number }]; p4.active = true;
+            p4.beforecalculation();
+            check('    ... a unit added afterwards, no choice made before its first spawn: it takes the focus', s.focus() === p4.number, s.focus());
+        }
     }
     {
         const { s, app, reg, units } = fresh(6);

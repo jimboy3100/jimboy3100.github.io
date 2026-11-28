@@ -26002,8 +26002,19 @@ function thelegendmodproject() {
          * A unit's profile skin is only loaded by its link (its own cells carry it): stored under
          * the profile's nick it replaced the main player's skin when both have that nick. Nothing
          * is written under a nick here, so the main player's skin is not registered again on a
-         * switch back (its spawn registers it). */
+         * switch back (its spawn registers it). The choice wins over the next spawn of the other
+         * units (Spect.beforecalculation): the first spawn of one not spawned yet (_lmFocusClaimed;
+         * that spawn waits up to 3 s for its place on the map, Spect._lmSpawnHold, and took the
+         * focus back from the player chosen meanwhile), and the spawn of one chosen before
+         * (_lmFocusOnSpawn: P1 -> dead P2 -> P1 gave the focus to P2 at its spawn). */
         _lmMbFocus(sp) {
+            var others = lmMbUnits();
+            for (var i = 0; i < others.length; i++) {
+                if (others[i] === sp) continue;
+                others[i]._lmFocusOnSpawn = false;
+                if (!others[i]._lmSpawnedOnce) others[i]._lmFocusClaimed = true;
+            }
+            if (sp) sp._lmFocusClaimed = false;
             if (!sp) {
                 lmSetMbUnit(0);
                 if (!legendmod.play) {

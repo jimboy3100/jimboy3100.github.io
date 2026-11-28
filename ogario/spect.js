@@ -3345,9 +3345,12 @@ class Spect {
                 /* first spawn of this unit, a spawn the player asked for (Tab), or the player you
                  * control is not alive (the main cell dead, or the unit you control): focus it. A
                  * background reconnect + auto-respawn used to take the focus mid-fight and freeze
-                 * the main cell, or another living unit's. */
+                 * the main cell, or another living unit's. Not the first spawn either once the
+                 * player chose another player after this unit was made (_lmFocusClaimed,
+                 * application._lmMbFocus): that spawn may wait up to 3 s (_lmSpawnHold) and undid
+                 * the choice. */
                 var _lmCur = typeof lmMbFocused === 'function' ? lmMbFocused() : (window.multiboxPlayerEnabled ? null : legendmod);
-                if (!this._lmSpawnedOnce || this._lmFocusOnSpawn || _lmCur === this || !lmMbAlive(_lmCur)) {
+                if ((!this._lmSpawnedOnce && !this._lmFocusClaimed) || this._lmFocusOnSpawn || _lmCur === this || !lmMbAlive(_lmCur)) {
                     lmSetMbUnit(this.number);
                     /* the death menu (terminate: last player died) stayed up over the unit now played;
                      * not a menu the player opened (Esc) or is using (typing a nick, server list) */
@@ -3361,6 +3364,7 @@ class Spect {
                     }
                 }
                 this._lmSpawnedOnce = true;
+                this._lmFocusClaimed = false;
                 this._lmFocusOnSpawn = false;
             }
         } else if (window.multiboxPlayerEnabled === this.number &&

@@ -13,7 +13,8 @@
  * Map are one exclusive mode (LM._lmSpecSetMode / _lmSpecReconcile); section 11 runs the real spect.js
  * tile lifecycle (failed / refused / captcha slots, lmFullMapHealth, lmFullMapRetry, opcode 18, replay).
  * Sections 9b and 23: multibox with Full Map on (the tiles stay, the unit is controlled by its own
- * number), Full Map off / on while multibox runs, multibox off (LM._lmMbStop), a refused unit.
+ * number), Full Map off / on while multibox runs, multibox off (LM._lmMbStop), a refused unit; 23b:
+ * the switch keys during the real first-spawn hold (Spect._lmSpawnHold) are not undone by that spawn.
  * node developers/tests/ingamespect.js [ogario.v4.js] */
 'use strict';
 const fs = require('fs'), path = require('path'), vm = require('vm');
@@ -1084,6 +1085,37 @@ for (const withUnit of [false, true]) {
         const unit = e.units()[0];
         check('23. in-game spectator on, multibox start: the spectator closed, mode off, the unit opened (controlled from its first spawn)', !!ig && ig.closedByUser && e.ctx.lmSpecMode === 'off' &&
             !e.ctx.ingameSpectator && e.ctx.spects.length === 1 && !!unit && e.focus() === 0);
+    }
+    /* 23b. the first spawn of a new unit waits for its place on the map (the real Spect._lmSpawnHold:
+     * orientation not verified, up to LM_MB_SPAWN_HOLD_MS); a choice made by the switch keys
+     * meanwhile wins when it goes through (it took the focus back: P1 controlled, rings on the unit) */
+    {
+        const start = (o) => {
+            const e = mk(o);
+            e.app.multiboxchange();
+            const unit = e.units()[0];
+            unit.active = true; unit._lmOwn = [{ x: 0, y: 0, size: 60, targetSize: 60, spectator: unit.number }];
+            unit.beforecalculation();
+            const heldFocus = e.focus(), wasHeld = !unit._lmSpawnedOnce && !unit.transformReady();
+            /* the hold runs out (3 s): it goes on unverified */
+            const go = () => { unit._lmSpawnSeenAt -= 4000; unit.beforecalculation(); return e.focus(); };
+            return Object.assign(e, { unit, heldFocus, wasHeld, go });
+        };
+        let e = start();
+        check('23b. multibox start, the unit\'s first spawn held (no place on the map yet): P1 controlled meanwhile', !!e.unit && e.wasHeld && e.heldFocus === 0, e.heldFocus);
+        check('    ... no choice made: the unit takes the focus when the hold runs out', e.go() === e.unit.number && e.unit._lmSpawnedOnce === true, e.focus());
+        e = start();
+        e.app.multiboxchange(); e.app.multiboxchange();
+        check('    ... switch key to the unit and back to P1 during the hold: P1 stays controlled when it runs out', e.go() === 0 && e.unit._lmSpawnedOnce === true &&
+            e.ctx.lmMultiboxControlledPlayer() === 1, e.focus());
+        e.app.multiboxchange();
+        check('    ... the switch key afterwards: the unit controlled', e.focus() === e.unit.number);
+        e = start();
+        e.app.multiboxchange();
+        check('    ... switch key to the unit during the hold: it is controlled, and stays so when the hold runs out', e.focus() === e.unit.number && e.go() === e.unit.number, e.focus());
+        e = start({ mainAlive: false });
+        e.app.multiboxchange(); e.app.multiboxchange();
+        check('    ... P1 chosen during the hold but not alive (in the menu): the unit takes the focus', e.go() === e.unit.number, e.focus());
     }
     /* the unit cannot be opened (the socket throws): nothing changes */
     {
