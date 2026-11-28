@@ -68,6 +68,14 @@ function lmWorldUpdateEnd(view, offset) {
     offset += 2 + n * 4;
     return offset > len ? -1 : offset;
 }
+/* Whether this server sends the agar.io / Expanding Land records lmWorldUpdateEnd reads: the
+ * main client's own choice (updateCells isLegacyMultiOgar; Garix has its own parser), with
+ * this connection's integrity in place of the main one's */
+function lmSpectAgarLayout(integrity) {
+    var t = window.legendmod && window.legendmod.serverType;
+    if (t === 'garix' || t === 'imsolo' || t === 'agar2' || t === 'private') return false;
+    return !!integrity || t === 'expandingland';
+}
 
 /*
  * ═══ Coordinates: one transform per connection ═══
@@ -519,6 +527,8 @@ class Spect {
         this.targetX = null
         this.targetY = null
         this._lmCamAt = 0
+        /* a new socket starts with no run of bad world updates (the totals stay) */
+        this._lmBadRun = 0
         this.playerCellIDs = []
         this.playerScore = 0
         this.fix3x = 0
@@ -650,9 +660,17 @@ class Spect {
     }
 
     /* A packet this connection could not read: counted (_lmDecodeErrors), and at most one
-     * warning per connection per minute (a bad stream logged every packet before, or nothing) */
+     * warning per connection per minute (a bad stream logged every packet before, or nothing).
+     * Any other error is a fault in the handler: logged with its stack, once per message. */
     _lmDecodeError(e) {
         this._lmDecodeErrors = (this._lmDecodeErrors || 0) + 1;
+        if (e && typeof e === 'object' && !(e instanceof RangeError)) {
+            const seen = this._lmFaultsSeen || (this._lmFaultsSeen = new Set()), key = String(e.message);
+            if (seen.has(key) || seen.size >= 32) return;
+            seen.add(key);
+            console.error('[SPECT] Unit ' + this.number + ' packet handler error:', e && e.stack ? e.stack : e);
+            return;
+        }
         const now = Date.now();
         if (now - (this._lmDecodeWarnAt || 0) < 60000) return;
         this._lmDecodeWarnAt = now;
@@ -1482,14 +1500,17 @@ class Spect {
                  * camera follows the unit's drawn cells instead (playerX/Y, see
                  * drawRender.getMultiboxFrame); these packets used to move it too,
                  * between frames and to a slightly different point.
-                 * A short or broken packet keeps the last camera (a cut one moved x only). */
+                 * A short packet or a broken position keeps the last camera (a cut one moved x
+                 * only); a scale out of (0.01, 4] keeps the last usable one (else the free
+                 * spectate scale, as lmServerViewSize) and the position is still taken. */
                 if (view.byteLength < offset + 12) { this._lmDecodeError('opcode 17: ' + view.byteLength + ' bytes'); break; }
                 {
                     const camX = view.getFloat32(offset, true), camY = view.getFloat32(offset + 4, true), camScale = view.getFloat32(offset + 8, true);
-                    if (!Number.isFinite(camX) || !Number.isFinite(camY) || !(camScale > 0.01 && camScale <= 4)) { this._lmDecodeError('opcode 17: bad camera'); break; }
+                    if (!Number.isFinite(camX) || !Number.isFinite(camY)) { this._lmDecodeError('opcode 17: bad camera'); break; }
                     this.viewX = camX;
                     this.viewY = camY;
-                    this.scale = camScale;
+                    if (camScale > 0.01 && camScale <= 4) this.scale = camScale;
+                    else if (!(this.scale > 0.01 && this.scale <= 4)) this.scale = LM_SPECT_FREE_SCALE;
                 }
                 this._lmCamAt = Date.now();
                 break;
@@ -2488,13 +2509,19 @@ class Spect {
             return text;
         };
         /* a packet cut short changes nothing (it used to apply its first sections and throw);
-         * three in a row drop a spectator's / Full Map tile's cells, as a ClearAll would; a
-         * playing unit keeps its world (a flush would forget its own cells and end it), its
-         * next whole update goes on */
-        if (lmWorldUpdateEnd(view, offset) < 0) {
+         * three in a row drop a spectator's / Full Map tile's cells (only the cells: the server
+         * did not change its spectate mode); a playing unit keeps its world (a flush would
+         * forget its own cells and end it), its next whole update goes on. Only for the
+         * agar.io / Expanding Land layout the pass knows (legacy MultiOgar / Garix: as before). */
+        if (lmSpectAgarLayout(this.integrity) && lmWorldUpdateEnd(view, offset) < 0) {
             this._lmBadUpdates = (this._lmBadUpdates || 0) + 1;
             this._lmBadRun = (this._lmBadRun || 0) + 1;
-            if (this._lmBadRun === 3 && !this.player) this.flushCellsData();
+            if (this._lmBadRun === 3 && !this.player) {
+                const spectating = this.isSpectateEnabled, free = this.isFreeSpectate;
+                this.flushCellsData();
+                this.isSpectateEnabled = spectating;
+                this.isFreeSpectate = free;
+            }
             return;
         }
         this.time = Date.now();

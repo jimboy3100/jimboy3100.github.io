@@ -702,23 +702,74 @@ reset();
         sp.onmessage({ data: msg(16, packet([], [{ id: 100, x: 1020, y: 1000, size: 60, name: 'alice', food: false }], [])) });
         check('playing unit: its next whole update goes on', mine.targetX === 1020 && sp._lmBadRun === 0 && ended === 0);
     }
-    /* opcode 17: cut after x, NaN scale */
+    /* an in-game spectator in free spectate: the resync after bad updates drops only its cells,
+     * it keeps its spectate mode and keeps following the cursor */
+    {
+        reset();
+        const sp = spect(1);
+        let tick = null, sent = 0;
+        const si = g.setInterval, ci = g.clearInterval;
+        g.setInterval = (f) => { tick = f; return 7; }; g.clearInterval = () => { };
+        Object.assign(sp, { staticX: null, staticY: null, _lmAnchors: [], isSpectateEnabled: true, isFreeSpectate: false });
+        sp.sendAction = () => { }; sp.sendPosition = () => { sent++; }; sp.convertX = sp.convertY = (v) => v;
+        LM.cursorX = 100; LM.cursorY = 200;
+        sp.sendFreeSpectate();
+        sp.updateCells(packet([], [{ id: 100, x: 1000, y: 1000, size: 60, name: 'alice', food: false }], []), 0);
+        const cut = msg(16, P.slice(0, 35));
+        for (let k = 0; k < 3; k++) sp.onmessage({ data: cut });
+        tick();
+        g.setInterval = si; g.clearInterval = ci;
+        check('in-game spectator in free spectate, 3 cut updates: cells dropped, spectate flags kept, cursor still followed',
+            !LM.indexedCells[g.lmUnitCellId(100, 1)] && sp.isFreeSpectate === true && sp.isSpectateEnabled === true && sp.positionController === 7 && sent === 1,
+            [sp.isFreeSpectate, sp.isSpectateEnabled, sent].join());
+    }
+    /* legacy MultiOgar (imsolo, agar2, private, no integrity) and Garix records are not the layout
+     * the pass reads: their updates go through updateCells as before */
+    {
+        const legacy = packet([], [{ id: 100, x: 1000, y: 1000, size: 60, name: 'alice', food: false }], []).slice(0, 26);
+        const run = (serverType, integrity) => {
+            reset();
+            LM.serverType = serverType;
+            const sp = spect(1);
+            sp.integrity = integrity; sp._lmAnchors = [];
+            let threw = false;
+            try { sp.updateCells(legacy, 0); } catch (e) { threw = true; }
+            delete LM.serverType;
+            return { bad: sp._lmBadUpdates || 0, read: threw && sp.time > 0 };
+        };
+        const agar = run('agario', true), el = run('expandingland', false);
+        const skipped = [['imsolo', true], ['agar2', true], ['private', true], ['garix', false], ['senpa', false]].map((a) => run(a[0], a[1]));
+        check('agar.io / Expanding Land: the whole-update check runs', agar.bad === 1 && el.bad === 1 && !agar.read && !el.read);
+        check('legacy MultiOgar / Garix / no-integrity servers: the check is skipped, the packet read as before', skipped.every((r) => r.bad === 0 && r.read), JSON.stringify(skipped));
+    }
+    /* opcode 17: cut after x, NaN position, out-of-range or NaN scale */
     {
         const sp = world();
         Object.assign(sp, { viewX: 11, viewY: 22, scale: 0.5, _lmCamAt: 5 });
-        const warn = g.console.warn; let warns = 0; g.console.warn = () => warns++;
+        const warn = g.console.warn, error = g.console.error; let warns = 0, errors = 0; g.console.warn = () => warns++; g.console.error = () => errors++;
         const cam = (x, y, s) => { const b = Buffer.alloc(12); b.writeFloatLE(x, 0); b.writeFloatLE(y, 4); b.writeFloatLE(s, 8); return b; };
+        const at = () => [sp.viewX, sp.viewY, sp.scale, sp._lmCamAt].join();
         sp.onmessage({ data: msg(17, cam(999, 888, 0.3).slice(0, 6)) });
-        const cut = [sp.viewX, sp.viewY, sp.scale, sp._lmCamAt].join();
-        sp.onmessage({ data: msg(17, cam(999, 888, NaN)) });
-        const nan = [sp.viewX, sp.viewY, sp.scale, sp._lmCamAt].join();
+        const cut = at();
+        sp.onmessage({ data: msg(17, cam(NaN, 888, 0.3)) });
+        const nanX = at();
+        check('opcode 17 cut at 7 bytes or NaN position: camera and _lmCamAt kept', cut === '11,22,0.5,5' && nanX === cut, cut + ' | ' + nanX);
         sp.onmessage({ data: msg(17, cam(999, 888, 5)) });
-        const big = [sp.viewX, sp.viewY, sp.scale, sp._lmCamAt].join();
-        check('opcode 17 cut at 7 bytes, NaN or out-of-range scale: camera and _lmCamAt kept', cut === '11,22,0.5,5' && nan === cut && big === cut, cut + ' | ' + nan + ' | ' + big);
+        check('opcode 17 scale 5: position and _lmCamAt taken, the last usable scale kept', sp.viewX === 999 && sp.viewY === 888 && sp.scale === 0.5 && sp._lmCamAt > 5, at());
+        sp.scale = NaN; sp._lmCamAt = 5;
+        sp.onmessage({ data: msg(17, cam(990, 880, NaN)) });
+        check('opcode 17 NaN scale with no usable one before: position taken, the free spectate scale stored', sp.viewX === 990 && sp.viewY === 880 &&
+            sp.scale === vm.runInContext('LM_SPECT_FREE_SCALE', g) && sp._lmCamAt > 5, at());
         sp.onmessage({ data: msg(17, cam(999, 888, 0.25)) });
         check('opcode 17 whole: camera taken', sp.viewX === 999 && sp.viewY === 888 && sp.scale === 0.25 && sp._lmCamAt > 5);
-        g.console.warn = warn;
-        check('bad packets counted (_lmDecodeErrors), one warning a minute at most', sp._lmDecodeErrors === 3 && warns === 1, warns);
+        check('bad packets counted (_lmDecodeErrors), one warning a minute at most', sp._lmDecodeErrors === 2 && warns === 1 && errors === 0, warns);
+        /* a fault in the handler (not a short packet): logged with its stack, once per message */
+        const hm = sp.handleMessage;
+        sp.handleMessage = () => { throw new TypeError('boom'); };
+        sp.onmessage({ data: msg(17, cam(1, 2, 0.3)) }); sp.onmessage({ data: msg(17, cam(1, 2, 0.3)) });
+        sp.handleMessage = hm;
+        g.console.warn = warn; g.console.error = error;
+        check('a TypeError in the handler: console.error once per message, counted, no warning', errors === 1 && warns === 1 && sp._lmDecodeErrors === 4, errors);
     }
     /* opcode 69: count 3, 2.4 records */
     {
