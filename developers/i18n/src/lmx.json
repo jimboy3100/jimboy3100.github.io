@@ -9233,24 +9233,6 @@
     "ja": "設定URLから有効なGameConfigurationが返されませんでした。",
     "it": "L'URL di configurazione non ha restituito un GameConfiguration valido."
   },
-  "lmx.ex.httpWarning": {
-    "en": "Legend Mod over http: many functions cannot work properly. To join non-SSL servers put {0} in front of the websocket.<br>e.g. {1}",
-    "el": "Το Legend Mod μέσω http: πολλές λειτουργίες δεν δουλεύουν σωστά. Για servers χωρίς SSL βάλε {0} μπροστά από το websocket.<br>π.χ. {1}",
-    "es": "Legend Mod por http: muchas funciones no funcionan bien. Para entrar en servidores sin SSL pon {0} delante del websocket.<br>p. ej. {1}",
-    "bg": "Legend Mod през http: много функции не работят правилно. За сървъри без SSL сложи {0} пред websocket адреса.<br>напр. {1}",
-    "fr": "Legend Mod en http : beaucoup de fonctions ne marchent pas bien. Pour les serveurs sans SSL, mets {0} devant le websocket.<br>ex. {1}",
-    "ar": "Legend Mod عبر http: كثير من الوظائف لا تعمل جيدًا. للدخول إلى خوادم بدون SSL ضع {0} قبل عنوان websocket.<br>مثال {1}",
-    "zh": "透過 http 使用 Legend Mod：許多功能無法正常運作。要加入非 SSL 伺服器，請在 websocket 前加上 {0}。<br>例如 {1}",
-    "ru": "Legend Mod через http: многие функции работают неправильно. Для серверов без SSL поставь {0} перед адресом websocket.<br>напр. {1}",
-    "de": "Legend Mod über http: viele Funktionen laufen nicht richtig. Für Server ohne SSL setze {0} vor den Websocket.<br>z. B. {1}",
-    "tr": "Legend Mod http üzerinden: birçok özellik düzgün çalışmaz. SSL olmayan sunuculara girmek için websocket adresinin önüne {0} ekle.<br>örn. {1}",
-    "pl": "Legend Mod przez http: wiele funkcji nie działa poprawnie. Aby wejść na serwery bez SSL, dodaj {0} przed adresem websocket.<br>np. {1}",
-    "nl": "Legend Mod via http: veel functies werken niet goed. Voor servers zonder SSL zet je {0} voor de websocket.<br>bijv. {1}",
-    "pt": "Legend Mod via http: muitas funções não funcionam direito. Para entrar em servidores sem SSL, coloque {0} antes do websocket.<br>ex.: {1}",
-    "id": "Legend Mod lewat http: banyak fungsi tidak bisa berjalan dengan baik. Untuk masuk ke server non-SSL, tambahkan {0} di depan websocket.<br>mis. {1}",
-    "ja": "http経由のLegend Modでは多くの機能が正しく動作しません。SSL非対応のサーバーに入るには、WebSocketの前に{0}を付けてください。<br>例：{1}",
-    "it": "Legend Mod su http: molte funzioni non funzionano bene. Per entrare nei server senza SSL metti {0} davanti al websocket.<br>es. {1}"
-  },
   "lmx.ex.updateAvailable": {
     "en": "Legend Express {0} is available! Your installed version: {1}. Update for faster and more reliable Agar.io loading, improved browser compatibility and prevention of conflicting game execution.",
     "el": "Το Legend Express {0} είναι διαθέσιμο! Η έκδοση που έχεις: {1}. Κάνε ενημέρωση για πιο γρήγορη και πιο αξιόπιστη φόρτωση του Agar.io, καλύτερη συμβατότητα με τους browsers και για να μην τρέχει το παιχνίδι δύο φορές μαζί.",

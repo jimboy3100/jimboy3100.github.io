@@ -130,9 +130,6 @@ if (!url) url = location.href;
 var modVersion;
 if (_lmOnLegendWebsite()) {
     window.legendModFromWebsite = true; // Flag: loaded from website, not Agar.io userscript (private servers only)
-    if (location.protocol !== 'https:') {
-        toastr.warning(_lmxT('lmx.ex.httpWarning', ["<font color='blue'>ws://</font>", "<font color='blue'>ws://34.89.203.157:3000/</font>"])).css("width", "350px");
-    }
     $("#region").val("Private").change();
     $("#region").hide();
 
