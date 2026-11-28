@@ -363,6 +363,19 @@ check('the new settings: off by default with Dying Light, immersive, full sound,
     ctx.defaultSettings.menuPanelColor = '#222';
     check('theme: a change to the player\'s theme while overridden shows when cleared', ctx.lmThemeEffective().menuPanelColor === '#222' &&
         ctx.lmThemeOverride('a', null) === true && ctx.lmThemeEffective() === ctx.defaultSettings && painted.length === 2);
+    {
+        /* the repaint of the HUD colours gives the team top 5 bars the colour they are built with */
+        const s = rd('ogario/ogario.v4.js').replace(/\r\n/g, '\n'), i = s.indexOf('        setHudColors() {'), j = s.indexOf('\n        },\n', i);
+        let bar = null;
+        ctx.$ = (q) => q === '#hudMainColor' ? [{ value: '#0f0' }] : { css: (k, v) => { bar = v; } };
+        vm.runInContext('var __hud = ({' + s.slice(i, j) + '\n        }, addCustomCSS() { } }); var _lmCssVal = function (v, d) { return v || d; };', ctx);
+        ctx.lmThemeOverride('a', { hudMainColor: '#a12b30' });
+        ctx.__hud.setHudColors();
+        const on = bar;
+        ctx.lmThemeOverride('a', null);
+        ctx.__hud.setHudColors();
+        check('theme: team top 5 bars repainted in the HUD colour as shown, the picker\'s once cleared', on === '#a12b30' && bar === '#0f0', on + ',' + bar);
+    }
 
     if (fail) { console.log(fail + ' failure(s)'); process.exit(1); }
     console.log('all Dying Light director checks passed');

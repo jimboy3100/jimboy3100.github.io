@@ -24193,7 +24193,8 @@ function thelegendmodproject() {
              * whole rule and the HUD background colour setting never reached the HUD */
             var css = '.hud-main-color,#top5-hud a,#target-panel-hud a:hover,#target-panel-hud a.active,#message-menu a{color:' + S.hudMainColor + '}.hud,' +
                 '.hud-b,.emoji-picker{background-color:' + S.hudColor + '}.hud,.hud-b,#top5-hud a:hover,#target-panel-hud a{color:' + S.hudTextColor + '}.stats-hud-color{color:' + S.statsHudColor + '}.time-hud-color{color:' + S.timeHudColor + '}.top5-mass-color{color:' + S.top5MassColor + '}#leaderboard-positions .me{color:' + S.lbMeColor + '}#leaderboard-positions .teammate{color:' + S.lbTeammateColor2 + '}';
-            $('.top5-mass-bar').css('background-color', $('#hudMainColor')[0].value)
+            /* the bars as the team top 5 builds them: the HUD colour as shown (an expansion's while it is on) */
+            $('.top5-mass-bar').css('background-color', _lmThemeOv ? S.hudMainColor : $('#hudMainColor')[0].value)
             /* in-game panels (HUD helpers, death recap, ...) read these */
             css += ':root{--lm-hud-mc:' + _lmCssVal(S.hudMainColor, '#01d9cc') + ';--lm-hud-bg:' + _lmCssVal(S.hudColor, 'rgba(0,0,0,0.4)') + ';--lm-hud-tc:' + _lmCssVal(S.hudTextColor, '#ffffff') + '}';
             this.addCustomCSS('hudCSS', css);
