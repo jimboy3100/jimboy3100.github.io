@@ -24958,9 +24958,14 @@ function thelegendmodproject() {
                 keys.forEach(function (k) {
                     if (same(defaultmapsettings[k], sv[k])) return;
                     try {
+                        /* anti-aliasing is named in the import's own Reload notice (need below),
+                         * so setSettings gives no second message for it */
+                        app._lmImporting = true;
                         app.setSettings(k, sv[k]);
                     } catch (e) {
                         defaultmapsettings[k] = sv[k];
+                    } finally {
+                        app._lmImporting = false;
                     }
                     if (k === 'glAntialias') aa = true;
                     if (AFTER[k] && typeof app[AFTER[k]] === 'function') { try { app[AFTER[k]](); } catch (e) { } }
@@ -25271,8 +25276,9 @@ function thelegendmodproject() {
                         this.setBlockPopups();
                         break;
                     case 'glAntialias':
-                        /* switched back to what the running GPU context has, no reload is needed */
-                        if (!_lmSame && window.toastr && lmGlAAPending()) toastr.info(lmT('game1.perf.aaReload'));
+                        /* switched back to what the running GPU context has, no reload is needed;
+                         * an import names it in its own Reload notice */
+                        if (!_lmSame && window.toastr && !this._lmImporting && lmGlAAPending()) toastr.info(lmT('game1.perf.aaReload'));
                         break;
                 }
                 /* a setting with a slider (addSliderBox): the slider and its value show the value

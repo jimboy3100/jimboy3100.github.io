@@ -79,5 +79,32 @@ check('Legend: the language switches at once, no Reload for it', JSON.stringify(
 check('Legend: new user scripts offer Reload', /localStorage\.setItem\("UserscriptEnabled" \+ slot, "1"\);\n    \}\);\n    \/\* a user script runs when the page loads: the import offers a Reload \*\/\n    if \(Array\.isArray\(window\._lmImportReload\)\) window\._lmImportReload\.push\('userscripts'\);/.test(lmx));
 check('Legend: the list starts with each Legend Mod import, none without it', lmx.includes('        window._lmImportReload = [];\n        saveLegendJSONAPI();') && lmx.includes('        window._lmImportReload = null;\n        $("#import-settings-btn").click();'));
 
+/* an import that changes anti-aliasing gives one message: the import's Reload notice names it
+ * (need), setSettings's own "reload for anti-aliasing" toast is not shown during the import.
+ * The real _lmImportLive and the real glAntialias case of setSettings run here. */
+{
+    const liveCut = cut(og, '        _lmImportLive(v, sel, backup, touched) {', '        _lmImportCommandsLive() {');
+    const liveSrc = liveCut.slice(0, liveCut.lastIndexOf('return need;')) + 'return need; }';
+    const caseSrc = cut(og, "                    case 'glAntialias':", '                        break;').replace("case 'glAntialias':", '');
+    const toasts = [];
+    const c2 = {
+        window: {}, toasts, clearTimeout: () => { },
+        toastr: { info: (t) => toasts.push(t) },
+        lmT: (k) => k, lmGlAAPending: () => true,
+        defaultmapsettings: { glAntialias: true, jellyPhisycs: true }
+    };
+    c2.window.toastr = c2.toastr; c2.window.lmGlAAPending = c2.lmGlAAPending;
+    c2.window.localStorage = { getItem: () => null, setItem() { }, removeItem() { } };
+    vm.createContext(c2);
+    vm.runInContext('this.app = { ' + liveSrc + ', saveSettings() { },' +
+        ' setSettings(id, checked) { var _lmSame = defaultmapsettings[id] === checked; defaultmapsettings[id] = checked; if (id === "glAntialias") {' + caseSrc + '} } };', c2);
+    check('live import: the real methods found', liveSrc.length > 100 && caseSrc.indexOf('aaReload') > 0);
+    const need = c2.app._lmImportLive({ ogarioSettings: { glAntialias: false, jellyPhisycs: false } }, k => k === 'ogarioSettings', {}, []);
+    check('live import: anti-aliasing changed gives the Reload notice only, no second toast', need.indexOf('glAntialias') !== -1 && toasts.length === 0 &&
+        c2.defaultmapsettings.glAntialias === false && c2.defaultmapsettings.jellyPhisycs === false && !c2.app._lmImporting, { need, toasts });
+    c2.app.setSettings('glAntialias', true);
+    check('switch after an import: the anti-aliasing toast is shown again', toasts.length === 1 && toasts[0] === 'game1.perf.aaReload', toasts);
+}
+
 console.log(fail ? fail + ' failed' : 'all import checks passed');
 process.exit(fail ? 1 : 0);
