@@ -235,14 +235,11 @@
     function tick() {
         var lm = window.legendmod;
         if (!lm || !lm.play || !liveNow()) return;
-        /* multibox: when Unit 1 is active, track its cells instead of Unit 0 */
+        /* the main player's life (its spawn and death events): a multibox branch here read
+         * lm.multiboxPlayerEnabled and lm.playerMassMulti, which never exist, so it never ran */
         var pc = lm.playerCells, n = pc ? pc.length : 0;
-        if (lm.multiboxPlayerEnabled && lm.playerCellsMulti && lm.playerCellsMulti.length) {
-            pc = lm.playerCellsMulti;
-            n = pc.length;
-        }
         if (!n) return;
-        var now = Date.now(), mass = (lm.multiboxPlayerEnabled && lm.playerCellsMulti && lm.playerCellsMulti.length) ? (+lm.playerMassMulti || 0) : (+lm.playerMass || 0), i, j;
+        var now = Date.now(), mass = +lm.playerMass || 0, i, j;
         lastAlive = now;
         /* biggest visible enemy cell near me that could eat at least my smallest cell */
         var minOwn = Infinity;

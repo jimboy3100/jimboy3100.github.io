@@ -193,6 +193,18 @@ lm.playerCells = []; lm.play = false; listeners.death[0]({ time: now });
 const last = D.last().steps[D.last().steps.length - 1];
 check('far and small cells are not "near"', last.nick == null, last);
 
+// --- the recap is the main player's life: multibox unit cells and fields never replace its numbers
+{
+  listeners.spawn[0]({ time: now });
+  lm.play = true; lm.playerCells = [own(0, 1500)]; lm.playerMass = 22500; lm.cells = [lm.playerCells[0]];
+  lm.multiboxPlayerEnabled = 1; lm.playerCellsMulti = [own(900, 100)]; lm.playerMassMulti = 100;
+  for (let i = 0; i < 12; i++) { now += 250; D._test.tick(); }
+  lm.playerCells = []; lm.play = false; listeners.death[0]({ time: now });
+  const sp = D.last().spark;
+  check('multibox: the recap samples the main player\'s mass, not the unit list', sp.length > 5 && sp.every((m) => m === 22500), sp.join(','));
+  delete lm.multiboxPlayerEnabled; delete lm.playerCellsMulti; delete lm.playerMassMulti;
+}
+
 // --- practice arena / replay lives (LMEvents context) are not recorded (audit A16)
 {
   const liveRecap = D.last();
