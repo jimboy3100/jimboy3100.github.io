@@ -201,6 +201,13 @@ async function dyingLightLifecycle() {
         check('a control saves its setting (only its own keys and values), the intensity follows', ok1 && ok2 && ok3 && D.dyingLightIntensity === 'immersive' &&
             ctx.LMDyingLight.intensity() === 'immersive' && D.dyingLightVolume === 1 && D.dyingLightScares === true);
     }
+    {
+        /* an import (or Undo preset) changes the intensity setting while on: the theme follows */
+        D.dyingLightIntensity = 'nightmare'; ctx.application.saveSettings(D, 'ogarioSettings');
+        const followed = ctx.LMDyingLight.intensity() === 'nightmare';
+        D.dyingLightIntensity = 'immersive'; ctx.application.saveSettings(D, 'ogarioSettings');
+        check('the intensity follows its setting changed elsewhere while on', followed && ctx.LMDyingLight.intensity() === 'immersive');
+    }
     const L = ctx.LMDyingLight;
     const other = { mass: 200, targetNick: 'enemy' };
     check('fallback skin only for another real player body', !!L.getFallbackSkinKey(other) && L.getFallbackSkinKey(other) === L.getFallbackSkinKey({ mass: 50, targetNick: 'enemy' }) &&
@@ -225,6 +232,13 @@ async function dyingLightLifecycle() {
     check('on again at once (pictures kept)', (await p) === true && L.isEnabled() && pics.length === 0);
     await L.disable(); await L.disable();
     check('disable twice: off once', L.state === 'off' && states.join() === 'loading,on,disabling,off' && snap() === before);
+    /* changed while off (an import): the next activation uses it */
+    D.dyingLightIntensity = 'nightmare'; ctx.application.saveSettings(D, 'ogarioSettings');
+    await L.enable();
+    const offFollowed = L.intensity() === 'nightmare';
+    await L.disable();
+    D.dyingLightIntensity = 'immersive'; ctx.application.saveSettings(D, 'ogarioSettings');
+    check('the intensity setting changed while off is used by the next activation', offFollowed && snap() === before);
 
     /* turned off while the pictures load: a late load does nothing */
     L.setIntensity('competitive');

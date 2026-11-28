@@ -48,12 +48,20 @@
     var ASSET_WAIT_MS = 8000;
     var INTENSITIES = { competitive: 1, immersive: 1, nightmare: 1 };
 
-    var state = 'off', generation = 0, intensityV = 'immersive';
-    /* the player's choice (setting dyingLightIntensity, changed by its control under the banner) */
-    try {
-        var si = W.defaultmapsettings && W.defaultmapsettings.dyingLightIntensity;
-        if (INTENSITIES[si] === 1) intensityV = si;
-    } catch (e) { }
+    var state = 'off', generation = 0, intensityV = 'immersive', intensityFrom;
+    /* the player's choice (setting dyingLightIntensity, changed by its control under the banner,
+     * an import or Undo preset): followed when the setting changes, at the start, at each enable
+     * and while on; setIntensity alone (a script) holds until the setting changes again */
+    function syncIntensity() {
+        var si;
+        try { si = W.defaultmapsettings && W.defaultmapsettings.dyingLightIntensity; } catch (e) { return false; }
+        if (si === intensityFrom) return false;
+        intensityFrom = si;
+        if (INTENSITIES[si] !== 1 || si === intensityV) return false;
+        intensityV = si;
+        return true;
+    }
+    syncIntensity();
     var job = null;           /* the enable in progress (one at a time) */
     var assets = {};          /* url -> Image: the fixed small set above, kept for the next enable */
     var bg = null;            /* frozen { url, img, alpha } while on */
@@ -251,6 +259,7 @@
         if (onSettings) return;
         onSettings = function (d) {
             if (d && d.key === 'dyingLight' && d.value === false && state !== 'off') disable();
+            else if (d && d.key === 'dyingLightIntensity' && syncIntensity()) emit();
         };
         if (W.LMEvents && typeof W.LMEvents.on === 'function') W.LMEvents.on('settingsChange', onSettings);
     }
@@ -279,6 +288,8 @@
         /* asked from a listener of the turn-off: that one finishes first */
         if (state === 'disabling') return Promise.resolve(false);
         if (opts && opts.confirm && !confirmed()) return Promise.resolve(false);
+        /* a change of the setting while it was off (an import) */
+        syncIntensity();
         var g = ++generation;
         setState('loading');
         listen();
@@ -348,6 +359,8 @@
         disable: disable,
         intensity: function () { return intensityV; },
         setIntensity: function (name) {
+            /* the setting as it is now was seen: only a later change of it replaces this choice */
+            try { intensityFrom = W.defaultmapsettings && W.defaultmapsettings.dyingLightIntensity; } catch (e) { }
             if (!INTENSITIES[name] || name === intensityV) return false;
             intensityV = name;
             emit();
