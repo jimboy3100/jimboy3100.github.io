@@ -65,19 +65,5 @@ function closeLegendHelper(event) {
 
     return false;
 }
-function openbleedmod() {
-    var s = document.createElement("script");
-    s.type = "text/javascript";
-    s.src = "https://jimboy3100.github.io/extras/BleedingMod.js";
-    s.src = "https://www.legendmod.ml/extras/bleedmod.js";
-    $("body").append(s);
-}
-
-function openrotatingmod() {
-    var s = document.createElement("script");
-    s.type = "text/javascript";
-    s.src = "https://jimboy3100.github.io/extras/rotating500images.js";
-    $("body").append(s);
-}
 
 
