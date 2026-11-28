@@ -16,7 +16,7 @@
  * Usage:
  *   node developers/tests/glbatch.js              visual comparison (quick)
  *   node developers/tests/glbatch.js --bench      + benchmark table
- *   node developers/tests/glbatch.js --fx         only the GL marks, merge timer and selected ring
+ *   node developers/tests/glbatch.js --fx         only the GL marks, FB badge / effects, merge timer and selected ring
  *                                                 against Canvas2D (quick)
  *     --ref REF      git revision of the reference version (default c677d1ba = 3.608)
  *     --old FILE     reference ogario.v4.js from a file instead of git
@@ -925,9 +925,125 @@ function pageLib() {
         R.gl.getExtension('WEBGL_lose_context').loseContext();
         return res;
     }
+    /* The FB friend badge and a special effect of an own WebGL cell drawn by the GL text pass
+     * (_lmGlMarks 0), then its multibox ring over them (_lmGlRingOne; the ring pass leaves the
+     * cell out): an earlier small cell under them, a later big cell over part of the effect.
+     * Pixels compared with Canvas2D drawing the same two images (drawImage, same world transform)
+     * over the frame without them; where the later cell covers them, and in the ring band (drawn
+     * over them as in Canvas2D), the frame must be the frame without them. 3 px around the
+     * cover's edge and 2 px around the ring band's edges are left out (antialiasing).
+     * cfg: scale, dpr, jelly, restore (after a WebGL context loss), skinAlpha (transparent skins). */
+    async function fgGpu(src, defaults, cfg) {
+        function disc(id, x, y, r, nick, own) {
+            var pts = [], n = 96;
+            for (var i = 0; i < n; i++) pts.push(x + Math.cos(i / n * 2 * Math.PI) * r, y + Math.sin(i / n * 2 * Math.PI) * r);
+            return { id: id, x: x, y: y, size: r, isVirus: false, maxPointRad: r, pts: pts, color: ['#3388ff', '#33ff66', '#cc33ff'][id % 3], nick: nick, own: own };
+        }
+        var scene = [disc(1, 40, -150, 45, 'under'), disc(2, 0, 0, 151, 'mate', 1), disc(3, -200, -230, 150, 'big')];
+        var map = { noNames: true, showMass: false, FBTracking: true };
+        if (cfg.skinAlpha) { map.transparentSkins = true; map.myTransparentSkin = true; }
+        var o = setup(src, defaults, { scale: cfg.scale, jelly: cfg.jelly, map: map, settings: cfg.skinAlpha ? { skinsAlpha: cfg.skinAlpha } : {} }, scene);
+        var R = o.R, env = o.env, dpr = cfg.dpr || 1;
+        R.canvasWidth = W / dpr; R.canvasHeight = H / dpr;
+        /* the badge: stripes, an alpha ramp and a hole; the effect: a checker with a soft edge */
+        var badge = document.createElement('canvas');
+        badge.width = 64; badge.height = 64;
+        var bx = badge.getContext('2d');
+        for (var k = 0; k < 8; k++) { bx.fillStyle = k & 1 ? '#ffffff' : '#2060e0'; bx.fillRect(k * 8, 0, 8, 64); }
+        var g = bx.createLinearGradient(0, 32, 0, 64);
+        g.addColorStop(0, 'rgba(240,200,20,1)'); g.addColorStop(1, 'rgba(240,200,20,0.15)');
+        bx.fillStyle = g; bx.fillRect(0, 32, 64, 32);
+        bx.clearRect(24, 8, 14, 14);
+        var hat = document.createElement('canvas');
+        hat.width = 80; hat.height = 80;
+        var hx = hat.getContext('2d');
+        for (var a = 0; a < 8; a++) for (var b = 0; b < 8; b++) { hx.fillStyle = (a + b) & 1 ? 'rgba(200,30,30,0.9)' : 'rgba(30,30,30,1)'; hx.fillRect(a * 10, b * 10, 10, 10); }
+        hx.clearRect(0, 0, 80, 6);
+        var mate = env.LM.cells[1];
+        /* the cell's badge and effect as cell.draw has them (lmFbBadge, drawSpecialSkin: a hat at
+         * the place the real "Hat" uses) */
+        mate.lmFbBadge = function () { return badge; };
+        mate.drawSpecialSkin = function (ctx, y) { ctx.drawImage(hat, this.x - 1 / 2 * y, this.y - 3 / 2 * y, y, y); };
+        window.SpecialEffectPlayers = { mate: 'Hat' };
+        function shot(on) {
+            R._glSkinFrame = (R._glSkinFrame || 0) + 1;
+            mate._lmFgOk = on ? R._glSkinFrame : 0;
+            frame(o);
+            var ok = frame(o);
+            return { ok: ok, px: pixels(R), done: R._lmGlFgDone(mate) };
+        }
+        var before = shot(false);
+        if (cfg.restore) { await loseAndRestore(o); before = shot(false); }
+        var after = shot(true);
+        var ring = new Float32Array(9), hasRing = R._lmMbRingPut(mate, ring, 0, R.scale);
+        var c = document.createElement('canvas');
+        c.width = W; c.height = H;
+        var x = c.getContext('2d'), im = x.createImageData(W, H), a0 = before.px;
+        for (var y = 0; y < H; y++) for (var i = 0; i < W; i++) {
+            var s = ((H - 1 - y) * W + i) * 4, d = (y * W + i) * 4, al = a0[s + 3];
+            im.data[d] = al ? Math.min(255, Math.round(a0[s] * 255 / al)) : 0;
+            im.data[d + 1] = al ? Math.min(255, Math.round(a0[s + 1] * 255 / al)) : 0;
+            im.data[d + 2] = al ? Math.min(255, Math.round(a0[s + 2] * 255 / al)) : 0;
+            im.data[d + 3] = al;
+        }
+        x.putImageData(im, 0, 0);
+        var sc = cfg.scale * dpr, y0 = mate.size;
+        x.setTransform(sc, 0, 0, sc, W / 2 - R.camX * sc, H / 2 - R.camY * sc);
+        x.globalAlpha = cfg.skinAlpha || 1;
+        x.drawImage(badge, mate.x - 1 / 2 * y0, mate.y - y0, y0, y0);
+        x.globalAlpha = 1;
+        x.drawImage(hat, mate.x - 1 / 2 * y0, mate.y - 3 / 2 * y0, y0, y0);
+        x.setTransform(1, 0, 0, 1, 0, 0);
+        var ref = x.getImageData(0, 0, W, H).data;
+        var big = env.LM.cells[2];
+        var bcx = W / 2 + (big.x - R.camX) * sc, bcy = H / 2 + (big.y - R.camY) * sc, br = big.size * sc;
+        var mcx = W / 2 + (mate.x - R.camX) * sc, mcy = H / 2 + (mate.y - R.camY) * sc, ro = ring[2] * sc, ri = ring[2] * ring[3] * sc;
+        function box(wx, wy, ww, wh) { return [W / 2 + (wx - R.camX) * sc, H / 2 + (wy - R.camY) * sc, W / 2 + (wx + ww - R.camX) * sc, H / 2 + (wy + wh - R.camY) * sc]; }
+        var boxes = [box(mate.x - y0 / 2, mate.y - y0, y0, y0), box(mate.x - y0 / 2, mate.y - 1.5 * y0, y0, y0)];
+        var res = { ok: before.ok && after.ok, done: after.done, ring: hasRing, shown: 0, covered: 0, coveredDiff: 0, ringPx: 0, ringDiff: 0, shownMax: 0, shownSum: 0, over4: 0, outside: 0, glError: 0 };
+        var p1 = after.px;
+        for (var yy = 0; yy < H; yy++) for (var xx = 0; xx < W; xx++) {
+            var inBox = false;
+            for (var q = 0; q < boxes.length; q++) { var bq = boxes[q]; if (xx + 0.5 > bq[0] && xx + 0.5 < bq[2] && yy + 0.5 > bq[1] && yy + 0.5 < bq[3]) inBox = true; }
+            var gs = ((H - 1 - yy) * W + xx) * 4, rs = (yy * W + xx) * 4;
+            var same = p1[gs] === a0[gs] && p1[gs + 1] === a0[gs + 1] && p1[gs + 2] === a0[gs + 2] && p1[gs + 3] === a0[gs + 3];
+            if (!inBox) {
+                if (!same) res.outside++;
+                continue;
+            }
+            var dd = Math.sqrt((xx + 0.5 - bcx) * (xx + 0.5 - bcx) + (yy + 0.5 - bcy) * (yy + 0.5 - bcy));
+            if (Math.abs(dd - br) < 3) continue;
+            if (dd < br) {
+                res.covered++;
+                if (!same) res.coveredDiff++;
+                continue;
+            }
+            var dm = Math.sqrt((xx + 0.5 - mcx) * (xx + 0.5 - mcx) + (yy + 0.5 - mcy) * (yy + 0.5 - mcy));
+            if (hasRing && dm > ri - 2 && dm < ro + 2) {
+                if (dm > ri + 2 && dm < ro - 2) {
+                    res.ringPx++;
+                    if (!same) res.ringDiff++;
+                }
+                continue;
+            }
+            res.shown++;
+            var ra = ref[rs + 3], m = 0;
+            for (var ch = 0; ch < 3; ch++) m = Math.max(m, Math.abs(p1[gs + ch] - Math.round(ref[rs + ch] * ra / 255)));
+            m = Math.max(m, Math.abs(p1[gs + 3] - ra));
+            res.shownSum += m;
+            if (m > res.shownMax) res.shownMax = m;
+            if (m > 4) res.over4++;
+        }
+        res.shownMean = res.shown ? res.shownSum / res.shown : 0;
+        res.glError = R.gl.getError();
+        R.gl.getExtension('WEBGL_lose_context').loseContext();
+        window.SpecialEffectPlayers = undefined;
+        return res;
+    }
     return {
         ringGpu: ringGpu,
         marksGpu: marksGpu,
+        fgGpu: fgGpu,
         atlasUploads: atlasUploads,
         atlasCapacity: atlasCapacity,
         atlasOracle: atlasOracle,
@@ -1108,11 +1224,23 @@ async function main() {
                 check(nm + ': antialiased edges as Canvas2D (max channel diff <= 48, mean <= 10)', rr.edgeMax <= 48 && rr.edgeMean <= 10);
             }
         }
+        /* FB badge, special effect and multibox ring in the GL text pass (working copy only) */
+        if (NEW.factory.indexOf('_lmGlRingOne(cell)') >= 0) {
+            for (const fc of [{ scale: 0.8, jelly: true }, { scale: 0.6, jelly: false }, { scale: 0.6, jelly: true, dpr: 2 }, { scale: 0.8, jelly: true, skinAlpha: 0.6 }, { scale: 0.8, jelly: true, restore: true }]) {
+                const fr = await evaluate('__glb.fgGpu(__glbNew, __glbDefaults, ' + JSON.stringify(fc) + ')');
+                const nm = 'GL badge + effect ' + JSON.stringify(fc);
+                console.log('     ' + nm + ': shown px ' + fr.shown + ' (max diff to Canvas2D ' + fr.shownMax + ', mean ' + fr.shownMean.toFixed(3) + ', >4: ' + fr.over4 + '), covered px ' + fr.covered +
+                    ' (changed ' + fr.coveredDiff + '), ring px ' + fr.ringPx + ' (changed ' + fr.ringDiff + '), changed outside them ' + fr.outside);
+                check(nm + ': drawn on the GL layer, no GL error', fr.ok && fr.done && fr.ring && fr.glError === 0 && fr.shown > 1000);
+                check(nm + ': the later cell covers them, the ring lies over them (no pixel changed there), nothing else changed', fr.covered > 100 && fr.coveredDiff === 0 && fr.ringPx > 50 && fr.ringDiff === 0 && fr.outside === 0);
+                check(nm + ': the same pixels as Canvas2D drawing them (max channel diff <= 4)', fr.over4 === 0);
+            }
+        }
         /* --fx: only the marks / timer / ring checks above (a few seconds) */
         if (FX) {
             if (errors.length) { console.log('page errors:\n  ' + errors.join('\n  ')); failed++; }
             if (failed) { console.log(failed + ' check(s) failed'); return done(1); }
-            console.log('glbatch ok (--fx: GL marks, merge timer and selected ring only)');
+            console.log('glbatch ok (--fx: GL marks, FB badge / effects, merge timer and selected ring only)');
             return done(0);
         }
         /* the labels are really drawn: labels on and off give different pictures */

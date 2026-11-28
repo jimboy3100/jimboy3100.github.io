@@ -72,7 +72,9 @@ ctx.window.legendmod.multiBoxPlayerExists = true;
 /* the WebGL pass: the real buildWebGLMultiboxRingData over both own-cell lists */
 const mI = main.indexOf('        buildWebGLMultiboxRingData(lists, data, max) {');
 check('WebGL ring pass found', mI > 0);
-const R = vm.runInContext('({' + block(mI).trim() + ',\n _lmLabelsOnFg() { return false; },' +
+/* (with its instance writer, in the versions that have one) */
+const pI = main.indexOf('        _lmMbRingPut(cell, data, o, scale) {');
+const R = vm.runInContext('({' + block(mI).trim() + (pI > 0 ? ',\n' + block(pI).trim() : '') + ',\n _lmLabelsOnFg() { return false; },' +
     ' getLegendWorldAttachedRenderPoint(x, y) { return { x: x, y: y }; },' +
     ' parseWebGLOverlayColor(c) { return c === "#FF2FD6" ? [1, 0, 1, 1] : [0, 1, 1, 1]; }, scale: 1 })', ctx);
 all.forEach(c => { c._webglRendered = true; });

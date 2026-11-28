@@ -21370,9 +21370,13 @@ function lmThemeValue(key, value) {
     }
     return typeof value === typeof def ? value : undefined;
 }
+/* with CORS (www.legendmod.ml sends Access-Control-Allow-Origin: *): untainted, so the WebGL
+ * text pass can draw the effects that use them (_lmGlFg, _lmMkClean) */
 cimg2 = new Image;
+cimg2.crossOrigin = 'anonymous';
 cimg2.src = defaultSettings.commanderImage2;
 cimg5 = new Image;
+cimg5.crossOrigin = 'anonymous';
 cimg5.src = defaultSettings.commanderImage5;
 cimg6 = new Image;
 cimg6.src = defaultSettings.commanderImage6;
@@ -21380,6 +21384,7 @@ cimg6.src = defaultSettings.commanderImage6;
 //cimg7.src = 'https://www.legendmod.ml/banners/iconLcForCanvas.png';
 function loadIconSpecialSkins(val) {
     window[val] = new Image();
+    window[val].crossOrigin = 'anonymous';
     window[val].src = 'https://www.legendmod.ml/banners/' + val + '.png';
 }
 /*
@@ -40204,10 +40209,12 @@ function thelegendmodproject() {
                          * the order of the Canvas2D branch, on the overlay. There they sit under
                          * the cell's own multibox ring and labels: for the cells canUseWebGLScene
                          * checked (_lmLabelsOnFg) those follow on the overlay too, below, and the
-                         * GL ring and text passes skipped them. */
-                        var _fbImg = defaultmapsettings.FBTracking ? this.lmFbBadge() : null;
+                         * GL ring and text passes skipped them. The GL text pass may have drawn
+                         * them already, at the cell's depth (_lmGlFgDone). */
+                        var _glFgDone = drawRender._lmGlFgDone(this);
+                        var _fbImg = defaultmapsettings.FBTracking && !_glFgDone ? this.lmFbBadge() : null;
                         /* (Canvas2D draws the effects only with custom skins on) */
-                        var _spFx = defaultmapsettings.customSkins && LM.showCustomSkins &&
+                        var _spFx = !_glFgDone && defaultmapsettings.customSkins && LM.showCustomSkins &&
                             typeof SpecialEffectPlayers !== 'undefined' && typeof SpecialEffectPlayers[this.targetNick] === 'string' &&
                             SpecialEffectPlayers[this.targetNick];
                         var _onFg = drawRender._lmLabelsOnFg(this);
@@ -63398,21 +63405,10 @@ function pickPlayerCellBySize(players, selectBiggest) {
             }
 
 
-            /*
-             * Keep the existing teams fallback until its detached-overlay
-             * semantics are intentionally migrated.
-             *
-             * This has NOTHING to do with Expanding Land or jelly physics.
-             */
-            /* Expanding Land Teams uses WebGL: the batch skips skins and the
-             * custom/opponent colours in Teams, and the pie goes on the overlay. */
-            if (
-                LM.gameMode ===
-                ':teams' &&
-                !_lmElTeamsActive(LM)
-            ) {
-                return this._lmNoGL(this.GLW.TEAMS);
-            }
+            /* Teams (agar.io, Agar2 and Expanding Land) uses WebGL: the batch and cell.draw
+             * show no skins and no FB badge there, the custom / opponent colours are off in
+             * both, and the team pie goes on the overlay in a WebGL frame (GLW.TEAMS is no
+             * longer given). */
 
 
             /*
@@ -63581,14 +63577,18 @@ function pickPlayerCellBySize(players, selectBiggest) {
              * and the indicator and bubble of a cell outside the GL view: in Canvas2D a
              * later (bigger) cell and its labels cover them, so keep WebGL only while no
              * later cell comes near such a mark (boxes in this._lmFxBoxes, conservative).
-             * Marks that sit under the cell's own labels in Canvas2D (FB friend badge,
-             * special effects) take that cell's labels (and multibox ring) onto the
-             * overlay with them, in the Canvas2D order (_lmLabelsOnFg).
+             * The FB friend badge and special effects of an on-screen WebGL cell are drawn by
+             * the GL text pass too, before the cell's multibox ring, indicator and labels
+             * (_lmGlMarks 0, _lmFgOk). Those of the cells outside the GL view and the
+             * effects the GL pass cannot draw (_lmSpFxGl) take that cell's labels (and
+             * multibox ring) onto the overlay with them, in the Canvas2D order (_lmLabelsOnFg).
              */
             var _glSpFx = (defaultmapsettings.customSkins && LM.showCustomSkins &&
                 typeof SpecialEffectPlayers !== 'undefined' && SpecialEffectPlayers) ? SpecialEffectPlayers : null;
             var _glFxCheck = !!(_glTeamNicks || _glTeamList || _glChatMap);
             var _glFgCheck = !!(_glFbSkins || _glSpFx);
+            /* the text pass runs (it draws the badges and effects of _lmFgOk) */
+            this._lmGlFgPass = !!(this.glTextProgram && this.glTextVAO);
             var _glFxN = 0;
             /* Cell shadows are the Canvas2D drop shadow of cell.draw and the GPU batch has no
              * shadow pass, so a frame with a shadowed cell on screen stays on Canvas2D (food
@@ -63632,14 +63632,15 @@ function pickPlayerCellBySize(players, selectBiggest) {
                     return this._lmNoGL(_glCov);
                 }
 
-                /* badges / effects of cells off screen too: an effect can reach in */
-                if (_glFgCheck) {
-                    _glFxN = this._lmCellFg(cell, _glFxN, _glSpFx);
-                }
-
                 /* outside the view the GL batch draws (200 around the screen): cell.draw draws
                  * this cell in its Canvas2D branch, on this.ctx under the GL layer */
                 var _glOut = !this._isCellInsideFrame(cell, 200);
+
+                /* badges / effects of cells off screen too: an effect can reach in */
+                if (_glFgCheck) {
+                    _glFxN = this._lmCellFg(cell, _glFxN, _glSpFx, _glOut);
+                }
+
                 if (_glOut) {
                     if (_glFxCheck) {
                         _glFxN = this._lmOutCellFx(cell, _glFxN, _glTeamNicks, _glTeamList, _glChatMap, _glSpFx);
@@ -63927,23 +63928,51 @@ function pickPlayerCellBySize(players, selectBiggest) {
         _lmSpFxReach(raw) {
             return typeof raw === 'string' && !window.testAnimatCells && raw.indexOf('WhiteArrow') !== -1 ? 12 : 2.5;
         },
+        /* false for an effect string the GL text pass cannot draw as Canvas2D does: the
+         * Gladiator helmet changes its hue every frame with a canvas filter, and an effect one
+         * of whose images could not go to a texture (_lmGlFg, _lmMkClean) */
+        _lmSpFxGl(raw) {
+            return raw.indexOf('Gladiator') === -1 && !(this._lmSpFxNoGl && this._lmSpFxNoGl[raw]);
+        },
         /* canUseWebGLScene: the FB friend badge and special effect (hats, crowns, smoke...)
          * of a cell, on screen or not (an effect reaches 2.5 radii out). In Canvas2D they
-         * sit over the cell's skin and under its multibox ring and labels: on the overlay,
-         * those then come after them there too (_lmLabelsOnFg: cell.draw draws them, the GL
-         * ring and text passes skip the cell). Same box rules as _lmCellFx. */
-        _lmCellFg(cell, n, spFx) {
+         * sit over the cell's skin and under its multibox ring and labels. A cell on screen
+         * (out false) gets them in the GL text pass at its depth, then its ring and labels
+         * (_lmFgOk, _lmGlMarks 0): later cells cover them there, so no boxes. One that reaches
+         * an overlay mark of an earlier cell (above the GL layer) goes on the overlay after it,
+         * as before. On the overlay its ring and labels come after them there too (_lmLabelsOnFg:
+         * cell.draw draws them, the GL ring and text passes skip the cell); a cell outside
+         * the GL view whose badge and effect do not reach the screen stays on this.ctx.
+         * Same box rules as _lmCellFx. */
+        _lmCellFg(cell, n, spFx, out) {
             var nick = cell.targetNick, x = cell.x, y = cell.y, ms = defaultmapsettings;
-            var r = cell.size * (1 + _EAT_PULSE_MAGNITUDE), on = false;
-            if (ms.FBTracking && cell.lmFbBadge && cell.lmFbBadge()) {
+            var r = cell.size * (1 + _EAT_PULSE_MAGNITUDE), on = false, n0 = n;
+            var fbImg = ms.FBTracking && cell.lmFbBadge ? cell.lmFbBadge() : null, fb = !!fbImg;
+            /* drawSpecialSkin runs with custom skins on, as in the Canvas2D branch */
+            var raw = spFx && nick && typeof spFx[nick] === 'string' && spFx[nick] && ms.customSkins && LM.showCustomSkins ? spFx[nick] : null;
+            if (!fb && !raw) return n;
+            var k = raw ? this._lmSpFxReach(raw) * r : 0;
+            if (!out && this._lmGlFgPass && (!raw || this._lmSpFxGl(raw)) && (!fb || this._lmMkClean(fbImg)) &&
+                !(n && ((fb && this._lmFxHit(n, x - 0.5 * r, y - r, x + 0.5 * r, y)) || (raw && this._lmFxHit(n, x - k, y - k, x + k, y + k))))) {
+                cell._lmFgOk = this._glSkinFrame;
+                return n;
+            }
+            if (fb) {
                 n = this._lmFxPush(n, x - 0.5 * r, y - r, x + 0.5 * r, y, this.GLW.COVER_FB);
                 on = true;
             }
-            /* drawSpecialSkin runs with custom skins on, as in the Canvas2D branch */
-            if (spFx && nick && typeof spFx[nick] === 'string' && spFx[nick] && ms.customSkins && LM.showCustomSkins) {
-                var k = this._lmSpFxReach(spFx[nick]) * r;
+            if (raw) {
                 n = this._lmFxPush(n, x - k, y - k, x + k, y + k, this.GLW.COVER_FX);
                 on = true;
+            }
+            if (on && out && this.canvasWidth > 0 && this.canvasHeight > 0) {
+                var s = this.scale || 1, hw = this.canvasWidth / s / 2, hh = this.canvasHeight / s / 2, b = this._lmFxBoxes;
+                on = false;
+                for (var q = n0; q < n && !on; q += 4) {
+                    on = b[q] < this.camX + hw && b[q + 2] > this.camX - hw && b[q + 1] < this.camY + hh && b[q + 3] > this.camY - hh;
+                }
+                /* nothing of them on screen: no boxes */
+                if (!on) return n0;
             }
             if (on) {
                 /* the ring lies inside the body */
@@ -72676,32 +72705,37 @@ function pickPlayerCellBySize(players, selectBiggest) {
                     if (!cell || !cell._webglRendered || cell.invisible === true) continue;
                     /* cell.draw strokes it on the overlay this frame, over its badge / effect */
                     if (this._lmLabelsOnFg(cell)) continue;
-                    var radius = cell.size;
-                    var ring = lmMultiboxRing(cell, radius, scale);
-                    if (!ring) continue;
-                    /* Expanding Land map deformation moves the body; same point as drawWebGLRingsBatch */
-                    var point = this.getLegendWorldAttachedRenderPoint(cell.x, cell.y, this._elMapPointA);
-                    /* parsed once per ring colour, not per cell per frame */
-                    var cache = this._lmMbRingRgba || (this._lmMbRingRgba = {});
-                    var rgba = cache[ring.color];
-                    if (!rgba) {
-                        if (Object.keys(cache).length > 16) cache = this._lmMbRingRgba = {};
-                        rgba = cache[ring.color] = this.parseWebGLOverlayColor(ring.color, LM_MB_RING_DEFAULT_COLORS[ring.player]);
-                    }
-                    var o = count * 9;
-                    data[o] = point.x;
-                    data[o + 1] = point.y;
-                    data[o + 2] = radius;
-                    data[o + 3] = Math.max(0, 1 - ring.width / radius);
-                    data[o + 4] = rgba[0];
-                    data[o + 5] = rgba[1];
-                    data[o + 6] = rgba[2];
-                    data[o + 7] = rgba[3];
-                    data[o + 8] = cell._webglZ || 0.5;
-                    count++;
+                    /* the text pass draws it over the cell's badge / effect (_lmGlRingOne) */
+                    if (this._glSkinFrame > 0 && cell._lmFgOk === this._glSkinFrame) continue;
+                    if (this._lmMbRingPut(cell, data, count * 9, scale)) count++;
                 }
             }
             return count;
+        },
+        /* One ring instance (9 floats at o) of this WebGL cell; false when it has no ring */
+        _lmMbRingPut(cell, data, o, scale) {
+            var radius = cell.size;
+            var ring = lmMultiboxRing(cell, radius, scale || this.scale || 1);
+            if (!ring) return false;
+            /* Expanding Land map deformation moves the body; same point as drawWebGLRingsBatch */
+            var point = this.getLegendWorldAttachedRenderPoint(cell.x, cell.y, this._elMapPointA);
+            /* parsed once per ring colour, not per cell per frame */
+            var cache = this._lmMbRingRgba || (this._lmMbRingRgba = {});
+            var rgba = cache[ring.color];
+            if (!rgba) {
+                if (Object.keys(cache).length > 16) cache = this._lmMbRingRgba = {};
+                rgba = cache[ring.color] = this.parseWebGLOverlayColor(ring.color, LM_MB_RING_DEFAULT_COLORS[ring.player]);
+            }
+            data[o] = point.x;
+            data[o + 1] = point.y;
+            data[o + 2] = radius;
+            data[o + 3] = Math.max(0, 1 - ring.width / radius);
+            data[o + 4] = rgba[0];
+            data[o + 5] = rgba[1];
+            data[o + 6] = rgba[2];
+            data[o + 7] = rgba[3];
+            data[o + 8] = cell._webglZ || 0.5;
+            return true;
         },
 
         drawWebGLMultiboxRings() {
@@ -74401,6 +74435,8 @@ function pickPlayerCellBySize(players, selectBiggest) {
                     if (!cell || !cell._webglRendered) continue;
                     /* its labels are on the overlay this frame (FB badge / special effect) */
                     if (this._lmLabelsOnFg(cell)) continue;
+                    /* its FB badge, special effect and then its multibox ring (_lmFgOk) */
+                    if (this._glSkinFrame > 0 && cell._lmFgOk === this._glSkinFrame) this._lmGlMarks(cell, 0);
                     /* its teammate indicator and chat bubble are drawn here, in the Canvas2D order */
                     var mk = cell._lmMkOk === this._glSkinFrame;
                     if (mk) this._lmGlMarks(cell, 1);
@@ -74713,9 +74749,67 @@ function pickPlayerCellBySize(players, selectBiggest) {
         _lmMarkCtxMake() {
             var r = this;
             return this._lmMkCtx = {
-                globalAlpha: 1, dx: 0, dy: 0, z: 0.5,
-                drawImage: function (img, x, y, w, h) { r._lmGlMarkQuad(img, x + this.dx, y + this.dy, w, h, this.z, this.globalAlpha); }
+                globalAlpha: 1, dx: 0, dy: 0, z: 0.5, filter: 'none',
+                /* chk: the FB badge and effects (_lmGlFg) check their images (_lmMkClean) */
+                chk: false,
+                /* save / restore of the alpha and filter (an effect fades with them), 8 deep */
+                _sn: 0, _sa: [1, 1, 1, 1, 1, 1, 1, 1], _sf: ['none', 'none', 'none', 'none', 'none', 'none', 'none', 'none'],
+                save: function () {
+                    if (this._sn < 8) { this._sa[this._sn] = this.globalAlpha; this._sf[this._sn] = this.filter; }
+                    this._sn++;
+                },
+                restore: function () {
+                    if (this._sn > 0 && --this._sn < 8) { this.globalAlpha = this._sa[this._sn]; this.filter = this._sf[this._sn]; }
+                },
+                drawImage: function (img, x, y, w, h) {
+                    if (this.chk && ((this.filter && this.filter !== 'none') || !r._lmMkClean(img))) {
+                        /* a canvas filter, or a source that would taint the text canvas: not
+                         * drawn here, the effect goes back to the overlay (_lmSpFxGl) */
+                        r._lmMkFail = true;
+                        return;
+                    }
+                    if (!this.chk) {
+                        r._lmGlMarkQuad(img, x + this.dx, y + this.dy, w, h, this.z, this.globalAlpha);
+                        return;
+                    }
+                    /* never throws into drawImageSpecialSkin (it would mark the image failed for
+                     * Canvas2D too) */
+                    try {
+                        r._lmGlMarkQuad(img, x + this.dx, y + this.dy, w, h, this.z, this.globalAlpha);
+                    } catch (e) {
+                        r._lmMkFail = true;
+                    }
+                }
             };
+        },
+        /* true when this image or canvas may be drawn into the text canvas and uploaded: one
+         * without CORS (e.g. a picture loaded without crossOrigin) would taint that canvas for
+         * good and every later label upload would fail. Known clean: data: / blob: images and
+         * images loaded with crossOrigin; others are tried once per version on a 1x1 canvas. */
+        _lmMkClean(src) {
+            if (!src) return false;
+            var v = src._lmDrawn || 0, u = src.src || '';
+            if (src._lmClV === v && src._lmClU === u && src._lmCl !== undefined) return src._lmCl;
+            var ok = false;
+            if (u && (u.indexOf('data:') === 0 || u.indexOf('blob:') === 0 || src.crossOrigin === 'anonymous')) ok = true;
+            else {
+                try {
+                    var p = this._lmClProbe || (this._lmClProbe = document.createElement('canvas'));
+                    p.width = 1;
+                    p.height = 1;
+                    var pc = p.getContext('2d');
+                    pc.drawImage(src, 0, 0, 1, 1);
+                    pc.getImageData(0, 0, 1, 1);
+                    ok = true;
+                } catch (e) {
+                    /* (a tainted probe stays tainted: a new one next time) */
+                    this._lmClProbe = null;
+                }
+            }
+            src._lmCl = ok;
+            src._lmClV = v;
+            src._lmClU = u;
+            return ok;
         },
         /* An image or canvas drawn at world x, y (w x h, or its own size) as a quad at depth z,
          * from the text cache: one entry per image, a new one when a canvas was drawn again
@@ -74750,11 +74844,14 @@ function pickPlayerCellBySize(players, selectBiggest) {
          * depth in the text pass order, a later cell and its labels cover them as in
          * Canvas2D. cell.draw leaves them out then (_lmGlMarked). */
         _lmGlMarks(cell, which) {
-            cell._lmMkAt = this._glSkinFrame;
+            /* (0: the FB badge, special effect and multibox ring, _lmGlFgDone) */
+            if (which === 0) cell._lmFgAt = this._glSkinFrame;
+            else cell._lmMkAt = this._glSkinFrame;
             var ms = defaultmapsettings, c = this._lmMarkCtx();
+            c._sn = 0;
             var deform = this._lmMarkAt(cell, c);
             try {
-                if (which === 1) {
+                if (which < 2) {
                     /* the rule and size of cell.draw (eat pulse included) */
                     var y = cell.size;
                     if (cell._eatPulseTime) {
@@ -74764,6 +74861,21 @@ function pickPlayerCellBySize(players, selectBiggest) {
                             y *= 1 + _EAT_PULSE_MAGNITUDE * t * t;
                         }
                     }
+                }
+                if (which === 0) {
+                    if (deform && !ms.jellyPhisycs) {
+                        /* drawn with the moved cell centre, as cell.draw */
+                        c.dx = 0;
+                        c.dy = 0;
+                        this._lmGlFgMoved(cell, c, y);
+                    } else {
+                        this._lmGlFg(cell, c, y);
+                    }
+                    /* the cell's multibox ring over them, as in Canvas2D (the ring pass left it out) */
+                    this._lmGlRingOne(cell);
+                    return;
+                }
+                if (which === 1) {
                     if (ms.teammatesInd && !cell.isPlayerCell && y <= 800 && window.teammatenicks && cell.targetNick != "" &&
                         (window._lmTeammateNickSet ? window._lmTeammateNickSet.has(cell.targetNick) : window.teammatenicks.includes(cell.targetNick))) {
                         this.drawTeammatesInd(c, cell.x, cell.y, y);
@@ -74844,6 +74956,85 @@ function pickPlayerCellBySize(players, selectBiggest) {
         /* the timer of _lmGlMerge with the Expanding Land map deformation (no jelly) */
         _lmGlMergeMoved(cell, c) {
             this.withLegendWorldDeformedCellRenderState(cell, function () { cell.drawMerge(c); });
+        },
+        /* The FB friend badge and special effect of _lmGlMarks 0, drawn on the mark context c
+         * as the WebGL branch of cell.draw draws them (badge with the skin alpha, then
+         * drawSpecialSkin); y: the drawn radius */
+        _lmGlFg(cell, c, y) {
+            var ms = defaultmapsettings, ds = defaultSettings, raw = null;
+            c.chk = true;
+            c.filter = 'none';
+            this._lmMkFail = false;
+            try {
+                var img = ms.FBTracking ? cell.lmFbBadge() : null;
+                if (img) {
+                    var a = c.globalAlpha;
+                    if ((ms.transparentSkins && !(cell.isPlayerCell && !ms.myTransparentSkin)) ||
+                        (cell.isPlayerCell && ms.myTransparentSkin && ds.skinsAlpha < 0.99)) {
+                        c.globalAlpha = a * ds.skinsAlpha;
+                    }
+                    c.drawImage(img, cell.x - 1 / 2 * y, cell.y - y, y, y);
+                    c.globalAlpha = a;
+                }
+                if (ms.customSkins && LM.showCustomSkins && typeof SpecialEffectPlayers !== 'undefined' &&
+                    typeof SpecialEffectPlayers[cell.targetNick] === 'string' && SpecialEffectPlayers[cell.targetNick]) {
+                    raw = SpecialEffectPlayers[cell.targetNick];
+                    cell.drawSpecialSkin(c, y);
+                }
+            } catch (e) {
+                /* a mark failing must not stop the ring and labels */
+            }
+            /* an image of this effect could not be drawn here: from the next frame on it is
+             * drawn on the overlay again, as before (canUseWebGLScene, _lmSpFxGl) */
+            if (this._lmMkFail && raw) (this._lmSpFxNoGl || (this._lmSpFxNoGl = Object.create(null)))[raw] = true;
+            this._lmMkFail = false;
+            c.chk = false;
+            c.filter = 'none';
+            c._sn = 0;
+        },
+        /* _lmGlFg with the Expanding Land map deformation (no jelly), with one function made
+         * once instead of a closure per call */
+        _lmGlFgMoved(cell, c, y) {
+            this._lmFgMvCell = cell;
+            this._lmFgMvCtx = c;
+            this._lmFgMvY = y;
+            try {
+                this.withLegendWorldDeformedCellRenderState(cell, this._lmFgMvFn || this._lmFgMvMake());
+            } finally {
+                this._lmFgMvCell = this._lmFgMvCtx = null;
+            }
+        },
+        /* (in its own method, as _lmMarkCtxMake: no closure context per _lmGlFgMoved call) */
+        _lmFgMvMake() {
+            var r = this;
+            return this._lmFgMvFn = function () { r._lmGlFg(r._lmFgMvCell, r._lmFgMvCtx, r._lmFgMvY); };
+        },
+        /* true when the GL text pass drew this cell's FB badge and special effect */
+        _lmGlFgDone(cell) {
+            return this._glSkinFrame > 0 && cell._lmFgAt === this._glSkinFrame;
+        },
+        /* The multibox ring of a cell of _lmGlMarks 0 (buildWebGLMultiboxRingData left it out),
+         * one instance with the ring pass's program and state, in the text pass order */
+        _lmGlRingOne(cell) {
+            var gl = this.gl;
+            if (!gl || !this.glMbRingProgram || !this.glMbRingVAO || !this.glMbRingData || !LM.multiBoxPlayerExists) return;
+            if (!this._lmMbRingPut(cell, this.glMbRingData, 0)) return;
+            /* the labels queued so far are below it */
+            if (this._lmTextBatchN) this._lmTextFlush();
+            var scale = this.scale || 1;
+            gl.enable(gl.BLEND);
+            gl.blendFuncSeparate(gl.SRC_ALPHA, gl.ONE_MINUS_SRC_ALPHA, gl.ONE, gl.ONE_MINUS_SRC_ALPHA);
+            gl.useProgram(this.glMbRingProgram);
+            gl.uniform2f(this.u_mbRing_viewCenter, this.camX, this.camY);
+            gl.uniform2f(this.u_mbRing_viewScale, 2.0 * scale / this.canvasWidth, 2.0 * scale / this.canvasHeight);
+            gl.bindBuffer(gl.ARRAY_BUFFER, this.glMbRingInstanceVBO);
+            /* (the WebGL2 offset / length form: no subarray per call) */
+            gl.bufferSubData(gl.ARRAY_BUFFER, 0, this.glMbRingData, 0, 9);
+            gl.bindVertexArray(this.glMbRingVAO);
+            gl.drawArraysInstanced(gl.TRIANGLE_STRIP, 0, 4, 1);
+            gl.bindBuffer(gl.ARRAY_BUFFER, null);
+            /* not the per-label program: the next own-texture label binds it again */
+            this._lmTextProg = 2;
         },
         /* true when the GL text pass drew this cell's teammate indicator and chat bubble */
         _lmGlMarked(cell) {

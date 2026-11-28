@@ -14,16 +14,20 @@
  * multibox ring, teammate indicator, nick and mass, chat bubble, one cell after the other,
  * then the FB arrow). Bodies and labels are test models (discs, label boxes about 0.6 em
  * per character) painted the same way in both; the GL layer is that model painted per cell
- * (body, ring, labels) in cell order, which is what its depth order gives. A cell with an FB
- * badge or effect has its real nick / mass rasters and ring on the overlay (the GL ring and
- * text passes skip it), so its reference uses the same rasters. So a difference is always a
- * mark: lost, misplaced, wrong alpha, or above something it is under in Canvas2D.
- * It does not run a GPU: drawWebGLCellBatch and the text pass are not executed here.
+ * (body, ring, labels) in cell order, which is what its depth order gives; the marks of the GL
+ * text pass (FB badge, special effect and then the ring; teammate indicator; chat bubble) are
+ * painted there by the real _lmGlMarks. A cell whose FB badge or effect stays on the overlay
+ * (beyond the GL view, Gladiator, an image without CORS) has its real nick / mass rasters and
+ * ring there (the GL ring and text passes skip it), so its reference uses the same rasters. So
+ * a difference is always a mark: lost, misplaced, wrong alpha, or above something it is under
+ * in Canvas2D. It does not run a GPU: drawWebGLCellBatch and the GPU draw of the text pass are
+ * not executed here (glbatch.js compares those pixels).
  * Also the Canvas2D gradient bubbles (opponents, cursor) on a recording context, and which look
  * of Cursor tracking draws (line, bubble, none) for its two switches.
  * Cases: teammate only, chat only, FB badge (with its nick and mass, multibox ring, text and
- * skin alpha, Teams, no skin), FB arrow, special effects (custom skins off, an effect of a
- * cell outside the frame), the chat bubble of a cell outside the GL view, overlapping cells (later cell over a mark or the moved labels,
+ * skin alpha, agar.io Teams, no skin, no CORS), FB arrow, special effects (custom skins off, an
+ * effect of a cell outside the frame, Hero1 alpha, Gladiator, an image without CORS), the
+ * agar.io Teams pie, the chat bubble of a cell outside the GL view, overlapping cells (later cell over a mark or the moved labels,
  * earlier cell under it, own labels), Canvas/WebGL transitions, frames with no marks (no
  * clear, overlay hidden), high DPI, resize between frames, WebGL context loss, the order of
  * the overlay calls, and the frame counters by Canvas2D reason.
@@ -103,6 +107,8 @@ class SoftCtx {
         let x, y, w, h;
         if (a.length >= 9) { x = a[5]; y = a[6]; w = a[7]; h = a[8]; } else if (a.length >= 5) { x = a[1]; y = a[2]; w = a[3]; h = a[4]; } else { x = a[1]; y = a[2]; w = img.width; h = img.height; }
         if (!img || !(img.width > 0) || !(img.height > 0)) return;
+        /* an image without CORS taints the canvas for good (getImageData then throws) */
+        if (img.tainted) this.canvas.tainted = true;
         oplog.push(this.canvas.name + ':draw:' + (img.name || img._id));
         this._paint(this._rect(x, y, w, h), img.color || colorFor(img._id || 0), this._alpha * (img.alpha == null ? 1 : img.alpha));
     }
@@ -112,6 +118,7 @@ class SoftCtx {
         this._paint([cx - pr, cy - pr, cx + pr, cy + pr], col, this._alpha, (px, py) => (px - cx) * (px - cx) + (py - cy) * (py - cy) <= pr * pr);
     }
     box(x, y, w, h, col) { this._paint(this._rect(x, y, w, h), col, this._alpha); }
+    getImageData() { if (this.canvas.tainted) throw new Error('SecurityError: tainted canvas'); return { data: [0, 0, 0, 0] }; }
     measureText(t) { const m = /(\d+(?:\.\d+)?)px/.exec(this.font); return { width: (m ? +m[1] : 10) * 0.6 * String(t).length }; }
     /* a full circle stroked (the multibox ring), only in the cases that turn it on */
     arc(x, y, r) { this._arc = [x, y, r]; }
@@ -216,6 +223,8 @@ const window = { teammatenicks: [], _lmTeammateNickSet: new Set(), LM_DPR: 1, le
 /* an Array, as SpecialEffectPlayers in ogario.v4.js */
 const SEP = [];
 const document = { createElement: () => new SoftCanvas(0, 0, 'txt') };
+/* (the renderer makes its 1x1 CORS probe canvas with it, _lmMkClean) */
+globalThis.document = document;
 const fbImage = img('fbBadge', 40, 40);
 const application = {
     customSkinsMap: {}, customSkinsCache: {},
@@ -241,6 +250,8 @@ const proto = new Function('env', 'var window = env.window, LM = env.LM, legendm
     ringSrc + '\n' +
     'return {' + haveMethods.map((n) => n + ': ' + cellMethod(n)).join(',\n') + '};')(Object.assign({ drawRender: R, SEP: SEP, TextClass: TextClass }, env));
 window.iconSpecialSkinEffectsHat3 = img('hat', 64, 64);
+/* drawn with a hue-rotate filter: an effect the GL text pass leaves to the overlay */
+window.iconSpecialSkinEffectsGladiator = img('gladiator', 64, 64);
 
 /* renderer state */
 /* the real selected-cell ring (the frame block calls it; stubbed by default) */
@@ -249,7 +260,7 @@ function stubRings() { }
 const main = new SoftCanvas(0, 0, 'main'), glc = new SoftCanvas(0, 0, 'gl'), overlay = new SoftCanvas(0, 0, 'overlay');
 Object.assign(R, {
     canvas: main, ctx: main.getContext(), overlayCanvas: overlay, overlayCtx: overlay.getContext(), glCanvas: glc,
-    gl: {}, glTextProgram: {}, glCellProgram: {}, glJellyProgram: {}, glJellyStrokeProgram: {}, glJellyVAO: {}, glJellyVBO: {}, glJellyStrokeVAO: {}, glJellyStrokeVBO: {}, glMbRingProgram: {}, glMbRingVAO: {},
+    gl: {}, glTextProgram: {}, glTextVAO: {}, glCellProgram: {}, glJellyProgram: {}, glJellyStrokeProgram: {}, glJellyVAO: {}, glJellyVBO: {}, glJellyStrokeVAO: {}, glJellyStrokeVBO: {}, glMbRingProgram: {}, glMbRingVAO: {},
     indicator: img('teamInd', 90, 50), heartIndicator: img('heartInd', 50, 50), smileIndicator: img('smileInd', 150, 150),
     isLegendWorldMapDeformationVisible: () => false, drawRings: stubRings, drawRMB() { }, drawViewPorts() { },
     drawFBTracking(ctx, players, x, y) { ctx.drawImage(fbArrow, x - 10, y - 10, 20, 20); }
@@ -262,6 +273,12 @@ R._lmGlMarkQuad = function (src, x, y, w, h, z, a) {
     g.globalAlpha = a;
     if (w === undefined) g.drawImage(src, x, y); else g.drawImage(src, x, y, w, h);
     g.globalAlpha = p;
+};
+/* the multibox ring the text pass draws after a cell's FB badge / effect: the ring model on the
+ * GL layer (the GPU draw is not run here) */
+R._lmGlRingOne = function (c) {
+    const ring = lmRing(c, c.size, R.scale);
+    if (ring) R.strokeMultiboxRing(glc.getContext(), c.x, c.y, c.size, ring);
 };
 const realDeformed = R.drawLegendWorldDeformedCanvasCell;
 /* Canvas2D cells: the test model painter; WebGL cells: the real cell.draw (its WebGL branch) */
@@ -417,7 +434,12 @@ function frame(s) {
             /* the GL ring and text passes leave out the cells whose ring and labels cell.draw
              * puts on the overlay (above their FB badge / effect) */
             const fg = R._lmLabelsOnFg && R._lmLabelsOnFg(c);
-            const ring = fg ? null : lmRing(c, c.size, R.scale);
+            /* the FB badge, special effect and then the multibox ring of the GL text pass (the
+             * real _lmGlMarks 0 and drawSpecialSkin); s.fgLate: after the labels (wrong order,
+             * to show the comparison sees it) */
+            const fgOk = !fg && R._lmGlMarks && c._lmFgOk === R._glSkinFrame;
+            if (fgOk && !s.fgLate) R._lmGlMarks(c, 0);
+            const ring = fg || fgOk ? null : lmRing(c, c.size, R.scale);
             if (ring) R.strokeMultiboxRing(gctx, c.x, c.y, c.size, ring);
             /* the teammate indicator and chat bubble of the GL text pass: the real _lmGlMarks
              * (and the Canvas2D code it runs), its quads painted here (_lmGlMarkQuad), before
@@ -428,6 +450,7 @@ function frame(s) {
             const fl = labelFlags(c);
             if (fl.on && !fg) paintLabels(gctx, c, fl);
             gctx.globalAlpha = pre;
+            if (fgOk && s.fgLate) R._lmGlMarks(c, 0);
             /* the merge timer of the GL text pass: the real _lmGlMerge (and drawMerge) */
             if (!fg && R._lmGlMerge && c._lmMgOk === R._glSkinFrame) R._lmGlMerge(c);
             if (mk) R._lmGlMarks(c, 2);
@@ -515,10 +538,16 @@ r = frame(S1);
 check('showChat off: no bubble in either renderer, WebGL, equal', r.gl && marked(r.out, chatCol) === 0 && r.d.n === 0, 'gl ' + r.gl + ' ' + r.d.n + ' px');
 
 /* ---- FB friend badge ---- */
-/* In Canvas2D the badge lies over the skin and under the cell's own nick and mass: in a WebGL
- * frame the badge and then the cell's labels go on the overlay (the GL text pass skips them). */
+/* In Canvas2D the badge lies over the skin and under the cell's own multibox ring, nick and
+ * mass: in a WebGL frame the GL text pass draws it at the cell's depth before them (_lmGlMarks
+ * 0), so later cells and their labels cover it as in Canvas2D. A cell beyond the GL view, an
+ * effect the pass cannot draw (Gladiator) or an image that is not CORS-clean keep the overlay
+ * (the badge and then the cell's labels go there, the GL ring and text passes skip them). */
 const why = () => R.GLW_IDS ? R.GLW_IDS[R._lmGlWhy] : '-';
 const fgOps = (r) => r.ops.filter((o) => /^overlay:(draw|stroke)/.test(o)).map((o) => o.replace(/^overlay:(draw:)?/, ''));
+const glOps = (r) => r.ops.filter((o) => /^gl:(draw|stroke)/.test(o)).map((o) => o.replace(/^gl:(draw:)?/, ''));
+/* drawn by the GL text pass: nothing on the overlay, not drawn on the main canvas */
+const onGl = (r, name) => !r.shown && glOps(r).includes(name) && !fgOps(r).length && !r.ops.includes('main:draw:' + name);
 reset(); setSettings({ map: { FBTracking: true } });
 application.customSkinsMap = { 'friendfacebookskin': 'fbk' }; application.customSkinsCache = { 'fbk_cached4': fbImage };
 application.skins = { friend: img('friendSkin', 64, 64) };
@@ -526,17 +555,25 @@ const friend = makeCell({ x: 0, y: 0, size: 70, targetNick: 'friend' });
 scene([friend]);
 r = frame(S1);
 check('FB badge: WebGL frame, badge visible, pixels equal the Canvas2D order (badge under the nick and mass)', r.gl && marks(r, fbImage) > 0 && r.d.n === 0, 'gl ' + r.gl + ' (' + why() + ') badge px ' + marks(r, fbImage) + ' ' + r.d.n + ' px');
-check('  badge, then the nick and mass rasters on the overlay', fgOps(r).join(' ') === 'fbBadge txt txt', fgOps(r).join(' '));
+check('  badge drawn by the GL text pass (no overlay, cell.draw leaves it out), the labels stay on the GL layer', onGl(r, 'fbBadge') && !R._lmLabelsOnFg(friend) && R._lmGlFgDone(friend),
+    glOps(r).join(' ') + ' | ' + fgOps(r).join(' ') + ' shown ' + r.shown);
 {
-    /* sensitivity: with the cell's labels left to the GL layer the badge covers its nick */
-    const keep = R._lmLabelsOnFg;
-    R._lmLabelsOnFg = () => false;
-    const bad = frame(S1);
-    R._lmLabelsOnFg = keep;
-    check('  (the comparison sees it when the nick stays under the badge)', bad.gl && bad.d.n > 0, bad.d.n + ' px');
+    /* sensitivity: the badge drawn after the cell's labels covers its nick */
+    const bad = frame(Object.assign({}, S1, { fgLate: true }));
+    check('  (the comparison sees it when the badge is drawn over the nick)', bad.gl && bad.d.n > 0, bad.d.n + ' px');
 }
 r = frame(S1);
-check('FB badge, next frame: equal (no labels left over, none drawn twice)', r.gl && r.d.n === 0 && fgOps(r).join(' ') === 'fbBadge txt txt', r.d.n + ' px ' + fgOps(r).join(' '));
+check('FB badge, next frame: equal (none left over, none drawn twice)', r.gl && r.d.n === 0 && onGl(r, 'fbBadge') && glOps(r).filter((o) => o === 'fbBadge').length === 1, r.d.n + ' px ' + glOps(r).join(' '));
+{
+    /* a badge that is not CORS-clean would taint the text canvas: it keeps the overlay */
+    const keepImg = application.customSkinsCache.fbk_cached4, dirty = img('fbDirty', 40, 40);
+    dirty.tainted = true;
+    application.customSkinsCache.fbk_cached4 = dirty;
+    const g = frame(S1);
+    check('  a badge that is not CORS-clean: WebGL, on the overlay as before (badge, nick, mass), never on the GL layer, equal',
+        g.gl && g.d.n === 0 && fgOps(g).join(' ') === 'fbDirty txt txt' && !glOps(g).includes('fbDirty'), g.d.n + ' px ' + fgOps(g).join(' ') + ' | ' + glOps(g).join(' '));
+    application.customSkinsCache.fbk_cached4 = keepImg;
+}
 setSettings({ map: { FBTracking: true }, set: { textAlpha: 0.6 } });
 r = frame(S1);
 check('FB badge with textAlpha 0.6: labels with the same alpha, drawn once, equal', r.gl && r.d.n === 0, 'gl ' + r.gl + ' ' + r.d.n + ' px, max ' + r.d.max.toFixed(3));
@@ -549,7 +586,7 @@ check('  jelly off (fixed circles keep the old alpha rule): Canvas2D, reason "al
 setSettings({ map: { FBTracking: true } });
 LM.gameMode = ':teams';
 r = frame(S1);
-check('FB badge in Teams: Canvas2D (reason "teams"), no badge as in Canvas2D, equal', !r.gl && why() === 'teams' && marks(r, fbImage) === 0 && r.d.n === 0, 'gl ' + r.gl + ' ' + why() + ' ' + r.d.n + ' px');
+check('FB badge in agar.io Teams: WebGL (no "teams" reason any more), no badge as in Canvas2D, equal', r.gl && marks(r, fbImage) === 0 && r.d.n === 0, 'gl ' + r.gl + ' ' + why() + ' ' + r.d.n + ' px');
 LM.gameMode = ':ffa';
 application.skins = {};
 r = frame(S1);
@@ -558,10 +595,10 @@ application.skins = { friend: img('friendSkin', 64, 64) };
 /* overlapping cells */
 scene([friend, makeCell({ x: 20, y: -80, size: 72, targetNick: 'cover' })]);
 r = frame(S1);
-check('later bigger cell over the badge: Canvas2D, reason "coveredFbBadge", equal', !r.gl && why() === 'coveredFbBadge' && r.d.n === 0, 'gl ' + r.gl + ' ' + why() + ' ' + r.d.n + ' px');
+check('later bigger cell over the badge: WebGL, it covers the GL badge as in Canvas2D, equal', r.gl && marks(r, fbImage) > 0 && r.d.n === 0, 'gl ' + r.gl + ' ' + why() + ' ' + r.d.n + ' px');
 scene([friend, makeCell({ x: 0, y: 105, size: 72, targetNick: 'low' })]);
 r = frame(S1);
-check('later bigger cell over the moved labels only: Canvas2D, reason "coveredLabels", equal', !r.gl && why() === 'coveredLabels' && r.d.n === 0, 'gl ' + r.gl + ' ' + why() + ' ' + r.d.n + ' px');
+check('later bigger cell over the cell\'s labels: WebGL, equal', r.gl && r.d.n === 0, 'gl ' + r.gl + ' ' + why() + ' ' + r.d.n + ' px');
 scene([makeCell({ x: 25, y: -45, size: 30, targetNick: 'under' }), friend]);
 r = frame(S1);
 check('earlier smaller cell under the badge: WebGL, badge and labels above it, equal', r.gl && r.d.n === 0, 'gl ' + r.gl + ' ' + why() + ' ' + r.d.n + ' px');
@@ -571,8 +608,20 @@ setSettings({ map: { FBTracking: true } });
 friend.isPlayerCell = true;
 scene([friend]);
 r = frame(S1);
-check('FB badge on an own cell with a multibox ring: WebGL, badge > ring > labels on the overlay, equal', r.gl && fgOps(r).join(' ') === 'fbBadge stroke txt txt' && r.d.n === 0, 'gl ' + r.gl + ' ' + why() + ' ' + fgOps(r).join(' ') + ' ' + r.d.n + ' px');
-check('  the GL ring pass leaves that cell out', typeof R.buildWebGLMultiboxRingData !== 'function' || (friend._webglRendered = true, R.buildWebGLMultiboxRingData([LM.cells], new Float32Array(64), 4) === 0));
+check('FB badge on an own cell with a multibox ring: WebGL, badge > ring in the GL text pass (labels after them), equal', r.gl && onGl(r, 'fbBadge') && glOps(r).join(' ') === 'fbBadge stroke' && r.d.n === 0,
+    'gl ' + r.gl + ' ' + why() + ' ' + glOps(r).join(' ') + ' | ' + fgOps(r).join(' ') + ' ' + r.d.n + ' px');
+{
+    const bad = frame(Object.assign({}, S1, { fgLate: true }));
+    check('  (the comparison sees a ring drawn before the badge)', bad.d.n > 0, bad.d.n + ' px');
+    frame(S1);
+    friend._webglRendered = true;
+    const d9 = new Float32Array(64);
+    check('  the GL ring pass leaves that cell out, the text pass gets the same ring instance (_lmMbRingPut)',
+        R.buildWebGLMultiboxRingData([LM.cells], d9, 4) === 0 && R._lmMbRingPut(friend, d9, 0) === true && d9[2] === friend.size && d9[0] === friend.x, Array.from(d9.subarray(0, 9)).join(','));
+    /* a frame where it has no GL badge: back in the ring pass */
+    R._glSkinFrame++;
+    check('  a frame where the cell has no GL badge: in the ring pass again', R.buildWebGLMultiboxRingData([LM.cells], d9, 4) === 1);
+}
 /* the ring is fixed: only on the player you control (player 1 here), its colour, 6% of the radius; old ring settings do nothing */
 (function () {
     const keep = Object.assign({}, ms);
@@ -594,11 +643,11 @@ scene([friend]);
 r = frame(S4);
 check('FB badge at DPR 2, zoom 0.8: WebGL, equal', r.gl && marks(r, fbImage) > 0 && r.d.n === 0, 'gl ' + r.gl + ' ' + r.d.n + ' px, max ' + r.d.max.toFixed(3));
 r = frame(Object.assign({}, S4, { W: 230, H: 120 }));
-check('FB badge, resized frame: overlay resized before its marks, equal', r.gl && orderOk(r.ops) && r.d.n === 0, 'gl ' + r.gl + ' ' + r.d.n + ' px');
+check('FB badge, resized frame: WebGL, badge on the GL layer, equal', r.gl && onGl(r, 'fbBadge') && r.d.n === 0, 'gl ' + r.gl + ' ' + r.d.n + ' px');
 /* WebGL > Canvas2D > WebGL */
 const b1 = frame(S1), b2 = frame(Object.assign({}, S1, { glOk: false })), b3 = frame(S1);
-check('FB badge, WebGL > Canvas2D > WebGL: every frame equal, labels not twice', b1.gl && !b2.gl && b3.gl && b1.d.n === 0 && b2.d.n === 0 && b3.d.n === 0 && fgOps(b3).join(' ') === 'fbBadge txt txt',
-    [b1.d.n, b2.d.n, b3.d.n].join('/') + ' ' + fgOps(b3).join(' '));
+check('FB badge, WebGL > Canvas2D > WebGL: every frame equal, badge once', b1.gl && !b2.gl && b3.gl && b1.d.n === 0 && b2.d.n === 0 && b3.d.n === 0 && onGl(b3, 'fbBadge') &&
+    glOps(b3).filter((o) => o === 'fbBadge').length === 1, [b1.d.n, b2.d.n, b3.d.n].join('/') + ' ' + glOps(b3).join(' '));
 
 /* ---- FB arrow ---- */
 
@@ -616,14 +665,14 @@ scene([hatter]);
 r = frame(S1);
 const hat = window.iconSpecialSkinEffectsHat3;
 check('special effect: WebGL frame, hat visible, equal (under the cell\'s nick as in Canvas2D)', r.gl && marks(r, hat) > 0 && r.d.n === 0, 'gl ' + r.gl + ' (' + why() + ') hat px ' + marks(r, hat) + ' ' + r.d.n + ' px');
-check('  hat, then the nick and mass on the overlay', fgOps(r).join(' ') === 'hat txt txt', fgOps(r).join(' '));
+check('  hat drawn by the GL text pass, labels on the GL layer', onGl(r, 'hat') && !R._lmLabelsOnFg(hatter), glOps(r).join(' ') + ' | ' + fgOps(r).join(' '));
 setSettings({ map: { customSkins: false } });
 r = frame(S1);
 check('special effect with custom skins off: Canvas2D draws none, WebGL none either, equal', r.gl && marks(r, hat) === 0 && r.d.n === 0, 'gl ' + r.gl + ' hat px ' + marks(r, hat) + ' ' + r.d.n + ' px');
 setSettings();
 scene([hatter, makeCell({ x: 30, y: -60, size: 55, targetNick: 'cover' })]);
 r = frame(S1);
-check('later bigger cell over the hat: Canvas2D, reason "coveredEffect", equal', !r.gl && why() === 'coveredEffect' && r.d.n === 0, 'gl ' + r.gl + ' ' + why() + ' ' + r.d.n + ' px');
+check('later bigger cell over the hat: WebGL, it covers the GL hat as in Canvas2D, equal', r.gl && marks(r, hat) > 0 && r.d.n === 0, 'gl ' + r.gl + ' ' + why() + ' ' + r.d.n + ' px');
 scene([makeCell({ x: 20, y: -45, size: 25, targetNick: 'under' }), hatter]);
 r = frame(S1);
 check('earlier smaller cell under the hat: WebGL, equal', r.gl && r.d.n === 0, 'gl ' + r.gl + ' ' + r.d.n + ' px');
@@ -659,8 +708,92 @@ scene([hatter]);
 frame(S5);
 r = frame(S5);
 check('effect + teammate indicator + chat bubble on one cell, DPR 2: WebGL, equal', r.gl && marks(r, hat) > 0 && marks(r, R.indicator) > 0 && r.d.n === 0, 'gl ' + r.gl + ' ' + why() + ' ' + r.d.n + ' px');
-check('  order: hat > indicator > nick > mass > bubble', fgOps(r).join(' ') === 'hat teamInd txt txt txt', fgOps(r).join(' '));
+check('  order on the GL layer: hat > indicator > (labels) > bubble, no overlay', !r.shown && glOps(r).join(' ') === 'hat teamInd txt', glOps(r).join(' ') + ' | ' + fgOps(r).join(' '));
 hatter.size = 50;
+/* an effect that fades with save / globalAlpha / restore (Hero1, its alpha from the frame clock):
+ * the mark context keeps the alpha stack as Canvas2D does */
+reset();
+{
+    window.iconSpecialSkinEffectsHero1 = img('hero1', 64, 64);
+    SEP.hero = 'Hero1';
+    R._frameSeconds = 12;
+    const hero = makeCell({ x: 0, y: 20, size: 55, targetNick: 'hero' });
+    scene([hero, makeCell({ x: -40, y: -70, size: 60, targetNick: 'cover' })]);
+    const g = frame(S1);
+    check('Hero1 (alpha 0.4 inside save / restore) under a later cell: WebGL, same alpha as Canvas2D, labels after it at full alpha, equal',
+        g.gl && onGl(g, 'hero1') && marks(g, window.iconSpecialSkinEffectsHero1) > 0 && g.d.n === 0 && R._lmMarkCtx()._sn === 0, 'gl ' + g.gl + ' onGl ' + onGl(g, 'hero1') + ' marks ' + marks(g, window.iconSpecialSkinEffectsHero1) + ' sn ' + R._lmMarkCtx()._sn + ' ' + glOps(g).join(' ') + ' ' + why() + ' ' + g.d.n + ' px, max ' + g.d.max.toFixed(3));
+    delete SEP.hero;
+}
+/* Gladiator: its helmet is drawn with a hue-rotate canvas filter the GL text pass does not
+ * have, so it keeps the overlay (and a later cell over it keeps the frame on Canvas2D) */
+reset();
+{
+    SEP.glad = 'Gladiator';
+    const glad = makeCell({ x: 0, y: 20, size: 55, targetNick: 'glad' });
+    scene([glad]);
+    let g = frame(S1);
+    check('Gladiator: WebGL, helmet on the overlay, then the nick and mass, equal', g.gl && g.shown && fgOps(g).join(' ') === 'gladiator txt txt' && !glOps(g).includes('gladiator') && g.d.n === 0,
+        'gl ' + g.gl + ' ' + fgOps(g).join(' ') + ' | ' + glOps(g).join(' ') + ' ' + g.d.n + ' px');
+    scene([glad, makeCell({ x: 0, y: -60, size: 60, targetNick: 'cover' })]);
+    g = frame(S1);
+    check('  a later cell over it: Canvas2D (coveredEffect), equal', !g.gl && why() === 'coveredEffect' && g.d.n === 0, 'gl ' + g.gl + ' ' + why() + ' ' + g.d.n + ' px');
+    /* a later cell's hat reaching that overlay helmet: the hat goes on the overlay after it
+     * (above it, as in Canvas2D) instead of the GL layer under the overlay */
+    SEP.later = 'Hat';
+    const later = makeCell({ x: 300, y: 20, size: 70, targetNick: 'later' });
+    scene([glad, later]);
+    g = frame(S1);
+    check('  a later cell whose hat reaches it: WebGL, the hat on the overlay after the helmet, equal', g.gl && fgOps(g).join(' ') === 'gladiator txt txt hat txt txt' && R._lmLabelsOnFg(later) && g.d.n === 0,
+        'gl ' + g.gl + ' ' + why() + ' ' + fgOps(g).join(' ') + ' ' + g.d.n + ' px');
+    delete SEP.glad;
+    g = frame(S1);
+    check('  without the helmet: the hat on the GL layer again, equal', g.gl && glOps(g).includes('hat') && !R._lmLabelsOnFg(later) && g.d.n === 0, 'gl ' + g.gl + ' ' + fgOps(g).join(' ') + ' | ' + glOps(g).join(' ') + ' ' + g.d.n + ' px');
+    delete SEP.later;
+    delete SEP.glad;
+}
+/* an effect image that is not CORS-clean: never drawn into the text canvas (it would taint it
+ * and every later label upload would fail); the effect goes back to the overlay from the next
+ * frame on, and the image stays usable for Canvas2D */
+reset();
+{
+    const dirtyHat = img('dirtyHat', 64, 64);
+    dirtyHat.tainted = true;
+    const keepHat = window.iconSpecialSkinEffectsHat3;
+    window.iconSpecialSkinEffectsHat3 = dirtyHat;
+    SEP.dirty = 'Hat;Smoke';
+    const dc = makeCell({ x: 0, y: 20, size: 55, targetNick: 'dirty' });
+    scene([dc]);
+    const tc = R._textCanvas;
+    const g1 = frame(S1);
+    const g2 = frame(S1);
+    check('effect image without CORS: not drawn on the GL layer, text canvas not tainted, the image not marked failed',
+        !glOps(g1).includes('dirtyHat') && !(tc && tc.tainted) && !dirtyHat._failed, glOps(g1).join(' ') + ' tainted ' + !!(tc && tc.tainted) + ' failed ' + dirtyHat._failed);
+    check('  next frame: WebGL, on the overlay as before (hat, nick, mass), equal', g2.gl && fgOps(g2).join(' ') === 'dirtyHat txt txt' && g2.d.n === 0, 'gl ' + g2.gl + ' ' + fgOps(g2).join(' ') + ' ' + g2.d.n + ' px');
+    window.iconSpecialSkinEffectsHat3 = keepHat;
+    delete SEP.dirty;
+}
+/* agar.io (and Agar2) Teams draws with WebGL too: the team pie goes on the overlay above the
+ * GL cells, as in Expanding Land Teams (the real renderFrame lines and late overlay pass) */
+reset();
+{
+    const pieSrc = frameLines('/* WebGL frame: the cells sit above this canvas, so the pie', 'this.renderingDelay +=');
+    LM.gameMode = ':teams';
+    R.pieChart = img('pie', 40, 40);
+    scene([makeCell({ x: 0, y: 0, size: 50, targetNick: 'a' }), makeCell({ x: 60, y: 30, size: 40, targetNick: 'b' })]);
+    const g = frame(S1);
+    let onOv = null;
+    if (pieSrc) {
+        R._lmFrameGL = g.gl;
+        onOv = new Function('LM', pieSrc + '\nreturn _lmPieOnOverlay;').call(Object.assign(Object.create(R), { ctx: { save() { }, restore() { }, setTransform() { }, drawImage() { } } }), LM);
+        oplog.length = 0;
+        runLatePass.call(R, LM, window, onOv, null, null, null, (x) => x);
+    }
+    check('agar.io Teams: WebGL frame (no "teams" reason), equal; the pie goes on the overlay above the GL layer', g.gl && why() === 'webgl' && g.d.n === 0 && onOv === true &&
+        oplog.includes('overlay:draw:pie') && overlay.style.display === 'block', 'gl ' + g.gl + ' ' + why() + ' ' + g.d.n + ' px pie on overlay ' + onOv + ' ' + oplog.join(' '));
+    LM.gameMode = ':ffa';
+    R.pieChart = null;
+    R._lmPieOverlayShown = false;
+}
 
 /* nicks that name an Array member ("at", "map"...) or an effect that is not a string: no
  * effect, no draw error, the labels stay where they are (they were moved to the overlay and
@@ -721,8 +854,8 @@ reset();
  * (two document.fonts reads per cell); a web font load or a font change in a later frame still
  * measures again */
 {
-    /* (the hat puts mate's marks and labels on the overlay: boxes for the later cells) */
-    reset(); team(['mate']); SEP.mate = 'Hat';
+    /* (the Gladiator helmet (a canvas filter, overlay only) puts mate's marks and labels on the overlay: boxes for the later cells) */
+    reset(); team(['mate']); SEP.mate = 'Gladiator';
     const saved = globalThis.document;
     let reads = 0, st = 'loading';
     globalThis.document = { fonts: { get status() { reads++; return st; } } };
@@ -778,7 +911,7 @@ frame(S1);
 r = frame(S1);
 check('later bigger cell over a chat bubble: WebGL, it covers the GL bubble as in Canvas2D, equal', r.gl && r.d.n === 0, 'gl ' + r.gl + ' ' + why() + ' ' + r.d.n + ' px');
 /* an overlay mark of an earlier cell (its labels with an effect) under a later GL indicator */
-reset(); team(['mate2']); SEP.hatty = 'Hat';
+reset(); team(['mate2']); SEP.hatty = 'Gladiator';
 {
     const hatty = makeCell({ x: 0, y: 30, size: 30, targetNick: 'hatty' });
     const m2 = makeCell({ x: 20, y: 60, size: 35, targetNick: 'mate2' });
@@ -915,9 +1048,11 @@ if (R._lmGlMerge) {
     a.y = -100;
     scene([a]);
     frame(S3);
-    SEP.hatty = 'Hat';
-    /* the hat (y - 1.5 r to y - 0.5 r) over the middle of the timer */
-    const hatty = makeCell({ x: a.x, y: a.y + a._lmMgDy + a._lmMgH / 2 + 16, size: 16, targetNick: 'hatty' });
+    /* (Gladiator: an effect that stays on the overlay; the GL text pass draws a hat at its
+     * cell's depth under the timer, as Canvas2D) */
+    SEP.hatty = 'Gladiator';
+    /* the helmet (y - 1.2 r to y - 0.53 r) over the middle of the timer */
+    const hatty = makeCell({ x: a.x + 8, y: a.y + a._lmMgDy + a._lmMgH / 2 + 14, size: 16, targetNick: 'hatty' });
     check('  (test layout: the effect box stays clear of the body of a)', hatty.y - 2.5 * 16 * 1.08 - 4 > a.y + a.size * 1.15 + 4, a._lmMgDy + ' ' + a._lmMgH);
     scene([hatty, a]);
     a._lmMgF = undefined;
@@ -952,14 +1087,22 @@ if (R._lmGlMerge) {
     check('  the cell changed size since its timer was placed (a split), effect near: Canvas2D, reason merge, equal', !r.gl && why() === 'merge' && r.d.n === 0, 'gl ' + r.gl + ' ' + why() + ' ' + r.d.n + ' px');
     a.size = 55; a.y = 20;
     delete SEP.hatty;
-    /* an own cell with an FB badge: its labels and its timer go on the overlay */
+    /* an own cell with an FB badge the GL text pass draws: badge, labels and timer on the GL layer */
     mergeOn({ FBTracking: true }); timers([a, b], 25);
     application.customSkinsMap = { 'mefacebookskin': 'fbk' }; application.customSkinsCache = { 'fbk_cached4': fbImage };
     application.skins = { me: img('meSkin', 64, 64) };
     scene([a]);
     frame(S1);
     r = frame(S1);
-    check('  own cell with an FB badge: WebGL, its timer on the overlay with its labels, equal', r.gl && r.shown && mpx(r, a) > 0 && !R._lmGlMerged(a) && r.d.n === 0,
+    check('  own cell with an FB badge: WebGL, badge, labels and timer on the GL layer, equal', r.gl && !r.shown && R._lmGlFgDone(a) && R._lmGlMerged(a) && mpx(r, a) > 0 && r.d.n === 0,
+        'gl ' + r.gl + ' ' + why() + ' shown ' + r.shown + ' px ' + mpx(r, a) + ' ' + r.d.n + ' px');
+    /* a badge that keeps the overlay (not CORS-clean): its labels and its timer go there too */
+    const fbDirty = img('fbDirty2', 40, 40);
+    fbDirty.tainted = true;
+    application.customSkinsCache = { 'fbk_cached4': fbDirty };
+    frame(S1);
+    r = frame(S1);
+    check('  own cell with an FB badge on the overlay: WebGL, its timer on the overlay with its labels, equal', r.gl && r.shown && mpx(r, a) > 0 && !R._lmGlMerged(a) && r.d.n === 0,
         'gl ' + r.gl + ' ' + why() + ' shown ' + r.shown + ' px ' + mpx(r, a) + ' ' + r.d.n + ' px');
     const late = makeCell({ x: a.x, y: a.y + a._lmMgDy - 66, size: 60, targetNick: 'late' });
     scene([a, late]);
@@ -992,7 +1135,7 @@ reset(); strokes.on = true; window.legendmod = LM; LM.multiBoxPlayerExists = tru
 LM.multiBoxPlayerExists = false; strokes.on = false;
 
 /* ---- no marks: no clear, overlay hidden ---- */
-reset(); SEP.mate = 'Hat';
+reset(); SEP.mate = 'Gladiator';
 scene([makeCell({ x: 0, y: 40, size: 40, targetNick: 'mate' })]);
 frame(S1);
 delete SEP.mate;
@@ -1021,7 +1164,7 @@ check('DPR 2, zoom 0.8: WebGL, indicator and bubble survive, equal', r.gl && mar
 /* ---- resize between frames ---- */
 const S3 = Object.assign({}, S2, { W: 260, H: 150 });
 /* (a mark the overlay holds: the indicator and bubble are on the GL layer) */
-SEP.talk = 'Hat';
+SEP.talk = 'Gladiator';
 r = frame(S3);
 check('resized frame: overlay resized before its marks, marks kept, equal', r.gl && overlay.width === 520 && orderOk(r.ops) && r.d.n === 0, 'gl ' + r.gl + ' ' + overlay.width + 'x' + overlay.height + ' ' + r.d.n + ' px ' + r.ops.filter((o) => /^overlay/.test(o)).join(' > '));
 r = frame(S3);
@@ -1183,8 +1326,8 @@ scene([mate2]);
 R._lmGlWhyN = null;
 for (let i = 0; i < 3; i++) frame(S1);
 const counts = R._lmGlWhyN;
-/* (a later cell over mate's hat, an overlay mark) */
-SEP.mate = 'Hat';
+/* (a later cell over mate's Gladiator helmet, an overlay mark) */
+SEP.mate = 'Gladiator';
 scene([mate2, makeCell({ x: 10, y: -70, size: 60, targetNick: 'big' })]);
 frame(S1); frame(S1);
 delete SEP.mate;
