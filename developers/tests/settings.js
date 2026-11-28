@@ -747,5 +747,30 @@ check('defaults: none of these dimmed, and every switch of the list is a real se
   ['rainbowMapBorders'].every(k => depWhy(k) === '') &&
   Object.keys(rows).every(k => k in D) || (console.log('   not settings: ' + Object.keys(rows).filter(k => !(k in D)).join(', ')), false));
 
+/* what a dimmed option really draws: the real gated draw code of the renderer with fake draw calls */
+{
+  vm.runInContext(cut('function _lmBorderColorNow() {', '/* Translations: window.lmT'), ctx);
+  /* the Canvas border (the condition at 20 spaces; the grid's is at 24) */
+  const bm = /\n {20}!_elMapMaterialHandled &&[\s\S]*?(?= {16}if \(window\.clientProfiler\) window\.clientProfiler\.recordGrid\()/.exec(main);
+  const border = bm ? 'if (' + bm[0] : '';
+  check('the Canvas map border block found', border.indexOf('this.drawMapBorders(') > 0);
+  const rings = cut('                if (defaultmapsettings.oppRings) {', '                if (defaultmapsettings.splitRange) {');
+  const run = (src, set) => {
+    Object.assign(dmsDep, D, set);
+    const calls = [];
+    const r = { ctx: {}, scale: 1, drawMapBorders() { calls.push(['border', arguments[6]]); }, drawOppRings() { calls.push(['rings']); }, drawBOppRings() { calls.push(['bubbles']); } };
+    vm.runInContext('(function (LM, _elMapMaterialHandled) {' + src + '})', ctx).call(r, { mapMinX: 0, mapMinY: 0, mapMaxX: 100, mapMaxY: 100 }, false);
+    return calls;
+  };
+  const theme = ctx.defaultSettings.bordersColor;
+  const b1 = run(border, { showMapBorders: false, rainbowMapBorders: true }), b2 = run(border, { showMapBorders: true, rainbowMapBorders: true }), b3 = run(border, { showMapBorders: true, rainbowMapBorders: false });
+  check('Map borders off: no border is drawn, so the rainbow colour has nothing to colour', b1.length === 0);
+  check('Map borders on: the border is drawn, rainbow in a cycling colour, else the theme colour', b2.length === 1 && /^#[0-9a-f]{6}$/.test(b2[0][1]) && b3.length === 1 && b3[0][1] === theme);
+  const r1 = run(rings, { oppRings: false, bubbleInd: true }), r2 = run(rings, { oppRings: true, bubbleInd: true }), r3 = run(rings, { oppRings: true, bubbleInd: false });
+  check('Opponent rings off: neither rings nor bubbles drawn (the bubble style needs the rings)', r1.length === 0);
+  check('Opponent rings on: the bubble style replaces the rings, off gives the rings', J(r2) === J([['bubbles']]) && J(r3) === J([['rings']]));
+  Object.assign(dmsDep, D);
+}
+
 console.log(fail ? fail + ' settings check(s) FAILED' : 'all settings checks passed');
 process.exit(fail ? 1 : 0);
