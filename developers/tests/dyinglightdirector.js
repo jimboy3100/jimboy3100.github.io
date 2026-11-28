@@ -60,7 +60,7 @@ class Aud {
     removeAttribute(k) { if (k === 'src') this._src = undefined; }
     load() { }
 }
-const plays = [], toasts = [], warns = [];
+const plays = [], toasts = [], warns = [], cleared = [];
 /* the sounds playing come to their end */
 const endSounds = () => audios.forEach(a => { a.paused = true; });
 const ctx = {
@@ -71,7 +71,8 @@ const ctx = {
         soundVolume: ch => ch === 'gameplay' ? ctx.defaultmapsettings.volGameplay * ctx.defaultmapsettings.volMaster : 1,
         play: (a, ch, g) => { plays.push({ t: T, id: /([\w-]+)\.mp3$/.exec(a.src)[1], ch, g }); a.volume = ctx.LMNotifications.soundVolume(ch) * g; a.play(); }
     },
-    toastr: { info: (m, t, o) => toasts.push({ t: T, m, o }), warning() { } },
+    /* a toast is a jQuery set of one element on the page; clear(toast, opts) records what goes */
+    toastr: { info: (m, t, o) => { toasts.push({ t: T, m, o }); const j = [{ parentNode: body }]; return j; }, warning() { }, clear: (el, o) => { cleared.push({ el, o }); } },
     legendmod: { play: true }, lmT: k => k
 };
 ctx.window = ctx;
@@ -360,7 +361,12 @@ check('the new settings: off by default with Dying Light, immersive, full sound,
     /* ═══ teardown ═══ */
     advance(1000);
     const late = pics.slice();
+    /* its own toasts still on the page (the last few); one that went by itself is not kept */
+    toasts.length = 0; cleared.length = 0;
+    const ownToasts = info().toasts;
     await L.disable();
+    check('off: only its own toasts are dismissed (each with force, never a clear of all)', ownToasts >= 1 && ownToasts <= 4 && cleared.length === ownToasts &&
+        cleared.every(c => Array.isArray(c.el) && c.el.length === 1 && c.o && c.o.force === true) && info().toasts === 0);
     check('off: no timer, no listener, no style, no figure', timers.size === 0 && docCount() === lsBefore &&
         ['death', 'spawn', 'disconnect', 'serverChange'].filter(n => ctx.LMEvents._has(n)).length === eventsBefore &&
         !head.kids.some(n => n.id === 'lm-dl-director-style') && body.kids.length === 0 && info().on === false && info().listeners === 0);
@@ -649,6 +655,19 @@ check('the new settings: off by default with Dying Light, immersive, full sound,
         delete ctx.AudioContext;
         delete ctx.navigator;
     }
+    /* a scene that never comes: skipped after 8 s like a failed one, by the tick (no timer of its own) */
+    p = L.enable(); flushPics(true); await p;
+    advance(1000);
+    const stalled = pics.slice();
+    advance(5000);
+    const waiting = info().loading !== null && timers.size === 2;
+    advance(4000);
+    check('a stalled scene: skipped after 8 s, not asked again, the fixed scene stays, no extra timer', stalled.length === 1 && waiting && info().loading === null &&
+        pics.length === 1 && info().scene === null && /back0-1920\.webp$/.test(L.getBackground().url) && timers.size === 2 && stalled[0].onload === null);
+    advance(5000);
+    check('...and not loaded again this activation', pics.length === 1);
+    pics.length = 0;
+    await L.disable();
 
     /* ═══ theme override (ogario.v4.js) ═══ */
     painted.length = 0;

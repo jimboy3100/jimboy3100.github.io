@@ -12,8 +12,11 @@
  *   particlePalette(), effect(name), setEffect(name, on): the themed death particle colours,
  *     the spawn burst and the Game Over card, each can be suppressed on its own
  *   getBackground(): { url, img, alpha } of the map scene while on, else null
- *   hasForegroundFx(), needsThreatData(), addPart({ name, start(gen, api), stop(), fx, threat, background(), replay(), changed() })
+ *   hasForegroundFx(), needsThreatData(), addPart({ name, start(gen, api), stop(), fx, threat, background(), replay(), changed(),
+ *     essential }): an essential part that cannot start undoes the whole activation, another one fails alone
  *     changed(): an effect was allowed or suppressed, or the intensity changed, while on
+ *   saved(): whether a reload keeps the switch as it is now (true, 'flag' for a turn-off kept in the
+ *     old flag, false; null before the first save)
  *   replayLook({ i, cy, ck }) / replayLook(null), replay(), replayScoped(): the look of a replay
  *     recorded with the theme on (ogario/modules/replaystudio.js): see replayLook below
  * LMEvents 'dyingLightChange' { state, enabled, generation } is sent on every state change. */
@@ -28,24 +31,24 @@
      * defaultSettings.commanderImageDyingLight at the 512 px of the WebGL skin layers; the first
      * scene of the old background chain */
     var SKIN_KEY = IMG + 'dyinglight/skins/zombie-512.webp';
-    /* the six cosmetic zombie designs (pictures of the old icons, same 512 px copies). A player
-     * keeps one design by name, so all of its cells and its copies from other connections (Full
-     * Map, multibox) look the same and nothing changes with its mass; a design says nothing about
-     * how dangerous a player is. */
+    /* the six cosmetic zombie designs (pictures of the old icons, same 512 px copies; small: the
+     * manifest's 256 px copy, used on a phone or a weak device). A player keeps one design by
+     * name, so all of its cells and its copies from other connections (Full Map, multibox) look
+     * the same and nothing changes with its mass; a design says nothing about how dangerous a
+     * player is. */
+    function design(id, file) {
+        return Object.freeze({ id: id, key: IMG + 'dyinglight/skins/' + file + '-512.webp', small: IMG + 'dyinglight/skins/' + file + '-256.webp' });
+    }
     var VARIANTS = Object.freeze([
-        Object.freeze({ id: 'biter', key: SKIN_KEY }),
-        Object.freeze({ id: 'viral', key: IMG + 'dyinglight/skins/zombie5-512.webp' }),
-        Object.freeze({ id: 'volatile', key: IMG + 'dyinglight/skins/volatile-512.webp' }),
-        Object.freeze({ id: 'demolisher', key: IMG + 'dyinglight/skins/zombiebig-512.webp' }),
-        Object.freeze({ id: 'screamer', key: IMG + 'dyinglight/skins/zombie2-512.webp' }),
-        Object.freeze({ id: 'nightHunter', key: IMG + 'dyinglight/skins/zombie4-512.webp' })
+        design('biter', 'zombie'), design('viral', 'zombie5'), design('volatile', 'volatile'),
+        design('demolisher', 'zombiebig'), design('screamer', 'zombie2'), design('nightHunter', 'zombie4')
     ]);
     /* the death particles' colours while on (a fixed few: the particle picture cache stays small) */
     var PARTICLES = Object.freeze(['#a12b30', '#6e1a1d', '#3b0d10']);
     var SPAWN_COLOUR = '#a12b30';
     /* each effect can be suppressed on its own (setEffect); none of them does any work while off */
     var FX = { variants: true, particles: true, spawn: true, gameOver: true, threat: true };
-    var SCENE_URL = IMG + 'dyinglight/backgrounds/back0-1920.webp';
+    var SCENE_URL = IMG + 'dyinglight/backgrounds/back0-1920.webp', SCENE_SMALL = IMG + 'dyinglight/backgrounds/back0-1280.webp';
     /* the WebP copy of dyinglightbabyteamboard.png (manifest: teamboard, 3 KB instead of 73 KB) */
     var MINIMAP_URL = IMG + 'dyinglight/interface/teamboard-323.webp';
     /* a picture that does not come is skipped, it never holds the theme back */
@@ -67,7 +70,13 @@
     }
     syncIntensity();
     var job = null;           /* the enable in progress (one at a time) */
-    var assets = {};          /* url -> Image: the fixed small set above, kept for the next enable */
+    /* url -> Image: the fixed scene, released by the turn-off (the browser's cache has it for the
+     * next enable); the zombie skins are loaded by the skin cache like any other skin */
+    var assets = {};
+    /* a phone or a weak device (decided at each enable): the small scene and the 256 px skins */
+    var lite = false;
+    /* the switch as last written: true kept, 'flag' kept in the old flag only, false not kept */
+    var saved = null;
     var bg = null;            /* frozen { url, img, alpha } while on */
     var parts = [];           /* optional parts other files add (addPart) */
     var running = [];         /* the parts started by this activation, stopped in reverse order */
@@ -98,26 +107,47 @@
         emit();
     }
 
-    /* The switch, in the gameplay settings. The old flag dyinglight1load is not written again
-     * (LMexpress.js moved it into dyingLight at the start). false = the browser refused to keep it:
-     * the theme is still on or off for this visit, the storage warning comes from saveSettings. */
+    /* The switch, in the gameplay settings. application.saveSettings puts the change in effect
+     * at once and throws when the browser refuses to keep it (its storage warning is shown once
+     * until a save works again), so the theme is on or off for this visit either way; this tells
+     * whether a reload keeps it: true kept, 'flag' (a turn-off only) kept in the small old flag
+     * dyinglight1load, which the next start reads before the setting (lmDyingLightStartup in
+     * LMexpress.js moves it into dyingLight), false not kept. A turn-off that is not kept at all is
+     * told to the player (it would be back after a reload). */
     function persist(on) {
-        var s = W.defaultmapsettings;
+        var s = W.defaultmapsettings, ok = true;
         /* Restore defaults / an import is reloading the page: a save now would put the old
          * settings back */
-        if (W._lmSettingsReload) return false;
-        if (!s || typeof s !== 'object' || !Object.prototype.hasOwnProperty.call(s, 'dyingLight')) return false;
+        if (W._lmSettingsReload) return (saved = false);
+        if (!s || typeof s !== 'object' || !Object.prototype.hasOwnProperty.call(s, 'dyingLight')) return (saved = false);
         if (s.dyingLight !== on) {
             s.dyingLight = on;
-            try { W.application.saveSettings(s, 'ogarioSettings'); } catch (e) { return false; }
+            try { W.application.saveSettings(s, 'ogarioSettings'); } catch (e) { ok = false; }
         }
-        /* the old flag goes only once the setting is kept */
-        try { W.localStorage.removeItem('dyinglight1load'); } catch (e) { }
-        return true;
+        if (ok) {
+            /* the old flag goes only once the setting is kept */
+            try { W.localStorage.removeItem('dyinglight1load'); } catch (e) { }
+            return (saved = true);
+        }
+        if (!on) {
+            try { W.localStorage.setItem('dyinglight1load', 'no'); return (saved = 'flag'); } catch (e) { }
+            try { if (W.toastr) W.toastr.warning(tx('pkg.dlv4life.notSaved')); } catch (e2) { }
+        }
+        return (saved = false);
+    }
+
+    /* a phone (Legend's isMobile: a coarse pointer only) or a device that reports little memory
+     * or few cores; small also a small screen (as the director's small scenes) */
+    function weak(screenToo) {
+        var n = W.navigator, dm = n && +n.deviceMemory, hc = n && +n.hardwareConcurrency;
+        if (W.isMobile === true || (dm > 0 && dm <= 2) || (hc > 0 && hc <= 2)) return true;
+        if (!screenToo) return false;
+        var sc = W.screen, px = sc ? Math.max(+sc.width || 0, +sc.height || 0) * (+W.devicePixelRatio || 1) : 0;
+        return px > 0 && px <= 1500;
     }
 
     /* one wait per picture, shared by every enable that needs it; a failed one is tried again
-     * only by a later enable (no retry loop) */
+     * only by a later enable (no retry loop); the turn-off settles a wait still open */
     function preload(url) {
         var im = assets[url];
         if (im && im._lmOk) return Promise.resolve(im);
@@ -132,16 +162,31 @@
                 clearTimeout(t);
                 t = 0;
                 im.onload = im.onerror = null;
-                im._lmWait = null;
+                im._lmWait = im._lmEnd = null;
                 im._lmOk = ok;
                 if (!ok && assets[url] === im) delete assets[url];
                 resolve(ok ? im : null);
             }
+            im._lmEnd = end;
             im.onload = function () { end(im.naturalWidth > 0); };
             im.onerror = function () { end(false); };
             im.src = url;
         });
         return im._lmWait;
+    }
+    /* the turn-off: the pictures of this file go (a wait still open ends as failed and its
+     * download is dropped); the browser's cache serves the next enable */
+    function releaseAssets() {
+        var a = assets;
+        assets = {};
+        for (var url in a) {
+            var im = a[url];
+            if (!im) continue;
+            if (typeof im._lmEnd === 'function') {
+                im._lmEnd(false);
+                try { if (typeof im.removeAttribute === 'function') im.removeAttribute('src'); } catch (e) { }
+            }
+        }
     }
 
     function addStyle() {
@@ -237,36 +282,45 @@
         W.LMEvents.on(spawnEv, onSpawn);
     }
     function stopFx() {
-        if (onSpawn && W.LMEvents && typeof W.LMEvents.off === 'function') W.LMEvents.off(spawnEv, onSpawn);
+        var f = onSpawn;
         onSpawn = null;
+        byNick.clear();
+        safeCleanup('spawn listener', function () { if (f && W.LMEvents && typeof W.LMEvents.off === 'function') W.LMEvents.off(spawnEv, f); });
         if (spawnTimer) clearTimeout(spawnTimer);
         spawnTimer = 0;
         /* a burst of ours still showing ends with the theme (another one is left alone) */
         var fx = W.drawRender && W.drawRender._spawnEffect;
         if (burstAt && fx && fx.active && fx.startTime === burstAt && fx.color === SPAWN_COLOUR && fx.el === false) fx.active = false;
         burstAt = 0;
-        byNick.clear();
     }
 
     /* a player's design: by name (the same for all of its cells and copies), kept for the
      * activation; a short FNV-1a over the name, once per name */
     function designKey(nick) {
-        if (!FX.variants) return SKIN_KEY;
+        if (!FX.variants) return lite ? VARIANTS[0].small : SKIN_KEY;
         var k = byNick.get(nick);
         if (k) return k;
         var h = 2166136261;
         for (var i = 0; i < nick.length; i++) h = Math.imul(h ^ nick.charCodeAt(i), 16777619);
-        k = VARIANTS[(h >>> 0) % VARIANTS.length].key;
+        var v = VARIANTS[(h >>> 0) % VARIANTS.length];
+        k = lite ? v.small : v.key;
         if (byNick.size >= 512) byNick.clear();
         byNick.set(nick, k);
         return k;
     }
 
+    /* a part whose start throws is stopped at once (what it made before the throw goes; its stop
+     * must accept a half start) and is not running; false then */
     function startPart(p, g) {
         try {
             if (typeof p.start === 'function') p.start(g, api);
             running.push(p);
-        } catch (e) { warn('part ' + (p.name || '?') + ' did not start', e); }
+            return true;
+        } catch (e) {
+            warn('part ' + (p.name || '?') + ' did not start', e);
+            try { if (typeof p.stop === 'function') p.stop(); } catch (e2) { warn('part ' + (p.name || '?') + ' did not stop', e2); }
+            return false;
+        }
     }
     /* the running parts' changed() (an effect allowed or suppressed, the intensity changed) */
     function changed() {
@@ -282,14 +336,30 @@
         }
     }
 
-    function apply(g, zombie, scene) {
-        /* the global flag older scripts may read (cleared by teardown); the zombie picture is drawn
-         * through getFallbackSkinKey, no global image is left behind after disable */
+    /* true when applied; false when this activation was ended meanwhile (a listener of something
+     * a part started turned it off or on anew). Throws when an essential part could not start:
+     * the caller undoes everything. An optional part (an effect) may fail alone. */
+    function apply(g, scene, url) {
+        /* the global flag older scripts may read (cleared by teardown); the zombie pictures are
+         * drawn through getFallbackSkinKey, no global image is left behind after disable */
         W.dyinglight1load = 'yes';
-        bg = scene ? Object.freeze({ url: SCENE_URL, img: scene, alpha: 1 }) : null;
+        bg = scene ? Object.freeze({ url: url, img: scene, alpha: 1 }) : null;
         addStyle();
         startFx(g);
-        for (var i = 0; i < parts.length; i++) startPart(parts[i], g);
+        for (var i = 0; i < parts.length; i++) {
+            var p = parts[i], ok = startPart(p, g);
+            if (g !== generation) {
+                /* ended during this start: the turn-off did not see this part yet */
+                var j = running.indexOf(p);
+                if (j >= 0) {
+                    running.splice(j, 1);
+                    try { if (typeof p.stop === 'function') p.stop(); } catch (e) { warn('part ' + (p.name || '?') + ' did not stop', e); }
+                }
+                return false;
+            }
+            if (!ok && p.essential === true) throw new Error('part ' + (p.name || '?') + ' did not start');
+        }
+        return true;
     }
     /* An import (or a script) that turns the switch off, also while the pictures still load: the
      * theme follows (else the end of the loading would save the switch on again) */
@@ -301,13 +371,22 @@
         };
         if (W.LMEvents && typeof W.LMEvents.on === 'function') W.LMEvents.on('settingsChange', onSettings);
     }
+    function unlisten() {
+        var f = onSettings;
+        onSettings = null;
+        if (f && W.LMEvents && typeof W.LMEvents.off === 'function') W.LMEvents.off('settingsChange', f);
+    }
+    /* one cleanup step: a step that throws does not keep the next ones from running */
+    function safeCleanup(what, fn) {
+        try { fn(); } catch (e) { warn('turn-off: ' + what, e); }
+    }
     /* everything this file put on the page, and only that */
     function teardown() {
-        stopParts();
-        stopFx();
-        if (onSettings && W.LMEvents && typeof W.LMEvents.off === 'function') W.LMEvents.off('settingsChange', onSettings);
-        onSettings = null;
-        removeStyle();
+        safeCleanup('parts', stopParts);
+        safeCleanup('effects', stopFx);
+        safeCleanup('settings listener', unlisten);
+        safeCleanup('style', removeStyle);
+        safeCleanup('pictures', releaseAssets);
         bg = null;
         W.dyinglight1load = null;
     }
@@ -460,29 +539,41 @@
         scoped = !!forReplay;
         /* a change of the setting while it was off (an import) */
         syncIntensity();
+        lite = weak(false);
         var g = ++generation;
+        /* every listener of dyingLightChange may turn it off (or on anew) at once: after each
+         * transition others see, this activation goes on only while it is still the current one */
         setState('loading');
+        if (g !== generation) return Promise.resolve(false);
         listen();
-        var p = job = Promise.all([preload(SKIN_KEY), preload(SCENE_URL)]).then(function (r) {
-            /* turned off (or on anew) while the pictures came: this activation is over */
+        /* the scene only: the zombie skins come through the skin cache when a cell needs one */
+        var url = weak(true) ? SCENE_SMALL : SCENE_URL;
+        var p = job = preload(url).then(function (scene) {
+            /* turned off (or on anew) while the picture came: this activation is over */
             if (g !== generation) return false;
+            var done;
             try {
-                apply(g, r[0], r[1]);
+                done = apply(g, scene, url);
             } catch (e) {
                 warn('could not start', e);
-                try { teardown(); } catch (e2) { }
-                generation++;
-                job = null;
-                scoped = false;
-                setState('off');
-                try { if (W.toastr) W.toastr.warning(tx('pkg.dlv3life.failed')); } catch (e3) { }
+                if (g === generation) {
+                    teardown();
+                    generation++;
+                    job = null;
+                    scoped = false;
+                    setState('off');
+                    try { if (W.toastr) W.toastr.warning(tx('pkg.dlv3life.failed')); } catch (e3) { }
+                }
                 return false;
             }
-            /* a replay's activation keeps the player's switch as it is */
+            if (!done || g !== generation) return false;
+            /* a replay's activation keeps the player's switch as it is (its settingsChange may
+             * end this activation too) */
             if (!scoped) persist(true);
+            if (g !== generation) return false;
             job = null;
             setState('on');
-            return true;
+            return g === generation && state === 'on';
         });
         return p;
     }
@@ -580,6 +671,7 @@
     var api = {
         _lm: 1,
         isEnabled: function () { return state === 'on'; },
+        saved: function () { return saved; },
         enable: enable,
         disable: disable,
         intensity: function () { return intensityV; },
@@ -670,7 +762,8 @@
     if (!DL || DL._lm !== 1 || typeof DL.addPart !== 'function' || W.LMDyingLightDirector) return;
 
     var BASE = 'https://www.legendmod.ml/';
-    var CYCLE_MS = 600000, TICK_MS = 1000, LATE_MS = 250, PRELOAD_MS = 30000;
+    /* LOAD_MS: the wait for a scene, as the theme's first picture (ASSET_WAIT_MS) */
+    var CYCLE_MS = 600000, TICK_MS = 1000, LATE_MS = 250, PRELOAD_MS = 30000, LOAD_MS = 8000;
     /* the scenes of banners/dyinglight/manifest.json for each phase, one per cycle in turn */
     var PHASES = [
         { id: 'day', at: 0, scenes: ['back9', 'back8'] },
@@ -748,7 +841,7 @@
     var phase = null, nextRollAt = 0, lastEventAt = -Infinity, lastAt = {}, lastMajorAt = -Infinity;
     var quietUntil = 0, lastDeathAt = -Infinity, lastSignalAt = -Infinity, deathN = 0, radioN = 0;
     var shown = null, pend = null, failed = {}, wasRec = false;
-    var audios = [], subs = [], onVis = null, styleEl = null, ghostEl = null, ghostUntil = 0;
+    var audios = [], subs = [], onVis = null, styleEl = null, ghostEl = null, ghostUntil = 0, toastEls = [];
 
     function now() { return W.performance.now(); }
     /* the director's clock: ms of visible time since this activation */
@@ -834,6 +927,9 @@
         return constrained || !(px > 1500);
     }
     function scenes(E, cyc, ph, constrained) {
+        /* a scene that does not come within LOAD_MS of visible time is skipped like a failed one
+         * (visible time, read by the tick: no timer of its own) */
+        if (pend && !pend.ok && clock(now()) - pend.at > LOAD_MS) { failed[pend.url] = 1; dropPend(); }
         /* no cycle: the fixed scene of the activation */
         if (!cyc) { shown = null; dropPend(); return; }
         /* a busy page keeps the scene it shows */
@@ -853,14 +949,19 @@
             if (nu !== shown.url && (!pend || pend.url !== nu)) load(nu);
         }
     }
+    /* the picture waited for goes; one still loading is dropped (its download too) */
     function dropPend() {
-        if (pend) { pend.img.onload = pend.img.onerror = null; pend = null; }
+        var p = pend;
+        pend = null;
+        if (!p) return;
+        p.img.onload = p.img.onerror = null;
+        if (!p.ok) { try { if (typeof p.img.removeAttribute === 'function') p.img.removeAttribute('src'); } catch (e) { } }
     }
     /* one picture at a time besides the one shown; a failed one is not asked again this activation */
     function load(url) {
         if (failed[url]) return;
         dropPend();
-        var g = gen, im = new W.Image(), p = { url: url, img: im, ok: false };
+        var g = gen, im = new W.Image(), p = { url: url, img: im, ok: false, at: clock(now()) };
         pend = p;
         im.crossOrigin = 'anonymous';
         im.onload = function () {
@@ -956,7 +1057,21 @@
         /* none in Stream mode (the sound alone) */
         if (!t || typeof t.info !== 'function' || !text || setting('streamMode')) return;
         var s = String(text).slice(0, 200).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
-        try { t.info(s, '', { toastClass: 'toast lm-dl-toast', timeOut: 6000 }); } catch (e) { }
+        var el = null;
+        try { el = t.info(s, '', { toastClass: 'toast lm-dl-toast', timeOut: 6000 }); } catch (e) { }
+        /* its own toasts are kept (the ones still on the page) to go with the turn-off */
+        for (var i = toastEls.length - 1; i >= 0; i--) { var o = toastEls[i][0]; if (!o || !o.parentNode) toastEls.splice(i, 1); }
+        if (el && el.length > 0 && el[0]) toastEls.push(el);
+        if (toastEls.length > 4) toastEls.shift();
+    }
+    /* only its own toasts go (toastr.clear with a toast and force never clears the others) */
+    function dismissToasts() {
+        var t = W.toastr, a = toastEls;
+        toastEls = [];
+        if (!t || typeof t.clear !== 'function') return;
+        for (var i = 0; i < a.length; i++) {
+            if (a[i] && a[i].length > 0) { try { t.clear(a[i], { force: true }); } catch (e) { } }
+        }
     }
 
     /* a dark figure at the edge of the screen (decorative, under the HUD, no clicks) */
@@ -1567,27 +1682,33 @@
         sub('settingsChange', onVolume);
         if (!hidden()) resume(now());
     }
+    /* one step of the turn-off: one that throws does not keep the next ones from running */
+    function safe(what, fn) {
+        try { fn(); } catch (e) { warn('turn-off: ' + what, e); }
+    }
     function stop() {
         on = false;
         gen = -1;
         clearTimeout(timer);
         timer = 0;
+        live = false;
         var ev = W.LMEvents;
         while (subs.length) {
             var s = subs.pop();
             try { ev.off(s[0], s[1]); } catch (e) { }
         }
-        var d = W.document;
-        if (onVis && d && typeof d.removeEventListener === 'function') d.removeEventListener('visibilitychange', onVis);
+        var d = W.document, f = onVis;
         onVis = null;
-        releaseSounds();
-        acClose();
-        hideGhost();
-        if (styleEl && styleEl.parentNode) styleEl.parentNode.removeChild(styleEl);
+        safe('visibility listener', function () { if (f && d && typeof d.removeEventListener === 'function') d.removeEventListener('visibilitychange', f); });
+        safe('sounds', releaseSounds);
+        safe('audio', acClose);
+        safe('figure', hideGhost);
+        safe('toasts', dismissToasts);
+        var st = styleEl;
         styleEl = null;
+        safe('style', function () { if (st && st.parentNode) st.parentNode.removeChild(st); });
         shown = null;
-        dropPend();
-        live = false;
+        safe('scene', dropPend);
     }
 
     /* -- the threat look: the edge of the screen turns dark red while a bigger player is near (1)
@@ -1707,6 +1828,8 @@
     /* its colours over the menu / HUD theme, while on (any intensity) */
     DL.addPart({
         name: 'theme',
+        /* the colours are part of the look: when they cannot be set the theme does not turn on */
+        essential: true,
         start: function () { if (typeof W.lmThemeOverride === 'function') W.lmThemeOverride('dyinglight', COLORS); },
         stop: function () { if (typeof W.lmThemeOverride === 'function') W.lmThemeOverride('dyinglight', null); }
     });
@@ -1718,7 +1841,7 @@
             return {
                 running: on && live, on: on, clock: on ? clock(now()) : 0, phase: phase ? phase.id : null, replay: !!(on && rec()),
                 busy: busy, scene: shown ? shown.url : null, loading: pend ? pend.url : null,
-                sounds: audios.length, timer: !!timer, listeners: subs.length + (onVis ? 1 : 0), ghost: !!ghostEl,
+                sounds: audios.length, timer: !!timer, listeners: subs.length + (onVis ? 1 : 0), ghost: !!ghostEl, toasts: toastEls.length,
                 threat: { on: tOn, level: tLvl, asked: tOn && tAsk(), timer: !!tTimer, listeners: tSubs.length + (tVis ? 1 : 0), shown: !!tEl },
                 audio: { ctx: ac ? ac.state : null, bed: bed ? bed.id + (bed.rich ? '+' : '') : null, fading: oldBeds.length,
                     heart: { level: hb.lvl, bpm: Math.round(hb.bpm), vol: hb.vol, beats: hb.beats },

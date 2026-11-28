@@ -128,12 +128,15 @@ async function dyingLightLifecycle() {
     const store = {};
     const localStorage = {
         getItem: k => Object.prototype.hasOwnProperty.call(store, k) ? store[k] : null,
-        setItem: (k, v) => { if (localStorage.full) throw new Error('QuotaExceededError'); store[k] = String(v); },
+        /* full: nothing is kept; fullBig: only the settings (the large value) are refused */
+        setItem: (k, v) => { if (localStorage.full || (localStorage.fullBig && k === 'ogarioSettings')) throw new Error('QuotaExceededError'); store[k] = String(v); },
         removeItem: k => { delete store[k]; }
     };
     /* pictures: each waits until the test lets it load (ok) or fail */
     const pics = [];
     class Img { set src(u) { this._src = u; pics.push(this); } get src() { return this._src; } }
+    /* an enable with its picture there at once */
+    const loaded = q => { flushPics(true); return q; };
     const flushPics = ok => { while (pics.length) { const im = pics.shift(); if (ok) { im.naturalWidth = 64; im.onload && im.onload(); } else im.onerror && im.onerror(); } };
     const head = { kids: [], appendChild(n) { n.parentNode = head; this.kids.push(n); if (n._script) scripts.push(n); return n; }, removeChild(n) { this.kids.splice(this.kids.indexOf(n), 1); n.parentNode = null; } };
     const cls = new Set();
@@ -227,15 +230,17 @@ async function dyingLightLifecycle() {
         !ctx.LMEvents._has('settingsChange') && L.getBackground() === null && L.getFallbackSkinKey(other) === null && L.generation > gen);
     check('states sent: loading, on, disabling, off', states.join() === 'loading,on,disabling,off');
 
-    /* on again: no new script, the pictures kept */
+    /* on again: no new script; the scene was let go at the turn-off (the browser's cache has it) */
     states.length = 0;
     p = vm.runInContext('lmDyingLightToggle()', ctx);
-    check('on again at once (pictures kept)', (await p) === true && L.isEnabled() && pics.length === 0);
+    await tick();
+    const asked = pics.length === 1 && /back0-1920\.webp$/.test(pics[0].src) && !pics.some(im => /skins\//.test(im.src));
+    check('on again: the scene asked again (released at the turn-off), no separate zombie picture', asked && (await loaded(p)) === true && L.isEnabled() && pics.length === 0);
     await L.disable(); await L.disable();
     check('disable twice: off once', L.state === 'off' && states.join() === 'loading,on,disabling,off' && snap() === before);
     /* changed while off (an import): the next activation uses it */
     D.dyingLightIntensity = 'nightmare'; ctx.application.saveSettings(D, 'ogarioSettings');
-    await L.enable();
+    await loaded(L.enable());
     const offFollowed = L.intensity() === 'nightmare';
     await L.disable();
     D.dyingLightIntensity = 'immersive'; ctx.application.saveSettings(D, 'ogarioSettings');
@@ -252,27 +257,123 @@ async function dyingLightLifecycle() {
     vm.runInContext('lmDyingLightToggle()', ctx);
     check('cancelled while loading: off, nothing saved', (await p) === false && L.state === 'off' && snap() === before && !cls.has('lm-dl') && parts.length === 0);
     p = L.enable(); const p2 = L.enable();
-    check('one enable at a time', p === p2 && (await p) === true && parts.join() === 'start' + L.generation && L.hasForegroundFx() && L.intensity() === 'competitive');
+    check('one enable at a time', p === p2 && (await loaded(p)) === true && parts.join() === 'start' + L.generation && L.hasForegroundFx() && L.intensity() === 'competitive');
     await L.disable();
     check('parts stopped by the turn-off', parts[parts.length - 1] === 'stop' && !L.hasForegroundFx());
 
     /* a start that fails part way: everything undone, the switch stays off */
     document.failClass = true; toasts.length = 0;
-    check('failed start rolled back', (await L.enable()) === false && L.state === 'off' && !head.kids.some(n => n.id === 'lm-dl-style') &&
+    check('failed start rolled back', (await loaded(L.enable())) === false && L.state === 'off' && !head.kids.some(n => n.id === 'lm-dl-style') &&
         ctx.dyinglight1load === null && snap() === before && toasts.length === 1 && !ctx.LMEvents._has('settingsChange'));
     document.failClass = false;
 
     /* the settings turn it off (an import, Restore defaults' save): the theme follows */
-    await L.enable();
+    await loaded(L.enable());
     D.dyingLight = false; ctx.application.saveSettings(D, 'ogarioSettings');
     check('setting turned off elsewhere: theme off', L.state === 'off' && !cls.has('lm-dl'));
 
     /* storage refused on the turn-off: off for this visit all the same */
-    await L.enable(); localStorage.full = true;
+    await loaded(L.enable()); localStorage.full = true; toasts.length = 0;
     try { await L.disable(); } catch (e) { }
     localStorage.full = false;
     check('storage full: still turned off', L.state === 'off' && !cls.has('lm-dl') && ctx.dyinglight1load === null);
+    check('storage full: the turn-off is not kept and the player is told', L.saved() === false && JSON.parse(store.ogarioSettings).dyingLight === true &&
+        toasts.indexOf('pkg.dlv4life.notSaved') >= 0);
     ctx.application.saveSettings(D, 'ogarioSettings');
+    check('...a later save keeps it off', JSON.parse(store.ogarioSettings).dyingLight === false);
+
+    /* only the settings refused (the large value): the turn-off is kept in the small old flag and a
+     * reload with the old settings (switch on) stays off */
+    await loaded(L.enable()); localStorage.fullBig = true; toasts.length = 0;
+    try { await L.disable(); } catch (e) { }
+    check('settings refused: off, kept in the old flag, nothing more to tell', L.state === 'off' && L.saved() === 'flag' && store.dyinglight1load === 'no' &&
+        JSON.parse(store.ogarioSettings).dyingLight === true && toasts.indexOf('pkg.dlv4life.notSaved') < 0);
+    {
+        /* the reload: the settings as stored (on), the start reads the old flag first */
+        D.dyingLight = JSON.parse(store.ogarioSettings).dyingLight;
+        localStorage.fullBig = false; pics.length = 0;
+        vm.runInContext('lmDyingLightStartup()', ctx);
+        await tick();
+        check('...the reload stays off (the flag moved into the setting, then removed)', D.dyingLight === false && L.state === 'off' && pics.length === 0 &&
+            JSON.parse(store.ogarioSettings).dyingLight === false && store.dyinglight1load === undefined);
+    }
+
+    /* a picture that is still loading at the turn-off: its wait ends then, nothing is kept */
+    {
+        pics.length = 0;
+        const q = L.enable(); const im = pics[pics.length - 1];
+        await L.disable();
+        check('turned off while the scene loads: the wait ends at once, the picture let go', !!im && (await q) === false && im.onload === null && im.onerror === null &&
+            L.state === 'off');
+        pics.length = 0;
+    }
+    /* a phone or a weak device: the small scene and the 256 px zombie skins */
+    {
+        ctx.isMobile = true;
+        const q = L.enable(); const src = pics.length === 1 ? pics[0].src : '';
+        await loaded(q);
+        const k = L.getFallbackSkinKey(other), bgUrl = L.getBackground() && L.getBackground().url;
+        await L.disable();
+        check('phone: the small scene and the 256 px skins (one design per name as before)', /back0-1280\.webp$/.test(src) && /-256\.webp$/.test(k) &&
+            L.variants.some(v => v.small === k) && /back0-1280\.webp$/.test(bgUrl));
+        ctx.isMobile = undefined; ctx.navigator = { deviceMemory: 2 };
+        await loaded(L.enable());
+        const k2 = L.getFallbackSkinKey(other);
+        await L.disable();
+        ctx.navigator = { deviceMemory: 8, hardwareConcurrency: 8 };
+        await loaded(L.enable());
+        const k3 = L.getFallbackSkinKey(other);
+        await L.disable();
+        delete ctx.navigator;
+        check('little memory: 256 px; a strong device: 512 px', /-256\.webp$/.test(k2) && /-512\.webp$/.test(k3) && L.variants.some(v => v.key === k3));
+    }
+
+    /* a part whose start fails after making something: stopped at once; an optional one fails
+     * alone, an essential one undoes the whole activation */
+    {
+        const made = { opt: 0, ess: 0 }, boom = { opt: false, ess: false, stop: false };
+        L.addPart({ name: 'opt', fx: true, start() { made.opt = 1; if (boom.opt) throw new Error('opt'); }, stop() { made.opt = 0; } });
+        L.addPart({ name: 'ess', essential: true, start() { made.ess = 1; if (boom.ess) throw new Error('ess'); }, stop() { made.ess = 0; } });
+        boom.opt = true; toasts.length = 0;
+        const on1 = await loaded(L.enable());
+        check('optional part fails: on without it, what it made is gone', on1 === true && L.isEnabled() && made.opt === 0 && made.ess === 1 && toasts.length === 0);
+        await L.disable();
+        boom.opt = false; boom.ess = true; toasts.length = 0;
+        const on2 = await loaded(L.enable());
+        check('essential part fails: off, every part and the style undone, the switch not saved', on2 === false && L.state === 'off' && made.opt === 0 && made.ess === 0 &&
+            !cls.has('lm-dl') && !head.kids.some(n => n.id === 'lm-dl-style') && ctx.dyinglight1load === null && D.dyingLight === false &&
+            !ctx.LMEvents._has('settingsChange') && toasts.length === 1);
+        boom.ess = false;
+        /* a stop that throws: the turn-off goes on with the rest */
+        L.addPart({ name: 'badstop', start() { }, stop() { if (boom.stop) throw new Error('stop'); } });
+        await loaded(L.enable());
+        boom.stop = true;
+        await L.disable();
+        boom.stop = false;
+        check('a part whose stop throws: everything else still cleaned up', L.state === 'off' && made.opt === 0 && made.ess === 0 && !cls.has('lm-dl') &&
+            !head.kids.some(n => n.id === 'lm-dl-style') && ctx.dyinglight1load === null && !ctx.LMEvents._has('settingsChange') && L.getBackground() === null);
+        /* turned off by a listener of a transition: the activation stops there */
+        let offAt = 'loading';
+        const offer = d => { if (d.state === offAt) L.disable(); };
+        ctx.LMEvents.on('dyingLightChange', offer);
+        pics.length = 0;
+        const q1 = L.enable();
+        check('turned off by a listener of "loading": no picture asked, no listener left', (await q1) === false && L.state === 'off' && pics.length === 0 &&
+            !ctx.LMEvents._has('settingsChange') && D.dyingLight === false);
+        offAt = 'on';
+        const q2 = L.enable();
+        check('turned off by a listener of "on": reported off, nothing left', (await loaded(q2)) === false && L.state === 'off' && made.ess === 0 && made.opt === 0 &&
+            !cls.has('lm-dl') && D.dyingLight === false && JSON.parse(store.ogarioSettings).dyingLight === false);
+        ctx.LMEvents.off('dyingLightChange', offer);
+        /* a part that turns it off while it starts: the parts after it never start, it is stopped */
+        let selfOff = true, selfStopped = 0;
+        L.addPart({ name: 'selfoff', start() { if (selfOff) L.disable(); }, stop() { selfStopped++; } });
+        L.addPart({ name: 'after', start() { made.after = 1; }, stop() { made.after = 0; } });
+        const q3 = L.enable();
+        check('turned off while a part starts: off, nothing left, later parts not started, the switch not saved on', (await loaded(q3)) === false && L.state === 'off' &&
+            made.ess === 0 && made.opt === 0 && !made.after && selfStopped === 1 && !cls.has('lm-dl') && D.dyingLight === false && JSON.parse(store.ogarioSettings).dyingLight === false);
+        selfOff = false;
+    }
 
     /* turned off while the script itself loads */
     {
