@@ -21362,8 +21362,8 @@ var defaultmapsettings = {
     mbAutoRespawn: true,
     cameraSmoothLerp: true,
     centerWeightCamera: false,    /* camera target = mass-weighted centre of the own cells (like Delta) */
-    /* optimizedMass is gone: the mass text is always redrawn on a 2% change (exact numbers: Mass format),
-     * and its merge-seconds number duplicated Merge countdown; a saved value is folded once (lmFoldOptimizedMass) */
+    /* optimizedMass is gone: the mass text is always redrawn on a 2% change (exact numbers: Mass format);
+     * a saved value is ignored */
     shortMass: true,              /* copy of massFormat === 2 for scripts and older versions (lmFoldLegacySettings) */
     cellContours: false,
     virMassShots: true,
@@ -21434,8 +21434,7 @@ var defaultmapsettings = {
     sdsplitRange: false, //Sonia2
     splitPrediction: false,       /* agar.io: dim cursor lines of own cells that will not split */
     tripleSplitRange: false,      /* rings at 3*size+760 around enemies that can triple-split onto you */
-    hudMergeCountdown: false,     /* HUD helpers (ogario/modules/hudhelpers.js): seconds until each own cell can merge (agar.io estimate) */
-    hudMergeSound: false,         /* short sound when two own cells can merge (agar.io) */
+    hudMergeSound: false,         /* HUD helpers (ogario/modules/hudhelpers.js): short sound when two own cells can merge (agar.io estimate) */
     hudRelativeMass: false,       /* other players' mass as a ratio to your biggest cell */
     massFormat: 2,                /* mass text: 1 exact, 2 12.3k from 1000 (was Short mass), 3 auto; 0 of older versions = Short mass */
     virusesRange: false,
@@ -21688,7 +21687,6 @@ function lmFoldLegacySettings(s) {
         changed = true;
     }
     if (lmFoldClickFollow(s)) changed = true;
-    if (lmFoldOptimizedMass(s)) changed = true;
     /* the virus pop / eat sounds are part of the virus sound: either one on turns it on, once */
     if (has('virusPopSound') || has('virusEatSound')) {
         if (s.virusPopSound === true || s.virusEatSound === true) s.virusSound = true;
@@ -21752,16 +21750,6 @@ function lmHudAdoptOld(s, theme) {
         if (window.LMHudEditor && typeof window.LMHudEditor.adoptPending === 'function') { try { window.LMHudEditor.adoptPending(); } catch (eA) { } }
     }
     keys.forEach(function (k) { delete s[k]; });
-    return true;
-}
-/* "Optimized mass OR Merge timer" (optimizedMass) is gone: its off state drew a merge-seconds number
- * under the own cells, which Merge countdown (hudMergeCountdown) shows. A stored, imported or profile
- * value of off turns Merge countdown on once, so such a player keeps a merge timer.
- * Returns true when the object had the key (it is removed). */
-function lmFoldOptimizedMass(s) {
-    if (!s || typeof s !== 'object' || !Object.prototype.hasOwnProperty.call(s, 'optimizedMass')) return false;
-    if (s.optimizedMass === false || s.optimizedMass === 'false') s.hudMergeCountdown = true;
-    delete s.optimizedMass;
     return true;
 }
 /* The spectate follows (a player cell, a leaderboard mass, the Expanding Land minimap) are always
@@ -26835,7 +26823,7 @@ function thelegendmodproject() {
                 });
                 /* Recently added options: a NEW badge for one build (until the settings were
                  * opened with the badges shown), and a toggle that lists only them. */
-                var NEW_KEYS = ['showStatsAlive', 'mergeRings', 'rainbowMapBorders', 'fpsLimit', 'x16Sound', 'non16Sound', 'showMiniMapTrail', 'lbHideBots', 'hideEventBanner', 'centerWeightCamera', 'rainbowBorderSpeed', 'chatHideWords', 'reducedMotion', 'matchHistory', 'gamepadDeadzone', 'performanceMode', 'recordReplays', 'glAntialias', 'macroSplitDelay', 'macroPopSplitDelay', 'splitPrediction', 'tripleSplitRange', 'chatShowId', 'hudMergeCountdown', 'hudMergeSound', 'hudRelativeMass', 'massFormat', 'volMaster', 'volChat', 'volCommands', 'volGameplay', 'adaptivePerf', 'analytics', 'showStatsFrameTime'];
+                var NEW_KEYS = ['showStatsAlive', 'mergeRings', 'rainbowMapBorders', 'fpsLimit', 'x16Sound', 'non16Sound', 'showMiniMapTrail', 'lbHideBots', 'hideEventBanner', 'centerWeightCamera', 'rainbowBorderSpeed', 'chatHideWords', 'reducedMotion', 'matchHistory', 'gamepadDeadzone', 'performanceMode', 'recordReplays', 'glAntialias', 'macroSplitDelay', 'macroPopSplitDelay', 'splitPrediction', 'tripleSplitRange', 'chatShowId', 'hudMergeSound', 'hudRelativeMass', 'massFormat', 'volMaster', 'volChat', 'volCommands', 'volGameplay', 'adaptivePerf', 'analytics', 'showStatsFrameTime'];
                 newBtn.on('click', function () {
                     newOnly = !newOnly;
                     newBtn.toggleClass('active', newOnly);
@@ -26934,8 +26922,8 @@ function thelegendmodproject() {
             /* Sticky cells: what the left and right button do on cells (a behaviour, not a binding,
              * so here and not in the Hotkeys window) */
             this.addOptionTo('.helpersGroup', 'stickyCell');
-            /* Merging: countdown, sound and rings together, with what each needs from the server */
-            this.addOptions(["hudMergeCountdown", "hudMergeSound", "mergeRings"], "mergeGroup");
+            /* Merging: sound and rings together, with what each needs from the server */
+            this.addOptions(["hudMergeSound", "mergeRings"], "mergeGroup");
             $('<div class="lm-group-note"></div>').text(this._lmMenuText('mergeNote')).appendTo('.mergeGroup');
             /* The mouse buttons, sticky cells and gamepad support are in the Hotkeys window
              * (buildHotkeysControls): all input bindings live there, none in Settings. */
@@ -27032,11 +27020,11 @@ function thelegendmodproject() {
                     showMapBorders: ['rainbowMapBorders'],
                     rainbowMapBorders: ['rainbowBorderSpeed']
                 };
-                /* option -> the server types it works on (checked against the code): the merge countdown and
+                /* option -> the server types it works on (checked against the code): the merge sound and
                  * split prediction need agar.io's merge times (LM.integrity && !LM.isLegendWorld); replays are
                  * recorded in _lmHandlePacket, which Sigmally and Senpa packets never reach */
                 var SRV_AGARIO = ['agario'], SRV_REPLAYS = ['agario', 'expandingland', 'garix', 'imsolo', 'agar2', 'deltio', 'private'];
-                var SRV = { hudMergeCountdown: SRV_AGARIO, hudMergeSound: SRV_AGARIO, splitPrediction: SRV_AGARIO, recordReplays: SRV_REPLAYS };
+                var SRV = { hudMergeSound: SRV_AGARIO, splitPrediction: SRV_AGARIO, recordReplays: SRV_REPLAYS };
                 /* server type (window.legendmod.serverType) -> its name; private servers: modules.profiles.serverPrivate */
                 // i18n-ok: server proper names
                 var SRV_NAMES = { agario: 'agar.io', expandingland: 'Expanding Land', senpa: 'Senpa', garix: 'Garix', sigmally: 'Sigmally', imsolo: 'Imsolo', agar2: 'Agar2', deltio: 'delt.io', private: '' };
@@ -79657,8 +79645,7 @@ function pickPlayerCellBySize(players, selectBiggest) {
                     !_elEntranceRunning && !(_elDeathVisual && _elDeathVisual.active) &&
                     (this._lmFgFxN > 0 || this._lmRingFg || this._glFbArrowActive ||
                         ((LM.play || (LM.playerCellsMulti && LM.playerCellsMulti.length)) && defaultmapsettings.cursorTracking && !defaultmapsettings.bubbleCursorTracker) ||
-                        (this._spawnEffect && this._spawnEffect.active) || _deathParticles.length > 0 || (LM._lmPings && LM._lmPings.length) ||
-                        (window.LMHudHelpers && window.LMHudHelpers.worldActive(LM))));
+                        (this._spawnEffect && this._spawnEffect.active) || _deathParticles.length > 0 || (LM._lmPings && LM._lmPings.length)));
                 if (_lmFgOn) {
                     this._lmFitOverlay();
                     _lmFxCtx = this.overlayCtx;
@@ -79778,8 +79765,8 @@ function pickPlayerCellBySize(players, selectBiggest) {
                 /* The main canvas is below the WebGL canvas: in WebGL frames the above-cell
                  * effects go on the overlay prepared before the cell pass (_lmFxCtx). */
                 this.drawPostCellOverlays(_lmFxCtx);
-                /* HUD helpers (ogario/modules/hudhelpers.js): the merge countdown on the same
-                 * context and the merge sound; returns at once while all are off */
+                /* HUD helpers (ogario/modules/hudhelpers.js): the merge sound; returns at once
+                 * while all are off */
                 if (window.LMHudHelpers) window.LMHudHelpers.frame(this, _lmFxCtx, LM);
                 /* Expanding Land: spawn burst effect (drawn above cells) */
                 if (this._spawnEffect && this._spawnEffect.active) {
@@ -80315,19 +80302,10 @@ function pickPlayerCellBySize(players, selectBiggest) {
                         cell.splitTime = now;
                     }
                     var mass = cell.mass || ~~(cell.size * cell.size / 100);
-                    var duration, elapsed, remaining, progress;
-                    if (defaultmapsettings.hudMergeCountdown && cell._lmHHEnd > 0 && cell._lmHHDur > 0) {
-                        /* Merge countdown on: the ring follows its estimate (re-armed on every split) */
-                        duration = cell._lmHHDur;
-                        remaining = Math.max(0, (cell._lmHHEnd - performance.now()) / 1000);
-                        elapsed = duration - remaining;
-                        progress = Math.min(1, elapsed / duration);
-                    } else {
-                        duration = 30 + (mass * 0.02);
-                        elapsed = (now - cell.splitTime) / 1000;
-                        remaining = Math.max(0, duration - elapsed);
-                        progress = Math.min(1, elapsed / duration);
-                    }
+                    var duration = 30 + (mass * 0.02);
+                    var elapsed = (now - cell.splitTime) / 1000;
+                    var remaining = Math.max(0, duration - elapsed);
+                    var progress = Math.min(1, elapsed / duration);
 
                     if (remaining > 0 && progress < 1) {
                         var radius = cell.size + 6;
@@ -87908,7 +87886,7 @@ Object.defineProperty(Array.prototype, 'stDev', {
     } catch (e) {
         console.warn('[LM] Error auto-loading extended UI script:', e);
     }
-    /* HUD helpers: merge countdown and its sound, relative mass,
+    /* HUD helpers: merge sound, relative mass,
      * mass format, zoom hotkeys (each its own option or hotkey; nothing runs while they are off) */
     try {
         var hudHelpersScript = document.createElement('script');

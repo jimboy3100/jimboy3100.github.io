@@ -2915,7 +2915,6 @@
 "settings.sdsplitRange": "Bereik langzame dubbele split",
 "settings.splitPrediction": "Splitvoorspelling (dimt de lijnen van cellen die niet splitsen, agar.io)",
 "settings.tripleSplitRange": "Bereik drievoudige split",
-"settings.hudMergeCountdown": "Merge-aftelling in seconden op je cellen (schatting, agar.io)",
 "settings.hudMergeSound": "Geluid wanneer je cellen kunnen mergen (agar.io)",
 "settings.hudRelativeMass": "Vijandelijke massa als verhouding tot je grootste cel (1.75x, =)",
 "settings.massFormat": "Massanotatie",

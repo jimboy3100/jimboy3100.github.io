@@ -48,7 +48,7 @@ check('profileNumber 1000000 -> 54', V('profileNumber', 1000000) === 54);
 check('fpsLimit -1 -> 0 (off), 0 stays 0', V('fpsLimit', -1) === 0 && V('fpsLimit', 0) === 0);
 /* removed or merged settings (mass-loss alert, kill feed, HUD helper arrows and cell panel, the removed 25 FPS menu cap, the
  * automatic Performance mode's own target / message / resolution options, the size symbols in Relative mass) */
-const GONE = ['menuFpsCap', 'adaptivePerfTarget', 'adaptivePerfToasts', 'adaptivePerfRes', 'hudMoveDir', 'hudEdgeTeammates', 'hudEdgeThreats', 'hudCellPanel', 'massLossAlert', 'massLossPct', 'killFeed', 'a11yIndicators'];
+const GONE = ['hudMergeCountdown', 'menuFpsCap', 'adaptivePerfTarget', 'adaptivePerfToasts', 'adaptivePerfRes', 'hudMoveDir', 'hudEdgeTeammates', 'hudEdgeThreats', 'hudCellPanel', 'massLossAlert', 'massLossPct', 'killFeed', 'a11yIndicators'];
 check('removed settings are no settings any more (a saved value is ignored)', GONE.every(k => !(k in D) && !(k in SCH) && V(k, true) === undefined && V(k, 30) === undefined));
 check('gamepadMoveCurve 100 -> 3', V('gamepadMoveCurve', 100) === 3);
 check('massFormat 1.7 -> 2 (a mode, not a fraction)', V('massFormat', 1.7) === 2);
@@ -159,19 +159,13 @@ const reSaved3 = JSON.parse(ctx.localStorage.getItem('ogarioSettings'));
 /* the size symbols were removed, not merged: an old saved value changes nothing (Relative mass stays off) */
 check('load: an old save with the size symbols on keeps Relative mass off, removed settings ignored', S.hudRelativeMass === false && !('a11yIndicators' in S) && reSaved3.hudRelativeMass !== true && GONE.every(k => !(k in S)));
 S.hudRelativeMass = D.hudRelativeMass;
-/* "Optimized mass OR Merge timer" is gone (the 2% mass redraw is fixed, Merge countdown is the merge
- * timer): a saved off turns Merge countdown on once, then the old key is dropped */
+/* "Optimized mass OR Merge timer" and "Merge countdown in seconds" are gone: saved values are ignored,
+ * nothing is turned on */
 check('optimizedMass is no setting: refused', !('optimizedMass' in D) && !('optimizedMass' in SCH) && V('optimizedMass', false) === undefined);
-check('fold: optimizedMass off turns Merge countdown on, on leaves it, the key goes', J(lfold({ optimizedMass: false })) === J({ hudMergeCountdown: true }) &&
-    J(lfold({ optimizedMass: 'false', hudMergeCountdown: false })) === J({ hudMergeCountdown: true }) && J(lfold({ optimizedMass: true, hudMergeCountdown: false })) === J({ hudMergeCountdown: false }));
-ctx.localStorage.setItem('ogarioSettings', JSON.stringify(Object.assign({}, saved, { optimizedMass: false, hudMergeCountdown: false })));
+check('fold: optimizedMass off turns nothing on (Merge countdown is removed)', !('hudMergeCountdown' in lfold({ optimizedMass: false })) && !('hudMergeCountdown' in lfold({ optimizedMass: 'false' })));
+ctx.localStorage.setItem('ogarioSettings', JSON.stringify(Object.assign({}, saved, { optimizedMass: false, hudMergeCountdown: true })));
 app.loadSettings();
-const reSavedOm = JSON.parse(ctx.localStorage.getItem('ogarioSettings'));
-check('load: a saved optimizedMass off has Merge countdown on, the save is rewritten without the key', S.hudMergeCountdown === true && !('optimizedMass' in S) && !('optimizedMass' in reSavedOm) && reSavedOm.hudMergeCountdown === true);
-S.hudMergeCountdown = false;
-ctx.localStorage.setItem('ogarioSettings', JSON.stringify(Object.assign({}, reSavedOm, { hudMergeCountdown: false })));
-app.loadSettings();
-check('load: only once (Merge countdown turned off later stays off)', S.hudMergeCountdown === false);
+check('load: saved optimizedMass off / hudMergeCountdown on are ignored, the merge sound keeps its value', !('optimizedMass' in S) && !('hudMergeCountdown' in S) && S.hudMergeSound === saved.hudMergeSound);
 /* the loaded values of the checks below */
 ctx.localStorage.setItem('ogarioSettings', JSON.stringify(saved));
 app.loadSettings();

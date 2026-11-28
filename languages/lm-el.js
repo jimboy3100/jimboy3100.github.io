@@ -2915,7 +2915,6 @@
 "settings.sdsplitRange": "Εμβέλεια αργού double split",
 "settings.splitPrediction": "Πρόβλεψη split (αχνές γραμμές κέρσορα για κύτταρα που δεν θα κάνουν split, agar.io)",
 "settings.tripleSplitRange": "Εμβέλεια triple split",
-"settings.hudMergeCountdown": "Αντίστροφη μέτρηση συγχώνευσης σε δευτερόλεπτα στα κύτταρά σου (εκτίμηση, agar.io)",
 "settings.hudMergeSound": "Ήχος όταν τα κύτταρά σου μπορούν να συγχωνευτούν (agar.io)",
 "settings.hudRelativeMass": "Μάζα αντιπάλων ως λόγος προς το μεγαλύτερο κύτταρό σου (1.75x, =)",
 "settings.massFormat": "Μορφή μάζας",

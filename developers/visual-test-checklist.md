@@ -96,7 +96,7 @@
 |---|-------|----------|-----------|--------|
 | 8.1 | Special effects (hats/crowns) visible on cells | ☐ | ☐ | ☐ |
 | 8.2 | Chat bubbles visible above cells | ☐ | ☐ | ☐ |
-| 8.3 | Merge countdown visible on own cells (agar.io) | ☐ | ☐ | ☐ |
+| 8.3 | Merge progress rings visible on own cells | ☐ | ☐ | ☐ |
 | 8.4 | Teammate indicators visible above cells | ☐ | ☐ | ☐ |
 | 8.5 | FB skin arrow on overlay canvas (GL) | ☐ | ☐ | ☐ |
 | 8.6 | Rings/contours still work (Canvas2D fallback) | ☐ | ☐ | ☐ |

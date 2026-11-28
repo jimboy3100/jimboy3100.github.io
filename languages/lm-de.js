@@ -2915,7 +2915,6 @@
 "settings.sdsplitRange": "Reichweite (langsamer Doppelsplit)",
 "settings.splitPrediction": "Split-Vorhersage (dunkelt die Cursorlinien nicht splittender Zellen ab, agar.io)",
 "settings.tripleSplitRange": "Dreifachsplit-Reichweite",
-"settings.hudMergeCountdown": "Merge-Countdown in Sekunden auf deinen Zellen (Schätzung, agar.io)",
 "settings.hudMergeSound": "Sound, wenn deine Zellen mergen können (agar.io)",
 "settings.hudRelativeMass": "Gegnermasse im Verhältnis zu deiner größten Zelle (1.75x, =)",
 "settings.massFormat": "Masseformat",

@@ -2915,7 +2915,6 @@
 "settings.sdsplitRange": "Обхват на бавен двоен сплит",
 "settings.splitPrediction": "Предсказване на сплит (затъмнява линиите на курсора на клетките, които няма да се разделят, agar.io)",
 "settings.tripleSplitRange": "Обхват на троен сплит",
-"settings.hudMergeCountdown": "Отброяване до сливане в секунди върху клетките ти (приблизително, agar.io)",
 "settings.hudMergeSound": "Звук, когато клетките ти могат да се слеят (agar.io)",
 "settings.hudRelativeMass": "Маса на противника спрямо най-голямата ти клетка (1.75x, =)",
 "settings.massFormat": "Формат на масата",

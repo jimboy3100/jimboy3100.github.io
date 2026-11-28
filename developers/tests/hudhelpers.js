@@ -1,14 +1,15 @@
 /* HUD helpers checks: the pure parts of ogario/modules/hudhelpers.js (ratio and
- * mass formatting, merge countdown) and the mass text / camera lock it gives the game.
+ * mass formatting, merge timing for the merge sound) and the mass text it gives the game.
  * node developers/tests/hudhelpers.js */
 const fs = require('fs'), vm = require('vm'), path = require('path');
 const i18n = require('./lib/i18n-env');
 const src = fs.readFileSync(process.argv[2] || path.join(__dirname, '..', '..', 'ogario', 'modules', 'hudhelpers.js'), 'utf8');
+let nowT = 0;
 const store = {};
 const toasts = [];
 const ctx = {
     console, Math, Number, JSON, Map, Array, String, Date, isFinite,
-    performance: { now: () => 0 },
+    performance: { now: () => nowT },
     localStorage: { getItem: k => (k in store ? store[k] : null), setItem: (k, v) => { store[k] = String(v); } },
     document: { body: null, getElementById: () => null, createElement: () => ({ style: {} }) },
     toastr: { info: m => toasts.push(m) }
@@ -48,9 +49,9 @@ check('mass auto: 123k', P.formatMass(123456, 3) === '123k');
 check('mass auto: 1.2M', P.formatMass(1234567, 3) === '1.2M');
 check('mass bad values', P.formatMass(-5, 1) === '0' && P.formatMass(NaN, 3) === '0' && P.formatMass(12.9, 1) === '12');
 
-// merge countdown
+// merge timing (the merge sound); the merge countdown in seconds is removed
 check('merge duration (agar.io formula)', near(P.mergeDuration(300), 37) && near(P.mergeDuration(0), 29));
-check('countdown text', P.countdownText(12.2) === '13' && P.countdownText(0.01) === '1' && P.countdownText(0) === '' && P.countdownText(-1) === '' && P.countdownText(5000) === '999');
+check('the merge countdown in seconds is gone', !('countdownText' in P) && !('mergeLeft' in H) && !('worldActive' in H));
 {
     const owner = { prevCount: 0, beep: false };
     const big = { size: 200, targetSize: 200 }; /* mass 400 */
@@ -130,6 +131,31 @@ check('countdown text', P.countdownText(12.2) === '13' && P.countdownText(0.01) 
     ctx.multiboxPlayerEnabled = null;
     delete ctx.getActiveSpect;
     s.hudRelativeMass = false;
+}
+
+// merge sound without the removed countdown: a saved hudMergeCountdown draws nothing, the sound still plays
+{
+    const s = ctx.legendmod5;
+    s.hudMergeSound = true; s.hudMergeCountdown = true;
+    const sounds = [];
+    ctx.application = { _lmOptSound: k => k, playSound: k => sounds.push(k) };
+    let drawn = 0;
+    const g = new Proxy({}, { get(t, k) { drawn++; return () => {}; }, set() { drawn++; return true; } });
+    const cell = { x: 0, y: 0, size: 200, targetSize: 200, isPlayerCell: true, isInView: () => true };
+    const LM = { play: true, integrity: true, isLegendWorld: false, playerCells: [cell], playerCellsMulti: [] };
+    const R = { scale: 1, getLegendWorldAttachedRenderPoint: (x, y, o) => { o.x = x; o.y = y; return o; } };
+    nowT = 100000;
+    H.frame(R, g, LM);
+    cell.size = cell.targetSize = Math.sqrt(20000);
+    LM.playerCells = [cell, { x: 50, y: 0, size: cell.size, targetSize: cell.size, isPlayerCell: true, isInView: () => true }];
+    nowT += 16; H.frame(R, g, LM);
+    nowT += 5000; H.frame(R, g, LM);
+    check('merge sound: not before the merge time', sounds.length === 0);
+    nowT += P.mergeDuration(200) * 1000; H.frame(R, g, LM);
+    check('merge sound: plays once the cells can merge', sounds.length === 1 && sounds[0] === 'mergeReady');
+    check('merge sound: no seconds drawn on the cells (old hudMergeCountdown value ignored)', drawn === 0);
+    s.hudMergeSound = false; delete s.hudMergeCountdown; delete ctx.application;
+    nowT = 0;
 }
 
 // all off: frame does nothing

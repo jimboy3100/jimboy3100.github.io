@@ -71,7 +71,7 @@
     {
       "id": "hud",
       "name": "HUD helpers",
-      "description": "Split range circles (single/double/triple/quad), merge countdown with sound and progress rings, relative mass display. Mass format modes (short/exact/12.3k/auto).",
+      "description": "Split range circles (single/double/triple/quad), merge sound and progress rings, relative mass display. Mass format modes (short/exact/12.3k/auto).",
       "url": "https://www.legendmod.ml/features.html"
     },
     {

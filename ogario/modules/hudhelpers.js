@@ -2,9 +2,8 @@
  * HUD helpers (Legend Mod).
  *
  * Each helper has its own option in the settings, all off by default:
- *   hudMergeCountdown  seconds until each own cell can merge (agar.io only: the only place the
- *                      timing is known; it is an estimate, like the merge ring)
- *   hudMergeSound      short sound when two of your cells can merge again
+ *   hudMergeSound      short sound when two of your cells can merge again (agar.io only: the
+ *                      only place the merge timing is known; it is an estimate)
  *   hudRelativeMass    other players' mass as a ratio to your biggest cell (1.75x, 0.40x, "=")
  *   massFormat         1 exact, 2 12.3k, 3 auto (Settings > Mass: "Mass format"; 0 of older
  *                      versions was "as Short mass"); the core draws 1 and 2 itself
@@ -25,10 +24,10 @@
     }
 
     /*
-     * Merge countdown bookkeeping for one owner's cells (main player or one multibox unit).
+     * Merge time bookkeeping (for the merge sound) for one owner's cells (main player or one multibox unit).
      * A piece that appears while the count grows, and a piece that lost a large part of its mass
      * then (the one that split or popped), start a new countdown. Pieces first seen without such
-     * a split (option turned on mid-game) are unknown (-1) and get no number.
+     * a split (option turned on mid-game) are unknown (-1) and never count as ready.
      * Writes cell._lmHHEnd (ms, same clock as now; 0 = nothing to merge, -1 = unknown) and
      * cell._lmHHDur (s). Returns the number of pieces whose countdown has run out.
      */
@@ -59,15 +58,6 @@
         if (count <= 1) owner.beep = false;
         owner.prevCount = count;
         return ready;
-    }
-
-    var _secTxt = [];
-    /* whole seconds left as text ("" when none), cached */
-    function countdownText(sec) {
-        if (!(sec > 0)) return '';
-        var n = Math.ceil(sec);
-        if (n > 999) n = 999;
-        return _secTxt[n] || (_secTxt[n] = String(n));
     }
 
     var _ratioTxt = new Map();
@@ -116,16 +106,10 @@
     }
     var refMass = 0;            /* mass of the reference unit's biggest cell (0 when not playing) */
     var refOwner = 0;           /* that unit: 0 the main player, else the multibox unit number */
-    var _pB = { x: 0, y: 0 };
-    var _fonts = [];
     var _lastBeep = 0;
     var api;
 
     function S() { return window.legendmod5 || {}; }
-    function fontPx(px) {
-        px = Math.max(6, Math.min(2000, Math.round(px)));
-        return _fonts[px] || (_fonts[px] = '700 ' + px + 'px Ubuntu, Arial, sans-serif');
-    }
     function isOwn(c) { return !!(c && (c.isPlayerCell || c.isPlayerCellMulti)); }
 
     /* Own cells of every owner into owners[k].cells (arrays reused), with their biggest size. */
@@ -164,53 +148,18 @@
         refMass = ref > 0 ? ref * ref / 100 : 0;
     }
 
-    /* ───────────────────────── 1. merge countdown ───────────────────────── */
+    /* ───────────────────────── 1. merge sound ───────────────────────── */
 
-    /* seconds left for a cell, this module's estimate (the merge ring uses the same one); -1 unknown, 0 ready */
-    function mergeLeft(c, now) {
-        if (c._lmHHEnd > 0) return Math.max(0, (c._lmHHEnd - now) / 1000);
-        return c._lmHHEnd === 0 ? 0 : -1;
-    }
-
-    function mergeFrame(ctx, render, LM, now, s) {
+    function mergeFrame(LM, now) {
         var known = !!(LM.integrity && !LM.isLegendWorld);
-        var draw = known && s.hudMergeCountdown;
-        var scale = render.scale || 1;
         var beepNow = false;
-        if (draw) {
-            ctx.save();
-            ctx.textAlign = 'center';
-            ctx.textBaseline = 'middle';
-            ctx.lineJoin = 'round';
-            ctx.strokeStyle = 'rgba(0, 0, 0, 0.85)';
+        for (var i = 0; i < MAX_OWNERS; i++) {
+            var o = owners[i];
+            var ready = trackMerge(o, o.cells, o.n, now);
+            if (!known) continue;
+            if (o.beep && ready >= 2 && (!o.beepAfter || now >= o.beepAfter)) { o.beep = false; o.beepAfter = 0; beepNow = true; }
         }
-        try {
-            for (var i = 0; i < MAX_OWNERS; i++) {
-                var o = owners[i];
-                var ready = trackMerge(o, o.cells, o.n, now);
-                if (!known) continue;
-                if (o.beep && ready >= 2 && (!o.beepAfter || now >= o.beepAfter)) { o.beep = false; o.beepAfter = 0; beepNow = true; }
-                if (!draw || o.n < 2) continue;
-                for (var j = 0; j < o.n; j++) {
-                    var c = o.cells[j];
-                    if (c.isInView && !c.isInView()) continue;
-                    var left = mergeLeft(c, now);
-                    var txt = countdownText(left);
-                    if (!txt) continue;
-                    var px = Math.max(c.size * 0.34, 13 / scale);
-                    var p = render.getLegendWorldAttachedRenderPoint ? render.getLegendWorldAttachedRenderPoint(c.x, c.y, _pB) : (_pB.x = c.x, _pB.y = c.y, _pB);
-                    var y = p.y + c.size * 0.58;
-                    ctx.font = fontPx(px);
-                    ctx.lineWidth = Math.max(1, px * 0.16);
-                    ctx.fillStyle = left < 5 ? '#00ff66' : (left < 15 ? '#ffcc00' : '#ffffff');
-                    ctx.strokeText(txt, p.x, y);
-                    ctx.fillText(txt, p.x, y);
-                }
-            }
-        } finally {
-            if (draw) ctx.restore();
-        }
-        if (beepNow && s.hudMergeSound && now - _lastBeep > 1500) {
+        if (beepNow && now - _lastBeep > 1500) {
             _lastBeep = now;
             var app = window.application;
             if (app && app._lmOptSound && app.playSound) app.playSound(app._lmOptSound('mergeReady'));
@@ -232,15 +181,7 @@
     /* ───────────────────────── frame ───────────────────────── */
 
     function anyOn(s) {
-        return !!(s.hudMergeCountdown || s.hudMergeSound || s.hudRelativeMass);
-    }
-
-    /* true when frame() will draw on the world context this frame (ogario.v4.js then uses the
-     * overlay canvas above the WebGL cells, like for the cursor lines) */
-    function worldActive(LM) {
-        var s = S();
-        return !!(s.hudMergeCountdown && LM &&
-            (LM.play || (LM.playerCellsMulti && LM.playerCellsMulti.length)));
+        return !!(s.hudMergeSound || s.hudRelativeMass);
     }
 
     var _wasOn = false;
@@ -258,23 +199,20 @@
         if (!LM || !render) return;
         var now = performance.now();
         gatherOwners(LM);
-        if (ctx && (s.hudMergeCountdown || s.hudMergeSound)) mergeFrame(ctx, render, LM, now, s);
+        if (s.hudMergeSound) mergeFrame(LM, now);
     }
 
     api = window.LMHudHelpers = {
         frame: frame,
-        worldActive: worldActive,
         massText: massText,
         /* mass as text in a Mass format mode (the HUD texts of ogario.v4.js shortMassFormat) */
         formatMass: formatMass,
         /* the unit the relative mass compares with (0 = main player) */
         refUnit: function () { return refOwner; },
-        mergeLeft: mergeLeft,
         /* pure parts, for the tests */
         _pure: {
             mergeDuration: mergeDuration,
             trackMerge: trackMerge,
-            countdownText: countdownText,
             ratioText: ratioText,
             formatMass: formatMass
         }

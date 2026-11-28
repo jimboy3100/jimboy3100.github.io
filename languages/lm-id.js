@@ -2915,7 +2915,6 @@
 "settings.sdsplitRange": "Jangkauan double split lambat",
 "settings.splitPrediction": "Prediksi split (meredupkan garis kursor sel yang tidak akan split, agar.io)",
 "settings.tripleSplitRange": "Jangkauan triple split",
-"settings.hudMergeCountdown": "Hitung mundur gabung dalam detik di sel kamu (perkiraan, agar.io)",
 "settings.hudMergeSound": "Suara saat sel kamu bisa bergabung (agar.io)",
 "settings.hudRelativeMass": "Massa musuh sebagai rasio terhadap sel terbesar kamu (1.75x, =)",
 "settings.massFormat": "Format massa",

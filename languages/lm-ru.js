@@ -2915,7 +2915,6 @@
 "settings.sdsplitRange": "Дальность медленного двойного сплита",
 "settings.splitPrediction": "Предсказание сплита (приглушает линии курсора у клеток, которые не разделятся, agar.io)",
 "settings.tripleSplitRange": "Дальность тройного сплита",
-"settings.hudMergeCountdown": "Отсчёт до слияния в секундах на клетках (оценка, agar.io)",
 "settings.hudMergeSound": "Звук, когда клетки могут слиться (agar.io)",
 "settings.hudRelativeMass": "Масса врага относительно вашей крупнейшей клетки (1.75x, =)",
 "settings.massFormat": "Формат массы",

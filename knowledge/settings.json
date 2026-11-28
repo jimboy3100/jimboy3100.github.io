@@ -221,7 +221,6 @@
       "name": "Merge",
       "description": "Cell merge feedback settings.",
       "settings": [
-        "mergeCountdown",
         "mergeSound",
         "mergeProgressRings"
       ]

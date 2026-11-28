@@ -2915,7 +2915,6 @@
 "settings.sdsplitRange": "مدى الانقسام المزدوج البطيء",
 "settings.splitPrediction": "توقع الانقسام (يُخفت خطوط المؤشر للخلايا التي لن تنقسم، agar.io)",
 "settings.tripleSplitRange": "مدى الانقسام الثلاثي",
-"settings.hudMergeCountdown": "عدّ تنازلي للدمج بالثواني على خلاياك (تقديري، agar.io)",
 "settings.hudMergeSound": "صوت عندما تستطيع خلاياك الدمج (agar.io)",
 "settings.hudRelativeMass": "كتلة الخصم كنسبة إلى أكبر خلاياك (1.75x، =)",
 "settings.massFormat": "تنسيق الكتلة",

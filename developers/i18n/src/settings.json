@@ -2177,24 +2177,6 @@
     "ja": "トリプル分裂の射程",
     "it": "Raggio del triple split"
   },
-  "settings.hudMergeCountdown": {
-    "en": "Merge countdown in seconds on your cells (estimate, agar.io)",
-    "el": "Αντίστροφη μέτρηση συγχώνευσης σε δευτερόλεπτα στα κύτταρά σου (εκτίμηση, agar.io)",
-    "es": "Cuenta atrás de fusión en segundos sobre tus células (estimación, agar.io)",
-    "bg": "Отброяване до сливане в секунди върху клетките ти (приблизително, agar.io)",
-    "fr": "Compte à rebours de fusion en secondes sur tes cellules (estimation, agar.io)",
-    "ar": "عدّ تنازلي للدمج بالثواني على خلاياك (تقديري، agar.io)",
-    "zh": "細胞上的合併倒數秒數（估計值，agar.io）",
-    "ru": "Отсчёт до слияния в секундах на клетках (оценка, agar.io)",
-    "de": "Merge-Countdown in Sekunden auf deinen Zellen (Schätzung, agar.io)",
-    "tr": "Hücrelerinde saniye cinsinden birleşme sayacı (tahmini, agar.io)",
-    "pl": "Odliczanie do łączenia w sekundach na twoich komórkach (szacunek, agar.io)",
-    "nl": "Merge-aftelling in seconden op je cellen (schatting, agar.io)",
-    "pt": "Contagem de fusão em segundos nas suas células (estimativa, agar.io)",
-    "id": "Hitung mundur gabung dalam detik di sel kamu (perkiraan, agar.io)",
-    "ja": "自分のセルに合体までの秒数を表示（推定、agar.io）",
-    "it": "Conto alla rovescia della fusione in secondi sulle tue cellule (stima, agar.io)"
-  },
   "settings.hudMergeSound": {
     "en": "Sound when your cells can merge (agar.io)",
     "el": "Ήχος όταν τα κύτταρά σου μπορούν να συγχωνευτούν (agar.io)",
@@ -3690,7 +3672,7 @@
     "it": "Fusione"
   },
   "settings.mergeNote": {
-    "en": "Countdown and sound use the agar.io merge times (agar.io only). Rings work on every server; outside agar.io they are an estimate from the mass.",
+    "en": "The sound uses the agar.io merge times (agar.io only). The rings work on every server, estimated from the mass.",
     "el": "Η αντίστροφη μέτρηση και ο ήχος χρησιμοποιούν τους χρόνους συγχώνευσης του agar.io (μόνο agar.io). Οι κύκλοι λειτουργούν σε κάθε server· εκτός agar.io είναι εκτίμηση από τη μάζα.",
     "es": "La cuenta atrás y el sonido usan los tiempos de fusión de agar.io (solo agar.io). Los anillos funcionan en todos los servidores; fuera de agar.io son una estimación según la masa.",
     "bg": "Отброяването и звукът използват времената за сливане на agar.io (само agar.io). Кръговете работят на всеки сървър; извън agar.io са оценка по масата.",

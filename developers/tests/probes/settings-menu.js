@@ -75,7 +75,7 @@
   if (dup.length) fail.push('options built twice: ' + dup.slice(0, 5).join(', '));
   // options in their section, and every heading has a text
   var place = { recordReplays: 'replayGroup', 'lm-perf-diag-btn': 'perfGroup',
-    adaptivePerf: 'perfGroup', hudMergeCountdown: 'mergeGroup', hudMergeSound: 'mergeGroup', mergeRings: 'mergeGroup', virusSound: 'soundsGroup',
+    adaptivePerf: 'perfGroup', hudMergeSound: 'mergeGroup', mergeRings: 'mergeGroup', virusSound: 'soundsGroup',
     reducedMotion: 'expandingLandGroup', showStatsWorldSize: 'expandingLandGroup', showStatsDecayInfo: 'expandingLandGroup',
     showStatsServerHz: 'expandingLandGroup', hideEventBanner: 'expandingLandGroup',
     'profileNumber-slider': 'profiles', showCellShadows: 'transparencyGroup' };
@@ -87,7 +87,7 @@
   /* no spectate options (the follows are always on), no Spectating and streaming section; the spectator director is gone */
   /* the instant replay is removed: no length slider */
   if ($('#og-options .spectateGroup').length) fail.push('Spectating and streaming section still in the menu');
-  ['clickSpectate', 'lbClickSpectate', 'minimapClickSpectate', 'lm-director-btn', 'instantReplaySecs-slider'].forEach(function (id) { if (document.getElementById(id)) fail.push('#' + id + ' still in the menu'); });
+  ['clickSpectate', 'lbClickSpectate', 'minimapClickSpectate', 'lm-director-btn', 'instantReplaySecs-slider', 'hudMergeCountdown'].forEach(function (id) { if (document.getElementById(id)) fail.push('#' + id + ' still in the menu'); });
   if (window.LMDirector || document.querySelector('script[src*="modules/director.js"]')) fail.push('spectator director still loaded');
   $('#og-options > .options-box > h5').each(function () {
     var t = $(this).text().trim();

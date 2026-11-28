@@ -2915,7 +2915,6 @@
 "settings.sdsplitRange": "Raggio del double split lento",
 "settings.splitPrediction": "Previsione dello split (attenua le linee del cursore delle cellule che non si divideranno, agar.io)",
 "settings.tripleSplitRange": "Raggio del triple split",
-"settings.hudMergeCountdown": "Conto alla rovescia della fusione in secondi sulle tue cellule (stima, agar.io)",
 "settings.hudMergeSound": "Suono quando le tue cellule possono fondersi (agar.io)",
 "settings.hudRelativeMass": "Massa nemica in rapporto alla tua cellula più grande (1.75x, =)",
 "settings.massFormat": "Formato massa",

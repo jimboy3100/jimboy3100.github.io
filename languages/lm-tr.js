@@ -2915,7 +2915,6 @@
 "settings.sdsplitRange": "Yavaş çift split menzili",
 "settings.splitPrediction": "Split tahmini (bölünmeyecek hücrelerin çizgilerini soluk gösterir, agar.io)",
 "settings.tripleSplitRange": "Üçlü split menzili",
-"settings.hudMergeCountdown": "Hücrelerinde saniye cinsinden birleşme sayacı (tahmini, agar.io)",
 "settings.hudMergeSound": "Hücrelerin birleşebildiğinde ses (agar.io)",
 "settings.hudRelativeMass": "Rakip kütlesinin en büyük hücrene oranı (1.75x, =)",
 "settings.massFormat": "Kütle biçimi",

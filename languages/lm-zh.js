@@ -2915,7 +2915,6 @@
 "settings.sdsplitRange": "慢速雙分範圍",
 "settings.splitPrediction": "分裂預測（淡化不會分裂的細胞的游標線，agar.io）",
 "settings.tripleSplitRange": "三分範圍",
-"settings.hudMergeCountdown": "細胞上的合併倒數秒數（估計值，agar.io）",
 "settings.hudMergeSound": "細胞可合併時播放音效（agar.io）",
 "settings.hudRelativeMass": "敵人質量與你最大細胞的比例（1.75x、=）",
 "settings.massFormat": "質量格式",

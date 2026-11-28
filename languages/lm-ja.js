@@ -2915,7 +2915,6 @@
 "settings.sdsplitRange": "低速ダブル分裂の射程",
 "settings.splitPrediction": "分裂予測（分裂しないセルのカーソル線を暗く表示、agar.io）",
 "settings.tripleSplitRange": "トリプル分裂の射程",
-"settings.hudMergeCountdown": "自分のセルに合体までの秒数を表示（推定、agar.io）",
 "settings.hudMergeSound": "セルが合体可能になったら音で通知（agar.io）",
 "settings.hudRelativeMass": "敵の質量を自分の最大セルとの比率で表示（1.75x、=）",
 "settings.massFormat": "質量の表示形式",

@@ -2915,7 +2915,6 @@
 "settings.sdsplitRange": "Zasięg wolnego podwójnego splitu",
 "settings.splitPrediction": "Przewidywanie splitu (przyciemnia linie kursora komórek, które nie zrobią splitu, agar.io)",
 "settings.tripleSplitRange": "Zasięg potrójnego splitu",
-"settings.hudMergeCountdown": "Odliczanie do łączenia w sekundach na twoich komórkach (szacunek, agar.io)",
 "settings.hudMergeSound": "Dźwięk, gdy twoje komórki mogą się połączyć (agar.io)",
 "settings.hudRelativeMass": "Masa przeciwnika względem twojej największej komórki (1.75x, =)",
 "settings.massFormat": "Format masy",
