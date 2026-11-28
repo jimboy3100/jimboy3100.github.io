@@ -52,16 +52,24 @@ check('no FPS text left on the stats line', !/t \+= 'FPS: '/.test(main));
 /* the removed ping jitter option: the ping after the FPS is the plain value, an old saved
  * showStatsJitter is ignored, and the pong handler keeps no ping history any more */
 const pingLine = cut('                    var activeSpect', '                    if (window.multiboxPlayerEnabled) {');
-const ping = (ms, p) => vm.runInNewContext('var t = "FPS: 60"; ' + pingLine + '; t', { defaultmapsettings: ms, drawRender: { ping: p, _lmPingHist: [10, 90, 10, 90] }, window: {}, getActiveSpect: () => null });
+const ping = (ms, p, ws) => vm.runInNewContext('var t = "FPS: 60"; ' + pingLine + '; t', { defaultmapsettings: ms, drawRender: { ping: p, _lmPingHist: [10, 90, 10, 90] }, window: {}, getActiveSpect: () => null, LM: { ws: ws || 'wss://live-arena-1.agar.io:443' } });
 check('stats line: PING after the FPS, no +/- even with an old saved showStatsJitter', ping({ showStatsJitter: true }, 45) === 'FPS: 60 | PING: 45');
 check('stats line: no PING before the first pong', ping({}, 0) === 'FPS: 60');
 check('ping jitter: no default and no Settings > Stats switch', !('showStatsJitter' in defs) && !/showStatsJitter/.test(main));
 r = load({ showStatsJitter: true, showMass: true });
 check('ping jitter: an old saved value loads quietly and is not kept', !('showStatsJitter' in r.ms) && r.ms.showMass === true);
-const pong = cut('                case 31:\n                    if (window.agarpingstarted) {', '                    break;');
+const pong = cut("                case 31:\n                    /* a replay's recorded pong", '                    break;');
 const dr = {};
-vm.runInNewContext(pong.replace('case 31:', ''), { window: { agarpingstarted: Date.now() - 40 }, drawRender: dr, Date });
+vm.runInNewContext(pong.replace('case 31:', ''), { window: { agarpingstarted: Date.now() - 40 }, drawRender: dr, Date, LM: { ws: 'wss://live-arena-1.agar.io:443' } });
 check('pong: sets the ping, keeps no history', dr.ping >= 40 && dr.ping < 1000 && !('_lmPingHist' in dr));
+/* replay playback (the replay socket, Replay Studio): the recorded pongs answer pings sent long
+ * before (the stats line read PING: 31349), so it shows no ping, and a recorded pong leaves the
+ * live ping as it was */
+check('replay playing: no PING on the stats line', ping({}, 31349, 'wss://imsolo.pro.replay:2000') === 'FPS: 60');
+check('live server again: the PING is back', ping({}, 45, 'wss://live-arena-1.agar.io:443') === 'FPS: 60 | PING: 45');
+const dr2 = { ping: 45 };
+vm.runInNewContext(pong.replace('case 31:', ''), { window: { agarpingstarted: Date.now() - 31349 }, drawRender: dr2, Date, LM: { ws: 'wss://imsolo.pro.replay:2000' } });
+check('replay playing: a recorded pong keeps the live ping', dr2.ping === 45);
 
 console.log(fail ? fail + ' FAILED' : 'all frame time checks passed');
 process.exit(fail ? 1 : 0);

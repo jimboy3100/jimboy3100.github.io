@@ -580,22 +580,11 @@ function _lmMatchHistoryPaint(host) {
     var fill = function () {
         while (body.firstChild) body.removeChild(body.firstChild);
         var list = _lmMatchHistory().slice().reverse();
-        /* Record replays off: say so (the list keeps its old games) and offer to turn it on */
+        /* Record replays off: one short line, the same as the Dashboard and Heatmaps (the list keeps
+         * its old games); the switch is Record replays in Settings > Replays only */
         if (typeof defaultmapsettings !== 'undefined' && defaultmapsettings.recordReplays === false) {
-            var off = el('div', 'padding:8px;margin:4px 0;text-align:center;border-radius:var(--lm-radius-s,4px);background:rgba(255,255,255,0.05);color:' + tc2 + ';', lmT('pkg.rpm.recOff') + ' ');
+            var off = el('div', 'padding:6px 8px;margin:4px 0;border-radius:var(--lm-radius-s,4px);background:rgba(255,255,255,0.05);color:' + tc2 + ';', lmT('pkg.rpm.recOff'));
             off.id = 'lm-mh-off';
-            var on = el('button', 'cursor:pointer;font:inherit;font-weight:700;border:0;border-radius:var(--lm-radius-s,4px);padding:3px 10px;min-height:var(--lm-w-ctl,26px);background:' + mc + ';color:' + pc + ';', lmT('pkg.r14.mhTurnOn'));
-            on.type = 'button';
-            on.id = 'lm-mh-on';
-            on.addEventListener('click', function (e) {
-                e.stopPropagation();
-                /* the Settings switch itself: its change handler saves it and starts recording */
-                var cb = document.getElementById('recordReplays');
-                if (cb && cb.type === 'checkbox' && !cb.checked) { cb.checked = true; try { cb.dispatchEvent(new Event('change', { bubbles: true })); } catch (er) { } }
-                if (defaultmapsettings.recordReplays === false && window.application && typeof application.setSettings === 'function') { application.setSettings('recordReplays', true); }
-                fill();
-            });
-            off.appendChild(on);
             body.appendChild(off);
             if (!list.length) return;
         }
@@ -24066,7 +24055,9 @@ function thelegendmodproject() {
                     t += drawRender.fps > 0 ? (1000 / drawRender.fps).toFixed(1) + ' ms' : '-- ms';
                     var activeSpect = (window.multiboxPlayerEnabled && typeof spects !== "undefined" && getActiveSpect(window.multiboxPlayerEnabled)) ? getActiveSpect(window.multiboxPlayerEnabled) : null;
                     var currentPing = (activeSpect && activeSpect.ping != null) ? activeSpect.ping : drawRender.ping;
-                    if (currentPing) t += ' | PING: ' + currentPing;
+                    /* no ping while a replay plays: its recorded pongs answer no ping of this page
+                     * (they read e.g. 31349 ms) */
+                    if (currentPing && !(LM.ws && String(LM.ws).indexOf('replay') !== -1)) t += ' | PING: ' + currentPing;
                     if (window.multiboxPlayerEnabled) {
                         t += ' | <span style="color:#00E5FF;font-weight:bold">[MB ' + (window.multiboxPlayerEnabled + 1) + '/' + ((typeof spects !== "undefined" && spects ? spects.filter(function (s) { return s && s.player; }).length : 0) + 1) + ']</span>';
                     } else if (legendmod.multiBoxPlayerExists) {
@@ -46085,7 +46076,8 @@ function thelegendmodproject() {
                     } catch (nprErr) { }
                     break;
                 case 31:
-                    if (window.agarpingstarted) {
+                    /* a replay's recorded pong: not a ping of this page, the live value stays */
+                    if (window.agarpingstarted && !(LM.ws && String(LM.ws).indexOf('replay') !== -1)) {
                         drawRender.ping = Date.now() - window.agarpingstarted;
                     }
                     break;

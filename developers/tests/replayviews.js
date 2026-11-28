@@ -59,5 +59,30 @@ click(tH);
 e.flush();
 check('stats file failed: asked for again, the view says it could not be loaded', asked === 1 && view.children.length === 1 && view.children[0].textContent === T('pkg.rpm.loadFailed') && T('pkg.rpm.loadFailed') !== 'pkg.rpm.loadFailed');
 RS.run('close');
+/* the real Match history list of ogario.v4.js (_lmMatchHistoryPaint): with Record replays off it says
+ * so in one short line, like the Dashboard and Heatmaps; no second switch (the old "Turn on" button
+ * and the "Match history is off" notice are gone: Record replays is the one switch) */
+{
+  const main = fs.readFileSync(path.join(__dirname, '..', '..', 'ogario', 'ogario.v4.js'), 'utf8').replace(/\r\n/g, '\n');
+  const cut = (a, b) => { const i = main.indexOf(a), j = main.indexOf(b, i); if (i < 0 || j < 0) throw new Error('not found: ' + a); return main.slice(i, j); };
+  const m = makeEnv({ recordReplays: false }, { toastr: { info() {} } });
+  i18n(m.ctx);
+  m.ctx._lmMhServerAvailable = () => false;
+  m.ctx.lmT = m.ctx.lmT || m.ctx.window.lmT;
+  m.run(cut('function _lmMatchHistory(add) {', 'window._lmMatchHistory = ') + cut('function _lmMhT(', '\n') + '\n' + cut('function _lmMatchHistoryPaint(host) {', 'window._lmMatchHistoryPaint = '));
+  m.ctx.localStorage.setItem('lmMatchHistory', JSON.stringify([{ t: 1, mass: 500, ms: 60000 }]));
+  const host = m.doc.createElement('div');
+  const texts = [], btns = [];
+  const walk = n => (n.children || []).forEach(c => { if (c.textContent) texts.push(c.textContent); if (c.tagName === 'BUTTON') btns.push(c); walk(c); });
+  m.ctx._lmMatchHistoryPaint(host); walk(host);
+  const byId = (n, id) => n.id === id ? n : (n.children || []).reduce((f, c) => f || byId(c, id), null);
+  const off = byId(host, 'lm-mh-off');
+  check('Record replays off: one short line in the Match history, no Turn on button, the old games still listed',
+    !!off && off.textContent === T('pkg.rpm.recOff') && off.children.length === 0 && btns.length === 0 && texts.filter(x => x === T('pkg.rpm.recOff')).length === 1 &&
+    !texts.some(x => /Match history is off/i.test(x)) && !!byId(host, 'lm-mh-view') && texts.indexOf('500') !== -1 && main.indexOf('pkg.r14.mhTurnOn') < 0);
+  m.ctx.defaultmapsettings.recordReplays = true;
+  m.ctx._lmMatchHistoryPaint(host);
+  check('Record replays on: no note at all', !byId(host, 'lm-mh-off') && !!byId(host, 'lm-mh-view'));
+}
 console.log(fail ? fail + ' FAILED' : 'all passed');
 process.exit(fail ? 1 : 0);
