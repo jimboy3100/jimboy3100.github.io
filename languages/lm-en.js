@@ -1507,7 +1507,7 @@
 "modules.hudeditor.loading": "The HUD editor could not be loaded, try again in a moment.",
 "modules.hudeditor.comp.leaderboard": "Leaderboard",
 "modules.hudeditor.comp.minimap": "Minimap",
-"modules.hudeditor.comp.stats": "Game stats (FPS, ping, mass)",
+"modules.hudeditor.comp.stats": "Game stats (frame time, ping, mass)",
 "modules.hudeditor.comp.phoneStats": "Phone stats",
 "modules.hudeditor.comp.team": "Team list",
 "modules.hudeditor.comp.time": "Time",

@@ -468,22 +468,7 @@
     "it": "Minimappa"
   },
   "modules.hudeditor.comp.stats": {
-    "en": "Game stats (FPS, ping, mass)",
-    "el": "Στατιστικά (FPS, ping, μάζα)",
-    "es": "Estadísticas (FPS, ping, masa)",
-    "bg": "Статистика (FPS, пинг, маса)",
-    "fr": "Statistiques (FPS, ping, masse)",
-    "ar": "إحصاءات اللعبة (FPS، ping، الكتلة)",
-    "zh": "遊戲數據（FPS、ping、質量）",
-    "ru": "Статистика (FPS, пинг, масса)",
-    "de": "Spielwerte (FPS, Ping, Masse)",
-    "tr": "Oyun istatistikleri (FPS, ping, kütle)",
-    "pl": "Statystyki (FPS, ping, masa)",
-    "nl": "Spelstatistieken (FPS, ping, massa)",
-    "pt": "Estatísticas do jogo (FPS, ping, massa)",
-    "id": "Statistik game (FPS, ping, massa)",
-    "ja": "ゲーム情報（FPS、Ping、質量）",
-    "it": "Statistiche di gioco (FPS, ping, massa)"
+    "en": "Game stats (frame time, ping, mass)"
   },
   "modules.hudeditor.comp.phoneStats": {
     "en": "Phone stats",
