@@ -82518,7 +82518,9 @@ function pickPlayerCellBySize(players, selectBiggest) {
                     this._lmOverlayFxFrame = true;
                     if (this.overlayCanvas.style.display !== 'block') this.overlayCanvas.style.display = 'block';
                     this._lmOverlayFxShown = true;
-                } else if (this._lmOverlayFxShown && this.overlayCanvas) {
+                } else if (this._lmOverlayFxShown && this.overlayCanvas &&
+                    /* (the death cinematic is drawn on it at the end of the frame) */
+                    !(_elDeathVisual && _elDeathVisual.active)) {
                     this.overlayCanvas.style.display = 'none';
                     this._lmOverlayFxShown = false;
                 }
@@ -82854,6 +82856,10 @@ function pickPlayerCellBySize(players, selectBiggest) {
                             _elDeathVisual.active = false;
                             _elDeathVisual = null;
                         } else {
+                            /* the overlay starts hidden and frames without overlay marks hide
+                             * it: shown while the cinematic plays, hidden after it like marks */
+                            if (this.overlayCanvas.style.display !== 'block') this.overlayCanvas.style.display = 'block';
+                            this._lmOverlayFxShown = true;
                             var dProgress = Math.max(0, Math.min(1, dElapsed / _elDeathVisual.duration));
                             var easeProgress = 1 - Math.pow(1 - dProgress, 3);
                             var pieceScale = Math.max(0, 1 - easeProgress * 0.95);

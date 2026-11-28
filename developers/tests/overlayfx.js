@@ -481,7 +481,7 @@ function frame(s) {
         gctx.restore();
     }
     if (runCount) runCount.call(R, gl, allowed);
-    runFrameBlock.call(R, LM, ms, ds, R, window, gl, false, null, [], null);
+    runFrameBlock.call(R, LM, ms, ds, R, window, gl, false, globalThis._elDeathVisual, [], null);
     mctx.restore();
     runLatePass.call(R, LM, window, false, null, null, null, null);
     const shown = overlay.style.display === 'block';
@@ -1193,6 +1193,29 @@ reset(); SEP.hatter2 = 'Gladiator';
     r = frame(S1);
     check('entrance over: WebGL, equal', r.gl && r.d.n === 0, 'gl ' + r.gl + ' ' + why() + ' ' + r.d.n + ' px');
     delete SEP.hatter2;
+    /* the death cinematic shows the overlay it is drawn on: the overlay starts hidden and a
+     * frame without overlay marks hid it, so the cinematic was not seen (or only on frames
+     * with marks) */
+    {
+        scene([makeCell({ x: 0, y: 10, size: 50, targetNick: 'plain' })]);
+        r = frame(S1);
+        const hidden0 = !r.shown;
+        const dv = { active: true, startTime: Date.now(), duration: 60000, pieces: [], particles: [], targetX: 0, targetY: 0 };
+        const late = () => runLatePass.call(R, LM, window, false, dv, () => null, () => { }, (x) => x);
+        globalThis._elDeathVisual = dv;
+        frame(S1); late();
+        const shown1 = overlay.style.display === 'block';
+        /* the next frame without marks keeps it shown for the cinematic */
+        frame(S1);
+        const kept = overlay.style.display === 'block';
+        late();
+        check('death cinematic without overlay marks: the overlay it is drawn on is shown, also the next frame',
+            hidden0 && shown1 && kept && overlay.style.display === 'block', 'hidden before ' + hidden0 + ' shown ' + shown1 + ' kept ' + kept);
+        dv.active = false;
+        globalThis._elDeathVisual = null;
+        r = frame(S1);
+        check('  cinematic over: the overlay hidden again', !r.shown);
+    }
     /* the overlay's CSS in renderFrame: with the world layers during the entrance, still with the cinematic */
     const cssA = src.indexOf('var _elOverlayWorld =');
     const cssB = src.indexOf('} /* end of the layer styles (_elLayersIdle) */', cssA);
