@@ -7265,6 +7265,102 @@
         "external": "no file of this repository or of expandingland, legendworld-help, LegendWorld and deltav4 ever named it (also not in their git history)"
       },
       "approvedForDeletion": true
+    },
+    {
+      "oldPath": "agario/master.js",
+      "canonicalPath": null,
+      "reason": "2017 copy of agar.io's client kept 'for reference' (agario/README.md), against developers/REPOSITORY.md rule 5 (the git history is the archive). Only the old game page legendmod.html loaded it, until 2020-09-16 (5510c8887); nothing since",
+      "internalReferencesMigrated": true,
+      "legacyResolverSupported": false,
+      "externalUrlSupported": false,
+      "legacyResolverNeeded": false,
+      "externalUrlNeeded": false,
+      "verification": {
+        "on": "2026-11-28",
+        "legacy": "saved data cannot hold it: a copy of agar.io client code, never a setting value",
+        "external": "expandingland, legendworld-help, LegendWorld and deltav4 do not name it (also not in their git history); no version of a userscript, of the two extension zips or of the Expanding Land APK names it; not in sitemap.xml; agar.io serves its own client"
+      },
+      "approvedForDeletion": true
+    },
+    {
+      "oldPath": "agario/main_out.js",
+      "canonicalPath": null,
+      "reason": "2017 copy of agar.io's client kept 'for reference' (agario/README.md), against developers/REPOSITORY.md rule 5 (the git history is the archive). Only the old game page legendmod.html loaded it, until 2020-09-16 (5510c8887); nothing since",
+      "internalReferencesMigrated": true,
+      "legacyResolverSupported": false,
+      "externalUrlSupported": false,
+      "legacyResolverNeeded": false,
+      "externalUrlNeeded": false,
+      "verification": {
+        "on": "2026-11-28",
+        "legacy": "saved data cannot hold it: a copy of agar.io client code, never a setting value",
+        "external": "expandingland, legendworld-help, LegendWorld and deltav4 do not name it (also not in their git history); no version of a userscript, of the two extension zips or of the Expanding Land APK names it; not in sitemap.xml; agar.io serves its own client"
+      },
+      "approvedForDeletion": true
+    },
+    {
+      "oldPath": "agario/i18n.js",
+      "canonicalPath": null,
+      "reason": "2017 copy of agar.io's client kept 'for reference' (agario/README.md), against developers/REPOSITORY.md rule 5 (the git history is the archive). Only the old game page legendmod.html loaded it, until 2020-09-16 (5510c8887); nothing since",
+      "internalReferencesMigrated": true,
+      "legacyResolverSupported": false,
+      "externalUrlSupported": false,
+      "legacyResolverNeeded": false,
+      "externalUrlNeeded": false,
+      "verification": {
+        "on": "2026-11-28",
+        "legacy": "saved data cannot hold it: a copy of agar.io client code, never a setting value",
+        "external": "expandingland, legendworld-help, LegendWorld and deltav4 do not name it (also not in their git history); no version of a userscript, of the two extension zips or of the Expanding Land APK names it; not in sitemap.xml; agar.io serves its own client"
+      },
+      "approvedForDeletion": true
+    },
+    {
+      "oldPath": "agario/css/master.css",
+      "canonicalPath": null,
+      "reason": "2017-2019 copy of agar.io's client kept 'for reference' (agario/README.md), against developers/REPOSITORY.md rule 5 (the git history is the archive). Only the old game page legendmod.html loaded it, until 2020-09-16 (5510c8887); nothing since",
+      "internalReferencesMigrated": true,
+      "legacyResolverSupported": false,
+      "externalUrlSupported": false,
+      "legacyResolverNeeded": false,
+      "externalUrlNeeded": false,
+      "verification": {
+        "on": "2026-11-28",
+        "legacy": "saved data cannot hold it: a copy of agar.io client code, never a setting value",
+        "external": "expandingland, legendworld-help, LegendWorld and deltav4 do not name it (also not in their git history); no version of a userscript, of the two extension zips or of the Expanding Land APK names it; not in sitemap.xml; agar.io serves its own client"
+      },
+      "approvedForDeletion": true
+    },
+    {
+      "oldPath": "agario/img/star.png",
+      "canonicalPath": null,
+      "reason": "picture of the 2017 agar.io client copy (agario/css/master.css, removed with it); LMexpress/master.css uses the site's own img/star.png, not this one; nothing else ever named it",
+      "internalReferencesMigrated": true,
+      "legacyResolverSupported": false,
+      "externalUrlSupported": false,
+      "legacyResolverNeeded": false,
+      "externalUrlNeeded": false,
+      "verification": {
+        "on": "2026-11-28",
+        "legacy": "saved data cannot hold it: a copy of agar.io client code, never a setting value",
+        "external": "expandingland, legendworld-help, LegendWorld and deltav4 do not name it (also not in their git history); no version of a userscript, of the two extension zips or of the Expanding Land APK names it; not in sitemap.xml; agar.io serves its own client"
+      },
+      "approvedForDeletion": true
+    },
+    {
+      "oldPath": "img/skins/potion.png",
+      "canonicalPath": null,
+      "reason": "Potion cell picture added on 2026-03-17 (f3349486d) that no code ever used: the potion cell rendering added the next day (ccb4012f1) uses img/skins/potion-blue.jpg; in the whole git history no page, script, style or setting names img/skins/potion.png.",
+      "internalReferencesMigrated": true,
+      "legacyResolverSupported": false,
+      "externalUrlSupported": false,
+      "legacyResolverNeeded": false,
+      "externalUrlNeeded": false,
+      "verification": {
+        "on": "2026-11-28",
+        "legacy": "saved data cannot hold it: no skin list, theme, preset or setting default ever named it",
+        "external": "expandingland, legendworld-help, LegendWorld and deltav4 do not name it (also not in their git history); no version of a userscript, of the two extension zips or of the Expanding Land APK names it"
+      },
+      "approvedForDeletion": true
     }
   ]
 }

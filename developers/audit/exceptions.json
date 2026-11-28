@@ -31,6 +31,10 @@
         { "glob": "wasm/build.sh", "class": "DEVELOPMENT", "why": "builds the .wasm files" },
         { "glob": "ogario/*.c", "class": "DEVELOPMENT", "why": "source of a .wasm file" },
         { "glob": "agario/mc/**", "class": "HISTORICAL", "why": "old agar.io client snapshots" },
+        { "glob": "agario/agario.core.js", "class": "DEVELOPMENT", "why": "reference copy of agar.io's current client (agario/README.md; updated with mc/agario.js and bundle_*.js in e26c77128): code comments cite agar.io's behaviour from it; LM does not load it" },
+        { "glob": "agario/agario.core.wasm", "class": "DEVELOPMENT", "why": "reference copy of agar.io's current client (agario/README.md; updated with mc/agario.js and bundle_*.js in e26c77128): code comments cite agar.io's behaviour from it; LM does not load it" },
+        { "glob": "agario/environment.js", "class": "DEVELOPMENT", "why": "reference copy of agar.io's current client (agario/README.md; updated with mc/agario.js and bundle_*.js in e26c77128): code comments cite agar.io's behaviour from it; LM does not load it" },
+        { "glob": "agario/css/styles.css", "class": "DEVELOPMENT", "why": "reference copy of agar.io's current client (agario/README.md; updated with mc/agario.js and bundle_*.js in e26c77128): code comments cite agar.io's behaviour from it; LM does not load it" },
         { "glob": "agario/bundle_*.js", "class": "HISTORICAL", "why": "old agar.io client snapshots (LM does not load them)" }
     ],
     "dynamicBases": [
