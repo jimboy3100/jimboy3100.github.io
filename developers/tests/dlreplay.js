@@ -121,6 +121,58 @@ ctx.LMEvents.on('dyingLightChange', d => states.push(d.state));
     flushPics(); await flush();
     check('end while loading: stays off', L.state === 'off' && saves === 0 && timers.size === 0);
 
+    /* the replay stopped while its picture loads, another one started at once (another recording):
+     * the first picture coming late changes nothing, the second activation is the only one */
+    states.length = 0;
+    L.replayLook({ on: 1, i: 'immersive', cy: 1, ck: 0 });
+    const slowPic = pics[pics.length - 1];
+    L.replayLook(null);
+    check('stopped while loading: off at once, the picture let go', L.state === 'off' && !slowPic.onload && L.getBackground() === null && timers.size === 0);
+    L.replayLook({ on: 1, i: 'nightmare', cy: 1, ck: 250000 });
+    const gen2 = L.generation;
+    flushPics(); await flush();
+    check('stopped while loading, a new replay: on for it only, once, nothing saved', L.isEnabled() && L.replayScoped() && L.generation === gen2 && saves === 0 && D.dyingLight === false &&
+        states.join() === 'loading,disabling,off,loading,on', states.join());
+    /* seeks across scene changes: the scene of the position, also when the one asked for before
+     * comes after the seek back */
+    advance(1000); flushPics(); advance(1000);
+    const nightScene = sceneOf();
+    L.replayLook({ on: 1, i: 'nightmare', cy: 1, ck: 30000 });
+    const dayPics = pics.length;
+    L.replayLook({ on: 1, i: 'nightmare', cy: 1, ck: 251000 });
+    flushPics(); L.replayLook({ on: 1, i: 'nightmare', cy: 1, ck: 252000 }); advance(1000);
+    check('seek to day and back before its scene came: the night scene stays, the late day picture not shown', info().phase === 'night' && /^back(0|1)$/.test(nightScene) && sceneOf() === nightScene && dayPics > 0, nightScene + ' ' + sceneOf());
+    L.replayLook({ on: 1, i: 'nightmare', cy: 1, ck: 500000 }); flushPics(); L.replayLook({ on: 1, i: 'nightmare', cy: 1, ck: 501000 });
+    const deepScene = sceneOf();
+    L.replayLook({ on: 1, i: 'nightmare', cy: 1, ck: 200000 }); flushPics(); L.replayLook({ on: 1, i: 'nightmare', cy: 1, ck: 201000 });
+    check('seek across phases forwards and back: each scene once loaded (deep night, then dusk)', /^back(5|2)$/.test(deepScene) && /^back(7|3)$/.test(sceneOf()) && info().phase === 'dusk', deepScene + ' ' + sceneOf());
+    /* a seek to where the recording had the theme off (the Studio ends the look) and back on */
+    L.replayLook(null);
+    check('seek to where it was off: the normal look', L.state === 'off' && L.getBackground() === null && !cls.has('lm-dl') && timers.size === 0);
+    L.replayLook({ on: 1, i: 'nightmare', cy: 1, ck: 260000 }); flushPics(); await flush();
+    check('  and back to where it was on: on again for the replay, nothing saved', L.isEnabled() && L.replayScoped() && saves === 0 && D.dyingLight === false);
+    L.replayLook(null);
+
+    /* a press on the banner while the replay's activation still loads: the player's own once it is on */
+    L.replayLook({ on: 1, i: 'nightmare', cy: 1, ck: 0 });
+    saves = 0; asked = 0; answer = true;
+    const pressed = L.enable({ confirm: true });
+    check('press while the replay\'s activation loads: asked, nothing saved yet', asked === 1 && L.state === 'loading' && saves === 0);
+    flushPics();
+    check('  on, the player\'s own, saved on once', await pressed === true && L.isEnabled() && !L.replayScoped() && D.dyingLight === true && saves === 1 && ctx.lmDyingLightOwnState(L) === 'on');
+    L.replayLook(null);
+    check('  the replay\'s end leaves it on (back to live play with the player\'s own)', L.state === 'on' && L.replay() === null && saves === 1);
+    await L.disable();
+    D.dyingLight = false; saves = 0; asked = 0;
+    /* answered no: still the replay's only */
+    L.replayLook({ on: 1, i: 'nightmare', cy: 1, ck: 0 }); flushPics(); await flush();
+    answer = false;
+    check('press during the replay answered no: still the replay\'s only, nothing saved', await L.enable({ confirm: true }) === false && asked === 1 && L.replayScoped() && saves === 0 && D.dyingLight === false);
+    answer = true;
+    L.replayLook(null);
+    check('  the replay\'s end: off, never saved', L.state === 'off' && saves === 0 && D.dyingLight === false && timers.size === 0);
+    asked = 0;
+
     /* ═══ the player turns it off during the replay: it stays off for that replay ═══ */
     L.replayLook({ on: 1, i: 'immersive', cy: 1, ck: 0 }); flushPics(); await flush();
     await L.disable();
