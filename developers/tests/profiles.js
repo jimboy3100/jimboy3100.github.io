@@ -178,11 +178,11 @@ tplIds.forEach(id => {
   }
 }
 
-// ── player profiles: search and the move of the old Skin collections into them (no favourite stars)
+// ── player profiles: the move of the old Skin collections into them (no favourite stars, no search)
 {
-  const M = ctx.lmMergeSkinCollections, Q = ctx.lmProfileMatches;
-  check('skin collections move: helpers exist', typeof M === 'function' && typeof Q === 'function');
-  if (typeof M === 'function' && typeof Q === 'function') {
+  const M = ctx.lmMergeSkinCollections;
+  check('skin collections move: helper exists, the profile search is gone', typeof M === 'function' && typeof ctx.lmProfileMatches === 'undefined');
+  if (typeof M === 'function') {
     const prof = (n, s, extra) => Object.assign({ nick: n, clanTag: '', skinURL: s, color: '#fff' }, extra || {});
     const mk = () => [prof('Me', 'https://s.example/me.png'), prof('Profile #2', ''), prof('Profile #3', ''), prof('Profile #4', '')];
     const col = { v: 1, folders: ['Fun'], items: {
@@ -213,15 +213,9 @@ tplIds.forEach(id => {
     // an old starred but otherwise unused profile is free for a link
     const l3 = [prof('Me', 'x'), prof('Profile #2', '', { fav: true })], e3 = [];
     check('skin collections move: an old fav field does not keep a profile', M({ items: { 'https://s.example/z.png': {} } }, l3, e3, [0], '#fff').added === 1 && l3[1].skinURL === 'https://s.example/z.png' && e3.length === 0);
-    // search: every word in the nick, clan tag or skin link; an old fav field means nothing
-    const p1 = prof('Jimbo', 'https://i.imgur.com/AbC.png', { clanTag: 'LM', fav: true }), p2 = prof('Other', 'https://s.example/x.png');
-    check('profile search: empty finds all', Q(p1, '') && Q(p2, '  '));
-    check('profile search: words over nick, clan tag and link, any case', Q(p1, 'jim lm') && Q(p1, 'IMGUR') && !Q(p2, 'jim') && !Q(p1, 'jim other'));
-    check('profile search: no favourites word (* is just text)', !Q(p1, '*') && !Q(p2, '*') && !Q(p1, '* jim') && Q(prof('a*b', ''), '*'));
-    check('profile search: a broken profile never matches', !Q(null, '') && !Q('x', ''));
-    check('profile texts: in the packs, Greek differs; star texts gone', ['pkg.skcol.search', 'pkg.skcol.none', 'pkg.skcol.moved', 'pkg.skcol.movedHidden'].every(k => i18n.t(k) !== k && i18n.t(k, null, 'el') !== i18n.t(k)) &&
-      ['pkg.skcol.star', 'pkg.skcol.unstar'].every(k => i18n.t(k) === k));
-    check('profile texts: neither the search nor the move notice points to a star or favourites', !/star|\*|favourite/i.test(i18n.t('pkg.skcol.moved') + i18n.t('pkg.skcol.search')) && !/αστέρι|αγαπημένα/.test(i18n.t('pkg.skcol.moved', null, 'el') + i18n.t('pkg.skcol.search', null, 'el')));
+    check('profile texts: the move notices in the packs, Greek differs; star and search texts gone', ['pkg.skcol.moved', 'pkg.skcol.movedHidden'].every(k => i18n.t(k) !== k && i18n.t(k, null, 'el') !== i18n.t(k)) &&
+      ['pkg.skcol.star', 'pkg.skcol.unstar', 'pkg.skcol.search', 'pkg.skcol.none'].every(k => i18n.t(k) === k));
+    check('profile texts: the move notice points to no star or favourites', !/star|\*|favourite/i.test(i18n.t('pkg.skcol.moved')) && !/\u03b1\u03c3\u03c4\u03ad\u03c1\u03b9|\u03b1\u03b3\u03b1\u03c0\u03b7\u03bc\u03ad\u03bd\u03b1/.test(i18n.t('pkg.skcol.moved', null, 'el')));
   }
 }
 

@@ -572,7 +572,6 @@ ctx.application = P;
 P.setSkinPreview = function () { };
 P.profiling = function () { };
 P.setProfileboxShadow = function () { };
-P._lmProfileTools = function () { };
 P.setProfile = function () { this.setProfileCalls = (this.setProfileCalls || 0) + 1; };
 P.saveProfileFields = function () { this.savedFields = (this.savedFields || 0) + 1; };
 const named = n => Array.from({ length: n }, (_, i) => ({ nick: 'P' + i, clanTag: 'T', skinURL: 'https://i.imgur.com/s' + i + '.png', color: '#00ff00' }));

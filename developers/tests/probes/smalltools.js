@@ -36,11 +36,8 @@
     need('Skin collections: no window, button, setting, hotkey or command', !T.isOpen() && !document.getElementById('lm-st-skins') && !document.getElementById('lm-skin-collections') &&
       !('skinCollections' in LM_SETTINGS_DEFAULTS) && !('hk-skinCollections' in hotkeysCommand) &&
       !(window.LMCommandCentre && window.LMCommandCentre.items().some(function (it) { return /skinCollections/.test(it.id); })));
-    /* no favourite stars or gold ring in the skins panel (removed); the search stays */
-    need('no profile stars', !document.querySelector('#skins .lm-prof-star, #skins .lm-prof-fav') && !/lm-prof-star|lm-prof-fav/.test(($('#lm-prof-css').text() || '')));
-    if (document.getElementById('skins')) {
-      need('profile search only with more than 15 profiles', !!document.getElementById('lm-prof-search') && (window.profiles.length > 15) === ($('#lm-prof-search').css('display') !== 'none'));
-    }
+    /* no favourite stars, gold ring or profile search in the skins panel (removed) */
+    need('no profile stars or search', !document.querySelector('#skins .lm-prof-star, #skins .lm-prof-fav, #lm-prof-search, #lm-prof-none, #lm-prof-css'));
     /* the conflict list is in the Hotkeys window only (its own section, not a header button and
      * not a small tools window / hotkey / Command Centre command of its own) */
     need('no conflicts button in the hotkeys window header', !document.getElementById('lm-hk-conflicts') && !$('#hotkeys-menu #lm-hk-conf-btn').length);

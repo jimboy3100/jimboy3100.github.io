@@ -22316,7 +22316,7 @@ function lmImportExtras(src, set, remove, step, get) {
         } else if (e.clear) remove(e.key);
     });
 }
-/* Player profile search (the skins panel), and the move of the old Skin collections window
+/* The move of the old Skin collections window
  * (lmSkinCollections: folders, tags and favourites of skin links) into the profiles. The fav field
  * that profiles saved with the removed favourite stars may still have is ignored and dropped at the
  * load (loadProfiles). */
@@ -22330,13 +22330,6 @@ function lmSkinLinkKey(u) {
 function lmProfileUnused(p) {
     return !!p && typeof p === 'object' && p.skinURL === '' && !p.clanTag &&
         (p.nick === '' || /^Profile #\d+$/.test(p.nick));
-}
-/* the skins panel search: every word is in the nick, the clan tag or the skin link */
-function lmProfileMatches(p, q) {
-    if (!p || typeof p !== 'object') return false;
-    var words = String(q == null ? '' : q).toLowerCase().trim().split(/\s+/).filter(Boolean);
-    var hay = [p.nick, p.clanTag, p.skinURL].map(function (s) { return typeof s === 'string' ? s : ''; }).join(' ').toLowerCase();
-    return words.every(function (w) { return hay.indexOf(w) >= 0; });
 }
 /* The skin links kept in the old Skin collections (raw: the parsed lmSkinCollections, any value)
  * into the player profiles (list) and the hidden ones (extra: ogarioPlayerProfilesExtra, the
@@ -26368,7 +26361,6 @@ function thelegendmodproject() {
                     list.append('<div class="skin-box"><a href="#profile-' + j + '" id="profile-' + j + '" data-profile="' + j + '"></a></div>');
                     this.setSkinPreview(profiles[j].skinURL, 'profile-' + j);
                 }
-                this._lmProfileTools();
             }
             this.setProfile();
             if (defaultmapsettings.multiBoxShadow) this.setProfileboxShadow();
@@ -26603,45 +26595,6 @@ function thelegendmodproject() {
 
             // Badges hidden per user request
             $('.mb-badge').remove();
-        },
-        /* The skins panel's profile search: with more profiles than the default 15, a search over
-         * their nicks, clan tags and skin links (lmProfileMatches). Built again when the boxes or the
-         * language change. */
-        _lmProfileTools() {
-            var app = this, list = $('#skins');
-            if (!list.length || !Array.isArray(profiles)) return;
-            if (!document.getElementById('lm-prof-css')) {
-                $('<style id="lm-prof-css" type="text/css">').text(
-                    '#skins .skin-box.lm-prof-off{display:none;}' +
-                    '#lm-prof-search{width:100%;margin:0 0 6px;}' +
-                    '#lm-prof-none{opacity:.8;padding:4px 0;clear:both;}'
-                ).appendTo('head');
-            }
-            if (!this._lmProfToolsOn) {
-                this._lmProfToolsOn = true;
-                $(document).on('input', '#lm-prof-search', function () { app._lmProfileFilter(); });
-                if (window.LMi18n && typeof window.LMi18n.onChange === 'function') window.LMi18n.onChange(function () { try { app._lmProfileTools(); } catch (e) { } });
-            }
-            var q = $('#lm-prof-search');
-            if (!q.length) q = $('<input id="lm-prof-search" type="search" class="form-control input-sm" maxlength="60" spellcheck="false">').insertBefore(list);
-            q.attr('placeholder', lmT('pkg.skcol.search')).attr('aria-label', lmT('pkg.skcol.search'));
-            var many = profiles.length > 15;
-            if (!many) q.val('');
-            q.css('display', many ? '' : 'none');
-            this._lmProfileFilter();
-        },
-        /* only the profiles that match the search are shown (all when it is empty) */
-        _lmProfileFilter() {
-            var q = $('#lm-prof-search').val() || '', shown = 0;
-            for (var i = 0; i < profiles.length; i++) {
-                var ok = lmProfileMatches(profiles[i], q);
-                if (ok) shown++;
-                $('#profile-' + i).closest('.skin-box').toggleClass('lm-prof-off', !ok);
-            }
-            var none = $('#lm-prof-none');
-            if (shown || !q.trim()) { none.remove(); return; }
-            if (!none.length) none = $('<div id="lm-prof-none"></div>').insertAfter('#skins');
-            none.text(lmT('pkg.skcol.none'));
         },
         prevProfile() {
             var newIdx = (profiles.length + this.selectedProfile - 1) % profiles.length;
@@ -27641,7 +27594,6 @@ function thelegendmodproject() {
                     $("#profile-" + e).addClass("selected");
                 }
             }
-            this._lmProfileTools();
         },
         setUI() {
             var app = this;
