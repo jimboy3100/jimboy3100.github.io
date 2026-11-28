@@ -19,8 +19,8 @@
   var mc0 = defaultSettings.menuMainColor, bg0 = defaultSettings.menuBg, ss0 = sessionStorage.getItem('lmThemeBridge');
   var f = null;
   try {
-    defaultSettings.menuBg = 'https://www.legendmod.ml/img/Legend.png?token=SECRET9&w=32';
-    need('query token not exported', lmThemeData().bg === 'https://www.legendmod.ml/img/Legend.png?w=32');
+    defaultSettings.menuBg = 'https://www.legendmod.ml/banners/smallbannerlegendclan.png?token=SECRET9&w=32';
+    need('query token not exported', lmThemeData().bg === 'https://www.legendmod.ml/banners/smallbannerlegendclan.png?w=32');
     defaultSettings.menuBg = bg0;
     f = document.createElement('iframe');
     f.src = 'https://www.legendmod.ml/faq.html';

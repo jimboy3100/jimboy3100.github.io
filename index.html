@@ -1701,28 +1701,6 @@ html.lm-themed-root .step-badge { background: var(--lm-btn1); color: var(--lm-bt
     <script src="https://www.legendmod.ml/skins/jquery.lazyload.min.js"></script>
     <script src="https://www.legendmod.ml/skins/skins.js"></script>
     <script>
-        /* snez.org:8080 is gone (SNEZ servers moved to api.legendmod.ml, which has no
-         * public mod counts), and its reply was inserted as HTML unescaped. Disabled.
-        $.ajax({
-            type: "GET",
-            //url: "https://map-srv.fly.dev/stats",
-            //url: "https://map-server.glitch.me/stats",
-            url: "//snez.org:8080/stats",
-            datatype: "json",
-            success: function (info) {
-                window.modusers = info; //JSON.parse(info)
-                $("#LMscriptsEnd").after('<div id="ModIcons"><img width="16" height="16" alt="Legend Mod users" src="/banners/icontinyLegend.png">: ' + window.modusers.lm +
-                    ' <img width="16" height="16" alt="Delta users" src="/banners/icontinyDelta.png">: ' + window.modusers.dl +
-                    ' <img width="16" height="16" alt="Other mods" src="/banners/icontinyUnknown.png">: ' + window.modusers.og +
-                    ' <img width="16" height="16" alt="HSLO users" src="/banners/icontinyHSLO.png">: ' + window.modusers.hs +
-                    ' <img width="16" height="16" alt="Addon users" src="/banners/icontinyAddon.png">: ' + window.modusers.sc +
-                    ' <img width="16" height="16" alt="All users" src="/banners/icontinyUsers.png">: ' + window.modusers.t +
-                    '</div>')
-            }
-        });
-        */
-    </script>
-    <script>
         // Inject step badges into "Step N" headings
         $('h2.project-tagline, h3.project-tagline').each(function() {
             var txt = $(this).text().trim();

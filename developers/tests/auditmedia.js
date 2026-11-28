@@ -146,6 +146,10 @@ Object.keys(PNG).forEach((f) => {
     const got = R.extract('Lc/Lc.html', page, { cfg: R.loadConfig(repo), inv }).refs.filter((r) => r.status === 'ok').map((r) => r.target).sort();
     check('references: onclick and javascript: handlers are read as script, a title is not (' + JSON.stringify(got) + ')',
         JSON.stringify(got) === JSON.stringify(['Lc/articles/a.html', 'Lc/articles/b.html']));
+    /* markup built in a script string: $(x).after('<img src="/Lc/articles/c.html">' + n) */
+    const js = "$('#x').after('<div><img width=\"16\" src=\"/Lc/articles/c.html\">: ' + n + '</div>');";
+    const got2 = R.extract('Lc/x.js', js, { cfg: R.loadConfig(repo), inv }).refs.filter((r) => r.status === 'ok').map((r) => r.target);
+    check('references: a src="..." inside a script string is read (' + JSON.stringify(got2) + ')', JSON.stringify(got2) === JSON.stringify(['Lc/articles/c.html']));
     /* exceptions.json dynamicBases: var IMG = '.../banners/' (extras/dyinglight.js) no longer makes every
        banners/ file a candidate; the entry narrows it to banners/dyinglight/, other patterns stay */
     const A = require(path.join(repo, 'developers', 'audit', 'audit.js'));

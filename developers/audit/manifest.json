@@ -4852,8 +4852,8 @@
     },
     {
       "oldPath": "banners/iconvanillaliking2.png",
-      "canonicalPath": "banners/iconvanillaliking3.png",
-      "reason": "Byte-identical copy of banners/iconvanillaliking3.png (the one banners/bannervanillaliking shows); never named by any file in the history of this repository or by another repository.",
+      "canonicalPath": null,
+      "reason": "Byte-identical copy of banners/iconvanillaliking3.png (the one banners/bannervanillaliking showed; both removed on 2026-11-28 with the 2017 ad snippets); never named by any file in the history of this repository or by another repository.",
       "internalReferencesMigrated": true,
       "legacyResolverSupported": false,
       "externalUrlSupported": false,
@@ -5103,6 +5103,1782 @@
         "on": "2026-11-28",
         "legacy": "saved data: lmCommandCentre is removed at start (ogario.v4.js), a stored key on hk-commandCentre is dropped (lmRenameOldHotkeys), an older settings export with lmCommandCentre imports without error and writes nothing (LM_EXPORT_KEYS has no entry); the saved commandCentreBar setting is not in the defaults and is ignored",
         "external": "only ogario/ogario.v4.js of this site loaded it (a script tag with ?v=OgVer); an older cached copy that still adds the tag gets a 404 for an optional script and goes on; the two extension zips, the userscripts, expandingland, legendworld-help, LegendWorld and deltav4 do not load it (their knowledge copies only name a feature anchor)"
+      },
+      "approvedForDeletion": true
+    },
+    {
+      "oldPath": "banners/bannerAll",
+      "canonicalPath": null,
+      "reason": "HTML snippet of the 2017 Legend Mod ad rotation: only legendmod.js (the 2017 loader, gone since 2017-08) loaded it with $(...).load(); nothing has loaded it since. In the git history only legendmod.js (2017) named it",
+      "internalReferencesMigrated": true,
+      "legacyResolverSupported": false,
+      "externalUrlSupported": false,
+      "legacyResolverNeeded": false,
+      "externalUrlNeeded": false,
+      "verification": {
+        "on": "2026-11-28",
+        "legacy": "saved data cannot hold it: in the whole git history no theme, preset, setting default or picture list a player could have picked and saved names it",
+        "external": "expandingland, legendworld-help, LegendWorld and deltav4 do not name it (also not in their git history); no version in the git history of a userscript, of the two extension zips (15 revisions) or of the Expanding Land APK names it; not in sitemap.xml"
+      },
+      "approvedForDeletion": true
+    },
+    {
+      "oldPath": "banners/bannerALLnew",
+      "canonicalPath": null,
+      "reason": "HTML snippet of the 2017 Legend Mod ad rotation: only legendmod.js (the 2017 loader, gone since 2017-08) loaded it with $(...).load(); nothing has loaded it since",
+      "internalReferencesMigrated": true,
+      "legacyResolverSupported": false,
+      "externalUrlSupported": false,
+      "legacyResolverNeeded": false,
+      "externalUrlNeeded": false,
+      "verification": {
+        "on": "2026-11-28",
+        "legacy": "saved data cannot hold it: in the whole git history no theme, preset, setting default or picture list a player could have picked and saved names it",
+        "external": "expandingland, legendworld-help, LegendWorld and deltav4 do not name it (also not in their git history); no version in the git history of a userscript, of the two extension zips (15 revisions) or of the Expanding Land APK names it; not in sitemap.xml"
+      },
+      "approvedForDeletion": true
+    },
+    {
+      "oldPath": "banners/bannerdz",
+      "canonicalPath": null,
+      "reason": "HTML snippet of the 2017 Legend Mod ad rotation: only legendmod.js (the 2017 loader, gone since 2017-08) loaded it with $(...).load(); nothing has loaded it since. In the git history only legendmod.js (2017) named it",
+      "internalReferencesMigrated": true,
+      "legacyResolverSupported": false,
+      "externalUrlSupported": false,
+      "legacyResolverNeeded": false,
+      "externalUrlNeeded": false,
+      "verification": {
+        "on": "2026-11-28",
+        "legacy": "saved data cannot hold it: in the whole git history no theme, preset, setting default or picture list a player could have picked and saved names it",
+        "external": "expandingland, legendworld-help, LegendWorld and deltav4 do not name it (also not in their git history); no version in the git history of a userscript, of the two extension zips (15 revisions) or of the Expanding Land APK names it; not in sitemap.xml"
+      },
+      "approvedForDeletion": true
+    },
+    {
+      "oldPath": "banners/bannereu",
+      "canonicalPath": null,
+      "reason": "HTML snippet of the 2017 Legend Mod ad rotation: only legendmod.js (the 2017 loader, gone since 2017-08) loaded it with $(...).load(); nothing has loaded it since. In the git history only legendmod.js (2017) named it",
+      "internalReferencesMigrated": true,
+      "legacyResolverSupported": false,
+      "externalUrlSupported": false,
+      "legacyResolverNeeded": false,
+      "externalUrlNeeded": false,
+      "verification": {
+        "on": "2026-11-28",
+        "legacy": "saved data cannot hold it: in the whole git history no theme, preset, setting default or picture list a player could have picked and saved names it",
+        "external": "expandingland, legendworld-help, LegendWorld and deltav4 do not name it (also not in their git history); no version in the git history of a userscript, of the two extension zips (15 revisions) or of the Expanding Land APK names it; not in sitemap.xml"
+      },
+      "approvedForDeletion": true
+    },
+    {
+      "oldPath": "banners/bannerex",
+      "canonicalPath": null,
+      "reason": "HTML snippet of the 2017 Legend Mod ad rotation: only legendmod.js (the 2017 loader, gone since 2017-08) loaded it with $(...).load(); nothing has loaded it since. In the git history only legendmod.js (2017) named it",
+      "internalReferencesMigrated": true,
+      "legacyResolverSupported": false,
+      "externalUrlSupported": false,
+      "legacyResolverNeeded": false,
+      "externalUrlNeeded": false,
+      "verification": {
+        "on": "2026-11-28",
+        "legacy": "saved data cannot hold it: in the whole git history no theme, preset, setting default or picture list a player could have picked and saved names it",
+        "external": "expandingland, legendworld-help, LegendWorld and deltav4 do not name it (also not in their git history); no version in the git history of a userscript, of the two extension zips (15 revisions) or of the Expanding Land APK names it; not in sitemap.xml"
+      },
+      "approvedForDeletion": true
+    },
+    {
+      "oldPath": "banners/bannerFc",
+      "canonicalPath": null,
+      "reason": "HTML snippet of the 2017 Legend Mod ad rotation: only legendmod.js (the 2017 loader, gone since 2017-08) loaded it with $(...).load(); nothing has loaded it since",
+      "internalReferencesMigrated": true,
+      "legacyResolverSupported": false,
+      "externalUrlSupported": false,
+      "legacyResolverNeeded": false,
+      "externalUrlNeeded": false,
+      "verification": {
+        "on": "2026-11-28",
+        "legacy": "saved data cannot hold it: in the whole git history no theme, preset, setting default or picture list a player could have picked and saved names it",
+        "external": "expandingland, legendworld-help, LegendWorld and deltav4 do not name it (also not in their git history); no version in the git history of a userscript, of the two extension zips (15 revisions) or of the Expanding Land APK names it; not in sitemap.xml"
+      },
+      "approvedForDeletion": true
+    },
+    {
+      "oldPath": "banners/bannergalaxyliking",
+      "canonicalPath": null,
+      "reason": "HTML snippet of the 2017 Legend Mod ad rotation: only legendmod.js (the 2017 loader, gone since 2017-08) loaded it with $(...).load(); nothing has loaded it since. In the git history only legendmod.js (2017) named it",
+      "internalReferencesMigrated": true,
+      "legacyResolverSupported": false,
+      "externalUrlSupported": false,
+      "legacyResolverNeeded": false,
+      "externalUrlNeeded": false,
+      "verification": {
+        "on": "2026-11-28",
+        "legacy": "saved data cannot hold it: in the whole git history no theme, preset, setting default or picture list a player could have picked and saved names it",
+        "external": "expandingland, legendworld-help, LegendWorld and deltav4 do not name it (also not in their git history); no version in the git history of a userscript, of the two extension zips (15 revisions) or of the Expanding Land APK names it; not in sitemap.xml"
+      },
+      "approvedForDeletion": true
+    },
+    {
+      "oldPath": "banners/bannerinformation",
+      "canonicalPath": null,
+      "reason": "HTML snippet of the 2017 Legend Mod ad rotation: only legendmod.js (the 2017 loader, gone since 2017-08) loaded it with $(...).load(); nothing has loaded it since. In the git history only legendmod.js (2017) named it",
+      "internalReferencesMigrated": true,
+      "legacyResolverSupported": false,
+      "externalUrlSupported": false,
+      "legacyResolverNeeded": false,
+      "externalUrlNeeded": false,
+      "verification": {
+        "on": "2026-11-28",
+        "legacy": "saved data cannot hold it: in the whole git history no theme, preset, setting default or picture list a player could have picked and saved names it",
+        "external": "expandingland, legendworld-help, LegendWorld and deltav4 do not name it (also not in their git history); no version in the git history of a userscript, of the two extension zips (15 revisions) or of the Expanding Land APK names it; not in sitemap.xml"
+      },
+      "approvedForDeletion": true
+    },
+    {
+      "oldPath": "banners/bannerir",
+      "canonicalPath": null,
+      "reason": "HTML snippet of the 2017 Legend Mod ad rotation: only legendmod.js (the 2017 loader, gone since 2017-08) loaded it with $(...).load(); nothing has loaded it since. In the git history only legendmod.js (2017) named it",
+      "internalReferencesMigrated": true,
+      "legacyResolverSupported": false,
+      "externalUrlSupported": false,
+      "legacyResolverNeeded": false,
+      "externalUrlNeeded": false,
+      "verification": {
+        "on": "2026-11-28",
+        "legacy": "saved data cannot hold it: in the whole git history no theme, preset, setting default or picture list a player could have picked and saved names it",
+        "external": "expandingland, legendworld-help, LegendWorld and deltav4 do not name it (also not in their git history); no version in the git history of a userscript, of the two extension zips (15 revisions) or of the Expanding Land APK names it; not in sitemap.xml"
+      },
+      "approvedForDeletion": true
+    },
+    {
+      "oldPath": "banners/bannerlc",
+      "canonicalPath": null,
+      "reason": "HTML snippet of the 2017 Legend Mod ad rotation: only legendmod.js (the 2017 loader, gone since 2017-08) loaded it with $(...).load(); nothing has loaded it since. In the git history only legendmod.js (2017) named it",
+      "internalReferencesMigrated": true,
+      "legacyResolverSupported": false,
+      "externalUrlSupported": false,
+      "legacyResolverNeeded": false,
+      "externalUrlNeeded": false,
+      "verification": {
+        "on": "2026-11-28",
+        "legacy": "saved data cannot hold it: in the whole git history no theme, preset, setting default or picture list a player could have picked and saved names it",
+        "external": "expandingland, legendworld-help, LegendWorld and deltav4 do not name it (also not in their git history); no version in the git history of a userscript, of the two extension zips (15 revisions) or of the Expanding Land APK names it; not in sitemap.xml"
+      },
+      "approvedForDeletion": true
+    },
+    {
+      "oldPath": "banners/bannerlegend",
+      "canonicalPath": null,
+      "reason": "HTML snippet of the 2017 Legend Mod ad rotation: only legendmod.js (the 2017 loader, gone since 2017-08) loaded it with $(...).load(); nothing has loaded it since",
+      "internalReferencesMigrated": true,
+      "legacyResolverSupported": false,
+      "externalUrlSupported": false,
+      "legacyResolverNeeded": false,
+      "externalUrlNeeded": false,
+      "verification": {
+        "on": "2026-11-28",
+        "legacy": "saved data cannot hold it: in the whole git history no theme, preset, setting default or picture list a player could have picked and saved names it",
+        "external": "expandingland, legendworld-help, LegendWorld and deltav4 do not name it (also not in their git history); no version in the git history of a userscript, of the two extension zips (15 revisions) or of the Expanding Land APK names it; not in sitemap.xml"
+      },
+      "approvedForDeletion": true
+    },
+    {
+      "oldPath": "banners/bannerlong",
+      "canonicalPath": null,
+      "reason": "HTML snippet of the 2017 Legend Mod ad rotation: only legendmod.js (the 2017 loader, gone since 2017-08) loaded it with $(...).load(); nothing has loaded it since. In the git history only legendmod.js (2017) named it",
+      "internalReferencesMigrated": true,
+      "legacyResolverSupported": false,
+      "externalUrlSupported": false,
+      "legacyResolverNeeded": false,
+      "externalUrlNeeded": false,
+      "verification": {
+        "on": "2026-11-28",
+        "legacy": "saved data cannot hold it: in the whole git history no theme, preset, setting default or picture list a player could have picked and saved names it",
+        "external": "expandingland, legendworld-help, LegendWorld and deltav4 do not name it (also not in their git history); no version in the git history of a userscript, of the two extension zips (15 revisions) or of the Expanding Land APK names it; not in sitemap.xml"
+      },
+      "approvedForDeletion": true
+    },
+    {
+      "oldPath": "banners/bannerrect",
+      "canonicalPath": null,
+      "reason": "HTML snippet of the 2017 Legend Mod ad rotation: only legendmod.js (the 2017 loader, gone since 2017-08) loaded it with $(...).load(); nothing has loaded it since. In the git history only legendmod.js (2017) named it",
+      "internalReferencesMigrated": true,
+      "legacyResolverSupported": false,
+      "externalUrlSupported": false,
+      "legacyResolverNeeded": false,
+      "externalUrlNeeded": false,
+      "verification": {
+        "on": "2026-11-28",
+        "legacy": "saved data cannot hold it: in the whole git history no theme, preset, setting default or picture list a player could have picked and saved names it",
+        "external": "expandingland, legendworld-help, LegendWorld and deltav4 do not name it (also not in their git history); no version in the git history of a userscript, of the two extension zips (15 revisions) or of the Expanding Land APK names it; not in sitemap.xml"
+      },
+      "approvedForDeletion": true
+    },
+    {
+      "oldPath": "banners/bannerscar",
+      "canonicalPath": null,
+      "reason": "HTML snippet of the 2017 Legend Mod ad rotation: only legendmod.js (the 2017 loader, gone since 2017-08) loaded it with $(...).load(); nothing has loaded it since. In the git history only legendmod.js (2017) named it",
+      "internalReferencesMigrated": true,
+      "legacyResolverSupported": false,
+      "externalUrlSupported": false,
+      "legacyResolverNeeded": false,
+      "externalUrlNeeded": false,
+      "verification": {
+        "on": "2026-11-28",
+        "legacy": "saved data cannot hold it: in the whole git history no theme, preset, setting default or picture list a player could have picked and saved names it",
+        "external": "expandingland, legendworld-help, LegendWorld and deltav4 do not name it (also not in their git history); no version in the git history of a userscript, of the two extension zips (15 revisions) or of the Expanding Land APK names it; not in sitemap.xml"
+      },
+      "approvedForDeletion": true
+    },
+    {
+      "oldPath": "banners/bannerSenpai",
+      "canonicalPath": null,
+      "reason": "HTML snippet of the 2017 Legend Mod ad rotation: only legendmod.js (the 2017 loader, gone since 2017-08) loaded it with $(...).load(); nothing has loaded it since",
+      "internalReferencesMigrated": true,
+      "legacyResolverSupported": false,
+      "externalUrlSupported": false,
+      "legacyResolverNeeded": false,
+      "externalUrlNeeded": false,
+      "verification": {
+        "on": "2026-11-28",
+        "legacy": "saved data cannot hold it: in the whole git history no theme, preset, setting default or picture list a player could have picked and saved names it",
+        "external": "expandingland, legendworld-help, LegendWorld and deltav4 do not name it (also not in their git history); no version in the git history of a userscript, of the two extension zips (15 revisions) or of the Expanding Land APK names it; not in sitemap.xml"
+      },
+      "approvedForDeletion": true
+    },
+    {
+      "oldPath": "banners/bannersearchliking",
+      "canonicalPath": null,
+      "reason": "HTML snippet of the 2017 Legend Mod ad rotation: only legendmod.js (the 2017 loader, gone since 2017-08) loaded it with $(...).load(); nothing has loaded it since",
+      "internalReferencesMigrated": true,
+      "legacyResolverSupported": false,
+      "externalUrlSupported": false,
+      "legacyResolverNeeded": false,
+      "externalUrlNeeded": false,
+      "verification": {
+        "on": "2026-11-28",
+        "legacy": "saved data cannot hold it: in the whole git history no theme, preset, setting default or picture list a player could have picked and saved names it",
+        "external": "expandingland, legendworld-help, LegendWorld and deltav4 do not name it (also not in their git history); no version in the git history of a userscript, of the two extension zips (15 revisions) or of the Expanding Land APK names it; not in sitemap.xml"
+      },
+      "approvedForDeletion": true
+    },
+    {
+      "oldPath": "banners/bannersflc",
+      "canonicalPath": null,
+      "reason": "HTML snippet of the 2017 Legend Mod ad rotation: only legendmod.js (the 2017 loader, gone since 2017-08) loaded it with $(...).load(); nothing has loaded it since. In the git history only legendmod.js (2017) named it",
+      "internalReferencesMigrated": true,
+      "legacyResolverSupported": false,
+      "externalUrlSupported": false,
+      "legacyResolverNeeded": false,
+      "externalUrlNeeded": false,
+      "verification": {
+        "on": "2026-11-28",
+        "legacy": "saved data cannot hold it: in the whole git history no theme, preset, setting default or picture list a player could have picked and saved names it",
+        "external": "expandingland, legendworld-help, LegendWorld and deltav4 do not name it (also not in their git history); no version in the git history of a userscript, of the two extension zips (15 revisions) or of the Expanding Land APK names it; not in sitemap.xml"
+      },
+      "approvedForDeletion": true
+    },
+    {
+      "oldPath": "banners/bannerupdate",
+      "canonicalPath": null,
+      "reason": "HTML snippet of the 2017 Legend Mod ad rotation: only legendmod.js (the 2017 loader, gone since 2017-08) loaded it with $(...).load(); nothing has loaded it since. In the git history only legendmod.js (2017) named it",
+      "internalReferencesMigrated": true,
+      "legacyResolverSupported": false,
+      "externalUrlSupported": false,
+      "legacyResolverNeeded": false,
+      "externalUrlNeeded": false,
+      "verification": {
+        "on": "2026-11-28",
+        "legacy": "saved data cannot hold it: in the whole git history no theme, preset, setting default or picture list a player could have picked and saved names it",
+        "external": "expandingland, legendworld-help, LegendWorld and deltav4 do not name it (also not in their git history); no version in the git history of a userscript, of the two extension zips (15 revisions) or of the Expanding Land APK names it; not in sitemap.xml"
+      },
+      "approvedForDeletion": true
+    },
+    {
+      "oldPath": "banners/bannerupdatebig",
+      "canonicalPath": null,
+      "reason": "HTML snippet of the 2017 Legend Mod ad rotation: only legendmod.js (the 2017 loader, gone since 2017-08) loaded it with $(...).load(); nothing has loaded it since",
+      "internalReferencesMigrated": true,
+      "legacyResolverSupported": false,
+      "externalUrlSupported": false,
+      "legacyResolverNeeded": false,
+      "externalUrlNeeded": false,
+      "verification": {
+        "on": "2026-11-28",
+        "legacy": "saved data cannot hold it: in the whole git history no theme, preset, setting default or picture list a player could have picked and saved names it",
+        "external": "expandingland, legendworld-help, LegendWorld and deltav4 do not name it (also not in their git history); no version in the git history of a userscript, of the two extension zips (15 revisions) or of the Expanding Land APK names it; not in sitemap.xml"
+      },
+      "approvedForDeletion": true
+    },
+    {
+      "oldPath": "banners/bannervanillaliking",
+      "canonicalPath": null,
+      "reason": "HTML snippet of the 2017 Legend Mod ad rotation: only legendmod.js (the 2017 loader, gone since 2017-08) loaded it with $(...).load(); nothing has loaded it since. In the git history only legendmod.js (2017) named it",
+      "internalReferencesMigrated": true,
+      "legacyResolverSupported": false,
+      "externalUrlSupported": false,
+      "legacyResolverNeeded": false,
+      "externalUrlNeeded": false,
+      "verification": {
+        "on": "2026-11-28",
+        "legacy": "saved data cannot hold it: in the whole git history no theme, preset, setting default or picture list a player could have picked and saved names it",
+        "external": "expandingland, legendworld-help, LegendWorld and deltav4 do not name it (also not in their git history); no version in the git history of a userscript, of the two extension zips (15 revisions) or of the Expanding Land APK names it; not in sitemap.xml"
+      },
+      "approvedForDeletion": true
+    },
+    {
+      "oldPath": "banners/bannerzs",
+      "canonicalPath": null,
+      "reason": "HTML snippet of the 2017 Legend Mod ad rotation: only legendmod.js (the 2017 loader, gone since 2017-08) loaded it with $(...).load(); nothing has loaded it since. In the git history only legendmod.js (2017) named it",
+      "internalReferencesMigrated": true,
+      "legacyResolverSupported": false,
+      "externalUrlSupported": false,
+      "legacyResolverNeeded": false,
+      "externalUrlNeeded": false,
+      "verification": {
+        "on": "2026-11-28",
+        "legacy": "saved data cannot hold it: in the whole git history no theme, preset, setting default or picture list a player could have picked and saved names it",
+        "external": "expandingland, legendworld-help, LegendWorld and deltav4 do not name it (also not in their git history); no version in the git history of a userscript, of the two extension zips (15 revisions) or of the Expanding Land APK names it; not in sitemap.xml"
+      },
+      "approvedForDeletion": true
+    },
+    {
+      "oldPath": "banners/banneragario",
+      "canonicalPath": null,
+      "reason": "HTML snippet of the 2017 Legend Mod ad rotation: only legendmod.js (the 2017 loader, gone since 2017-08) loaded it with $(...).load(); nothing has loaded it since",
+      "internalReferencesMigrated": true,
+      "legacyResolverSupported": false,
+      "externalUrlSupported": false,
+      "legacyResolverNeeded": false,
+      "externalUrlNeeded": false,
+      "verification": {
+        "on": "2026-11-28",
+        "legacy": "saved data cannot hold it: in the whole git history no theme, preset, setting default or picture list a player could have picked and saved names it",
+        "external": "expandingland, legendworld-help, LegendWorld and deltav4 do not name it (also not in their git history); no version in the git history of a userscript, of the two extension zips (15 revisions) or of the Expanding Land APK names it; not in sitemap.xml"
+      },
+      "approvedForDeletion": true
+    },
+    {
+      "oldPath": "banners/playerbubbleBALZ",
+      "canonicalPath": null,
+      "reason": "HTML snippet of the 2017 Legend Mod ad rotation: only legendmod.js (the 2017 loader, gone since 2017-08) loaded it with $(...).load(); nothing has loaded it since",
+      "internalReferencesMigrated": true,
+      "legacyResolverSupported": false,
+      "externalUrlSupported": false,
+      "legacyResolverNeeded": false,
+      "externalUrlNeeded": false,
+      "verification": {
+        "on": "2026-11-28",
+        "legacy": "saved data cannot hold it: in the whole git history no theme, preset, setting default or picture list a player could have picked and saved names it",
+        "external": "expandingland, legendworld-help, LegendWorld and deltav4 do not name it (also not in their git history); no version in the git history of a userscript, of the two extension zips (15 revisions) or of the Expanding Land APK names it; not in sitemap.xml"
+      },
+      "approvedForDeletion": true
+    },
+    {
+      "oldPath": "banners/playerguard",
+      "canonicalPath": null,
+      "reason": "HTML snippet of the 2017 Legend Mod ad rotation: only legendmod.js (the 2017 loader, gone since 2017-08) loaded it with $(...).load(); nothing has loaded it since. In the git history only legendmod.js (2017) named it",
+      "internalReferencesMigrated": true,
+      "legacyResolverSupported": false,
+      "externalUrlSupported": false,
+      "legacyResolverNeeded": false,
+      "externalUrlNeeded": false,
+      "verification": {
+        "on": "2026-11-28",
+        "legacy": "saved data cannot hold it: in the whole git history no theme, preset, setting default or picture list a player could have picked and saved names it",
+        "external": "expandingland, legendworld-help, LegendWorld and deltav4 do not name it (also not in their git history); no version in the git history of a userscript, of the two extension zips (15 revisions) or of the Expanding Land APK names it; not in sitemap.xml"
+      },
+      "approvedForDeletion": true
+    },
+    {
+      "oldPath": "banners/playeriamlegend",
+      "canonicalPath": null,
+      "reason": "HTML snippet of the 2017 Legend Mod ad rotation: only legendmod.js (the 2017 loader, gone since 2017-08) loaded it with $(...).load(); nothing has loaded it since. In the git history only legendmod.js (2017) named it",
+      "internalReferencesMigrated": true,
+      "legacyResolverSupported": false,
+      "externalUrlSupported": false,
+      "legacyResolverNeeded": false,
+      "externalUrlNeeded": false,
+      "verification": {
+        "on": "2026-11-28",
+        "legacy": "saved data cannot hold it: in the whole git history no theme, preset, setting default or picture list a player could have picked and saved names it",
+        "external": "expandingland, legendworld-help, LegendWorld and deltav4 do not name it (also not in their git history); no version in the git history of a userscript, of the two extension zips (15 revisions) or of the Expanding Land APK names it; not in sitemap.xml"
+      },
+      "approvedForDeletion": true
+    },
+    {
+      "oldPath": "banners/bannerEl",
+      "canonicalPath": null,
+      "reason": "HTML snippet of the 2017 Legend Mod ad rotation: only legendmod.js (the 2017 loader, gone since 2017-08) loaded it with $(...).load(); nothing has loaded it since. In the git history only legendmod.js (2017) named it",
+      "internalReferencesMigrated": true,
+      "legacyResolverSupported": false,
+      "externalUrlSupported": false,
+      "legacyResolverNeeded": false,
+      "externalUrlNeeded": false,
+      "verification": {
+        "on": "2026-11-28",
+        "legacy": "saved data cannot hold it: in the whole git history no theme, preset, setting default or picture list a player could have picked and saved names it",
+        "external": "expandingland, legendworld-help, LegendWorld and deltav4 do not name it (also not in their git history); no version in the git history of a userscript, of the two extension zips (15 revisions) or of the Expanding Land APK names it; not in sitemap.xml"
+      },
+      "approvedForDeletion": true
+    },
+    {
+      "oldPath": "banners/megaFFA",
+      "canonicalPath": null,
+      "reason": "HTML snippet of an old menu ad ($(\"#LEGENDAds..\").load()); its last loader was commented out (ogario.v4.master.js 2020 / LMexpress.js, the dead comment is removed with it); nothing loads it. In the git history only ogario/ogario.v4.master.js (2020) named it",
+      "internalReferencesMigrated": true,
+      "legacyResolverSupported": false,
+      "externalUrlSupported": false,
+      "legacyResolverNeeded": false,
+      "externalUrlNeeded": false,
+      "verification": {
+        "on": "2026-11-28",
+        "legacy": "saved data cannot hold it: in the whole git history no theme, preset, setting default or picture list a player could have picked and saved names it",
+        "external": "expandingland, legendworld-help, LegendWorld and deltav4 do not name it (also not in their git history); no version in the git history of a userscript, of the two extension zips (15 revisions) or of the Expanding Land APK names it; not in sitemap.xml"
+      },
+      "approvedForDeletion": true
+    },
+    {
+      "oldPath": "banners/bannerLMdevs",
+      "canonicalPath": null,
+      "reason": "HTML snippet of an old menu ad ($(\"#LEGENDAds..\").load()); its last loader was commented out (ogario.v4.master.js 2020 / LMexpress.js, the dead comment is removed with it); nothing loads it. In the git history only LMexpress/lm_extended_ui.js (2026), LMexpress/LMexpress.js (2022-2024-10), ogario/ogario.v4.js (2019-2023-08), ogario/ogario.v4.master.js (2020) named it",
+      "internalReferencesMigrated": true,
+      "legacyResolverSupported": false,
+      "externalUrlSupported": false,
+      "legacyResolverNeeded": false,
+      "externalUrlNeeded": false,
+      "verification": {
+        "on": "2026-11-28",
+        "legacy": "saved data cannot hold it: in the whole git history no theme, preset, setting default or picture list a player could have picked and saved names it",
+        "external": "expandingland, legendworld-help, LegendWorld and deltav4 do not name it (also not in their git history); no version in the git history of a userscript, of the two extension zips (15 revisions) or of the Expanding Land APK names it; not in sitemap.xml"
+      },
+      "approvedForDeletion": true
+    },
+    {
+      "oldPath": "banners/agario2",
+      "canonicalPath": null,
+      "reason": "HTML snippet of an old menu ad ($(\"#LEGENDAds..\").load()); its last loader was commented out (ogario.v4.master.js 2020 / LMexpress.js, the dead comment is removed with it); nothing loads it. In the git history only LMexpress/lm_extended_ui.js (2026), LMexpress/LMexpress.js (2022-2026-03), ogario/ogario.v4.js (2023) named it",
+      "internalReferencesMigrated": true,
+      "legacyResolverSupported": false,
+      "externalUrlSupported": false,
+      "legacyResolverNeeded": false,
+      "externalUrlNeeded": false,
+      "verification": {
+        "on": "2026-11-28",
+        "legacy": "saved data cannot hold it: in the whole git history no theme, preset, setting default or picture list a player could have picked and saved names it",
+        "external": "expandingland, legendworld-help, LegendWorld and deltav4 do not name it (also not in their git history); no version in the git history of a userscript, of the two extension zips (15 revisions) or of the Expanding Land APK names it; not in sitemap.xml"
+      },
+      "approvedForDeletion": true
+    },
+    {
+      "oldPath": "banners/iconFC.png",
+      "canonicalPath": null,
+      "reason": "picture shown only by an old ad snippet of banners/ that nothing loads (removed with it). In the git history only banners/bannerFc (2017) named it",
+      "internalReferencesMigrated": true,
+      "legacyResolverSupported": false,
+      "externalUrlSupported": false,
+      "legacyResolverNeeded": false,
+      "externalUrlNeeded": false,
+      "verification": {
+        "on": "2026-11-28",
+        "legacy": "saved data cannot hold it: in the whole git history no theme, preset, setting default or picture list a player could have picked and saved names it",
+        "external": "expandingland, legendworld-help, LegendWorld and deltav4 do not name it (also not in their git history); no version in the git history of a userscript, of the two extension zips (15 revisions) or of the Expanding Land APK names it; not in sitemap.xml"
+      },
+      "approvedForDeletion": true
+    },
+    {
+      "oldPath": "banners/iconLMdevs.png",
+      "canonicalPath": null,
+      "reason": "picture shown only by an old ad snippet of banners/ that nothing loads (removed with it). In the git history only banners/bannerLMdevs (2019) named it",
+      "internalReferencesMigrated": true,
+      "legacyResolverSupported": false,
+      "externalUrlSupported": false,
+      "legacyResolverNeeded": false,
+      "externalUrlNeeded": false,
+      "verification": {
+        "on": "2026-11-28",
+        "legacy": "saved data cannot hold it: in the whole git history no theme, preset, setting default or picture list a player could have picked and saved names it",
+        "external": "expandingland, legendworld-help, LegendWorld and deltav4 do not name it (also not in their git history); no version in the git history of a userscript, of the two extension zips (15 revisions) or of the Expanding Land APK names it; not in sitemap.xml"
+      },
+      "approvedForDeletion": true
+    },
+    {
+      "oldPath": "banners/iconSenpai.png",
+      "canonicalPath": null,
+      "reason": "picture shown only by an old ad snippet of banners/ that nothing loads (removed with it). In the git history only banners/bannerSenpai (2018) named it",
+      "internalReferencesMigrated": true,
+      "legacyResolverSupported": false,
+      "externalUrlSupported": false,
+      "legacyResolverNeeded": false,
+      "externalUrlNeeded": false,
+      "verification": {
+        "on": "2026-11-28",
+        "legacy": "saved data cannot hold it: in the whole git history no theme, preset, setting default or picture list a player could have picked and saved names it",
+        "external": "expandingland, legendworld-help, LegendWorld and deltav4 do not name it (also not in their git history); no version in the git history of a userscript, of the two extension zips (15 revisions) or of the Expanding Land APK names it; not in sitemap.xml"
+      },
+      "approvedForDeletion": true
+    },
+    {
+      "oldPath": "banners/iconbubblebalz.png",
+      "canonicalPath": null,
+      "reason": "picture shown only by an old ad snippet of banners/ that nothing loads (removed with it). In the git history only banners/playerbubbleBALZ (2017) named it",
+      "internalReferencesMigrated": true,
+      "legacyResolverSupported": false,
+      "externalUrlSupported": false,
+      "legacyResolverNeeded": false,
+      "externalUrlNeeded": false,
+      "verification": {
+        "on": "2026-11-28",
+        "legacy": "saved data cannot hold it: in the whole git history no theme, preset, setting default or picture list a player could have picked and saved names it",
+        "external": "expandingland, legendworld-help, LegendWorld and deltav4 do not name it (also not in their git history); no version in the git history of a userscript, of the two extension zips (15 revisions) or of the Expanding Land APK names it; not in sitemap.xml"
+      },
+      "approvedForDeletion": true
+    },
+    {
+      "oldPath": "banners/icondz.png",
+      "canonicalPath": null,
+      "reason": "picture shown only by an old ad snippet of banners/ that nothing loads (removed with it). In the git history only banners/bannerdz (2017) named it",
+      "internalReferencesMigrated": true,
+      "legacyResolverSupported": false,
+      "externalUrlSupported": false,
+      "legacyResolverNeeded": false,
+      "externalUrlNeeded": false,
+      "verification": {
+        "on": "2026-11-28",
+        "legacy": "saved data cannot hold it: in the whole git history no theme, preset, setting default or picture list a player could have picked and saved names it",
+        "external": "expandingland, legendworld-help, LegendWorld and deltav4 do not name it (also not in their git history); no version in the git history of a userscript, of the two extension zips (15 revisions) or of the Expanding Land APK names it; not in sitemap.xml"
+      },
+      "approvedForDeletion": true
+    },
+    {
+      "oldPath": "banners/iconeu.png",
+      "canonicalPath": null,
+      "reason": "picture shown only by an old ad snippet of banners/ that nothing loads (removed with it). In the git history only banners/bannereu (2017) named it",
+      "internalReferencesMigrated": true,
+      "legacyResolverSupported": false,
+      "externalUrlSupported": false,
+      "legacyResolverNeeded": false,
+      "externalUrlNeeded": false,
+      "verification": {
+        "on": "2026-11-28",
+        "legacy": "saved data cannot hold it: in the whole git history no theme, preset, setting default or picture list a player could have picked and saved names it",
+        "external": "expandingland, legendworld-help, LegendWorld and deltav4 do not name it (also not in their git history); no version in the git history of a userscript, of the two extension zips (15 revisions) or of the Expanding Land APK names it; not in sitemap.xml"
+      },
+      "approvedForDeletion": true
+    },
+    {
+      "oldPath": "banners/iconex.png",
+      "canonicalPath": null,
+      "reason": "picture shown only by an old ad snippet of banners/ that nothing loads (removed with it). In the git history only banners/bannerex (2017) named it",
+      "internalReferencesMigrated": true,
+      "legacyResolverSupported": false,
+      "externalUrlSupported": false,
+      "legacyResolverNeeded": false,
+      "externalUrlNeeded": false,
+      "verification": {
+        "on": "2026-11-28",
+        "legacy": "saved data cannot hold it: in the whole git history no theme, preset, setting default or picture list a player could have picked and saved names it",
+        "external": "expandingland, legendworld-help, LegendWorld and deltav4 do not name it (also not in their git history); no version in the git history of a userscript, of the two extension zips (15 revisions) or of the Expanding Land APK names it; not in sitemap.xml"
+      },
+      "approvedForDeletion": true
+    },
+    {
+      "oldPath": "banners/iconguard.gif",
+      "canonicalPath": null,
+      "reason": "picture shown only by an old ad snippet of banners/ that nothing loads (removed with it). In the git history only banners/playerguard (2017) named it",
+      "internalReferencesMigrated": true,
+      "legacyResolverSupported": false,
+      "externalUrlSupported": false,
+      "legacyResolverNeeded": false,
+      "externalUrlNeeded": false,
+      "verification": {
+        "on": "2026-11-28",
+        "legacy": "saved data cannot hold it: in the whole git history no theme, preset, setting default or picture list a player could have picked and saved names it",
+        "external": "expandingland, legendworld-help, LegendWorld and deltav4 do not name it (also not in their git history); no version in the git history of a userscript, of the two extension zips (15 revisions) or of the Expanding Land APK names it; not in sitemap.xml"
+      },
+      "approvedForDeletion": true
+    },
+    {
+      "oldPath": "banners/iconiamlegend.gif",
+      "canonicalPath": null,
+      "reason": "picture shown only by an old ad snippet of banners/ that nothing loads (removed with it). In the git history only banners/playeriamlegend (2017) named it",
+      "internalReferencesMigrated": true,
+      "legacyResolverSupported": false,
+      "externalUrlSupported": false,
+      "legacyResolverNeeded": false,
+      "externalUrlNeeded": false,
+      "verification": {
+        "on": "2026-11-28",
+        "legacy": "saved data cannot hold it: in the whole git history no theme, preset, setting default or picture list a player could have picked and saved names it",
+        "external": "expandingland, legendworld-help, LegendWorld and deltav4 do not name it (also not in their git history); no version in the git history of a userscript, of the two extension zips (15 revisions) or of the Expanding Land APK names it; not in sitemap.xml"
+      },
+      "approvedForDeletion": true
+    },
+    {
+      "oldPath": "banners/iconinfobann.png",
+      "canonicalPath": null,
+      "reason": "picture shown only by an old ad snippet of banners/ that nothing loads (removed with it). In the git history only banners/bannerinformation (2017) named it",
+      "internalReferencesMigrated": true,
+      "legacyResolverSupported": false,
+      "externalUrlSupported": false,
+      "legacyResolverNeeded": false,
+      "externalUrlNeeded": false,
+      "verification": {
+        "on": "2026-11-28",
+        "legacy": "saved data cannot hold it: in the whole git history no theme, preset, setting default or picture list a player could have picked and saved names it",
+        "external": "expandingland, legendworld-help, LegendWorld and deltav4 do not name it (also not in their git history); no version in the git history of a userscript, of the two extension zips (15 revisions) or of the Expanding Land APK names it; not in sitemap.xml"
+      },
+      "approvedForDeletion": true
+    },
+    {
+      "oldPath": "banners/iconlegenddefault.png",
+      "canonicalPath": null,
+      "reason": "picture shown only by an old ad snippet of banners/ that nothing loads (removed with it). In the git history only banners/bannergalaxyliking (2017) named it",
+      "internalReferencesMigrated": true,
+      "legacyResolverSupported": false,
+      "externalUrlSupported": false,
+      "legacyResolverNeeded": false,
+      "externalUrlNeeded": false,
+      "verification": {
+        "on": "2026-11-28",
+        "legacy": "saved data cannot hold it: in the whole git history no theme, preset, setting default or picture list a player could have picked and saved names it",
+        "external": "expandingland, legendworld-help, LegendWorld and deltav4 do not name it (also not in their git history); no version in the git history of a userscript, of the two extension zips (15 revisions) or of the Expanding Land APK names it; not in sitemap.xml"
+      },
+      "approvedForDeletion": true
+    },
+    {
+      "oldPath": "banners/iconlong.png",
+      "canonicalPath": null,
+      "reason": "picture shown only by an old ad snippet of banners/ that nothing loads (removed with it). In the git history only banners/bannerlong (2017) named it",
+      "internalReferencesMigrated": true,
+      "legacyResolverSupported": false,
+      "externalUrlSupported": false,
+      "legacyResolverNeeded": false,
+      "externalUrlNeeded": false,
+      "verification": {
+        "on": "2026-11-28",
+        "legacy": "saved data cannot hold it: in the whole git history no theme, preset, setting default or picture list a player could have picked and saved names it",
+        "external": "expandingland, legendworld-help, LegendWorld and deltav4 do not name it (also not in their git history); no version in the git history of a userscript, of the two extension zips (15 revisions) or of the Expanding Land APK names it; not in sitemap.xml"
+      },
+      "approvedForDeletion": true
+    },
+    {
+      "oldPath": "banners/iconrekt.png",
+      "canonicalPath": null,
+      "reason": "picture shown only by an old ad snippet of banners/ that nothing loads (removed with it). In the git history only banners/bannerrect (2017) named it",
+      "internalReferencesMigrated": true,
+      "legacyResolverSupported": false,
+      "externalUrlSupported": false,
+      "legacyResolverNeeded": false,
+      "externalUrlNeeded": false,
+      "verification": {
+        "on": "2026-11-28",
+        "legacy": "saved data cannot hold it: in the whole git history no theme, preset, setting default or picture list a player could have picked and saved names it",
+        "external": "expandingland, legendworld-help, LegendWorld and deltav4 do not name it (also not in their git history); no version in the git history of a userscript, of the two extension zips (15 revisions) or of the Expanding Land APK names it; not in sitemap.xml"
+      },
+      "approvedForDeletion": true
+    },
+    {
+      "oldPath": "banners/iconscar.png",
+      "canonicalPath": null,
+      "reason": "picture shown only by an old ad snippet of banners/ that nothing loads (removed with it). In the git history only banners/bannersearchliking (2017), banners/bannerscar (2017) named it",
+      "internalReferencesMigrated": true,
+      "legacyResolverSupported": false,
+      "externalUrlSupported": false,
+      "legacyResolverNeeded": false,
+      "externalUrlNeeded": false,
+      "verification": {
+        "on": "2026-11-28",
+        "legacy": "saved data cannot hold it: in the whole git history no theme, preset, setting default or picture list a player could have picked and saved names it",
+        "external": "expandingland, legendworld-help, LegendWorld and deltav4 do not name it (also not in their git history); no version in the git history of a userscript, of the two extension zips (15 revisions) or of the Expanding Land APK names it; not in sitemap.xml"
+      },
+      "approvedForDeletion": true
+    },
+    {
+      "oldPath": "banners/iconsearchliking.png",
+      "canonicalPath": null,
+      "reason": "picture shown only by an old ad snippet of banners/ that nothing loads (removed with it). In the git history only banners/bannersearchliking (2017) named it",
+      "internalReferencesMigrated": true,
+      "legacyResolverSupported": false,
+      "externalUrlSupported": false,
+      "legacyResolverNeeded": false,
+      "externalUrlNeeded": false,
+      "verification": {
+        "on": "2026-11-28",
+        "legacy": "saved data cannot hold it: in the whole git history no theme, preset, setting default or picture list a player could have picked and saved names it",
+        "external": "expandingland, legendworld-help, LegendWorld and deltav4 do not name it (also not in their git history); no version in the git history of a userscript, of the two extension zips (15 revisions) or of the Expanding Land APK names it; not in sitemap.xml"
+      },
+      "approvedForDeletion": true
+    },
+    {
+      "oldPath": "banners/iconvanillaliking3.png",
+      "canonicalPath": null,
+      "reason": "picture shown only by an old ad snippet of banners/ that nothing loads (removed with it). In the git history only banners/bannervanillaliking (2017) named it",
+      "internalReferencesMigrated": true,
+      "legacyResolverSupported": false,
+      "externalUrlSupported": false,
+      "legacyResolverNeeded": false,
+      "externalUrlNeeded": false,
+      "verification": {
+        "on": "2026-11-28",
+        "legacy": "saved data cannot hold it: in the whole git history no theme, preset, setting default or picture list a player could have picked and saved names it",
+        "external": "expandingland, legendworld-help, LegendWorld and deltav4 do not name it (also not in their git history); no version in the git history of a userscript, of the two extension zips (15 revisions) or of the Expanding Land APK names it; not in sitemap.xml"
+      },
+      "approvedForDeletion": true
+    },
+    {
+      "oldPath": "banners/iconzs.png",
+      "canonicalPath": null,
+      "reason": "picture shown only by an old ad snippet of banners/ that nothing loads (removed with it). In the git history only banners/bannerzs (2017) named it",
+      "internalReferencesMigrated": true,
+      "legacyResolverSupported": false,
+      "externalUrlSupported": false,
+      "legacyResolverNeeded": false,
+      "externalUrlNeeded": false,
+      "verification": {
+        "on": "2026-11-28",
+        "legacy": "saved data cannot hold it: in the whole git history no theme, preset, setting default or picture list a player could have picked and saved names it",
+        "external": "expandingland, legendworld-help, LegendWorld and deltav4 do not name it (also not in their git history); no version in the git history of a userscript, of the two extension zips (15 revisions) or of the Expanding Land APK names it; not in sitemap.xml"
+      },
+      "approvedForDeletion": true
+    },
+    {
+      "oldPath": "banners/Iconupdatemod.gif",
+      "canonicalPath": null,
+      "reason": "picture shown only by an old ad snippet of banners/ that nothing loads (removed with it). In the git history only banners/bannerupdatebig (2017), banners/bannerupdate (2017) named it",
+      "internalReferencesMigrated": true,
+      "legacyResolverSupported": false,
+      "externalUrlSupported": false,
+      "legacyResolverNeeded": false,
+      "externalUrlNeeded": false,
+      "verification": {
+        "on": "2026-11-28",
+        "legacy": "saved data cannot hold it: in the whole git history no theme, preset, setting default or picture list a player could have picked and saved names it",
+        "external": "expandingland, legendworld-help, LegendWorld and deltav4 do not name it (also not in their git history); no version in the git history of a userscript, of the two extension zips (15 revisions) or of the Expanding Land APK names it; not in sitemap.xml"
+      },
+      "approvedForDeletion": true
+    },
+    {
+      "oldPath": "banners/agariosbanner.png",
+      "canonicalPath": null,
+      "reason": "picture shown only by an old ad snippet of banners/ that nothing loads (removed with it). In the git history only banners/banneragario (2017) named it",
+      "internalReferencesMigrated": true,
+      "legacyResolverSupported": false,
+      "externalUrlSupported": false,
+      "legacyResolverNeeded": false,
+      "externalUrlNeeded": false,
+      "verification": {
+        "on": "2026-11-28",
+        "legacy": "saved data cannot hold it: in the whole git history no theme, preset, setting default or picture list a player could have picked and saved names it",
+        "external": "expandingland, legendworld-help, LegendWorld and deltav4 do not name it (also not in their git history); no version in the git history of a userscript, of the two extension zips (15 revisions) or of the Expanding Land APK names it; not in sitemap.xml"
+      },
+      "approvedForDeletion": true
+    },
+    {
+      "oldPath": "banners/iconMegaFFA.png",
+      "canonicalPath": null,
+      "reason": "picture shown only by an old ad snippet of banners/ that nothing loads (removed with it). In the git history only banners/megaFFA (2020-2024-03) named it",
+      "internalReferencesMigrated": true,
+      "legacyResolverSupported": false,
+      "externalUrlSupported": false,
+      "legacyResolverNeeded": false,
+      "externalUrlNeeded": false,
+      "verification": {
+        "on": "2026-11-28",
+        "legacy": "saved data cannot hold it: in the whole git history no theme, preset, setting default or picture list a player could have picked and saved names it",
+        "external": "expandingland, legendworld-help, LegendWorld and deltav4 do not name it (also not in their git history); no version in the git history of a userscript, of the two extension zips (15 revisions) or of the Expanding Land APK names it; not in sitemap.xml"
+      },
+      "approvedForDeletion": true
+    },
+    {
+      "oldPath": "banners/agario2.gif",
+      "canonicalPath": null,
+      "reason": "picture shown only by an old ad snippet of banners/ that nothing loads (removed with it). In the git history only banners/agario2 (2020-2024-03) named it",
+      "internalReferencesMigrated": true,
+      "legacyResolverSupported": false,
+      "externalUrlSupported": false,
+      "legacyResolverNeeded": false,
+      "externalUrlNeeded": false,
+      "verification": {
+        "on": "2026-11-28",
+        "legacy": "saved data cannot hold it: in the whole git history no theme, preset, setting default or picture list a player could have picked and saved names it",
+        "external": "expandingland, legendworld-help, LegendWorld and deltav4 do not name it (also not in their git history); no version in the git history of a userscript, of the two extension zips (15 revisions) or of the Expanding Land APK names it; not in sitemap.xml"
+      },
+      "approvedForDeletion": true
+    },
+    {
+      "oldPath": "banners/legendpromo1.png",
+      "canonicalPath": null,
+      "reason": "used only by pages, styles or code that are gone (removed, or commented out and that dead comment removed with it); no live page, script or setting names it. In the git history only extras/banneranimated5Lc.html (2017) named it",
+      "internalReferencesMigrated": true,
+      "legacyResolverSupported": false,
+      "externalUrlSupported": false,
+      "legacyResolverNeeded": false,
+      "externalUrlNeeded": false,
+      "verification": {
+        "on": "2026-11-28",
+        "legacy": "saved data cannot hold it: in the whole git history no theme, preset, setting default or picture list a player could have picked and saved names it",
+        "external": "expandingland, legendworld-help, LegendWorld and deltav4 do not name it (also not in their git history); no version in the git history of a userscript, of the two extension zips (15 revisions) or of the Expanding Land APK names it; not in sitemap.xml"
+      },
+      "approvedForDeletion": true
+    },
+    {
+      "oldPath": "banners/iconinfo.png",
+      "canonicalPath": null,
+      "reason": "used only by pages, styles or code that are gone (removed, or commented out and that dead comment removed with it); no live page, script or setting names it. In the git history only legendmod.js (2017) named it",
+      "internalReferencesMigrated": true,
+      "legacyResolverSupported": false,
+      "externalUrlSupported": false,
+      "legacyResolverNeeded": false,
+      "externalUrlNeeded": false,
+      "verification": {
+        "on": "2026-11-28",
+        "legacy": "saved data cannot hold it: in the whole git history no theme, preset, setting default or picture list a player could have picked and saved names it",
+        "external": "expandingland, legendworld-help, LegendWorld and deltav4 do not name it (also not in their git history); no version in the git history of a userscript, of the two extension zips (15 revisions) or of the Expanding Land APK names it; not in sitemap.xml"
+      },
+      "approvedForDeletion": true
+    },
+    {
+      "oldPath": "banners/iconlegenddefaultsmall.png",
+      "canonicalPath": null,
+      "reason": "used only by pages, styles or code that are gone (removed, or commented out and that dead comment removed with it); no live page, script or setting names it. In the git history only legendmod.js (2017) named it",
+      "internalReferencesMigrated": true,
+      "legacyResolverSupported": false,
+      "externalUrlSupported": false,
+      "legacyResolverNeeded": false,
+      "externalUrlNeeded": false,
+      "verification": {
+        "on": "2026-11-28",
+        "legacy": "saved data cannot hold it: in the whole git history no theme, preset, setting default or picture list a player could have picked and saved names it",
+        "external": "expandingland, legendworld-help, LegendWorld and deltav4 do not name it (also not in their git history); no version in the git history of a userscript, of the two extension zips (15 revisions) or of the Expanding Land APK names it; not in sitemap.xml"
+      },
+      "approvedForDeletion": true
+    },
+    {
+      "oldPath": "banners/vanillapic2.jpg",
+      "canonicalPath": null,
+      "reason": "used only by pages, styles or code that are gone (removed, or commented out and that dead comment removed with it); no live page, script or setting names it. In the git history only legendmod.js (2017) named it",
+      "internalReferencesMigrated": true,
+      "legacyResolverSupported": false,
+      "externalUrlSupported": false,
+      "legacyResolverNeeded": false,
+      "externalUrlNeeded": false,
+      "verification": {
+        "on": "2026-11-28",
+        "legacy": "saved data cannot hold it: in the whole git history no theme, preset, setting default or picture list a player could have picked and saved names it",
+        "external": "expandingland, legendworld-help, LegendWorld and deltav4 do not name it (also not in their git history); no version in the git history of a userscript, of the two extension zips (15 revisions) or of the Expanding Land APK names it; not in sitemap.xml"
+      },
+      "approvedForDeletion": true
+    },
+    {
+      "oldPath": "banners/smallbannerlegendclan2.png",
+      "canonicalPath": null,
+      "reason": "used only by pages, styles or code that are gone (removed, or commented out and that dead comment removed with it); no live page, script or setting names it. In the git history only legendmod.js (2017) named it",
+      "internalReferencesMigrated": true,
+      "legacyResolverSupported": false,
+      "externalUrlSupported": false,
+      "legacyResolverNeeded": false,
+      "externalUrlNeeded": false,
+      "verification": {
+        "on": "2026-11-28",
+        "legacy": "saved data cannot hold it: in the whole git history no theme, preset, setting default or picture list a player could have picked and saved names it",
+        "external": "expandingland, legendworld-help, LegendWorld and deltav4 do not name it (also not in their git history); no version in the git history of a userscript, of the two extension zips (15 revisions) or of the Expanding Land APK names it; not in sitemap.xml"
+      },
+      "approvedForDeletion": true
+    },
+    {
+      "oldPath": "banners/LMJimboystatistics1.png",
+      "canonicalPath": null,
+      "reason": "used only by pages, styles or code that are gone (removed, or commented out and that dead comment removed with it); no live page, script or setting names it. In the git history only extras/rewardday2.html (2023-2024-03), extras/rewardday.html (2020-2024-03) named it",
+      "internalReferencesMigrated": true,
+      "legacyResolverSupported": false,
+      "externalUrlSupported": false,
+      "legacyResolverNeeded": false,
+      "externalUrlNeeded": false,
+      "verification": {
+        "on": "2026-11-28",
+        "legacy": "saved data cannot hold it: in the whole git history no theme, preset, setting default or picture list a player could have picked and saved names it",
+        "external": "expandingland, legendworld-help, LegendWorld and deltav4 do not name it (also not in their git history); no version in the git history of a userscript, of the two extension zips (15 revisions) or of the Expanding Land APK names it; not in sitemap.xml"
+      },
+      "approvedForDeletion": true
+    },
+    {
+      "oldPath": "banners/LMJimboystatistics2.jpg",
+      "canonicalPath": null,
+      "reason": "used only by pages, styles or code that are gone (removed, or commented out and that dead comment removed with it); no live page, script or setting names it. In the git history only extras/rewardday2.html (2023-2024-03), extras/rewardday.html (2020-2024-03) named it",
+      "internalReferencesMigrated": true,
+      "legacyResolverSupported": false,
+      "externalUrlSupported": false,
+      "legacyResolverNeeded": false,
+      "externalUrlNeeded": false,
+      "verification": {
+        "on": "2026-11-28",
+        "legacy": "saved data cannot hold it: in the whole git history no theme, preset, setting default or picture list a player could have picked and saved names it",
+        "external": "expandingland, legendworld-help, LegendWorld and deltav4 do not name it (also not in their git history); no version in the git history of a userscript, of the two extension zips (15 revisions) or of the Expanding Land APK names it; not in sitemap.xml"
+      },
+      "approvedForDeletion": true
+    },
+    {
+      "oldPath": "banners/body-background.png",
+      "canonicalPath": null,
+      "reason": "used only by pages, styles or code that are gone (removed, or commented out and that dead comment removed with it); no live page, script or setting names it. In the git history only extras/loader/Bundle.css (2019), extras/loader/Bundle2.css (2019) named it",
+      "internalReferencesMigrated": true,
+      "legacyResolverSupported": false,
+      "externalUrlSupported": false,
+      "legacyResolverNeeded": false,
+      "externalUrlNeeded": false,
+      "verification": {
+        "on": "2026-11-28",
+        "legacy": "saved data cannot hold it: in the whole git history no theme, preset, setting default or picture list a player could have picked and saved names it",
+        "external": "expandingland, legendworld-help, LegendWorld and deltav4 do not name it (also not in their git history); no version in the git history of a userscript, of the two extension zips (15 revisions) or of the Expanding Land APK names it; not in sitemap.xml"
+      },
+      "approvedForDeletion": true
+    },
+    {
+      "oldPath": "banners/iconsantorini2.jpg",
+      "canonicalPath": null,
+      "reason": "used only by pages, styles or code that are gone (removed, or commented out and that dead comment removed with it); no live page, script or setting names it. In the git history only extras/loader/BundleAgario.css (2019) named it",
+      "internalReferencesMigrated": true,
+      "legacyResolverSupported": false,
+      "externalUrlSupported": false,
+      "legacyResolverNeeded": false,
+      "externalUrlNeeded": false,
+      "verification": {
+        "on": "2026-11-28",
+        "legacy": "saved data cannot hold it: in the whole git history no theme, preset, setting default or picture list a player could have picked and saved names it",
+        "external": "expandingland, legendworld-help, LegendWorld and deltav4 do not name it (also not in their git history); no version in the git history of a userscript, of the two extension zips (15 revisions) or of the Expanding Land APK names it; not in sitemap.xml"
+      },
+      "approvedForDeletion": true
+    },
+    {
+      "oldPath": "banners/drawCommanderLegendMod.png",
+      "canonicalPath": null,
+      "reason": "used only by pages, styles or code that are gone (removed, or commented out and that dead comment removed with it); no live page, script or setting names it. In the git history only extras/bannermembers.html (2020), extras/loader/BundleNew.css (2020) named it",
+      "internalReferencesMigrated": true,
+      "legacyResolverSupported": false,
+      "externalUrlSupported": false,
+      "legacyResolverNeeded": false,
+      "externalUrlNeeded": false,
+      "verification": {
+        "on": "2026-11-28",
+        "legacy": "saved data cannot hold it: in the whole git history no theme, preset, setting default or picture list a player could have picked and saved names it",
+        "external": "expandingland, legendworld-help, LegendWorld and deltav4 do not name it (also not in their git history); no version in the git history of a userscript, of the two extension zips (15 revisions) or of the Expanding Land APK names it; not in sitemap.xml"
+      },
+      "approvedForDeletion": true
+    },
+    {
+      "oldPath": "banners/background-grey-dark.jpg",
+      "canonicalPath": null,
+      "reason": "used only by pages, styles or code that are gone (removed, or commented out and that dead comment removed with it); no live page, script or setting names it. In the git history only extras/website/index.html (2018) named it",
+      "internalReferencesMigrated": true,
+      "legacyResolverSupported": false,
+      "externalUrlSupported": false,
+      "legacyResolverNeeded": false,
+      "externalUrlNeeded": false,
+      "verification": {
+        "on": "2026-11-28",
+        "legacy": "saved data cannot hold it: in the whole git history no theme, preset, setting default or picture list a player could have picked and saved names it",
+        "external": "expandingland, legendworld-help, LegendWorld and deltav4 do not name it (also not in their git history); no version in the git history of a userscript, of the two extension zips (15 revisions) or of the Expanding Land APK names it; not in sitemap.xml"
+      },
+      "approvedForDeletion": true
+    },
+    {
+      "oldPath": "banners/icon38.png",
+      "canonicalPath": null,
+      "reason": "used only by pages, styles or code that are gone (removed, or commented out and that dead comment removed with it); no live page, script or setting names it. In the git history only .idea/vcs.xml (2025), tei/html/test2.html (2019), extras/website/index.html (2018) named it",
+      "internalReferencesMigrated": true,
+      "legacyResolverSupported": false,
+      "externalUrlSupported": false,
+      "legacyResolverNeeded": false,
+      "externalUrlNeeded": false,
+      "verification": {
+        "on": "2026-11-28",
+        "legacy": "saved data cannot hold it: in the whole git history no theme, preset, setting default or picture list a player could have picked and saved names it",
+        "external": "expandingland, legendworld-help, LegendWorld and deltav4 do not name it (also not in their git history); no version in the git history of a userscript, of the two extension zips (15 revisions) or of the Expanding Land APK names it; not in sitemap.xml"
+      },
+      "approvedForDeletion": true
+    },
+    {
+      "oldPath": "banners/iconbrowserchrome32.png",
+      "canonicalPath": null,
+      "reason": "used only by pages, styles or code that are gone (removed, or commented out and that dead comment removed with it); no live page, script or setting names it. In the git history only index.html (2020-2023-09) named it",
+      "internalReferencesMigrated": true,
+      "legacyResolverSupported": false,
+      "externalUrlSupported": false,
+      "legacyResolverNeeded": false,
+      "externalUrlNeeded": false,
+      "verification": {
+        "on": "2026-11-28",
+        "legacy": "saved data cannot hold it: in the whole git history no theme, preset, setting default or picture list a player could have picked and saved names it",
+        "external": "expandingland, legendworld-help, LegendWorld and deltav4 do not name it (also not in their git history); no version in the git history of a userscript, of the two extension zips (15 revisions) or of the Expanding Land APK names it; not in sitemap.xml"
+      },
+      "approvedForDeletion": true
+    },
+    {
+      "oldPath": "banners/iconOperaGX.gif",
+      "canonicalPath": null,
+      "reason": "used only by pages, styles or code that are gone (removed, or commented out and that dead comment removed with it); no live page, script or setting names it. In the git history only index.html (2020-2026-02) named it",
+      "internalReferencesMigrated": true,
+      "legacyResolverSupported": false,
+      "externalUrlSupported": false,
+      "legacyResolverNeeded": false,
+      "externalUrlNeeded": false,
+      "verification": {
+        "on": "2026-11-28",
+        "legacy": "saved data cannot hold it: in the whole git history no theme, preset, setting default or picture list a player could have picked and saved names it",
+        "external": "expandingland, legendworld-help, LegendWorld and deltav4 do not name it (also not in their git history); no version in the git history of a userscript, of the two extension zips (15 revisions) or of the Expanding Land APK names it; not in sitemap.xml"
+      },
+      "approvedForDeletion": true
+    },
+    {
+      "oldPath": "banners/iconRightcropped.png",
+      "canonicalPath": null,
+      "reason": "used only by pages, styles or code that are gone (removed, or commented out and that dead comment removed with it); no live page, script or setting names it. In the git history only extras/website/index.html (2018-2026-11), extras/website/index2.html (2018-2026-11), extras/website/index3.html (2018-2026-11), index.html (2019-2023-08) named it",
+      "internalReferencesMigrated": true,
+      "legacyResolverSupported": false,
+      "externalUrlSupported": false,
+      "legacyResolverNeeded": false,
+      "externalUrlNeeded": false,
+      "verification": {
+        "on": "2026-11-28",
+        "legacy": "saved data cannot hold it: in the whole git history no theme, preset, setting default or picture list a player could have picked and saved names it",
+        "external": "expandingland, legendworld-help, LegendWorld and deltav4 do not name it (also not in their git history); no version in the git history of a userscript, of the two extension zips (15 revisions) or of the Expanding Land APK names it; not in sitemap.xml"
+      },
+      "approvedForDeletion": true
+    },
+    {
+      "oldPath": "banners/iconagariotool.png",
+      "canonicalPath": null,
+      "reason": "used only by pages, styles or code that are gone (removed, or commented out and that dead comment removed with it); no live page, script or setting names it. In the git history only LMexpress/LMexpress.js (2022-2026-11), extras/website/index.html (2018-2026-11), extras/website/index2.html (2018-2026-11), extras/website/index3.html (2018-2026-11), LMexpress/lm_extended_ui.js (2026), ogario/ogario.v4.js (2019-2023-08), index.html (2019-2023-08), ogario/ogario.v4.master.js (2020) named it",
+      "internalReferencesMigrated": true,
+      "legacyResolverSupported": false,
+      "externalUrlSupported": false,
+      "legacyResolverNeeded": false,
+      "externalUrlNeeded": false,
+      "verification": {
+        "on": "2026-11-28",
+        "legacy": "saved data cannot hold it: in the whole git history no theme, preset, setting default or picture list a player could have picked and saved names it",
+        "external": "expandingland, legendworld-help, LegendWorld and deltav4 do not name it (also not in their git history); no version in the git history of a userscript, of the two extension zips (15 revisions) or of the Expanding Land APK names it; not in sitemap.xml"
+      },
+      "approvedForDeletion": true
+    },
+    {
+      "oldPath": "banners/icontinyHSLO.png",
+      "canonicalPath": null,
+      "reason": "used only by pages, styles or code that are gone (removed, or commented out and that dead comment removed with it); no live page, script or setting names it. In the git history only index.html (2020-2026-11) named it",
+      "internalReferencesMigrated": true,
+      "legacyResolverSupported": false,
+      "externalUrlSupported": false,
+      "legacyResolverNeeded": false,
+      "externalUrlNeeded": false,
+      "verification": {
+        "on": "2026-11-28",
+        "legacy": "saved data cannot hold it: in the whole git history no theme, preset, setting default or picture list a player could have picked and saved names it",
+        "external": "expandingland, legendworld-help, LegendWorld and deltav4 do not name it (also not in their git history); no version in the git history of a userscript, of the two extension zips (15 revisions) or of the Expanding Land APK names it; not in sitemap.xml"
+      },
+      "approvedForDeletion": true
+    },
+    {
+      "oldPath": "banners/icontinyLegend.png",
+      "canonicalPath": null,
+      "reason": "used only by pages, styles or code that are gone (removed, or commented out and that dead comment removed with it); no live page, script or setting names it. In the git history only index.html (2020-2026-11) named it",
+      "internalReferencesMigrated": true,
+      "legacyResolverSupported": false,
+      "externalUrlSupported": false,
+      "legacyResolverNeeded": false,
+      "externalUrlNeeded": false,
+      "verification": {
+        "on": "2026-11-28",
+        "legacy": "saved data cannot hold it: in the whole git history no theme, preset, setting default or picture list a player could have picked and saved names it",
+        "external": "expandingland, legendworld-help, LegendWorld and deltav4 do not name it (also not in their git history); no version in the git history of a userscript, of the two extension zips (15 revisions) or of the Expanding Land APK names it; not in sitemap.xml"
+      },
+      "approvedForDeletion": true
+    },
+    {
+      "oldPath": "banners/icontinyUnknown.png",
+      "canonicalPath": null,
+      "reason": "used only by pages, styles or code that are gone (removed, or commented out and that dead comment removed with it); no live page, script or setting names it. In the git history only index.html (2020-2026-11) named it",
+      "internalReferencesMigrated": true,
+      "legacyResolverSupported": false,
+      "externalUrlSupported": false,
+      "legacyResolverNeeded": false,
+      "externalUrlNeeded": false,
+      "verification": {
+        "on": "2026-11-28",
+        "legacy": "saved data cannot hold it: in the whole git history no theme, preset, setting default or picture list a player could have picked and saved names it",
+        "external": "expandingland, legendworld-help, LegendWorld and deltav4 do not name it (also not in their git history); no version in the git history of a userscript, of the two extension zips (15 revisions) or of the Expanding Land APK names it; not in sitemap.xml"
+      },
+      "approvedForDeletion": true
+    },
+    {
+      "oldPath": "banners/icontinyUsers.png",
+      "canonicalPath": null,
+      "reason": "used only by pages, styles or code that are gone (removed, or commented out and that dead comment removed with it); no live page, script or setting names it. In the git history only index.html (2020-2026-11) named it",
+      "internalReferencesMigrated": true,
+      "legacyResolverSupported": false,
+      "externalUrlSupported": false,
+      "legacyResolverNeeded": false,
+      "externalUrlNeeded": false,
+      "verification": {
+        "on": "2026-11-28",
+        "legacy": "saved data cannot hold it: in the whole git history no theme, preset, setting default or picture list a player could have picked and saved names it",
+        "external": "expandingland, legendworld-help, LegendWorld and deltav4 do not name it (also not in their git history); no version in the git history of a userscript, of the two extension zips (15 revisions) or of the Expanding Land APK names it; not in sitemap.xml"
+      },
+      "approvedForDeletion": true
+    },
+    {
+      "oldPath": "banners/iconsaynotoffabots.png",
+      "canonicalPath": null,
+      "reason": "used only by pages, styles or code that are gone (removed, or commented out and that dead comment removed with it); no live page, script or setting names it. In the git history only LMexpress/LMexpress.js (2022-2026-07), ogario/ogario.v4.js (2023), ogario/ogario.v4.master.js (2020) named it",
+      "internalReferencesMigrated": true,
+      "legacyResolverSupported": false,
+      "externalUrlSupported": false,
+      "legacyResolverNeeded": false,
+      "externalUrlNeeded": false,
+      "verification": {
+        "on": "2026-11-28",
+        "legacy": "saved data cannot hold it: in the whole git history no theme, preset, setting default or picture list a player could have picked and saved names it",
+        "external": "expandingland, legendworld-help, LegendWorld and deltav4 do not name it (also not in their git history); no version in the git history of a userscript, of the two extension zips (15 revisions) or of the Expanding Land APK names it; not in sitemap.xml"
+      },
+      "approvedForDeletion": true
+    },
+    {
+      "oldPath": "banners/iconSpecialSkinEffectsLight.png",
+      "canonicalPath": null,
+      "reason": "used only by pages, styles or code that are gone (removed, or commented out and that dead comment removed with it); no live page, script or setting names it. In the git history only ogario/ogario.v4.js (2020), LMexpress/shop/shop.js (2020) named it",
+      "internalReferencesMigrated": true,
+      "legacyResolverSupported": false,
+      "externalUrlSupported": false,
+      "legacyResolverNeeded": false,
+      "externalUrlNeeded": false,
+      "verification": {
+        "on": "2026-11-28",
+        "legacy": "saved data cannot hold it: in the whole git history no theme, preset, setting default or picture list a player could have picked and saved names it",
+        "external": "expandingland, legendworld-help, LegendWorld and deltav4 do not name it (also not in their git history); no version in the git history of a userscript, of the two extension zips (15 revisions) or of the Expanding Land APK names it; not in sitemap.xml"
+      },
+      "approvedForDeletion": true
+    },
+    {
+      "oldPath": "banners/preloader.gif",
+      "canonicalPath": null,
+      "reason": "used only by pages, styles or code that are gone (removed, or commented out and that dead comment removed with it); no live page, script or setting names it. In the git history only legendmod.js (2017) named it",
+      "internalReferencesMigrated": true,
+      "legacyResolverSupported": false,
+      "externalUrlSupported": false,
+      "legacyResolverNeeded": false,
+      "externalUrlNeeded": false,
+      "verification": {
+        "on": "2026-11-28",
+        "legacy": "saved data cannot hold it: in the whole git history no theme, preset, setting default or picture list a player could have picked and saved names it",
+        "external": "expandingland, legendworld-help, LegendWorld and deltav4 do not name it (also not in their git history); no version in the git history of a userscript, of the two extension zips (15 revisions) or of the Expanding Land APK names it; not in sitemap.xml"
+      },
+      "approvedForDeletion": true
+    },
+    {
+      "oldPath": "banners/particles.gif",
+      "canonicalPath": null,
+      "reason": "used only by pages, styles or code that are gone (removed, or commented out and that dead comment removed with it); no live page, script or setting names it. In the git history only languages/lm-ar.js (2026), languages/lm-bg.js (2026), languages/lm-de.js (2026), languages/lm-el.js (2026), languages/lm-en.js (2026), languages/lm-es.js (2026), languages/lm-fr.js (2026), languages/lm-id.js (2026), languages/lm-it.js (2026), languages/lm-ja.js (2026), languages/lm-nl.js (2026), languages/lm-pl.js (2026), languages/lm-pt.js (2026), languages/lm-ru.js (2026), languages/lm-tr.js (2026), languages/lm-zh.js (2026), LMexpress/lm_extended_ui.js (2026), extras/legendffa.html (2026), ogario/ogario.v4.test.js (2026), ogario/ogario.test.v4.js (2026), LMexpress/LMexpress.js (2019-2026-03), ogario/ogario.v4.master.js (2020), LMexpress/shop/shop.js (2020), ExampleScripts/animatedskins.js (2019), legendmod.js (2017) named it",
+      "internalReferencesMigrated": true,
+      "legacyResolverSupported": false,
+      "externalUrlSupported": false,
+      "legacyResolverNeeded": false,
+      "externalUrlNeeded": false,
+      "verification": {
+        "on": "2026-11-28",
+        "legacy": "saved data cannot hold it: in the whole git history no theme, preset, setting default or picture list a player could have picked and saved names it",
+        "external": "expandingland, legendworld-help, LegendWorld and deltav4 do not name it (also not in their git history); no version in the git history of a userscript, of the two extension zips (15 revisions) or of the Expanding Land APK names it; not in sitemap.xml"
+      },
+      "approvedForDeletion": true
+    },
+    {
+      "oldPath": "banners/21200467_720752201450756_895180016955935045_o.jpg",
+      "canonicalPath": null,
+      "reason": "no page, script, style, setting or test of this repository ever named it (whole git history)",
+      "internalReferencesMigrated": true,
+      "legacyResolverSupported": false,
+      "externalUrlSupported": false,
+      "legacyResolverNeeded": false,
+      "externalUrlNeeded": false,
+      "verification": {
+        "on": "2026-11-28",
+        "legacy": "saved data cannot hold it: in the whole git history no theme, preset, setting default or picture list a player could have picked and saved names it",
+        "external": "expandingland, legendworld-help, LegendWorld and deltav4 do not name it (also not in their git history); no version in the git history of a userscript, of the two extension zips (15 revisions) or of the Expanding Land APK names it; not in sitemap.xml"
+      },
+      "approvedForDeletion": true
+    },
+    {
+      "oldPath": "banners/CropedImage200.gif",
+      "canonicalPath": null,
+      "reason": "no page, script, style, setting or test of this repository ever named it (whole git history)",
+      "internalReferencesMigrated": true,
+      "legacyResolverSupported": false,
+      "externalUrlSupported": false,
+      "legacyResolverNeeded": false,
+      "externalUrlNeeded": false,
+      "verification": {
+        "on": "2026-11-28",
+        "legacy": "saved data cannot hold it: in the whole git history no theme, preset, setting default or picture list a player could have picked and saved names it",
+        "external": "expandingland, legendworld-help, LegendWorld and deltav4 do not name it (also not in their git history); no version in the git history of a userscript, of the two extension zips (15 revisions) or of the Expanding Land APK names it; not in sitemap.xml"
+      },
+      "approvedForDeletion": true
+    },
+    {
+      "oldPath": "banners/FAYiz/FayizPromoCarSmall.jpg",
+      "canonicalPath": null,
+      "reason": "no page, script, style, setting or test of this repository ever named it (whole git history)",
+      "internalReferencesMigrated": true,
+      "legacyResolverSupported": false,
+      "externalUrlSupported": false,
+      "legacyResolverNeeded": false,
+      "externalUrlNeeded": false,
+      "verification": {
+        "on": "2026-11-28",
+        "legacy": "saved data cannot hold it: in the whole git history no theme, preset, setting default or picture list a player could have picked and saved names it",
+        "external": "expandingland, legendworld-help, LegendWorld and deltav4 do not name it (also not in their git history); no version in the git history of a userscript, of the two extension zips (15 revisions) or of the Expanding Land APK names it; not in sitemap.xml"
+      },
+      "approvedForDeletion": true
+    },
+    {
+      "oldPath": "banners/IconAdCode.svg",
+      "canonicalPath": null,
+      "reason": "no page, script, style, setting or test of this repository ever named it (whole git history)",
+      "internalReferencesMigrated": true,
+      "legacyResolverSupported": false,
+      "externalUrlSupported": false,
+      "legacyResolverNeeded": false,
+      "externalUrlNeeded": false,
+      "verification": {
+        "on": "2026-11-28",
+        "legacy": "saved data cannot hold it: in the whole git history no theme, preset, setting default or picture list a player could have picked and saved names it",
+        "external": "expandingland, legendworld-help, LegendWorld and deltav4 do not name it (also not in their git history); no version in the git history of a userscript, of the two extension zips (15 revisions) or of the Expanding Land APK names it; not in sitemap.xml"
+      },
+      "approvedForDeletion": true
+    },
+    {
+      "oldPath": "banners/IconAdDiscord.svg",
+      "canonicalPath": null,
+      "reason": "no page, script, style, setting or test of this repository ever named it (whole git history)",
+      "internalReferencesMigrated": true,
+      "legacyResolverSupported": false,
+      "externalUrlSupported": false,
+      "legacyResolverNeeded": false,
+      "externalUrlNeeded": false,
+      "verification": {
+        "on": "2026-11-28",
+        "legacy": "saved data cannot hold it: in the whole git history no theme, preset, setting default or picture list a player could have picked and saved names it",
+        "external": "expandingland, legendworld-help, LegendWorld and deltav4 do not name it (also not in their git history); no version in the git history of a userscript, of the two extension zips (15 revisions) or of the Expanding Land APK names it; not in sitemap.xml"
+      },
+      "approvedForDeletion": true
+    },
+    {
+      "oldPath": "banners/IconAdFacebook.svg",
+      "canonicalPath": null,
+      "reason": "no page, script, style, setting or test of this repository ever named it (whole git history)",
+      "internalReferencesMigrated": true,
+      "legacyResolverSupported": false,
+      "externalUrlSupported": false,
+      "legacyResolverNeeded": false,
+      "externalUrlNeeded": false,
+      "verification": {
+        "on": "2026-11-28",
+        "legacy": "saved data cannot hold it: in the whole git history no theme, preset, setting default or picture list a player could have picked and saved names it",
+        "external": "expandingland, legendworld-help, LegendWorld and deltav4 do not name it (also not in their git history); no version in the git history of a userscript, of the two extension zips (15 revisions) or of the Expanding Land APK names it; not in sitemap.xml"
+      },
+      "approvedForDeletion": true
+    },
+    {
+      "oldPath": "banners/IconAdGithub.svg",
+      "canonicalPath": null,
+      "reason": "no page, script, style, setting or test of this repository ever named it (whole git history)",
+      "internalReferencesMigrated": true,
+      "legacyResolverSupported": false,
+      "externalUrlSupported": false,
+      "legacyResolverNeeded": false,
+      "externalUrlNeeded": false,
+      "verification": {
+        "on": "2026-11-28",
+        "legacy": "saved data cannot hold it: in the whole git history no theme, preset, setting default or picture list a player could have picked and saved names it",
+        "external": "expandingland, legendworld-help, LegendWorld and deltav4 do not name it (also not in their git history); no version in the git history of a userscript, of the two extension zips (15 revisions) or of the Expanding Land APK names it; not in sitemap.xml"
+      },
+      "approvedForDeletion": true
+    },
+    {
+      "oldPath": "banners/IconAdHome.svg",
+      "canonicalPath": null,
+      "reason": "no page, script, style, setting or test of this repository ever named it (whole git history)",
+      "internalReferencesMigrated": true,
+      "legacyResolverSupported": false,
+      "externalUrlSupported": false,
+      "legacyResolverNeeded": false,
+      "externalUrlNeeded": false,
+      "verification": {
+        "on": "2026-11-28",
+        "legacy": "saved data cannot hold it: in the whole git history no theme, preset, setting default or picture list a player could have picked and saved names it",
+        "external": "expandingland, legendworld-help, LegendWorld and deltav4 do not name it (also not in their git history); no version in the git history of a userscript, of the two extension zips (15 revisions) or of the Expanding Land APK names it; not in sitemap.xml"
+      },
+      "approvedForDeletion": true
+    },
+    {
+      "oldPath": "banners/LMJimboystatistics.png",
+      "canonicalPath": null,
+      "reason": "no page, script, style, setting or test of this repository ever named it (whole git history)",
+      "internalReferencesMigrated": true,
+      "legacyResolverSupported": false,
+      "externalUrlSupported": false,
+      "legacyResolverNeeded": false,
+      "externalUrlNeeded": false,
+      "verification": {
+        "on": "2026-11-28",
+        "legacy": "saved data cannot hold it: in the whole git history no theme, preset, setting default or picture list a player could have picked and saved names it",
+        "external": "expandingland, legendworld-help, LegendWorld and deltav4 do not name it (also not in their git history); no version in the git history of a userscript, of the two extension zips (15 revisions) or of the Expanding Land APK names it; not in sitemap.xml"
+      },
+      "approvedForDeletion": true
+    },
+    {
+      "oldPath": "banners/agariosmall.png",
+      "canonicalPath": null,
+      "reason": "no page, script, style, setting or test of this repository ever named it (whole git history)",
+      "internalReferencesMigrated": true,
+      "legacyResolverSupported": false,
+      "externalUrlSupported": false,
+      "legacyResolverNeeded": false,
+      "externalUrlNeeded": false,
+      "verification": {
+        "on": "2026-11-28",
+        "legacy": "saved data cannot hold it: in the whole git history no theme, preset, setting default or picture list a player could have picked and saved names it",
+        "external": "expandingland, legendworld-help, LegendWorld and deltav4 do not name it (also not in their git history); no version in the git history of a userscript, of the two extension zips (15 revisions) or of the Expanding Land APK names it; not in sitemap.xml"
+      },
+      "approvedForDeletion": true
+    },
+    {
+      "oldPath": "banners/chatscriptagartool.png",
+      "canonicalPath": null,
+      "reason": "no page, script, style, setting or test of this repository ever named it (whole git history)",
+      "internalReferencesMigrated": true,
+      "legacyResolverSupported": false,
+      "externalUrlSupported": false,
+      "legacyResolverNeeded": false,
+      "externalUrlNeeded": false,
+      "verification": {
+        "on": "2026-11-28",
+        "legacy": "saved data cannot hold it: in the whole git history no theme, preset, setting default or picture list a player could have picked and saved names it",
+        "external": "expandingland, legendworld-help, LegendWorld and deltav4 do not name it (also not in their git history); no version in the git history of a userscript, of the two extension zips (15 revisions) or of the Expanding Land APK names it; not in sitemap.xml"
+      },
+      "approvedForDeletion": true
+    },
+    {
+      "oldPath": "banners/chatscriptchat.jpg",
+      "canonicalPath": null,
+      "reason": "no page, script, style, setting or test of this repository ever named it (whole git history)",
+      "internalReferencesMigrated": true,
+      "legacyResolverSupported": false,
+      "externalUrlSupported": false,
+      "legacyResolverNeeded": false,
+      "externalUrlNeeded": false,
+      "verification": {
+        "on": "2026-11-28",
+        "legacy": "saved data cannot hold it: in the whole git history no theme, preset, setting default or picture list a player could have picked and saved names it",
+        "external": "expandingland, legendworld-help, LegendWorld and deltav4 do not name it (also not in their git history); no version in the git history of a userscript, of the two extension zips (15 revisions) or of the Expanding Land APK names it; not in sitemap.xml"
+      },
+      "approvedForDeletion": true
+    },
+    {
+      "oldPath": "banners/chatscriptkitty.jpg",
+      "canonicalPath": null,
+      "reason": "no page, script, style, setting or test of this repository ever named it (whole git history)",
+      "internalReferencesMigrated": true,
+      "legacyResolverSupported": false,
+      "externalUrlSupported": false,
+      "legacyResolverNeeded": false,
+      "externalUrlNeeded": false,
+      "verification": {
+        "on": "2026-11-28",
+        "legacy": "saved data cannot hold it: in the whole git history no theme, preset, setting default or picture list a player could have picked and saved names it",
+        "external": "expandingland, legendworld-help, LegendWorld and deltav4 do not name it (also not in their git history); no version in the git history of a userscript, of the two extension zips (15 revisions) or of the Expanding Land APK names it; not in sitemap.xml"
+      },
+      "approvedForDeletion": true
+    },
+    {
+      "oldPath": "banners/chatscriptlegend.png",
+      "canonicalPath": null,
+      "reason": "no page, script, style, setting or test of this repository ever named it (whole git history)",
+      "internalReferencesMigrated": true,
+      "legacyResolverSupported": false,
+      "externalUrlSupported": false,
+      "legacyResolverNeeded": false,
+      "externalUrlNeeded": false,
+      "verification": {
+        "on": "2026-11-28",
+        "legacy": "saved data cannot hold it: in the whole git history no theme, preset, setting default or picture list a player could have picked and saved names it",
+        "external": "expandingland, legendworld-help, LegendWorld and deltav4 do not name it (also not in their git history); no version in the git history of a userscript, of the two extension zips (15 revisions) or of the Expanding Land APK names it; not in sitemap.xml"
+      },
+      "approvedForDeletion": true
+    },
+    {
+      "oldPath": "banners/chatscriptogario.jpg",
+      "canonicalPath": null,
+      "reason": "no page, script, style, setting or test of this repository ever named it (whole git history)",
+      "internalReferencesMigrated": true,
+      "legacyResolverSupported": false,
+      "externalUrlSupported": false,
+      "legacyResolverNeeded": false,
+      "externalUrlNeeded": false,
+      "verification": {
+        "on": "2026-11-28",
+        "legacy": "saved data cannot hold it: in the whole git history no theme, preset, setting default or picture list a player could have picked and saved names it",
+        "external": "expandingland, legendworld-help, LegendWorld and deltav4 do not name it (also not in their git history); no version in the git history of a userscript, of the two extension zips (15 revisions) or of the Expanding Land APK names it; not in sitemap.xml"
+      },
+      "approvedForDeletion": true
+    },
+    {
+      "oldPath": "banners/chatscriptvanilla.jpg",
+      "canonicalPath": null,
+      "reason": "no page, script, style, setting or test of this repository ever named it (whole git history)",
+      "internalReferencesMigrated": true,
+      "legacyResolverSupported": false,
+      "externalUrlSupported": false,
+      "legacyResolverNeeded": false,
+      "externalUrlNeeded": false,
+      "verification": {
+        "on": "2026-11-28",
+        "legacy": "saved data cannot hold it: in the whole git history no theme, preset, setting default or picture list a player could have picked and saved names it",
+        "external": "expandingland, legendworld-help, LegendWorld and deltav4 do not name it (also not in their git history); no version in the git history of a userscript, of the two extension zips (15 revisions) or of the Expanding Land APK names it; not in sitemap.xml"
+      },
+      "approvedForDeletion": true
+    },
+    {
+      "oldPath": "banners/grid4.png",
+      "canonicalPath": null,
+      "reason": "no page, script, style, setting or test of this repository ever named it (whole git history)",
+      "internalReferencesMigrated": true,
+      "legacyResolverSupported": false,
+      "externalUrlSupported": false,
+      "legacyResolverNeeded": false,
+      "externalUrlNeeded": false,
+      "verification": {
+        "on": "2026-11-28",
+        "legacy": "saved data cannot hold it: in the whole git history no theme, preset, setting default or picture list a player could have picked and saved names it",
+        "external": "expandingland, legendworld-help, LegendWorld and deltav4 do not name it (also not in their git history); no version in the git history of a userscript, of the two extension zips (15 revisions) or of the Expanding Land APK names it; not in sitemap.xml"
+      },
+      "approvedForDeletion": true
+    },
+    {
+      "oldPath": "banners/icomagnifyingglass.png",
+      "canonicalPath": null,
+      "reason": "no page, script, style, setting or test of this repository ever named it (whole git history)",
+      "internalReferencesMigrated": true,
+      "legacyResolverSupported": false,
+      "externalUrlSupported": false,
+      "legacyResolverNeeded": false,
+      "externalUrlNeeded": false,
+      "verification": {
+        "on": "2026-11-28",
+        "legacy": "saved data cannot hold it: in the whole git history no theme, preset, setting default or picture list a player could have picked and saved names it",
+        "external": "expandingland, legendworld-help, LegendWorld and deltav4 do not name it (also not in their git history); no version in the git history of a userscript, of the two extension zips (15 revisions) or of the Expanding Land APK names it; not in sitemap.xml"
+      },
+      "approvedForDeletion": true
+    },
+    {
+      "oldPath": "banners/icon19.png",
+      "canonicalPath": null,
+      "reason": "no page, script, style, setting or test of this repository ever named it (whole git history)",
+      "internalReferencesMigrated": true,
+      "legacyResolverSupported": false,
+      "externalUrlSupported": false,
+      "legacyResolverNeeded": false,
+      "externalUrlNeeded": false,
+      "verification": {
+        "on": "2026-11-28",
+        "legacy": "saved data cannot hold it: in the whole git history no theme, preset, setting default or picture list a player could have picked and saved names it",
+        "external": "expandingland, legendworld-help, LegendWorld and deltav4 do not name it (also not in their git history); no version in the git history of a userscript, of the two extension zips (15 revisions) or of the Expanding Land APK names it; not in sitemap.xml"
+      },
+      "approvedForDeletion": true
+    },
+    {
+      "oldPath": "banners/icon19w.png",
+      "canonicalPath": null,
+      "reason": "no page, script, style, setting or test of this repository ever named it (whole git history)",
+      "internalReferencesMigrated": true,
+      "legacyResolverSupported": false,
+      "externalUrlSupported": false,
+      "legacyResolverNeeded": false,
+      "externalUrlNeeded": false,
+      "verification": {
+        "on": "2026-11-28",
+        "legacy": "saved data cannot hold it: in the whole git history no theme, preset, setting default or picture list a player could have picked and saved names it",
+        "external": "expandingland, legendworld-help, LegendWorld and deltav4 do not name it (also not in their git history); no version in the git history of a userscript, of the two extension zips (15 revisions) or of the Expanding Land APK names it; not in sitemap.xml"
+      },
+      "approvedForDeletion": true
+    },
+    {
+      "oldPath": "banners/icon38w.png",
+      "canonicalPath": null,
+      "reason": "no page, script, style, setting or test of this repository ever named it (whole git history)",
+      "internalReferencesMigrated": true,
+      "legacyResolverSupported": false,
+      "externalUrlSupported": false,
+      "legacyResolverNeeded": false,
+      "externalUrlNeeded": false,
+      "verification": {
+        "on": "2026-11-28",
+        "legacy": "saved data cannot hold it: in the whole git history no theme, preset, setting default or picture list a player could have picked and saved names it",
+        "external": "expandingland, legendworld-help, LegendWorld and deltav4 do not name it (also not in their git history); no version in the git history of a userscript, of the two extension zips (15 revisions) or of the Expanding Land APK names it; not in sitemap.xml"
+      },
+      "approvedForDeletion": true
+    },
+    {
+      "oldPath": "banners/iconbrowseredge32.png",
+      "canonicalPath": null,
+      "reason": "no page, script, style, setting or test of this repository ever named it (whole git history)",
+      "internalReferencesMigrated": true,
+      "legacyResolverSupported": false,
+      "externalUrlSupported": false,
+      "legacyResolverNeeded": false,
+      "externalUrlNeeded": false,
+      "verification": {
+        "on": "2026-11-28",
+        "legacy": "saved data cannot hold it: in the whole git history no theme, preset, setting default or picture list a player could have picked and saved names it",
+        "external": "expandingland, legendworld-help, LegendWorld and deltav4 do not name it (also not in their git history); no version in the git history of a userscript, of the two extension zips (15 revisions) or of the Expanding Land APK names it; not in sitemap.xml"
+      },
+      "approvedForDeletion": true
+    },
+    {
+      "oldPath": "banners/iconexpanding-land3.png",
+      "canonicalPath": null,
+      "reason": "no page, script, style, setting or test of this repository ever named it (whole git history)",
+      "internalReferencesMigrated": true,
+      "legacyResolverSupported": false,
+      "externalUrlSupported": false,
+      "legacyResolverNeeded": false,
+      "externalUrlNeeded": false,
+      "verification": {
+        "on": "2026-11-28",
+        "legacy": "saved data cannot hold it: in the whole git history no theme, preset, setting default or picture list a player could have picked and saved names it",
+        "external": "expandingland, legendworld-help, LegendWorld and deltav4 do not name it (also not in their git history); no version in the git history of a userscript, of the two extension zips (15 revisions) or of the Expanding Land APK names it; not in sitemap.xml"
+      },
+      "approvedForDeletion": true
+    },
+    {
+      "oldPath": "banners/icongalaxyliking.png",
+      "canonicalPath": null,
+      "reason": "no page, script, style, setting or test of this repository ever named it (whole git history)",
+      "internalReferencesMigrated": true,
+      "legacyResolverSupported": false,
+      "externalUrlSupported": false,
+      "legacyResolverNeeded": false,
+      "externalUrlNeeded": false,
+      "verification": {
+        "on": "2026-11-28",
+        "legacy": "saved data cannot hold it: in the whole git history no theme, preset, setting default or picture list a player could have picked and saved names it",
+        "external": "expandingland, legendworld-help, LegendWorld and deltav4 do not name it (also not in their git history); no version in the git history of a userscript, of the two extension zips (15 revisions) or of the Expanding Land APK names it; not in sitemap.xml"
+      },
+      "approvedForDeletion": true
+    },
+    {
+      "oldPath": "banners/iconlegendbannernice.png",
+      "canonicalPath": null,
+      "reason": "no page, script, style, setting or test of this repository ever named it (whole git history)",
+      "internalReferencesMigrated": true,
+      "legacyResolverSupported": false,
+      "externalUrlSupported": false,
+      "legacyResolverNeeded": false,
+      "externalUrlNeeded": false,
+      "verification": {
+        "on": "2026-11-28",
+        "legacy": "saved data cannot hold it: in the whole git history no theme, preset, setting default or picture list a player could have picked and saved names it",
+        "external": "expandingland, legendworld-help, LegendWorld and deltav4 do not name it (also not in their git history); no version in the git history of a userscript, of the two extension zips (15 revisions) or of the Expanding Land APK names it; not in sitemap.xml"
+      },
+      "approvedForDeletion": true
+    },
+    {
+      "oldPath": "banners/iconloading.gif",
+      "canonicalPath": null,
+      "reason": "no page, script, style, setting or test of this repository ever named it (whole git history)",
+      "internalReferencesMigrated": true,
+      "legacyResolverSupported": false,
+      "externalUrlSupported": false,
+      "legacyResolverNeeded": false,
+      "externalUrlNeeded": false,
+      "verification": {
+        "on": "2026-11-28",
+        "legacy": "saved data cannot hold it: in the whole git history no theme, preset, setting default or picture list a player could have picked and saved names it",
+        "external": "expandingland, legendworld-help, LegendWorld and deltav4 do not name it (also not in their git history); no version in the git history of a userscript, of the two extension zips (15 revisions) or of the Expanding Land APK names it; not in sitemap.xml"
+      },
+      "approvedForDeletion": true
+    },
+    {
+      "oldPath": "banners/iconsflc.png",
+      "canonicalPath": null,
+      "reason": "no page, script, style, setting or test of this repository ever named it (whole git history)",
+      "internalReferencesMigrated": true,
+      "legacyResolverSupported": false,
+      "externalUrlSupported": false,
+      "legacyResolverNeeded": false,
+      "externalUrlNeeded": false,
+      "verification": {
+        "on": "2026-11-28",
+        "legacy": "saved data cannot hold it: in the whole git history no theme, preset, setting default or picture list a player could have picked and saved names it",
+        "external": "expandingland, legendworld-help, LegendWorld and deltav4 do not name it (also not in their git history); no version in the git history of a userscript, of the two extension zips (15 revisions) or of the Expanding Land APK names it; not in sitemap.xml"
+      },
+      "approvedForDeletion": true
+    },
+    {
+      "oldPath": "banners/iconvanillaliking.png",
+      "canonicalPath": null,
+      "reason": "no page, script, style, setting or test of this repository ever named it (whole git history)",
+      "internalReferencesMigrated": true,
+      "legacyResolverSupported": false,
+      "externalUrlSupported": false,
+      "legacyResolverNeeded": false,
+      "externalUrlNeeded": false,
+      "verification": {
+        "on": "2026-11-28",
+        "legacy": "saved data cannot hold it: in the whole git history no theme, preset, setting default or picture list a player could have picked and saved names it",
+        "external": "expandingland, legendworld-help, LegendWorld and deltav4 do not name it (also not in their git history); no version in the git history of a userscript, of the two extension zips (15 revisions) or of the Expanding Land APK names it; not in sitemap.xml"
+      },
+      "approvedForDeletion": true
+    },
+    {
+      "oldPath": "banners/tampermonkey18.png",
+      "canonicalPath": null,
+      "reason": "no page, script, style, setting or test of this repository ever named it (whole git history)",
+      "internalReferencesMigrated": true,
+      "legacyResolverSupported": false,
+      "externalUrlSupported": false,
+      "legacyResolverNeeded": false,
+      "externalUrlNeeded": false,
+      "verification": {
+        "on": "2026-11-28",
+        "legacy": "saved data cannot hold it: in the whole git history no theme, preset, setting default or picture list a player could have picked and saved names it",
+        "external": "expandingland, legendworld-help, LegendWorld and deltav4 do not name it (also not in their git history); no version in the git history of a userscript, of the two extension zips (15 revisions) or of the Expanding Land APK names it; not in sitemap.xml"
+      },
+      "approvedForDeletion": true
+    },
+    {
+      "oldPath": "banners/iconMobileChat.png",
+      "canonicalPath": null,
+      "reason": "no page, script, style, setting or test of this repository ever named it (whole git history)",
+      "internalReferencesMigrated": true,
+      "legacyResolverSupported": false,
+      "externalUrlSupported": false,
+      "legacyResolverNeeded": false,
+      "externalUrlNeeded": false,
+      "verification": {
+        "on": "2026-11-28",
+        "legacy": "saved data cannot hold it: in the whole git history no theme, preset, setting default or picture list a player could have picked and saved names it",
+        "external": "expandingland, legendworld-help, LegendWorld and deltav4 do not name it (also not in their git history); no version in the git history of a userscript, of the two extension zips (15 revisions) or of the Expanding Land APK names it; not in sitemap.xml"
+      },
+      "approvedForDeletion": true
+    },
+    {
+      "oldPath": "banners/dyinglightpromopic.png",
+      "canonicalPath": null,
+      "reason": "no page, script, style, setting or test of this repository ever named it (whole git history)",
+      "internalReferencesMigrated": true,
+      "legacyResolverSupported": false,
+      "externalUrlSupported": false,
+      "legacyResolverNeeded": false,
+      "externalUrlNeeded": false,
+      "verification": {
+        "on": "2026-11-28",
+        "legacy": "saved data cannot hold it: in the whole git history no theme, preset, setting default or picture list a player could have picked and saved names it",
+        "external": "expandingland, legendworld-help, LegendWorld and deltav4 do not name it (also not in their git history); no version in the git history of a userscript, of the two extension zips (15 revisions) or of the Expanding Land APK names it; not in sitemap.xml"
+      },
+      "approvedForDeletion": true
+    },
+    {
+      "oldPath": "banners/iconagario.jpg",
+      "canonicalPath": null,
+      "reason": "no page, script, style, setting or test of this repository ever named it (whole git history)",
+      "internalReferencesMigrated": true,
+      "legacyResolverSupported": false,
+      "externalUrlSupported": false,
+      "legacyResolverNeeded": false,
+      "externalUrlNeeded": false,
+      "verification": {
+        "on": "2026-11-28",
+        "legacy": "saved data cannot hold it: in the whole git history no theme, preset, setting default or picture list a player could have picked and saved names it",
+        "external": "expandingland, legendworld-help, LegendWorld and deltav4 do not name it (also not in their git history); no version in the git history of a userscript, of the two extension zips (15 revisions) or of the Expanding Land APK names it; not in sitemap.xml"
+      },
+      "approvedForDeletion": true
+    },
+    {
+      "oldPath": "banners/iconno.png",
+      "canonicalPath": null,
+      "reason": "no page, script, style, setting or test of this repository ever named it (whole git history)",
+      "internalReferencesMigrated": true,
+      "legacyResolverSupported": false,
+      "externalUrlSupported": false,
+      "legacyResolverNeeded": false,
+      "externalUrlNeeded": false,
+      "verification": {
+        "on": "2026-11-28",
+        "legacy": "saved data cannot hold it: in the whole git history no theme, preset, setting default or picture list a player could have picked and saved names it",
+        "external": "expandingland, legendworld-help, LegendWorld and deltav4 do not name it (also not in their git history); no version in the git history of a userscript, of the two extension zips (15 revisions) or of the Expanding Land APK names it; not in sitemap.xml"
+      },
+      "approvedForDeletion": true
+    },
+    {
+      "oldPath": "banners/iconyes.png",
+      "canonicalPath": null,
+      "reason": "no page, script, style, setting or test of this repository ever named it (whole git history)",
+      "internalReferencesMigrated": true,
+      "legacyResolverSupported": false,
+      "externalUrlSupported": false,
+      "legacyResolverNeeded": false,
+      "externalUrlNeeded": false,
+      "verification": {
+        "on": "2026-11-28",
+        "legacy": "saved data cannot hold it: in the whole git history no theme, preset, setting default or picture list a player could have picked and saved names it",
+        "external": "expandingland, legendworld-help, LegendWorld and deltav4 do not name it (also not in their git history); no version in the git history of a userscript, of the two extension zips (15 revisions) or of the Expanding Land APK names it; not in sitemap.xml"
+      },
+      "approvedForDeletion": true
+    },
+    {
+      "oldPath": "banners/emoticons/newcry.svg",
+      "canonicalPath": null,
+      "reason": "no page, script, style, setting or test of this repository ever named it (whole git history)",
+      "internalReferencesMigrated": true,
+      "legacyResolverSupported": false,
+      "externalUrlSupported": false,
+      "legacyResolverNeeded": false,
+      "externalUrlNeeded": false,
+      "verification": {
+        "on": "2026-11-28",
+        "legacy": "saved data cannot hold it: in the whole git history no theme, preset, setting default or picture list a player could have picked and saved names it",
+        "external": "expandingland, legendworld-help, LegendWorld and deltav4 do not name it (also not in their git history); no version in the git history of a userscript, of the two extension zips (15 revisions) or of the Expanding Land APK names it; not in sitemap.xml"
+      },
+      "approvedForDeletion": true
+    },
+    {
+      "oldPath": "banners/Lcclan33.jpg",
+      "canonicalPath": "Lc/articles/images/indonesia-inggris.jpg",
+      "reason": "Byte-identical copy of Lc/articles/images/indonesia-inggris.jpg (the picture the clan article shows). Lc/Lc.html showed banners/Lcclan33.jpg from 2018 to 2026-02-25; its last user, the old clan page copy Lc/PROJETOX.HTML/original/lc.html, now loads indonesia-inggris.jpg. The file stays published for links from outside until its public URL is no longer needed (developers/audit/public-urls.json lists it as compatibility).",
+      "internalReferencesMigrated": true,
+      "legacyResolverSupported": false,
+      "externalUrlSupported": true,
+      "legacyResolverNeeded": false,
+      "externalUrlNeeded": true,
+      "verification": {
+        "on": "2026-11-28",
+        "legacy": "saved data cannot hold it: in the whole git history no theme, preset, setting default or picture list a player could have picked and saved names it",
+        "external": "kept published: a clan page picture for eight years that people may have linked from outside; expandingland, legendworld-help, LegendWorld and deltav4 do not name it"
+      },
+      "approvedForDeletion": false
+    },
+    {
+      "oldPath": "img/Legend.png",
+      "canonicalPath": "banners/smallbannerlegendclan.png",
+      "reason": "Byte-identical copy of banners/smallbannerlegendclan.png (and of the deleted banners/smallbannerlegendclan2.png). It is the old root Legend.png moved to img/ on 2026-07-30 (367fc0a2a); since that move nothing loads it: the only mention was a made-up background address in developers/tests/probes/themebridge.js, which now names banners/smallbannerlegendclan.png. The 2017 userscripts that named the root Legend.png point to an address that is gone since that move either way.",
+      "internalReferencesMigrated": true,
+      "legacyResolverSupported": false,
+      "externalUrlSupported": false,
+      "legacyResolverNeeded": false,
+      "externalUrlNeeded": false,
+      "verification": {
+        "on": "2026-11-28",
+        "legacy": "saved data cannot hold it: in the whole git history no theme, preset, setting default or picture list names img/Legend.png",
+        "external": "expandingland, legendworld-help, LegendWorld and deltav4 do not name it (also not in their git history); no version of a userscript, of the two extension zips or of the Expanding Land APK names img/Legend.png; not in sitemap.xml"
       },
       "approvedForDeletion": true
     }

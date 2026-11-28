@@ -19,6 +19,8 @@ const { readJson, ext } = require('./inventory');
 
 const ASSET_EXT = 'png|jpe?g|gif|webp|svg|ico|bmp|avif|mp4|webm|ogv|mov|mp3|ogg|oga|wav|m4a|flac|js|mjs|css|json|jsonld|html?|txt|xml|woff2?|ttf|otf|eot|wasm|cur|ani|zip|apk|md|pdf|webmanifest';
 const REL_RE = new RegExp('([\'"`])((?:\\.{1,2}\\/|\\/)?(?:[\\w\\-.%@ ]+\\/)*[\\w\\-.%@ ]*[\\w\\-%@]\\.(?:' + ASSET_EXT + '))(?:[?#][^\'"`\\r\\n]*)?\\1', 'gi');
+/* markup built in a script string: '<img src="/banners/x.png">' (the attribute value, quoted inside the string) */
+const ATTR_IN_STR_RE = /\b(?:src|href|poster|data-src|data-original|data-href|background)\s*=\s*\\?(["'])([^"'\\<>\s+]+)\\?\1/gi;
 const DIR_PREFIX_RE = /(['"`])((?:\.{1,2}\/|\/)?(?:[\w\-.]+\/)+)\1(?=\s*\+)/g;
 /* brackets stay in (nicks/emoji/DisMojiPicker[1].js); a closing one without an opening one is markdown */
 const URL_RE = /(?:\b(https?):)?\/\/([a-z0-9][a-z0-9.-]*\.[a-z]{2,})(:\d+)?(\/[^\s'"`<>()\\{}|^,;$]*)?/gi;
@@ -501,6 +503,12 @@ function extract(rel, t, ctx) {
                 REL_RE.lastIndex = m.index + m[0].length - 1;
             }
             if (e === 'json') continue;
+            ATTR_IN_STR_RE.lastIndex = 0;
+            while ((m = ATTR_IN_STR_RE.exec(s))) {
+                const v = m[2], at = z[0] + m.index + m[0].indexOf(v);
+                if (seenAt.has(at) || v.startsWith('//') || /^(#|[a-z][a-z0-9+.-]*:)/i.test(v) || v.indexOf('${') >= 0) continue;
+                if (cutQuery(v) && /\.[a-z0-9]{2,5}$/i.test(cutQuery(v))) weakRel(v, at);
+            }
             DIR_PREFIX_RE.lastIndex = 0;
             while ((m = DIR_PREFIX_RE.exec(s))) {
                 const at = z[0] + m.index;

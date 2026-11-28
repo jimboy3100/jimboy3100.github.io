@@ -449,7 +449,6 @@ function startLM(modVersion, loaderName) {
     if (!window.LMstarted) {
         window.LMstarted = true
         // ANNOUNCEMENTS
-        //toastr.info('<b><font color="yellow"><span style="text-shadow: 0px 0px 10px #0DA9C7;background: transparent url(https://www.legendmod.ml/banners/particles.gif);">'+'Legend mod </span></font> is back!<br><font color="red"></b>Enable Vanilla skins on Settings</font>').css("width", "350px");
         window.LMVersion = modVersion;
         _lmxUpdateNotice(modVersion, loaderName);
 
@@ -475,32 +474,6 @@ function loadersettings() {
             }
         }
     }
-    /*if (checkonlyfourtenth != "true") {
-    toastr.info('<center><b>'+
-    'Try <font color="yellow"><span style="text-shadow: 0px 0px 10px #0DA9C7;background: transparent url(https://www.legendmod.ml/banners/particles.gif);">Unlimited FPS</font></span>:<br>'+
-    'Change  frame per sec, to <u><font color="blue">unlimited</font></u><br>'+
-    'on <u><font color="blue">settings tab</font></u'+
-    '</b></center>', '', {
-                timeOut: 20000,
-                extendedTimeOut: 20000
-    }).css("width", "450px");	
-	
-    //if($("#SHOSHOBtn").attr('aria-pressed') == "false"){
-    toastr.info('<center><b>'+
-    'IF HOTKEYS <font color="yellow"><span style="text-shadow: 0px 0px 10px #0DA9C7;background: transparent url(https://www.legendmod.ml/banners/particles.gif);">NOT WORKING</font></span>:<br>'+
-    'Change theme, <u><a target="_blank" href="https://www.legendmod.ml/themes/"><font color="blue">click here</font></u></a><br>'+
-    'or <u><font color="green">chrome://settings/clearBrowserData </font></u>delete cookies'+
-    '<br>or <u><font color="green">Settings->Import/Export->Download </font></u> your latest saved setting</b></center>', '', {
-                timeOut: 20000,
-                extendedTimeOut: 20000
-            }).css("width", "450px");
-        	
-        	
-    checkonlyfourtenth = "true";
-    localStorage.setItem("checkonlyfourtenth", checkonlyfourtenth);				
-   // }					
-    }
-*/
     if (checkonlytfourtheenth != "true") {
         LMLegendFFAPromo();
         checkonlytfourtheenth = "true";
@@ -3878,10 +3851,6 @@ function triggerLMbtns() {
         setdiscwebhook2();
     }
 
-    /*$("#agario-main-buttons").append('<div id="LEGENDAds5"></div>')
-    if (!window.proLicenceUID && !document.getElementById("nick").value.includes("℄")){
-        $("#LEGENDAds5").load("https://www.legendmod.ml/banners/agario2");
-    }*/
     lmDyingLightStartup();
 }
 
@@ -6310,8 +6279,6 @@ function initializeLM(modVersion) {
 
     /* positioning parent for "More FPS", centred on the footer whatever the version label's width */
     $("#menu-footer").text("").css("position", "relative");
-    //$("#agario-main-buttons").after('<div id="LEGENDAds4"></div>'); //
-    //$("#LEGENDAds4").load("https://www.legendmod.ml/banners/bannerLMdevs"); //
     $("#menu-footer").prepend('<span style="float: left; font-size: 13px;"><a target="_blank" href="https://jimboy3100.github.io" style="color: #ffffff;" data-toggle="tooltip" data-title="' + _lmxE('lmx.ex.website') + '" data-placement="left">v' + modVersion +
         '</a></span><span class="lm-footer-fps" style="position: absolute; left: 50%; top: 5px; transform: translateX(-50%); white-space: nowrap; font-size: 13px;"><a id="MorefpsText" href="https://www.legendmod.ml/?nav=FPS" data-toggle="tooltip" data-title="' + _lmxE('lmx.ex.improvePerformance') + '" data-placement="top" style ="font-size: 13px"; target="_blank">' + _lmxE('pack.moreFps') + '</a></span>' +
         '<a style="float: right;  margin-top: -2px" target="_blank" href="https://www.buymeacoffee.com/legendmod">☕︎</a>');
