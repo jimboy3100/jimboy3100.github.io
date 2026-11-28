@@ -2957,7 +2957,7 @@
 "settings.oneColoredSpectator": "Multibox: lighter rendering (one-color cells)",
 "settings.multiBoxShadow": "Player 1 & 2 glow (profile colors)",
 "settings.multiKeepMoving": "Inactive unit keeps moving",
-"settings.middleMultiView": "View on middle of both (disables when close)",
+"settings.middleMultiView": "View on middle of both (always, also when far apart)",
 "settings.middleMultiViewWhenClose": "View on middle of both (when close)",
 "settings.multiboxAmount": "Multibox slots (2-4)",
 "settings.mbSwitchAfterDeath": "Auto-switch focus after death",

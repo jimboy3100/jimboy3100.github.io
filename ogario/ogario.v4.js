@@ -78723,6 +78723,9 @@ function pickPlayerCellBySize(players, selectBiggest) {
                 (this.canvasHeight || 1) * 0.9 / Math.max(1, maxY - minY)
             ) / (baseScale > 0 ? baseScale : 1);
             var both;
+            /* one choice in two switches: "middle of both" always (middleMultiView, also its hotkey)
+             * wins over "middle of both when close" (middleMultiViewWhenClose), so the hotkey turns the
+             * always-view on and off over the when-close one */
             if (defaultmapsettings.middleMultiView) {
                 both = 1;
             } else if (defaultmapsettings.middleMultiViewWhenClose) {
