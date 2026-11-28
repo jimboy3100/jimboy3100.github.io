@@ -52,31 +52,93 @@
  *   lifecycle    init exactly once, its readiness signal
  *   recovery     a takeover that came after agar.io had started, a cached page that does not start
  *   diagnostics  sessionStorage "lmx-boot": the stages with their times, the source, any conflict
+ * The owner records, the agar.io/normal note, the stage records and the init call with its signal are the
+ * extension's code too (extension/content.js): developers/loader-build.js writes developers/loader/shared.js
+ * into both, between the lmx-shared markers. Everything else here is this loader's own adapter.
  */
 (function () {
 'use strict';
 
+/* lmx-shared:start */ /* GENERATED from developers/loader/shared.js by developers/loader-build.js: edit it there */
+/* ---- single owner: with both loaders installed only one takes over agar.io's page. The one that does names
+ * itself first, in sessionStorage and on <html>, as "<extension|userscript>:<performance.timeOrigin>". ---- */
+var LMX_OWNER_KEY = 'lm-loader-owner', LMX_OWNER_ATTR = 'data-lm-loader';
+var lmxTimeOrigin = '';
+try { lmxTimeOrigin = String(performance.timeOrigin || performance.timing.navigationStart); } catch (e) { }
+/* the loader that an owner record names when it is of this page load, else '' (a record with another
+ * timeOrigin is from an earlier page load in this tab) */
+function lmxLiveOwner(value) {
+    var m = /^(extension|userscript):(.*)$/.exec(String(value || ''));
+    return m && m[2] === lmxTimeOrigin ? m[1] : '';
+}
+/* the owner records of this page: sessionStorage, then the <html> attribute */
+function lmxOwnerRecords() {
+    var seen = [];
+    try { seen.push(sessionStorage.getItem(LMX_OWNER_KEY)); } catch (e) { }
+    try { seen.push(document.documentElement ? document.documentElement.getAttribute(LMX_OWNER_ATTR) : null); } catch (e) { }
+    return seen;
+}
+function lmxClaimOwner(mark) {
+    try { sessionStorage.setItem(LMX_OWNER_KEY, mark); } catch (e) { }
+    try { if (document.documentElement) document.documentElement.setAttribute(LMX_OWNER_ATTR, mark); } catch (e) { }
+}
+
+/* ---- agar.io without the mod: the userscript's agar.io/normal leaves the note "go:<time>" (10 s) and sends
+ * the tab to agar.io/; that load keeps it as "on", and a reload of it stays without the mod. ---- */
+var LMX_VANILLA_KEY = 'lmx-vanilla';
+function lmxVanillaWanted() {
+    var note = '', nav = '';
+    try { note = sessionStorage.getItem(LMX_VANILLA_KEY) || ''; } catch (e) { return false; }
+    var m = /^go:(\d+)$/.exec(note);
+    if (m) return Date.now() - Number(m[1]) < 10000;
+    if (note !== 'on') return false;
+    try {
+        var entry = performance.getEntriesByType('navigation')[0];
+        nav = entry ? entry.type : performance.navigation.type === 1 ? 'reload' : '';
+    } catch (e) { }
+    return nav === 'reload';
+}
+
+/* ---- diagnostics: the stages (ROUTING -> TAKEOVER -> LOADING -> INITIALIZING -> READY, or FAILED / RECOVERY)
+ * with their times since startedAt, in sessionStorage "lmx-boot" ---- */
+function lmxStage(diag, startedAt, next, info) {
+    var t = 0;
+    try { t = performance.now(); } catch (e) { }
+    diag.states.push([next, Math.round(t - startedAt)]);
+    if (info) diag.info = String(info);
+    try { sessionStorage.setItem('lmx-boot', JSON.stringify(diag)); } catch (e) { }
+}
+
+/* ---- lifecycle: the mod's init(<version>[, <loader>]) call at the end of the Legend page's body, after its
+ * own scripts, with its readiness signal: the DOM events lmx-init-ok / lmx-init-missing (the loaders do not
+ * run in the page's world) and html[data-lmx-init] for a page whose call ran while it was being written ---- */
+function lmxAddInitCall(html, version, loaderName) {
+    /* JSON quoting, with "<" escaped so the version text can never close the script tag */
+    var args = JSON.stringify(version).replace(/</g, '\\u003c') + (loaderName ? ', ' + JSON.stringify(loaderName) : '');
+    var call = '<script>' +
+        'var lmxInit = function (s) { document.documentElement.setAttribute("data-lmx-init", s); document.dispatchEvent(new Event("lmx-init-" + s)); };' +
+        'if (typeof init === "function") { try { init(' + args + '); } finally { lmxInit("ok"); } }' +
+        ' else { console.error("[LMexpress] init() is missing: LMexpress.js did not load"); lmxInit("missing"); }' +
+        '</script>';
+    var bodyEnd = html.toLowerCase().lastIndexOf('</body>');
+    if (bodyEnd === -1) return html + call;
+    return html.slice(0, bodyEnd) + call + html.slice(bodyEnd);
+}
+
+function lmxEscapeHtml(text) {
+    return String(text).replace(/[&<>"']/g, function (ch) {
+        return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[ch];
+    });
+}
+/* lmx-shared:end */
+
 /* ---- owner: the first statement. Another loader of this same page load (same timeOrigin) already
  * owns it: do nothing. A value from an earlier page load in this tab is not live. ---- */
 var LOADER = 'userscript';
-var OWNER_KEY = 'lm-loader-owner', OWNER_ATTR = 'data-lm-loader';
-var timeOrigin = '';
-try { timeOrigin = String(performance.timeOrigin || performance.timing.navigationStart); } catch (e) { }
+var timeOrigin = lmxTimeOrigin;
 var OWNER = LOADER + ':' + timeOrigin;
-function liveOwner(value) {
-    var m = /^(extension|userscript):(.*)$/.exec(String(value || ''));
-    return !!m && m[2] === timeOrigin;
-}
-var seenOwner = null;
-try { seenOwner = sessionStorage.getItem(OWNER_KEY); } catch (e) { }
-if (!liveOwner(seenOwner)) {
-    try { seenOwner = document.documentElement ? document.documentElement.getAttribute(OWNER_ATTR) : null; } catch (e) { seenOwner = null; }
-}
-if (liveOwner(seenOwner)) return;
-function claimOwner() {
-    try { sessionStorage.setItem(OWNER_KEY, OWNER); } catch (e) { }
-    try { if (document.documentElement) document.documentElement.setAttribute(OWNER_ATTR, OWNER); } catch (e) { }
-}
+if (lmxOwnerRecords().some(lmxLiveOwner)) return;
+function claimOwner() { lmxClaimOwner(OWNER); }
 claimOwner();
 
 /* ---- router ---- */
@@ -125,19 +187,8 @@ var mode = Object.prototype.hasOwnProperty.call(modes, modeName) ? modes[modeNam
  * agar.io/ arrives as /legendmod/ (its redirect rule comes before any script), and without sessionStorage
  * /normal does it itself. The extension (content.js) reads the same note.
  */
-var VANILLA_KEY = 'lmx-vanilla';
-function vanillaWanted() {
-    var note = '', nav = '';
-    try { note = sessionStorage.getItem(VANILLA_KEY) || ''; } catch (e) { return false; }
-    var m = /^go:(\d+)$/.exec(note);
-    if (m) return Date.now() - Number(m[1]) < 10000;
-    if (note !== 'on') return false;
-    try {
-        var entry = performance.getEntriesByType('navigation')[0];
-        nav = entry ? entry.type : performance.navigation.type === 1 ? 'reload' : '';
-    } catch (e) { }
-    return nav === 'reload';
-}
+var VANILLA_KEY = LMX_VANILLA_KEY;
+var vanillaWanted = lmxVanillaWanted;
 if (modeName === 'normal' && !vanillaWanted()) {
     var noted = false;
     try { sessionStorage.setItem(VANILLA_KEY, 'go:' + Date.now()); noted = /^go:/.test(sessionStorage.getItem(VANILLA_KEY) || ''); } catch (e) { }
@@ -190,7 +241,7 @@ try {
 } catch (e) { }
 /* the same look as play.html's own loading screen (#lm-boot), which takes over from it */
 try {
-    writeDocument('<!DOCTYPE html><html ' + OWNER_ATTR + '="' + OWNER + '"><head><meta charset="utf-8">' +
+    writeDocument('<!DOCTYPE html><html ' + LMX_OWNER_ATTR + '="' + OWNER + '"><head><meta charset="utf-8">' +
         '<meta name="viewport" content="width=device-width, initial-scale=1"><title>Legend Mod</title></head>' +
         '<body style="margin:0;background:' + themeBg + ';"><div id="lmx-loading" style="position:fixed;left:0;top:0;right:0;bottom:0;' +
         'z-index:2147483000;background:' + themeBg + ';color:#fff;font:15px/1.5 Ubuntu,Arial,sans-serif;display:flex;' + /* i18n-ok: style */
@@ -297,15 +348,7 @@ var diag = {
     mode: modeName || '/', timing: timing, startMs: Math.round(startedAt), takeoverMs: Math.round(tookOverAt - startedAt),
     states: [], source: '', release: '', conflict: ''
 };
-var state = '';
-function go(next, info) {
-    state = next;
-    var t = 0;
-    try { t = performance.now(); } catch (e) { }
-    diag.states.push([next, Math.round(t - startedAt)]);
-    if (info) diag.info = String(info);
-    try { sessionStorage.setItem('lmx-boot', JSON.stringify(diag)); } catch (e) { }
-}
+function go(next, info) { lmxStage(diag, startedAt, next, info); }
 go('ROUTING');
 go('TAKEOVER');
 
@@ -581,21 +624,8 @@ function runUserscript(scriptUrl, replacesPage) {
     });
 }
 
-/* Add the mod's init(<version>) call at the end of the Legend page's body, after its own scripts, with its
- * readiness signal for the loader (a DOM event: the loader runs in the manager's world, not the page's) */
-function addInitCall(html) {
-    /* JSON quoting, with "<" escaped so the version text can never close the script tag */
-    var version = JSON.stringify(modVersion).replace(/</g, '\\u003c');
-    var call = '<script>' +
-        'if (typeof init === "function") { try { init(' + version + '); } finally { document.dispatchEvent(new Event("lmx-init-ok")); } }' +
-        ' else { console.error("[LMexpress] init() is missing: LMexpress.js did not load"); document.dispatchEvent(new Event("lmx-init-missing")); }' +
-        '</script>';
-    var bodyEnd = html.toLowerCase().lastIndexOf('</body>');
-    if (bodyEnd === -1) {
-        return html + call;
-    }
-    return html.slice(0, bodyEnd) + call + html.slice(bodyEnd);
-}
+/* the mod's init(<version>) call after the Legend page's own scripts, with its readiness signal (shared part) */
+function addInitCall(html) { return lmxAddInitCall(html, modVersion); }
 
 /* A late start where reloading does not help: agar.io's timers and animation frames, still running in the
  * page, are cancelled before the Legend page's first script (the ids before it are all agar.io's).
@@ -693,10 +723,10 @@ function fetchText(url, fresh, onText, onFail) {
 function showLoaderPage(title, text, linkUrl, linkText) {
     var page = '<!doctype html><html' + (lmxLang === 6 ? ' dir="rtl"' : '') + '><head><meta charset="utf-8"><title>Legend Mod</title></head>' +
         '<body style="margin:0;background:#00243e;color:#fff;font:16px Ubuntu,Arial,sans-serif;text-align:center;padding-top:20vh">' +
-        '<h2 style="margin:0 0 12px">' + escapeHtml(title) + '</h2><div style="opacity:.8">' + escapeHtml(text) + '</div><br>' +
-        (linkUrl ? '<a style="color:#ffd200" href="' + escapeHtml(linkUrl) + '" target="_blank" rel="noopener">' + escapeHtml(linkText || linkUrl) + '</a> &nbsp;&middot;&nbsp; ' : '') +
-        '<a style="color:#ffd200" href="https://agar.io/legendmod">' + escapeHtml(lmxText('lmx.us.playLegend')) + '</a> &nbsp;&middot;&nbsp; ' +
-        '<a style="color:#ffd200" href="https://agar.io/normal">' + escapeHtml(lmxText('lmx.us.playNoMods')) + '</a>' +
+        '<h2 style="margin:0 0 12px">' + lmxEscapeHtml(title) + '</h2><div style="opacity:.8">' + lmxEscapeHtml(text) + '</div><br>' +
+        (linkUrl ? '<a style="color:#ffd200" href="' + lmxEscapeHtml(linkUrl) + '" target="_blank" rel="noopener">' + lmxEscapeHtml(linkText || linkUrl) + '</a> &nbsp;&middot;&nbsp; ' : '') +
+        '<a style="color:#ffd200" href="https://agar.io/legendmod">' + lmxEscapeHtml(lmxText('lmx.us.playLegend')) + '</a> &nbsp;&middot;&nbsp; ' +
+        '<a style="color:#ffd200" href="https://agar.io/normal">' + lmxEscapeHtml(lmxText('lmx.us.playNoMods')) + '</a>' +
         '</body></html>';
     writePage(page);
 }
@@ -706,17 +736,12 @@ function showLoadError(url, problem) {
     go('FAILED', problem);
     var page = '<!DOCTYPE html><html' + (lmxLang === 6 ? ' dir="rtl"' : '') + '><head><meta charset="utf-8"><title>Legend Express</title></head>' +
         '<body style="background:#111;color:#eee;font:16px sans-serif;padding:40px;">' +
-        '<h2 id="lmx-error">' + escapeHtml(lmxText('lmx.us.couldNotLoad')) + '</h2>' +
-        '<p>' + escapeHtml(url) + ' (' + escapeHtml(problem) + ')</p>' +
-        '<p><a style="color:#6cf;" href="' + escapeHtml(location.href) + '">' + escapeHtml(lmxText('lmx.ext.tryAgain')) + '</a>' +
-        ' &middot; <a style="color:#6cf;" href="https://agar.io/normal">' + escapeHtml(lmxText('lmx.us.playVanilla')) + '</a></p>' +
+        '<h2 id="lmx-error">' + lmxEscapeHtml(lmxText('lmx.us.couldNotLoad')) + '</h2>' +
+        '<p>' + lmxEscapeHtml(url) + ' (' + lmxEscapeHtml(problem) + ')</p>' +
+        '<p><a style="color:#6cf;" href="' + lmxEscapeHtml(location.href) + '">' + lmxEscapeHtml(lmxText('lmx.ext.tryAgain')) + '</a>' +
+        ' &middot; <a style="color:#6cf;" href="https://agar.io/normal">' + lmxEscapeHtml(lmxText('lmx.us.playVanilla')) + '</a></p>' +
         '</body></html>';
     writePage(page);
 }
 
-function escapeHtml(text) {
-    return String(text).replace(/[&<>"']/g, function (ch) {
-        return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[ch];
-    });
-}
 })();

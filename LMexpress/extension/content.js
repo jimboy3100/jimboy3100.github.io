@@ -2,15 +2,91 @@
 /*MIT License*/
 
 /*
+ * The owner records, the agar.io/normal note, the stage records and the init call with its signal are the
+ * userscript's code too (LMexpress.user.js): developers/loader-build.js writes developers/loader/shared.js into
+ * both, between the lmx-shared markers. Everything else here is this extension's own adapter.
+ */
+/* lmx-shared:start */ /* GENERATED from developers/loader/shared.js by developers/loader-build.js: edit it there */
+/* ---- single owner: with both loaders installed only one takes over agar.io's page. The one that does names
+ * itself first, in sessionStorage and on <html>, as "<extension|userscript>:<performance.timeOrigin>". ---- */
+var LMX_OWNER_KEY = 'lm-loader-owner', LMX_OWNER_ATTR = 'data-lm-loader';
+var lmxTimeOrigin = '';
+try { lmxTimeOrigin = String(performance.timeOrigin || performance.timing.navigationStart); } catch (e) { }
+/* the loader that an owner record names when it is of this page load, else '' (a record with another
+ * timeOrigin is from an earlier page load in this tab) */
+function lmxLiveOwner(value) {
+    var m = /^(extension|userscript):(.*)$/.exec(String(value || ''));
+    return m && m[2] === lmxTimeOrigin ? m[1] : '';
+}
+/* the owner records of this page: sessionStorage, then the <html> attribute */
+function lmxOwnerRecords() {
+    var seen = [];
+    try { seen.push(sessionStorage.getItem(LMX_OWNER_KEY)); } catch (e) { }
+    try { seen.push(document.documentElement ? document.documentElement.getAttribute(LMX_OWNER_ATTR) : null); } catch (e) { }
+    return seen;
+}
+function lmxClaimOwner(mark) {
+    try { sessionStorage.setItem(LMX_OWNER_KEY, mark); } catch (e) { }
+    try { if (document.documentElement) document.documentElement.setAttribute(LMX_OWNER_ATTR, mark); } catch (e) { }
+}
+
+/* ---- agar.io without the mod: the userscript's agar.io/normal leaves the note "go:<time>" (10 s) and sends
+ * the tab to agar.io/; that load keeps it as "on", and a reload of it stays without the mod. ---- */
+var LMX_VANILLA_KEY = 'lmx-vanilla';
+function lmxVanillaWanted() {
+    var note = '', nav = '';
+    try { note = sessionStorage.getItem(LMX_VANILLA_KEY) || ''; } catch (e) { return false; }
+    var m = /^go:(\d+)$/.exec(note);
+    if (m) return Date.now() - Number(m[1]) < 10000;
+    if (note !== 'on') return false;
+    try {
+        var entry = performance.getEntriesByType('navigation')[0];
+        nav = entry ? entry.type : performance.navigation.type === 1 ? 'reload' : '';
+    } catch (e) { }
+    return nav === 'reload';
+}
+
+/* ---- diagnostics: the stages (ROUTING -> TAKEOVER -> LOADING -> INITIALIZING -> READY, or FAILED / RECOVERY)
+ * with their times since startedAt, in sessionStorage "lmx-boot" ---- */
+function lmxStage(diag, startedAt, next, info) {
+    var t = 0;
+    try { t = performance.now(); } catch (e) { }
+    diag.states.push([next, Math.round(t - startedAt)]);
+    if (info) diag.info = String(info);
+    try { sessionStorage.setItem('lmx-boot', JSON.stringify(diag)); } catch (e) { }
+}
+
+/* ---- lifecycle: the mod's init(<version>[, <loader>]) call at the end of the Legend page's body, after its
+ * own scripts, with its readiness signal: the DOM events lmx-init-ok / lmx-init-missing (the loaders do not
+ * run in the page's world) and html[data-lmx-init] for a page whose call ran while it was being written ---- */
+function lmxAddInitCall(html, version, loaderName) {
+    /* JSON quoting, with "<" escaped so the version text can never close the script tag */
+    var args = JSON.stringify(version).replace(/</g, '\\u003c') + (loaderName ? ', ' + JSON.stringify(loaderName) : '');
+    var call = '<script>' +
+        'var lmxInit = function (s) { document.documentElement.setAttribute("data-lmx-init", s); document.dispatchEvent(new Event("lmx-init-" + s)); };' +
+        'if (typeof init === "function") { try { init(' + args + '); } finally { lmxInit("ok"); } }' +
+        ' else { console.error("[LMexpress] init() is missing: LMexpress.js did not load"); lmxInit("missing"); }' +
+        '</script>';
+    var bodyEnd = html.toLowerCase().lastIndexOf('</body>');
+    if (bodyEnd === -1) return html + call;
+    return html.slice(0, bodyEnd) + call + html.slice(bodyEnd);
+}
+
+function lmxEscapeHtml(text) {
+    return String(text).replace(/[&<>"']/g, function (ch) {
+        return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[ch];
+    });
+}
+/* lmx-shared:end */
+
+/*
  * Single owner. With both Legend Express loaders installed (this extension and the userscript) only one
  * may take over agar.io's page. The one that takes over names itself first, in sessionStorage
  * "lm-loader-owner" and html[data-lm-loader], as "<extension|userscript>:<performance.timeOrigin>".
  * A record of the other loader with this page load's timeOrigin means it already owns this page, so
  * this script then does nothing. A record with another timeOrigin is from an earlier page load in this tab.
  */
-const OWNER_KEY = 'lm-loader-owner';
-const OWNER_ATTR = 'data-lm-loader';
-const ownerMark = 'extension:' + performance.timeOrigin;
+const ownerMark = 'extension:' + lmxTimeOrigin;
 const otherLoaderOwned = otherLoaderOwns();
 
 /*
@@ -65,14 +141,10 @@ let stopped = false;
 const now = () => { try { return performance.now(); } catch (e) { return 0; } };
 const startedAt = now();
 const diag = { loader: 'extension', version: modVersion, mode: path, timing: 'early', states: [], source: '', release: '', conflict: '' };
-function go(next, info) {
-    diag.states.push([next, Math.round(now() - startedAt)]);
-    if (info) diag.info = String(info);
-    try { sessionStorage.setItem('lmx-boot', JSON.stringify(diag)); } catch (e) { }
-}
+function go(next, info) { lmxStage(diag, startedAt, next, info); }
 /* agar.io without the mod, asked for at agar.io/normal by the Legend Express userscript: it writes agar.io's
  * page here (the same note and rule as LMexpress.user.js vanillaWanted), so this page is left to it */
-const vanilla = isLegendPath && vanillaWanted();
+const vanilla = isLegendPath && lmxVanillaWanted();
 if (!otherLoaderOwned && !vanilla && (isLegendPath || isCaptchaPath) && mirroredOn) {
     go('ROUTING');
     claimOwner();
@@ -128,31 +200,15 @@ chrome.storage.local.get({ enabled: true }, (result) => {
     }
 });
 
-/* True for a load the userscript's agar.io/normal sent here: its note "go:<time>" of the last 10 s, or "on"
- * on a reload of that page */
-function vanillaWanted() {
-    let note = '', nav = '';
-    try { note = sessionStorage.getItem('lmx-vanilla') || ''; } catch (e) { return false; }
-    const m = /^go:(\d+)$/.exec(note);
-    if (m) return Date.now() - Number(m[1]) < 10000;
-    if (note !== 'on') return false;
-    try { const entry = performance.getEntriesByType('navigation')[0]; nav = entry ? entry.type : ''; } catch (e) { }
-    return nav === 'reload';
-}
-
 /* True when the other loader (the userscript) named itself owner of this page load */
 function otherLoaderOwns() {
-    const seen = [];
-    try { seen.push(sessionStorage.getItem(OWNER_KEY)); } catch (e) { }
-    try { seen.push(document.documentElement.getAttribute(OWNER_ATTR)); } catch (e) { }
-    return seen.some((value) => {
-        const m = /^(extension|userscript):(.+)$/.exec(value || '');
-        return !!m && m[1] !== 'extension' && Number(m[2]) === performance.timeOrigin;
+    return lmxOwnerRecords().some((value) => {
+        const owner = lmxLiveOwner(value);
+        return !!owner && owner !== 'extension';
     });
 }
 function claimOwner() {
-    try { sessionStorage.setItem(OWNER_KEY, ownerMark); } catch (e) { }
-    markPage();
+    lmxClaimOwner(ownerMark);
     /* agar.io/ sent to agar.io/legendmod/ by rules_legend.json: the address bar shows agar.io/ again, with
      * its ?query and #hash, before anything reads it (the launch link, Legend Mod itself) */
     if (path === '/legendmod/') {
@@ -161,7 +217,7 @@ function claimOwner() {
 }
 /* document.open() starts a new <html>: name the owner on it again after every page written */
 function markPage() {
-    try { document.documentElement.setAttribute(OWNER_ATTR, ownerMark); } catch (e) { }
+    try { document.documentElement.setAttribute(LMX_OWNER_ATTR, ownerMark); } catch (e) { }
 }
 
 /* True when this was already done less than 10 s ago in this tab (then it is not done again) */
@@ -245,7 +301,7 @@ function loadPage(pageUrl, isLegendPage, retried) {
             return;
         }
         go('INITIALIZING', 'network');
-        writePage(addInitCall(response.data));
+        writePage(lmxAddInitCall(response.data, modVersion, 'extension'));
         /* the init call's readiness signal (as the userscript's); document.open() dropped every listener, so
          * they are added after the write (the call comes after the page's script files: it has not run yet) */
         let settled = false;
@@ -262,22 +318,6 @@ function loadPage(pageUrl, isLegendPage, retried) {
             if (seen) started(seen === 'ok');
         } catch (e) { }
     });
-}
-
-/* Add the mod's init(<version>, "extension") call at the end of the Legend page's body, after its own scripts */
-function addInitCall(html) {
-    /* JSON quoting, with "<" escaped so the version text can never close the script tag */
-    const version = JSON.stringify(modVersion).replace(/</g, '\\u003c');
-    const call = '<script>' +
-        'var lmxInit = function (s) { document.documentElement.setAttribute("data-lmx-init", s); document.dispatchEvent(new Event("lmx-init-" + s)); };' +
-        'if (typeof init === "function") { try { init(' + version + ', "extension"); } finally { lmxInit("ok"); } }' +
-        ' else { console.error("[LMexpress] init() is missing: LMexpress.js did not load"); lmxInit("missing"); }' +
-        '</script>';
-    const bodyEnd = html.toLowerCase().lastIndexOf('</body>');
-    if (bodyEnd === -1) {
-        return html + call;
-    }
-    return html.slice(0, bodyEnd) + call + html.slice(bodyEnd);
 }
 
 /* Same look as play.html's loading screen (#lm-boot), shown until the page is written */
@@ -299,16 +339,10 @@ function showLoading() {
 function showLoadError(url, problem) {
     const page = '<!DOCTYPE html><html lang="' + (lang === 13 ? 'pt-BR' : lang === 7 ? 'zh-Hant' : LMX_EXT_CODES[lang - 1]) + '"' + (lang === 6 ? ' dir="rtl"' : '') + '><head><meta charset="utf-8"><title>Legend Express</title></head>' +
         '<body style="background:#111;color:#eee;font:16px sans-serif;padding:40px;">' +
-        '<h2>' + escapeHtml(text('lmx.ext.couldNotLoad')) + '</h2>' +
-        '<p>' + escapeHtml(url) + ' (' + escapeHtml(problem) + ')</p>' +
-        '<p><a style="color:#6cf;" href="' + escapeHtml(location.href) + '">' + escapeHtml(text('lmx.ext.tryAgain')) + '</a>' +
-        ' &middot; ' + escapeHtml(text('lmx.ext.switchOff')) + '</p>' +
+        '<h2>' + lmxEscapeHtml(text('lmx.ext.couldNotLoad')) + '</h2>' +
+        '<p>' + lmxEscapeHtml(url) + ' (' + lmxEscapeHtml(problem) + ')</p>' +
+        '<p><a style="color:#6cf;" href="' + lmxEscapeHtml(location.href) + '">' + lmxEscapeHtml(text('lmx.ext.tryAgain')) + '</a>' +
+        ' &middot; ' + lmxEscapeHtml(text('lmx.ext.switchOff')) + '</p>' +
         '</body></html>';
     writePage(page);
-}
-
-function escapeHtml(text) {
-    return String(text).replace(/[&<>"']/g, (ch) => {
-        return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[ch];
-    });
 }

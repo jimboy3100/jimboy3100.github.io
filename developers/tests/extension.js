@@ -279,5 +279,18 @@ check('userscript: an extension\'s inline script (createElement, so async): earl
 check('userscript: an inline script put in <html> at document start: early', timingOf([el({}, 'html')]) === 'early');
 check('userscript: an ordered data: script, JSON data, a module: early', timingOf([el({ src: 'data:text/javascript,1' }), el({ type: 'application/ld+json' }), el({ type: 'module' })]) === 'early');
 
+/* one bootstrap: developers/loader/shared.js is in both loaders as developers/loader-build.js writes it */
+const loaderBuild = require(path.join(__dirname, '..', 'loader-build.js'));
+const staleLoaders = loaderBuild.run(true);
+check('shared bootstrap: both loaders carry developers/loader/shared.js as generated', staleLoaders.length === 0, staleLoaders.join());
+/* the shared owner records, seen from the userscript */
+const extOwned = runUs('/', null, { session: { 'lm-loader-owner': 'extension:1' } });
+check('userscript: the extension owns this page load: nothing written or downloaded', !extOwned.writes.length && !extOwned.gets.length && extOwned.ss['lm-loader-owner'] === 'extension:1');
+const earlier = runUs('/', null, { session: { 'lm-loader-owner': 'extension:0.5' } });
+check('userscript: a record of an earlier page load: taken over, record replaced', earlier.writes.length > 0 && earlier.ss['lm-loader-owner'] === 'userscript:1');
+/* the shared init call: the same readiness signal as the extension's, without a loader name */
+const legendWrite = back.writes[back.writes.length - 1] || '';
+check('userscript: the init call signals readiness like the extension\'s', /try \{ init\("1\.9"\); \} finally \{ lmxInit\("ok"\); \}/.test(legendWrite) && /lmxInit\("missing"\)/.test(legendWrite) && /data-lmx-init/.test(legendWrite));
+
 console.log(fail ? fail + ' FAILED' : 'all extension checks passed');
 process.exit(fail ? 1 : 0);
