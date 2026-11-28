@@ -907,15 +907,17 @@ class Spect {
                     this.sendPosition(this.convertX(_lmAim[0]), this.convertY(_lmAim[1]));
                 }
 
-                /* Keep-moving offset in server space (playerX/Y are client space). */
-                this.distX = this.convertX(legendmod.cursorX) - this.convertX(this.playerX)
-                this.distY = this.convertY(legendmod.cursorY) - this.convertY(this.playerY)
+                /* Keep-moving offset in world units (playerX/Y are client space): a raw delta of
+                 * this socket ran the other way after a background reconnect on a mirrored socket. */
+                this.distX = this.rawToWorldX(this.convertX(legendmod.cursorX)) - this.rawToWorldX(this.convertX(this.playerX))
+                this.distY = this.rawToWorldY(this.convertY(legendmod.cursorY)) - this.rawToWorldY(this.convertY(this.playerY))
             } else {
                 /* "Freeze inactive multibox unit": hold it at its own centre. */
                 if (defaultmapsettings.mbFreeze && Number.isFinite(this.playerX) && Number.isFinite(this.playerY)) {
                     this.sendPosition(this.convertX(this.playerX), this.convertY(this.playerY));
                 } else if (defaultmapsettings.multiKeepMoving) {
-                    this.sendPosition(this.convertX(this.playerX) + this.distX, this.convertY(this.playerY) + this.distY);
+                    this.sendPosition(Math.round(this.worldToRawX(this.rawToWorldX(this.convertX(this.playerX)) + this.distX)),
+                        Math.round(this.worldToRawY(this.rawToWorldY(this.convertY(this.playerY)) + this.distY)));
                 }
             }
         }, 40); /* 40 ms like the main cell's cursor (was 50) */

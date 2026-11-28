@@ -14,7 +14,7 @@
  * evidence (top-player lists 1.5 s apart, other pellets); a CONFLICTED source is not fed to the
  * reconciliation (_lmFeedOk); anchors die with their pellet or socket; live pellet pairs of FFA,
  * Experimental, Party and FFA with Rotate Map agree per mode; ClearAll and later borders keep a
- * connection's transform.
+ * connection's transform; "Keep moving" keeps the world direction across a reconnect on a mirrored socket.
  * node developers/tests/spectcoords.js [spect.js] */
 'use strict';
 const fs = require('fs'), path = require('path'), vm = require('vm');
@@ -390,6 +390,36 @@ for (const [d, vnr] of [[0, 0], [3, 2]]) {
     sp.resetConnectionState();
     sp.handleMessage(border(-7000, -7100, 7189, 7002));
     check('a new socket takes its own border (k ' + sp._lmKX.toFixed(6) + ')', sp.mapOffsetFixed && near(sp._lmKX, W / 14189) && near(sp.mapOffsetX, -94.5));
+}
+
+/* 11. "Keep moving" (sendCursor): the uncontrolled unit keeps the world direction the cursor gave it,
+ *     also after its socket dropped and reconnected in the background on a mirrored socket
+ *     (the offset was a raw delta of the old socket: +500 became -500) */
+{
+    const LM = mainClient(-7071.0678, -7071.0678), ctx = load(LM);
+    let tick = null;
+    ctx.setInterval = (fn) => { tick = fn; return 1; };
+    ctx.window.multiboxPlayerEnabled = 0;
+    const sp = unitB(ctx, [-7000, -7100, 7142.1356, 7042.1356], { number: 1, player: true });
+    sp.setOrientation(1, 1);
+    const sent = [];
+    sp.sendPosition = (x, y) => { sent.push([x, y]); return true; };
+    sp.playerX = LM.worldX(1000); sp.playerY = LM.worldY(0);
+    /* controlled: the cursor 500 right and 300 down of the unit */
+    ctx.window.multiboxPlayerEnabled = 1; LM.cursorX = sp.playerX + 500; LM.cursorY = sp.playerY + 300;
+    sp.sendCursor(); tick();
+    /* the main player takes control back; the unit keeps moving: target - unit centre in world units */
+    ctx.window.multiboxPlayerEnabled = 0; ctx.defaultmapsettings.multiKeepMoving = true;
+    const dir = () => {
+        sent.length = 0; tick();
+        return [sp.rawToWorldX(sent[0][0]) - sp.rawToWorldX(sp.convertX(sp.playerX)), sp.rawToWorldY(sent[0][1]) - sp.rawToWorldY(sp.convertY(sp.playerY))].map((v) => Math.round(v)).join(',');
+    };
+    const a = dir();
+    sp.connectionGeneration++; sp.resetConnectionState(); sp.setMapOffset(-7100, -7000, 7042.1356, 7142.1356); sp.setOrientation(-1, 1);
+    sp.sendCursor();
+    const b = dir();
+    check('Keep moving: the unit runs toward where the cursor was (world +500, +300)', a === '500,300', a);
+    check('Keep moving after a background reconnect on a mirrored socket: the same world direction (ran the opposite way)', b === '500,300', b);
 }
 
 console.log(failed ? 'FAILED ' + failed : 'all spectcoords checks passed');
