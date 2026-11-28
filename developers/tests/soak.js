@@ -261,9 +261,11 @@ const M = (() => {
         }
         const tiles = live();
         if (fm) need(r, 'Full Map on: 15 tiles', tiles === 15);
-        /* enable: one unit (P2), controlled; enable again opens nothing */
+        /* enable: one unit (P2); the main player stays controlled until P2's first spawn takes the
+         * focus (fbf552277: a unit is not steered before its orientation is known); enable again
+         * opens nothing */
         const u2 = bring(app.mbEnable());
-        need(r, 'enable: P2 in slot 2, controlled', !!u2 && u2.slotId === 2 && ctx.multiboxPlayerEnabled === u2.number && app.mbEnable() === u2 && units().length === 1);
+        need(r, 'enable: P2 in slot 2, the main player still controlled until its spawn', !!u2 && u2.slotId === 2 && !ctx.multiboxPlayerEnabled && app.mbEnable() === u2 && units().length === 1);
         /* Add Player up to six players (Settings "Multibox slots" 6), then no more */
         for (let i = 0; i < 4; i++) bring(app.mbAddPlayer());
         const epoch = reg._epoch, nums = units().map((u) => u.number).join();
