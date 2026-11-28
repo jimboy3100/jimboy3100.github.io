@@ -29,15 +29,13 @@ home page, the skins gallery, the clan pages and the shop window), and the theme
 
 ## Why an older version is still here
 
-- `jquery.min.js` (jQuery 3.2.1) is the old address the game page used until 3.561. No page loads it any
-  more; it stays only while the retired service worker's precache list still names it. Remove it with a
-  manifest record once that list is gone.
 - Lazy Load 1.9.7 has no newer jQuery-plugin release; it works with jQuery 3.7.1 (its `.bind()` and
   `jQuery.expr[':']` calls are deprecated in jQuery 3 but still supported).
 
 ## Removed
 
-The old jQuery 1.11.1 copy of the site pages, Bootstrap 3.3.7, the full jQuery UI 1.12.1 build and the
+The old jQuery 1.11.1 copy of the site pages, the jQuery 3.2.1 copy `jquery.min.js` (the game page's address until
+3.561, named last by the retired service worker's precache list), Bootstrap 3.3.7, the full jQuery UI 1.12.1 build and the
 unused renderer libraries (PixiJS 3.0.10 with its canvas helper, litegl, Canvas2DtoWebGL and gl-matrix) are
 removed; `developers/audit/manifest.json` says where each one went and why it was safe. None of the current
 renderers (Canvas 2D, Legend Mod's own WebGL / WebGL2 batches) used them, and no page, script or other

@@ -5073,6 +5073,22 @@
         "external": "expandingland, legendworld-help, LegendWorld and deltav4 do not name it (also not in their git history); no version in the git history of a page, a userscript or the two extension zips (18 revisions) names it; not in sitemap.xml"
       },
       "approvedForDeletion": true
+    },
+    {
+      "oldPath": "lib/jquery.min.js",
+      "canonicalPath": "lib/jquery-3.7.1.min.js",
+      "reason": "jQuery 3.2.1, the address play.html loaded until 3.561; every page now loads lib/jquery-3.7.1.min.js. Its last mention was the precache list of lib/sw.js, removed with the service worker in 6b4d59bdd (play.html unregisters old workers, whose addAll errors are caught). git grep finds no other reference; no built path reaches it (the library guard in ogario/ogario.v4.js names perfect-scrollbar, colorpicker, rangeslider and bootstrap-3.4.1 only).",
+      "internalReferencesMigrated": true,
+      "legacyResolverSupported": false,
+      "externalUrlSupported": false,
+      "legacyResolverNeeded": false,
+      "externalUrlNeeded": false,
+      "verification": {
+        "on": "2026-11-28",
+        "legacy": "saved data cannot hold it: a library file, never a setting value",
+        "external": "expandingland, legendworld-help, LegendWorld and deltav4 do not name it (also not in their git history); no version in the git history of a userscript, of the two extension zips (15 revisions) or of the Expanding Land APK names lib/jquery.min.js; the @require lines of old userscripts point to ajax.googleapis.com / cdnjs copies"
+      },
+      "approvedForDeletion": true
     }
   ]
 }
