@@ -561,7 +561,7 @@ check('Map borders off: rainbow borders and their speed are dimmed (only the bor
 depRun({ rainbowMapBorders: false });
 check('rainbow borders off: only their speed is dimmed', depWhy('rainbowMapBorders') === '' && depWhy('rainbowBorderSpeed') === 'Needs: rainbowMapBorders');
 depRun({ showMass: false });
-/* Mass format also sets the HUD mass texts (team list, leaderboard, tab title), shown without cell mass */
+/* Mass format also sets the HUD mass texts (team list, leaderboard), shown without cell mass */
 check('Show mass off: the cell mass options are dimmed, Mass format is not (it still sets the HUD mass texts)',
   depWhy('autoHideMass') === 'Needs: showMass' && depWhy('massFormat') === '');
 check('Multibox rings category removed: no ring setting left (the ring on the player you control has none)', !Object.keys(D).some(k => /^mbRing/.test(k)));

@@ -2988,7 +2988,6 @@
 "settings.chatHideWords": "Şunları içeren sohbet mesajlarını gizle (virgülle ayrılmış kelimeler)",
 "settings.rainbowMapBorders": "Gökkuşağı harita sınırları",
 "settings.rainbowBorderSpeed": "Gökkuşağı sınır hızı",
-"settings.massInTitle": "Tarayıcı sekmesi başlığında kütle",
 "settings.showStatsPPS": "PPS: Saniyedeki paket sayısı",
 "settings.showStatsServerHz": "Sunucu Hz (Expanding Land)",
 "settings.blockPopups": "Açılır pencereleri engelle (reklam/mağaza/görev)",

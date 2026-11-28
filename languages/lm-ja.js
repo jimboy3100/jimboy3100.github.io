@@ -2988,7 +2988,6 @@
 "settings.chatHideWords": "次の語を含むチャットを隠す（カンマ区切り）",
 "settings.rainbowMapBorders": "虹色のマップ境界",
 "settings.rainbowBorderSpeed": "虹色境界の速度",
-"settings.massInTitle": "ブラウザのタブ名に質量を表示",
 "settings.showStatsPPS": "PPS：毎秒パケット数",
 "settings.showStatsServerHz": "サーバーHz（Expanding Land）",
 "settings.blockPopups": "ポップアップをブロック（広告/ショップ/クエスト）",

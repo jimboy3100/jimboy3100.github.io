@@ -1,7 +1,6 @@
 /* Settings > Mass > Mass format in every place that shows a mass as text, with the real code: the
  * HUD texts of ogario.v4.js (shortMassFormat: team list and its total, leaderboard mass, target,
- * followed cell, ghost cells), the mass in the browser tab title and the Game Over card (and its
- * image). Short (the default) keeps the texts as before; Exact and Auto were shown as 12.3k there.
+ * followed cell, ghost cells) and the Game Over card (and its image). Short (the default) keeps the texts as before; Exact and Auto were shown as 12.3k there.
  * node developers/tests/massformat.js */
 const fs = require('fs'), vm = require('vm'), path = require('path');
 const root = path.join(__dirname, '..', '..');
@@ -33,21 +32,6 @@ ms.massFormat = 2;
 check('Short (default): numbers below 1000 stay numbers, as before', ctx.application.shortMassFormat(950) === 950 && ctx.application.shortMassFormat(12345) === '12.3k');
 ms.massFormat = 0;
 check('older value 0: as before', F(12345) === '12.3k');
-
-/* the tab title (Mass in the browser tab title): one tick of its 1 s timer */
-{
-  const iife = cut("    (function () {\n        var baseTitle = null, last = null;", '}, 1000);\n    })();');
-  let tick = null;
-  ctx.setInterval = f => { tick = f; return 1; };
-  ms.massInTitle = true; ms.gameOverStats = false;
-  ctx.legendmod = { play: true, playerMass: 23456 };
-  vm.runInContext(iife, ctx);
-  const title = m => { ms.massFormat = m; ctx.document.title = 'Legend Mod'; tick(); const t = ctx.document.title; ctx.legendmod.play = false; tick(); ctx.legendmod.play = true; return t; };
-  check('tab title: Short', title(2) === '23.5k · Legend Mod', ctx.document.title);
-  check('tab title: Exact', title(1) === '23456 · Legend Mod');
-  check('tab title: Auto', title(3) === '23.5k · Legend Mod');
-  check('tab title: the page title back when not playing', ctx.document.title === 'Legend Mod');
-}
 
 /* the Game Over card's mass texts (also the image and the share text) */
 {

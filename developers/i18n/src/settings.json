@@ -3455,24 +3455,6 @@
     "ja": "虹色境界の速度",
     "it": "Velocità del bordo arcobaleno"
   },
-  "settings.massInTitle": {
-    "en": "Mass in the browser tab title",
-    "el": "Μάζα στον τίτλο της καρτέλας",
-    "es": "Masa en el título de la pestaña del navegador",
-    "bg": "Маса в заглавието на раздела",
-    "fr": "Masse dans le titre de l'onglet",
-    "ar": "الكتلة في عنوان تبويب المتصفح",
-    "zh": "在瀏覽器分頁標題顯示質量",
-    "ru": "Масса в заголовке вкладки",
-    "de": "Masse im Titel des Browser-Tabs",
-    "tr": "Tarayıcı sekmesi başlığında kütle",
-    "pl": "Masa w tytule karty przeglądarki",
-    "nl": "Massa in de titel van het browsertabblad",
-    "pt": "Massa no título da aba do navegador",
-    "id": "Massa di judul tab browser",
-    "ja": "ブラウザのタブ名に質量を表示",
-    "it": "Massa nel titolo della scheda del browser"
-  },
   "settings.showStatsPPS": {
     "en": "PPS: Packets per second",
     "el": "PPS: Πακέτα ανά δευτερόλεπτο",

@@ -2988,7 +2988,6 @@
 "settings.chatHideWords": "Masquer les messages contenant (mots séparés par des virgules)",
 "settings.rainbowMapBorders": "Bordures de carte arc-en-ciel",
 "settings.rainbowBorderSpeed": "Vitesse de la bordure arc-en-ciel",
-"settings.massInTitle": "Masse dans le titre de l'onglet",
 "settings.showStatsPPS": "PPS : Paquets par seconde",
 "settings.showStatsServerHz": "Hz du serveur (Expanding Land)",
 "settings.blockPopups": "Bloquer les popups (pubs/boutique/quête)",

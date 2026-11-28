@@ -21503,7 +21503,6 @@ var defaultmapsettings = {
     rainbowMapBorders: false,     /* map border colour cycles through the rainbow */
     rainbowBorderSpeed: 5,        /* 5 = the original speed */
     /* timeFormat (clock format) is gone: the clock always shows the browser's date and time; saved values are skipped on load */
-    massInTitle: false,           /* browser tab title shows the mass while playing */
     showStatsPPS: true,
     showStatsFrameTime: false,    /* frame time next to the FPS: FPS: 60 (16.7 ms) (was the Lab experiment "frameTime") */
     showStatsServerHz: true,
@@ -26843,7 +26842,7 @@ function thelegendmodproject() {
                 });
                 /* Recently added options: a NEW badge for one build (until the settings were
                  * opened with the badges shown), and a toggle that lists only them. */
-                var NEW_KEYS = ['showStatsAlive', 'massInTitle', 'mergeRings', 'rainbowMapBorders', 'fpsLimit', 'x16Sound', 'non16Sound', 'showMiniMapTrail', 'lbHideBots', 'hideEventBanner', 'centerWeightCamera', 'rainbowBorderSpeed', 'chatHideWords', 'reducedMotion', 'matchHistory', 'gamepadDeadzone', 'performanceMode', 'recordReplays', 'glAntialias', 'macroSplitDelay', 'macroPopSplitDelay', 'splitPrediction', 'tripleSplitRange', 'chatShowId', 'hudMergeCountdown', 'hudMergeSound', 'hudRelativeMass', 'massFormat', 'volMaster', 'volChat', 'volCommands', 'volGameplay', 'adaptivePerf', 'analytics', 'showStatsFrameTime'];
+                var NEW_KEYS = ['showStatsAlive', 'mergeRings', 'rainbowMapBorders', 'fpsLimit', 'x16Sound', 'non16Sound', 'showMiniMapTrail', 'lbHideBots', 'hideEventBanner', 'centerWeightCamera', 'rainbowBorderSpeed', 'chatHideWords', 'reducedMotion', 'matchHistory', 'gamepadDeadzone', 'performanceMode', 'recordReplays', 'glAntialias', 'macroSplitDelay', 'macroPopSplitDelay', 'splitPrediction', 'tripleSplitRange', 'chatShowId', 'hudMergeCountdown', 'hudMergeSound', 'hudRelativeMass', 'massFormat', 'volMaster', 'volChat', 'volCommands', 'volGameplay', 'adaptivePerf', 'analytics', 'showStatsFrameTime'];
                 newBtn.on('click', function () {
                     newOnly = !newOnly;
                     newBtn.toggleClass('active', newOnly);
@@ -26949,7 +26948,7 @@ function thelegendmodproject() {
              * (buildHotkeysControls): all input bindings live there, none in Settings. */
             //this.addOptions(["showTop5", "showTargeting", "showLbData", "centeredLb", "normalLb", "fpsAtTop", "tweenMaxEffect"], "hudGroup"),
             this.addOptions(["showTop5", "showTargeting", "showLbData", "lbHideBots", "centeredLb", "tweenMaxEffect", "top5skins"], "hudGroup");
-            this.addOptions(["showStats", "showStatsMass", "showStatsESTE", "showStatsEMTE", "showStatsMTE", "showStatsSTE", "showStatsTTE", "showStatsPTE", "showStatsN16", "showStatsFPS", "showStatsFrameTime", "showStatsPPS", "showStatsAlive", "massInTitle", "gameOverStats", "showTime", "showStopwatch", "analytics"], "statsGroup");
+            this.addOptions(["showStats", "showStatsMass", "showStatsESTE", "showStatsEMTE", "showStatsMTE", "showStatsSTE", "showStatsTTE", "showStatsPTE", "showStatsN16", "showStatsFPS", "showStatsFrameTime", "showStatsPPS", "showStatsAlive", "gameOverStats", "showTime", "showStopwatch", "analytics"], "statsGroup");
             /* Replays and history */
             this.addOptions(["recordReplays", "matchHistory"], "replayGroup");
             /* turning recording off keeps the recordings in memory: freeing them is this explicit, confirmed action */
@@ -27028,7 +27027,7 @@ function thelegendmodproject() {
                     showStats: ['showStatsMass', 'showStatsWorldSize', 'showStatsDecayInfo', 'showStatsServerHz', 'showStatsESTE', 'showStatsEMTE', 'showStatsMTE', 'showStatsSTE', 'showStatsTTE', 'showStatsPTE', 'showStatsN16', 'showStatsFPS', 'showStatsPPS', 'showStatsAlive'],
                     showStatsFPS: ['showStatsFrameTime'],
                     showMiniMap: ['showMiniMapGrid', 'showMiniMapGuides', 'showExtraMiniMapGuides', 'showMiniMapGhostCells', 'showMiniMapTrail'],
-                    /* not Mass format: it also sets the team list, leaderboard, target and tab title
+                    /* not Mass format: it also sets the team list, leaderboard and target
                      * mass texts (shortMassFormat), which show with the cell mass off too */
                     showMass: ['autoHideMass', 'hideMyMass', 'hideEnemiesMass', 'hudRelativeMass'],
                     videoSkins: ['videoDestorted', 'videoSkinsMusic2', 'videoOthersSkinSoundLevelproportion', 'videoSkinSoundLevel'],
@@ -84904,10 +84903,7 @@ function pickPlayerCellBySize(players, selectBiggest) {
     LM.init();
     drawRender.init();
     if (window.master && window.master.init) window.master.init();
-    /* "Mass in the browser tab title": written only when the text changes; the original
-     * title comes back when the setting is off or the player is not playing */
     (function () {
-        var baseTitle = null, last = null;
         setInterval(function () {
             /* leaving a life without a death (server change, quick respawn, token change) did not
              * reset the life start: time alive and the session time grew across lives */
@@ -84931,19 +84927,6 @@ function pickPlayerCellBySize(players, selectBiggest) {
                     }
                 }
             } catch (e1) { }
-            try {
-                var on = window.legendmod5 && window.legendmod5.massInTitle && window.legendmod && window.legendmod.play && window.legendmod.playerMass;
-                if (on) {
-                    if (baseTitle === null) baseTitle = document.title;
-                    var m = window.legendmod.playerMass;
-                    /* in the Mass format chosen (Short as before) */
-                    var txt = String(window.application.shortMassFormat(m)) + ' \u00B7 ' + baseTitle;
-                    if (txt !== last) { document.title = txt; last = txt; }
-                } else if (baseTitle !== null) {
-                    document.title = baseTitle;
-                    baseTitle = null; last = null;
-                }
-            } catch (e) { }
         }, 1000);
     })();
     /* session summary after a reload in the same tab */

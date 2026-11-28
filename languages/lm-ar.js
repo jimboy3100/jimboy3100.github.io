@@ -2988,7 +2988,6 @@
 "settings.chatHideWords": "إخفاء رسائل الدردشة التي تحتوي على (كلمات مفصولة بفواصل)",
 "settings.rainbowMapBorders": "حدود خريطة بألوان قوس قزح",
 "settings.rainbowBorderSpeed": "سرعة حدود قوس قزح",
-"settings.massInTitle": "الكتلة في عنوان تبويب المتصفح",
 "settings.showStatsPPS": "PPS: حزم في الثانية",
 "settings.showStatsServerHz": "Hz السيرفر (Expanding Land)",
 "settings.blockPopups": "حظر النوافذ المنبثقة (إعلانات/متجر/مهمة)",

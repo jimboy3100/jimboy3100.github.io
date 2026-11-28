@@ -2988,7 +2988,6 @@
 "settings.chatHideWords": "Ukryj wiadomości zawierające (słowa po przecinku)",
 "settings.rainbowMapBorders": "Tęczowe granice mapy",
 "settings.rainbowBorderSpeed": "Szybkość tęczowych granic",
-"settings.massInTitle": "Masa w tytule karty przeglądarki",
 "settings.showStatsPPS": "PPS: pakiety na sekundę",
 "settings.showStatsServerHz": "Server Hz (Expanding Land)",
 "settings.blockPopups": "Blokuj popupy (reklamy/sklep/zadanie)",

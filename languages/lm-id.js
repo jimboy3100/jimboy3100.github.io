@@ -2988,7 +2988,6 @@
 "settings.chatHideWords": "Sembunyikan pesan chat yang berisi (kata dipisah koma)",
 "settings.rainbowMapBorders": "Batas peta pelangi",
 "settings.rainbowBorderSpeed": "Kecepatan batas pelangi",
-"settings.massInTitle": "Massa di judul tab browser",
 "settings.showStatsPPS": "PPS: paket per detik",
 "settings.showStatsServerHz": "Hz server (Expanding Land)",
 "settings.blockPopups": "Blokir pop-up (iklan/toko/misi)",

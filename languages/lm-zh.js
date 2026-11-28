@@ -2988,7 +2988,6 @@
 "settings.chatHideWords": "隱藏包含以下文字的聊天訊息（以逗號分隔）",
 "settings.rainbowMapBorders": "彩虹地圖邊界",
 "settings.rainbowBorderSpeed": "彩虹邊界速度",
-"settings.massInTitle": "在瀏覽器分頁標題顯示質量",
 "settings.showStatsPPS": "PPS：每秒封包數",
 "settings.showStatsServerHz": "伺服器 Hz（Expanding Land）",
 "settings.blockPopups": "封鎖彈出視窗（廣告/商店/任務）",

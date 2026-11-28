@@ -2988,7 +2988,6 @@
 "settings.chatHideWords": "Nascondi i messaggi della chat che contengono (parole separate da virgole)",
 "settings.rainbowMapBorders": "Bordi della mappa arcobaleno",
 "settings.rainbowBorderSpeed": "Velocità del bordo arcobaleno",
-"settings.massInTitle": "Massa nel titolo della scheda del browser",
 "settings.showStatsPPS": "PPS: pacchetti al secondo",
 "settings.showStatsServerHz": "Hz del server (Expanding Land)",
 "settings.blockPopups": "Blocca popup (pubblicità/negozio/missione)",

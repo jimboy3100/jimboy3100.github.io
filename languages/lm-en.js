@@ -2988,7 +2988,6 @@
 "settings.chatHideWords": "Hide chat messages containing (comma-separated words)",
 "settings.rainbowMapBorders": "Rainbow map borders",
 "settings.rainbowBorderSpeed": "Rainbow border speed",
-"settings.massInTitle": "Mass in the browser tab title",
 "settings.showStatsPPS": "PPS: Packets per second",
 "settings.showStatsServerHz": "Server Hz",
 "settings.blockPopups": "Block popups (ads/shop/quest)",

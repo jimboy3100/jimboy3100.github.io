@@ -2988,7 +2988,6 @@
 "settings.chatHideWords": "Ocultar mensajes de chat que contengan (palabras separadas por comas)",
 "settings.rainbowMapBorders": "Bordes del mapa arcoíris",
 "settings.rainbowBorderSpeed": "Velocidad del borde arcoíris",
-"settings.massInTitle": "Masa en el título de la pestaña del navegador",
 "settings.showStatsPPS": "PPS: Paquetes por segundo",
 "settings.showStatsServerHz": "Hz del servidor (Expanding Land)",
 "settings.blockPopups": "Bloquear ventanas emergentes (anuncios/tienda/misión)",

@@ -2988,7 +2988,6 @@
 "settings.chatHideWords": "Chatberichten verbergen die bevatten (woorden gescheiden door komma's)",
 "settings.rainbowMapBorders": "Regenboog-kaartranden",
 "settings.rainbowBorderSpeed": "Snelheid regenboogrand",
-"settings.massInTitle": "Massa in de titel van het browsertabblad",
 "settings.showStatsPPS": "PPS: Pakketten per seconde",
 "settings.showStatsServerHz": "Server-Hz (Expanding Land)",
 "settings.blockPopups": "Pop-ups blokkeren (advertenties/winkel/opdracht)",

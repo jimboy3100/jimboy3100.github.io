@@ -2988,7 +2988,6 @@
 "settings.chatHideWords": "Скрий съобщенията в чата, които съдържат (думи, разделени със запетая)",
 "settings.rainbowMapBorders": "Граници на картата в цветовете на дъгата",
 "settings.rainbowBorderSpeed": "Скорост на границата в цветовете на дъгата",
-"settings.massInTitle": "Маса в заглавието на раздела",
 "settings.showStatsPPS": "PPS: Пакети в секунда",
 "settings.showStatsServerHz": "Hz на сървъра (Expanding Land)",
 "settings.blockPopups": "Блокирай изскачащите прозорци (реклами/магазин/мисия)",

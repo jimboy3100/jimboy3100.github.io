@@ -4302,7 +4302,7 @@
     "it": "<b>Novità:</b> casella di ricerca nelle impostazioni, un elenco dei <b>Tasti assegnati</b> in Tasti rapidi, un riepilogo della sessione sotto il menu, un <b>limite di FPS</b> facoltativo (fa risparmiare batteria) e un tasto rapido per attivare/disattivare la Modalità prestazioni."
   },
   "site.index.newOptionsOffBy": {
-    "en": "<b>New options</b> (off by default): time alive in the stats, mass in the tab title, rainbow map borders, HUD blur, merge rings on/off. Server and party boxes now suggest your last 5 joins.",
+    "en": "<b>New options</b> (off by default): time alive in the stats, rainbow map borders, HUD blur, merge rings on/off. Server and party boxes now suggest your last 5 joins.",
     "el": "<b>Νέες επιλογές</b> (απενεργοποιημένες από προεπιλογή): χρόνος ζωής στα στατιστικά, μάζα στον τίτλο της καρτέλας, ουράνια τόξα στα όρια του χάρτη, θόλωμα HUD, δαχτυλίδια merge on/off. Τα πλαίσια server και party προτείνουν πλέον τις τελευταίες 5 συνδέσεις σας.",
     "es": "<b>Nuevas opciones</b> (desactivadas por defecto): tiempo de vida en las estadísticas, masa en el título de la pestaña, bordes del mapa arcoíris, desenfoque del HUD, anillos de fusión on/off. Los cuadros de servidor y party ahora sugieren tus últimas 5 entradas.",
     "bg": "<b>Нови опции</b> (изключени по подразбиране): време на оцеляване в статистиката, маса в заглавието на раздела, дъгови граници на картата, размазване на HUD, включване/изключване на пръстените за сливане. Полетата за сървър и парти вече предлагат последните ви 5 влизания.",

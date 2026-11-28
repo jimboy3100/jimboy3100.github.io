@@ -2988,7 +2988,6 @@
 "settings.chatHideWords": "Απόκρυψη μηνυμάτων chat που περιέχουν (λέξεις χωρισμένες με κόμμα)",
 "settings.rainbowMapBorders": "Όρια χάρτη ουράνιου τόξου",
 "settings.rainbowBorderSpeed": "Ταχύτητα ορίων ουράνιου τόξου",
-"settings.massInTitle": "Μάζα στον τίτλο της καρτέλας",
 "settings.showStatsPPS": "PPS: Πακέτα ανά δευτερόλεπτο",
 "settings.showStatsServerHz": "Hz του server (Expanding Land)",
 "settings.blockPopups": "Αποκλεισμός αναδυόμενων (διαφημίσεις/κατάστημα/αποστολή)",

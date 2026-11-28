@@ -2988,7 +2988,6 @@
 "settings.chatHideWords": "Скрывать сообщения чата, содержащие (слова через запятую)",
 "settings.rainbowMapBorders": "Радужные границы карты",
 "settings.rainbowBorderSpeed": "Скорость радужной границы",
-"settings.massInTitle": "Масса в заголовке вкладки",
 "settings.showStatsPPS": "PPS: Пакетов в секунду",
 "settings.showStatsServerHz": "Hz сервера (Expanding Land)",
 "settings.blockPopups": "Блокировать всплывающие окна (реклама/магазин/задания)",

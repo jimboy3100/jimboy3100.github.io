@@ -245,7 +245,6 @@ Sound switches: chatSounds, virusSound (a virus is shot, or you pop or eat one),
 - **Relative mass display**: Other players' mass shown as ratio to your biggest cell (e.g. 1.75x, 0.40x)
 - **Mass format**: one choice: exact, short (12.3k, the former Short mass switch) or auto (exact below 10000, then 12.3k, 123k, 1.2M)
 - **Virus range circles**: Rings showing virus ejection range
-- **Mass in tab title**: Browser tab shows current mass
 - **Game stats**: configurable stats elements (placed with the HUD editor)
 
 ### 13. HUD Editor

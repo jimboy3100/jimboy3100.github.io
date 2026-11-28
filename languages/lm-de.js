@@ -2988,7 +2988,6 @@
 "settings.chatHideWords": "Chatnachrichten mit diesen Wörtern ausblenden (durch Komma getrennt)",
 "settings.rainbowMapBorders": "Regenbogen-Kartenränder",
 "settings.rainbowBorderSpeed": "Geschwindigkeit des Regenbogenrands",
-"settings.massInTitle": "Masse im Titel des Browser-Tabs",
 "settings.showStatsPPS": "PPS: Pakete pro Sekunde",
 "settings.showStatsServerHz": "Server-Hz (Expanding Land)",
 "settings.blockPopups": "Popups blockieren (Werbung/Shop/Quest)",
