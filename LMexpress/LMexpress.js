@@ -190,9 +190,6 @@ TimerLM = window.TimerLM || {};
 var MSGCOMMANDS = "";
 var MSGCOMMANDS2;
 var MSGNICK;
-var playerMsg = "";
-var commandMsg = "";
-var otherMsg = "";
 var rotateminimap = 0;
 var rotateminimapfirst = 0;
 var openthecommunication = "NO";
@@ -204,7 +201,6 @@ var PanelImageSrc;
 var AdminClanSymbol;
 var AdminPassword;
 var AdminRights = 0;
-var LegendClanSymbol = "0";
 /* Theme values (menuBg URL, panel colour) can come from imported or cloud settings:
  * keep only characters that cannot leave a CSS url()/colour or the HTML attribute. */
 /* a URL for url(...): quotes, brackets and spaces removed. Not named _lmCssUrl: ogario.v4.js has a global
@@ -2092,24 +2088,8 @@ function MsgCommands1(MSGCOMMANDS, MSGNICK, MSGEL) {
          * a line sent by an older version is only taken out of the chat */
         _lmRemoveCmdMsg();
     } else if (MSGCOMMANDS.includes("https://agar.io/sip=151.80.91.73:1511")) {
-        commandMsg = getParameterByName("com", MSGCOMMANDS);
-        otherMsg = getParameterByName("do", MSGCOMMANDS);
+        /* the admin "disconnect enemies" command is removed: a line sent by an older version is only taken out of the chat */
         _lmRemoveCmdMsg();
-        LegendClanSymbol = $("#nick").val();
-        console.log("Step1");
-        /* everyone except nicks starting with the clan symbol is asked to rejoin.
-         * Any chat sender can type this text, so it never reconnects by itself:
-         * the user has to press the button. */
-        if (LegendClanSymbol.indexOf("℄") !== 0) {
-            console.log("Step2");
-            var _lmRejoinToast = toastr.warning(_lmxT('lmx.ex.asksReconnect', ["<b>" + MSGNICK + "</b>"]) + '<br><button class="btn btn-sm btn-primary btn-lm-rejoin" style="margin-top: 10px;border-color: darkblue;">' + _lmxE('lmx.ex.reconnect') + '</button><br><button class="btn btn-sm btn-warning btn-lm-norejoin" style="width: 100%;margin-top: 10px;">' + Premadeletter25 + '</button>', "", {
-                timeOut: 20000,
-                extendedTimeOut: 20000
-            }).css("width", "210px");
-            _lmRejoinToast.find(".btn-lm-rejoin").click(function () {
-                $("#server-join").click();
-            });
-        }
     } else if (MSGCOMMANDS.includes("[DosAttack]")) {
         if ($("#nick").val().includes("DosAttack") == false) _lmRemoveCmdMsg();
         MSGCOMMANDS = MSGCOMMANDS.split("[DosAttack]").pop();
@@ -7446,13 +7426,9 @@ function adminstuff() {
                 $("#administrationtools").hide();
                 $("#minimap-hud").prepend('<div id="administrationtool-hud" class="hud" style="width: 55.5%; height: 30px; padding: 0px; pointer-events: auto; position: absolute; right: 0px; top: -120px; display: block;">' +
                     '<button id="administrationtool0" class="btn-link" style="padding: 0px; color: #d6d3d3; width: 20%; height: 100%;" onclick="banlistLM();"><i id="administrationtool01" class="fa fa-address-book" style="padding-left: 0px;"></i></button>' +
-                    '<button id="administrationtool1" class="btn-link" style="padding: 0px; color: #d6d3d3; width: 20%; height: 100%;" onclick="disconnect2min();"><i id="administrationtool11" class="fa fa-bomb" style="padding-left: 0px;"></i></button>' +
-                    '<button id="administrationtool2" class="btn-link" style="padding: 0px; color: #d6d3d3; width: 20%; height: 100%;" onclick="disconnectnow();"><i id="administrationtoo21" class="fa fa-ban" style="padding-left: 0px;"></i></button>' +
                     //'<button id="administrationtool3" class="btn-link" style="padding: 0px; color: #d6d3d3; width: 20%; height: 100%;" onclick="showstatsphp();"><i id="administrationtoo31" class="fa fa-database" style="padding-left: 0px;"></i></button>'+	
                     '<button id="administrationtool4" class="btn-link" style="padding: 0px; color: #d6d3d3; width: 20%; height: 100%;" onclick="showstatsphp2();"><i id="administrationtoo41" class="fa fa-wpexplorer" style="padding-left: 0px;"></i></button>' +
                     '</div>');
-                //				$("#administrationtool1").attr("data-original-title", "Disconnect enemies in 2 minutes " + $("#AdminClanSymbol").val() + " Symbol" );
-                //				$("#administrationtool2").attr("data-original-title", "Disconnect enemies in now " + $("#AdminClanSymbol").val() + " Symbol" );
                 return AdminRights = 1;
             }
             else { toastr["info"](_lmxT('lmx.ex.accessDenied')); }
@@ -7478,39 +7454,12 @@ function adminstuff() {
 function banlistLM() {
     BannedUIDS();
 }
-function disconnect2min() {
-    if (AdminRights == 1) {
-        commandMsg = "EU-London";
-        otherMsg = ""; //otherMsg=$("#AdminClanSymbol").val();
-        dosendadmincommand();
-        toastr["info"](_lmxT('lmx.ex.adminRejoinAsk'));
-    }
-}
-
-function disconnectnow() {
-    if (AdminRights == 1) {
-        commandMsg = "RU-Russia";
-        otherMsg = ""; //otherMsg=$("#AdminClanSymbol").val();
-        dosendadmincommand();
-        toastr["info"](_lmxT('lmx.ex.adminRejoinNow'));
-    }
-}
 /*function showstatsphp(){
     window.open('https://analytics.google.com/analytics/web/?hl=el&pli=1#realtime/rt-content/a92655864w165988480p166491055/', '_blank');
 }*/
 function showstatsphp2() {
     window.open(lmThemeUrl('https://www.legendmod.ml/monitor/'), '_blank');
 }
-function dosendadmincommand() {
-    if (AdminRights == 1) {
-        if ($('#message-box').css('display') == 'none') { KeyEvent.simulate(13, 13); };
-        setTimeout(function () { $("#message").val("https://agar.io/sip=151.80.91.73:1511&?do=" + otherMsg + "&?com=" + commandMsg); KeyEvent.simulate(13, 13); if ($('#message').css('display') == 'block') { KeyEvent.simulate(13, 13); }; if ($('#message-box').css('display') == 'block') { KeyEvent.simulate(13, 13); } }, 100);
-    }
-    else {
-        toastr["info"](_lmxT('lmx.ex.somethingWrong'));
-    }
-}
-
 function administrationtools() {
     $("#main-menu").show();
     $("#skins-panel").show();
