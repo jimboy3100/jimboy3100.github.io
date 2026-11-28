@@ -78,18 +78,19 @@ function spect(number) {
     g.spects.push(sp);
     return sp;
 }
-/* agar.io update body: eats, cells (id, x, y, size, flags[, ext], colour), 0, removes */
+/* agar.io update body: eats, cells (id, x, y, size, flags[, ext], colour[, name][, account]), 0, removes */
 function packet(eats, cells, removes) {
-    const b = Buffer.alloc(8 + eats.length * 8 + cells.reduce((n, c) => n + 20 + (c.name ? c.name.length + 1 : 0), 0) + 4 + removes.length * 4);
+    const b = Buffer.alloc(8 + eats.length * 8 + cells.reduce((n, c) => n + 20 + (c.name ? c.name.length + 1 : 0) + (c.acc ? 4 : 0), 0) + 4 + removes.length * 4);
     let o = 0;
     b.writeUInt16LE(eats.length, o); o += 2;
     for (const [a, v] of eats) { b.writeUInt32LE(a, o); b.writeUInt32LE(v, o + 4); o += 8; }
     for (const c of cells) {
         b.writeUInt32LE(c.id, o); b.writeInt32LE(c.x, o + 4); b.writeInt32LE(c.y, o + 8); b.writeUInt16LE(c.size || 11, o + 12); o += 14;
         const col = c.color === undefined ? 0x40a0f0 : c.color;
-        b.writeUInt8(128 | 2 | (c.virus ? 1 : 0) | (c.name ? 8 : 0), o++); b.writeUInt8(c.food === false ? 0 : 1, o++);
+        b.writeUInt8(128 | 2 | (c.virus ? 1 : 0) | (c.name ? 8 : 0), o++); b.writeUInt8((c.food === false ? 0 : 1) | (c.acc ? 4 : 0), o++);
         b.writeUInt8((col >> 16) & 255, o++); b.writeUInt8((col >> 8) & 255, o++); b.writeUInt8(col & 255, o++);
         if (c.name) { o += b.write(c.name, o, 'latin1'); b.writeUInt8(0, o++); }
+        if (c.acc) { b.writeUInt32LE(c.acc, o); o += 4; }
     }
     b.writeUInt32LE(0, o); o += 4;
     b.writeUInt16LE(removes.length, o); o += 2;
@@ -606,6 +607,171 @@ reset();
         check('Full Map food pass (' + (rainbow ? 'rainbow' : 'one colour') + '): only pellets near the screen read (' + reads + ' of ' + list.length + ')', reads < list.length / 4, reads);
     }
     g.defaultmapsettings.rainbowFood = true;
+}
+
+/* Packets cut short on a unit / spectator connection (spect.js lmWorldUpdateEnd, opcodes 17, 64,
+ * 69, 255): a world update that is not whole changes nothing (before: its eats and first records
+ * were applied, then it threw), a cut camera or ghost list keeps the last one, an LZ4 block that
+ * decodes short is refused (its zero tail read as records) */
+{
+    /* the page's own Buffer (handleMessage 16 / 64 wrap the message in it) and the main decoder */
+    Object.assign(g, { DataView, RangeError, TypeError, Error, Uint8Array, ArrayBuffer, Object, Number, String });
+    vm.runInContext(read(path.join(root, 'extras', 'buffer.js')), g);
+    g._lz4wasmLoading = true; /* the JS decoder (no WASM in the vm) */
+    const dmA = src.indexOf('        decompressMessage(message) {\n'), dmB = src.indexOf('        /* ── Expanding Land: Handle map resize', dmA);
+    LM.decompressMessage = vm.runInContext('({' + src.slice(dmA, dmB).trim().replace(/,$/, '') + '})', g).decompressMessage;
+    const ab = (b) => { const u = new Uint8Array(b); return u.buffer.slice(u.byteOffset, u.byteOffset + u.length); };
+    const msg = (op, b) => ab(Buffer.concat([Buffer.from([op]), b]));
+    const world = () => {
+        reset();
+        LM.cellcolors = {};
+        const sp = spect(1);
+        sp._lmAnchors = [];
+        sp.updateCells(packet([], [
+            { id: 100, x: 1000, y: 1000, size: 60, name: 'alice', food: false },
+            { id: 101, x: 1050, y: 1000, size: 30, name: 'bob', food: false },
+            { id: 200, x: 2000, y: 2000 }, { id: 201, x: 2100, y: 2000 }], []), 0);
+        sp.time = 1; sp._lmWorldAt = 1;
+        return sp;
+    };
+    const snap = (sp) => {
+        const cells = Object.keys(LM.indexedCells).sort().map((k) => { const c = LM.indexedCells[k]; return [k, c.targetX, c.targetY, c.targetSize, !!c.removed, c.accID, c.targetNick]; });
+        return JSON.stringify({ cells, n: [LM.cells.length, LM.foodMulti.length, LM.removedCells.length, LM.playerCellsMulti.length], food: stats(),
+            anchors: sp._lmAnchors.length, time: sp.time, at: sp._lmWorldAt, colors: LM.cellcolors });
+    };
+    /* A eats B, A moves, new C with an account id, a new pellet, food 200 and 201 removed */
+    const P = packet([[100, 101]], [{ id: 100, x: 1300, y: 1000, size: 64, name: 'alice', food: false },
+        { id: 102, x: 3000, y: 3000, size: 40, name: 'carol', food: false, acc: 777 }, { id: 202, x: 2500, y: 2500 }], [200, 201]);
+    let same = 0, bad = 0, errs = 0;
+    for (let len = 0; len < P.length; len++) {
+        const sp = world(), before = snap(sp);
+        sp.onmessage({ data: msg(16, P.slice(0, len)) });
+        if (snap(sp) === before) same++;
+        if (sp._lmBadUpdates === 1) bad++;
+        errs += sp._lmDecodeErrors || 0;
+    }
+    check('every cut of a world update (' + P.length + ' lengths) changes nothing: cells, eats, removals, account ids, food list, anchors, update time, nick colours',
+        same === P.length, same + ' / ' + P.length);
+    check('each cut counted as a bad update (_lmBadUpdates), none thrown', bad === P.length && errs === 0, bad + ' bad, ' + errs + ' thrown');
+    /* the cuts of the earlier failures: eat list, after it, after a record, before the account id,
+     * before the removal count, in the removal list */
+    const named = { 'eat list': 6, 'after the eat list': 10, 'after record A': 35, 'before the account id of C': 60, 'before the removal count': P.length - 10, 'in the removal list': P.length - 4 };
+    for (const k in named) {
+        const sp = world(), before = snap(sp);
+        sp.onmessage({ data: msg(16, P.slice(0, named[k])) });
+        check('cut ' + k + ' (' + named[k] + ' bytes): nothing changed', snap(sp) === before);
+    }
+    {
+        const sp = world();
+        sp.onmessage({ data: msg(16, P) });
+        const A = LM.indexedCells[g.lmUnitCellId(100, 1)], C = LM.indexedCells[g.lmUnitCellId(102, 1)];
+        check('the whole update is applied (eat, move, account id, new pellet, removals) and stamps _lmWorldAt',
+            A && A.targetX === 1300 && !LM.indexedCells[g.lmUnitCellId(101, 1)] && C && C.accID === 777 && LM.indexedCells[g.lmUnitCellId(202, 1)] &&
+            !LM.indexedCells[g.lmUnitCellId(200, 1)] && !LM.indexedCells[g.lmUnitCellId(201, 1)] && sp._lmWorldAt > 1 && sp.time > 1 && !sp._lmBadUpdates);
+        /* two bad, one good: no flush; then three bad in a row: this connection's cells dropped */
+        const cut = msg(16, P.slice(0, 35));
+        sp.onmessage({ data: cut }); sp.onmessage({ data: cut });
+        sp.onmessage({ data: msg(16, packet([], [{ id: 100, x: 1310, y: 1000, size: 64, name: 'alice', food: false }], [])) });
+        check('two bad updates then a whole one: kept, the run counter reset', LM.indexedCells[g.lmUnitCellId(100, 1)] && sp._lmBadRun === 0 && sp._lmBadUpdates === 2);
+        let flushes = 0;
+        sp.flushCellsData = function () { flushes++; return g.Spect.prototype.flushCellsData.call(this); };
+        sp.onmessage({ data: cut }); sp.onmessage({ data: cut });
+        const kept = !!LM.indexedCells[g.lmUnitCellId(100, 1)];
+        sp.onmessage({ data: cut }); sp.onmessage({ data: cut });
+        check('spectator / Full Map tile, bad updates in a row: its cells flushed once, after the third', kept && !LM.indexedCells[g.lmUnitCellId(100, 1)] &&
+            !LM.indexedCells[g.lmUnitCellId(202, 1)] && flushes === 1 && sp._lmBadUpdates === 6, flushes + ' flushes, ' + sp._lmBadUpdates + ' bad');
+    }
+    /* a playing multibox unit with its own cells: bad updates never flush or end it */
+    {
+        reset();
+        LM.cellcolors = {};
+        const sp = spect(1), own = g.lmUnitCellId(100, 1);
+        Object.assign(sp, { player: true, active: true, playerCellIDs: [own], _lmAnchors: [] });
+        let ended = 0, flushes = 0;
+        sp.terminate = () => { ended++; };
+        sp.beforecalculation = () => { };
+        sp.flushCellsData = function () { flushes++; return g.Spect.prototype.flushCellsData.call(this); };
+        sp.onmessage({ data: msg(16, packet([], [{ id: 100, x: 1000, y: 1000, size: 60, name: 'alice', food: false }, { id: 200, x: 2000, y: 2000 }], [])) });
+        const mine = LM.indexedCells[own];
+        const cut = msg(16, P.slice(0, 35));
+        for (let k = 0; k < 4; k++) sp.onmessage({ data: cut });
+        check('playing unit, 4 bad updates in a row: still alive (no flush, no terminate), own cells and playerCellIDs kept, counted',
+            mine && !mine.removed && LM.indexedCells[own] === mine && LM.playerCellsMulti.includes(mine) && sp.getOwnPlayerCells().length === 1 &&
+            sp.playerCellIDs.length === 1 && sp.playerCellIDs[0] === own && ended === 0 && flushes === 0 && sp._lmBadUpdates === 4 && sp._lmBadRun === 4,
+            ended + ' ended, ' + flushes + ' flushes');
+        sp.onmessage({ data: msg(16, packet([], [{ id: 100, x: 1020, y: 1000, size: 60, name: 'alice', food: false }], [])) });
+        check('playing unit: its next whole update goes on', mine.targetX === 1020 && sp._lmBadRun === 0 && ended === 0);
+    }
+    /* opcode 17: cut after x, NaN scale */
+    {
+        const sp = world();
+        Object.assign(sp, { viewX: 11, viewY: 22, scale: 0.5, _lmCamAt: 5 });
+        const warn = g.console.warn; let warns = 0; g.console.warn = () => warns++;
+        const cam = (x, y, s) => { const b = Buffer.alloc(12); b.writeFloatLE(x, 0); b.writeFloatLE(y, 4); b.writeFloatLE(s, 8); return b; };
+        sp.onmessage({ data: msg(17, cam(999, 888, 0.3).slice(0, 6)) });
+        const cut = [sp.viewX, sp.viewY, sp.scale, sp._lmCamAt].join();
+        sp.onmessage({ data: msg(17, cam(999, 888, NaN)) });
+        const nan = [sp.viewX, sp.viewY, sp.scale, sp._lmCamAt].join();
+        sp.onmessage({ data: msg(17, cam(999, 888, 5)) });
+        const big = [sp.viewX, sp.viewY, sp.scale, sp._lmCamAt].join();
+        check('opcode 17 cut at 7 bytes, NaN or out-of-range scale: camera and _lmCamAt kept', cut === '11,22,0.5,5' && nan === cut && big === cut, cut + ' | ' + nan + ' | ' + big);
+        sp.onmessage({ data: msg(17, cam(999, 888, 0.25)) });
+        check('opcode 17 whole: camera taken', sp.viewX === 999 && sp.viewY === 888 && sp.scale === 0.25 && sp._lmCamAt > 5);
+        g.console.warn = warn;
+        check('bad packets counted (_lmDecodeErrors), one warning a minute at most', sp._lmDecodeErrors === 3 && warns === 1, warns);
+    }
+    /* opcode 69: count 3, 2.4 records */
+    {
+        const sp = world();
+        const old = [{ x: 1, y: 1, size: 100, mass: 100 }, { x: 2, y: 2, size: 100, mass: 100 }, { x: 3, y: 3, size: 100, mass: 100 }];
+        sp.ghostCells = old; sp._lmGhostTime = 5;
+        const b = Buffer.alloc(2 + 13 * 2 + 5); b.writeUInt16LE(3, 0);
+        for (let k = 0; k < 2; k++) { b.writeInt32LE(500 + k, 2 + k * 13); b.writeInt32LE(600, 6 + k * 13); b.writeUInt32LE(4000, 10 + k * 13); }
+        sp.onmessage({ data: msg(69, b) });
+        check('opcode 69 with 3 records announced and 2.4 sent: the last ghost cells and _lmGhostTime kept', sp.ghostCells === old && sp.ghostCells.length === 3 && sp._lmGhostTime === 5);
+    }
+    /* opcode 64: a cut border sets no side */
+    {
+        const sp = world();
+        Object.assign(sp, { viewMinX: 7, viewMinY: 7, viewMaxX: 7, viewMaxY: 7, mapOffsetFixed: false });
+        const b = Buffer.alloc(32); b.writeDoubleLE(-7000, 0); b.writeDoubleLE(-7000, 8); b.writeDoubleLE(7000, 16); b.writeDoubleLE(7000, 24);
+        sp.onmessage({ data: msg(64, b.slice(0, 20)) });
+        check('opcode 64 cut short: no side of the border set', sp.viewMinX === 7 && sp.viewMinY === 7 && sp.viewMaxX === 7 && sp.viewMaxY === 7);
+    }
+    /* opcode 255: a literals-only LZ4 block of the update, cut short */
+    {
+        const inner = Buffer.concat([Buffer.from([16]), P]);
+        const ext = []; for (let n = inner.length - 15; ; n -= 255) { if (n >= 255) ext.push(255); else { ext.push(n); break; } }
+        const block = Buffer.concat([Buffer.from([0xF0]), Buffer.from(ext), inner]);
+        const z = (blk) => { const h = Buffer.alloc(5); h[0] = 255; h.writeUInt32LE(inner.length, 1); return ab(Buffer.concat([h, blk])); };
+        const short = z(block.slice(0, ext.length + 1 + 1 + 40));
+        let sp = world(), before = snap(sp);
+        sp.handleMessage(new DataView(short));
+        check('opcode 255 block cut short (main decoder): nothing changed, counted', snap(sp) === before && sp._lmDecodeErrors === 1);
+        const mainDm = LM.decompressMessage;
+        delete LM.decompressMessage;
+        sp = world(); before = snap(sp);
+        sp.handleMessage(new DataView(short));
+        check('opcode 255 block cut short (the copy for a core without the main decoder): nothing changed', snap(sp) === before && sp._lmDecodeErrors === 1);
+        sp.handleMessage(new DataView(z(block)));
+        const okCopy = LM.indexedCells[g.lmUnitCellId(102, 1)] && LM.indexedCells[g.lmUnitCellId(102, 1)].accID === 777;
+        LM.decompressMessage = mainDm;
+        sp = world();
+        sp.handleMessage(new DataView(z(block)));
+        check('opcode 255 whole block: applied (main decoder and the copy)', okCopy && LM.indexedCells[g.lmUnitCellId(102, 1)] && LM.indexedCells[g.lmUnitCellId(102, 1)].accID === 777 && !sp._lmDecodeErrors);
+    }
+    /* cost of the check on a dense update (600 records, a third named) */
+    {
+        const recs = [];
+        for (let k = 0; k < 600; k++) recs.push({ id: 1000 + k, x: k * 10, y: k * 7, size: 30 + (k % 50), name: k % 3 ? '' : 'player' + k, food: k % 2 === 0 && k % 3 !== 0 });
+        const D = new g.buffer.Buffer(ab(packet([[1, 2], [3, 4]], recs, [5, 6, 7])));
+        const f = vm.runInContext('typeof lmWorldUpdateEnd === "function" ? lmWorldUpdateEnd : function () { return -1; }', g);
+        let s = 0; const N = 5000; const t0 = process.hrtime.bigint();
+        for (let i = 0; i < N; i++) s += f(D, 0);
+        const us = Number(process.hrtime.bigint() - t0) / 1e3 / N;
+        console.log('     whole-update check, 600 records (' + D.length + ' bytes): ' + us.toFixed(2) + ' us per update');
+        check('the check reads the dense update to its end', s / N === D.length);
+    }
 }
 
 console.log(fail ? fail + ' check(s) failed' : 'all fullmapfood checks passed');

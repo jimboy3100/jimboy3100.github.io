@@ -37,6 +37,38 @@ var _lmIdxPlain = {
 };
 function lmSpectIdx() { return window.lmCellIdx || _lmIdxPlain; }
 
+/* End offset of a whole agar.io world update (opcode 16 body at offset), or -1 when the packet
+ * is cut short. updateCells applies each section as it reads it, so a short packet used to
+ * apply its eats and first records and then throw. Same layout as updateCells reads:
+ * u16 eats x 8 bytes; records until id 0 (u32 id, i32 x, i32 y, u16 size, u8 flags,
+ * [u8 ext if flags&128], [rgb if 2], [skin\0 if 4], [name\0 if 8], [u32 account if ext&4]);
+ * u16 removals x 4 bytes. Index reads only, no allocation. */
+function lmWorldUpdateEnd(view, offset) {
+    var len = view.length, n, flags, ext;
+    if (!(offset >= 0) || offset + 2 > len) return -1;
+    n = view[offset] | (view[offset + 1] << 8);
+    offset += 2 + n * 8;
+    for (;;) {
+        if (offset + 4 > len) return -1;
+        if ((view[offset] | view[offset + 1] | view[offset + 2] | view[offset + 3]) === 0) { offset += 4; break; }
+        offset += 4;
+        if (offset + 11 > len) return -1;
+        flags = view[offset + 10];
+        offset += 11;
+        ext = 0;
+        if (flags & 128) { if (offset >= len) return -1; ext = view[offset++]; }
+        if (flags & 2) offset += 3;
+        if (flags & 4) { while (offset < len && view[offset] !== 0) offset++; if (offset++ >= len) return -1; }
+        if (flags & 8) { while (offset < len && view[offset] !== 0) offset++; if (offset++ >= len) return -1; }
+        if (ext & 4) offset += 4;
+        if (offset > len) return -1;
+    }
+    if (offset + 2 > len) return -1;
+    n = view[offset] | (view[offset + 1] << 8);
+    offset += 2 + n * 4;
+    return offset > len ? -1 : offset;
+}
+
 /*
  * ═══ Coordinates: one transform per connection ═══
  *
@@ -613,8 +645,18 @@ class Spect {
         try {
             this.handleMessage(message);
         } catch (e) {
-            if (!(e instanceof RangeError)) console.error('[SPECT] onmessage error:', e);
+            this._lmDecodeError(e);
         }
+    }
+
+    /* A packet this connection could not read: counted (_lmDecodeErrors), and at most one
+     * warning per connection per minute (a bad stream logged every packet before, or nothing) */
+    _lmDecodeError(e) {
+        this._lmDecodeErrors = (this._lmDecodeErrors || 0) + 1;
+        const now = Date.now();
+        if (now - (this._lmDecodeWarnAt || 0) < 60000) return;
+        this._lmDecodeWarnAt = now;
+        console.warn('[SPECT] Unit ' + this.number + ': unreadable packet (' + this._lmDecodeErrors + ' so far):', e && e.message ? e.message : e);
     }
 
     onerror(socket, generation) {
@@ -1234,6 +1276,10 @@ class Spect {
     }
 
     decompressMessage(message) {
+        /* the main client's decoder (it refuses a block that decodes short: the zero tail
+         * read as cell records); the copy below is only for a core without it */
+        const main = window.legendmod && window.legendmod.decompressMessage;
+        if (typeof main === 'function') return main.call(window.legendmod, message);
         const buffer = window.buffer.Buffer;
 
         if (!message ||
@@ -1312,7 +1358,7 @@ class Spect {
             var decoded = wasm.decode(
                 compressedSize, outputSize
             );
-            if (decoded >= 0) {
+            if (decoded === outputSize) {
                 var out = new Uint8Array(outputSize);
                 out.set(
                     wasm.mem.subarray(
@@ -1342,6 +1388,11 @@ class Spect {
                     addByte = src[sPos++];
                     litLen += addByte;
                 } while (addByte === 255);
+            }
+            if (sPos + litLen > sEnd) {
+                throw new RangeError(
+                    "LZ4: literal run out of bounds (spectator)"
+                );
             }
             if (litLen > 0) {
                 dst.set(
@@ -1389,7 +1440,7 @@ class Spect {
             }
         }
 
-        if (dPos < 0 || dPos > outputSize) {
+        if (dPos !== outputSize) {
             throw new RangeError(
                 "Spectator LZ4 decompression failed"
             );
@@ -1430,10 +1481,16 @@ class Spect {
                 /* This connection's own server camera (its server space). The main
                  * camera follows the unit's drawn cells instead (playerX/Y, see
                  * drawRender.getMultiboxFrame); these packets used to move it too,
-                 * between frames and to a slightly different point. */
-                this.viewX = view.getFloat32(offset, true);
-                this.viewY = view.getFloat32(offset + 4, true);
-                this.scale = view.getFloat32(offset + 8, true);
+                 * between frames and to a slightly different point.
+                 * A short or broken packet keeps the last camera (a cut one moved x only). */
+                if (view.byteLength < offset + 12) { this._lmDecodeError('opcode 17: ' + view.byteLength + ' bytes'); break; }
+                {
+                    const camX = view.getFloat32(offset, true), camY = view.getFloat32(offset + 4, true), camScale = view.getFloat32(offset + 8, true);
+                    if (!Number.isFinite(camX) || !Number.isFinite(camY) || !(camScale > 0.01 && camScale <= 4)) { this._lmDecodeError('opcode 17: bad camera'); break; }
+                    this.viewX = camX;
+                    this.viewY = camY;
+                    this.scale = camScale;
+                }
                 this._lmCamAt = Date.now();
                 break;
             case 18:
@@ -1541,7 +1598,11 @@ class Spect {
                 break;
 
             case 69:
+                /* as the main client: a cut list keeps the last ghost cells (it was cleared,
+                 * then threw half-way) */
+                if (view.byteLength < 3) { this._lmDecodeError('opcode 69: ' + view.byteLength + ' bytes'); break; }
                 const length = view.getUint16(offset, true);
+                if (3 + length * 13 > view.byteLength) { this._lmDecodeError('opcode 69: ' + view.byteLength + ' bytes for ' + length + ' records'); break; }
                 offset += 2;
                 this.ghostCells = [];
                 for (let i = 0; i < length; i++) {
@@ -1727,6 +1788,8 @@ class Spect {
             case 64: //specific private servers
                 /* setMapOffset keeps the first usable (on agar.io: full-map) border;
                  * taking only the very first packet could fix a partial one. */
+                /* a cut border set some of the four sides, then threw */
+                if (view.byteLength < offset + 32) { this._lmDecodeError('opcode 64: ' + view.byteLength + ' bytes'); break; }
                 if (!this.mapOffsetFixed) {
                     const message = new window.buffer.Buffer(view.buffer);
                     this.viewMinX = message.readDoubleLE(offset);
@@ -2367,17 +2430,13 @@ class Spect {
             message =
                 this.decompressMessage(message);
         } catch (error) {
-            console.warn(
-                "[SPECT] Rejected invalid compressed packet:",
-                error
-            );
+            /* counted, one warning a minute (see _lmDecodeError) */
+            this._lmDecodeError(error);
             return;
         }
 
         if (!message || message.length < 1) {
-            console.warn(
-                "[SPECT] Rejected empty decompressed packet"
-            );
+            this._lmDecodeError('empty decompressed packet');
             return;
         }
 
@@ -2394,6 +2453,7 @@ class Spect {
                 break;
             case 64:
                 /* see the other case 64: the first usable border wins */
+                if (message.length < offset + 32) { this._lmDecodeError('opcode 64: ' + message.length + ' bytes'); break; }
                 if (!this.mapOffsetFixed) {
                     this.viewMinX = (message.readDoubleLE(offset));
                     offset += 8;
@@ -2427,6 +2487,16 @@ class Spect {
             }
             return text;
         };
+        /* a packet cut short changes nothing (it used to apply its first sections and throw);
+         * three in a row drop a spectator's / Full Map tile's cells, as a ClearAll would; a
+         * playing unit keeps its world (a flush would forget its own cells and end it), its
+         * next whole update goes on */
+        if (lmWorldUpdateEnd(view, offset) < 0) {
+            this._lmBadUpdates = (this._lmBadUpdates || 0) + 1;
+            this._lmBadRun = (this._lmBadRun || 0) + 1;
+            if (this._lmBadRun === 3 && !this.player) this.flushCellsData();
+            return;
+        }
         this.time = Date.now();
         this.removePlayerCell = false;
         let eatEventsLength = view.readUInt16LE(offset);
@@ -2779,7 +2849,9 @@ class Spect {
             if (legendmod.ghostCellsTime && (!this._lmGhostPair || this._lmGhostPair[0] !== legendmod.ghostCellsTime)) this.detectOrientation();
             this._lmCalibrate(this.time);
         }
-
+        /* a whole world update arrived (Full Map coverage reads it) */
+        this._lmWorldAt = Date.now();
+        this._lmBadRun = 0;
     }
 
     beforecalculation() {
