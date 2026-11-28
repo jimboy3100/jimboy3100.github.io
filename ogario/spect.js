@@ -1997,7 +1997,8 @@ class Spect {
                 var closedIndex = spects.indexOf(this)
                 if (closedIndex !== -1) spects.splice(closedIndex, 1)
                 if (window.multiboxPlayerEnabled === this.number) lmSetMbUnit(0)
-                if (this.player && !spects.some(function (s) { return s && s.player; })) legendmod.multiBoxPlayerExists = false
+                if (typeof lmMbSyncExists === 'function') lmMbSyncExists()
+                else if (this.player && !spects.some(function (s) { return s && s.player; })) legendmod.multiBoxPlayerExists = false
 
                 break;
             case 87:

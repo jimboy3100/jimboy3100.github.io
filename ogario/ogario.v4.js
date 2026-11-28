@@ -54481,8 +54481,9 @@ function thelegendmodproject() {
             }
             if (keep.length !== sp.length) window.spects = keep;
             if (typeof lmMbPlayers !== 'undefined') lmMbPlayers.releaseAll();
-            this.multiBoxPlayerExists = false;
-            if (window.legendmod) window.legendmod.multiBoxPlayerExists = false;
+            /* lmMbSyncExists: the one writer of multiBoxPlayerExists (no unit is left) */
+            if (typeof lmMbSyncExists === 'function') lmMbSyncExists();
+            else { this.multiBoxPlayerExists = false; if (window.legendmod) window.legendmod.multiBoxPlayerExists = false; }
             lmSetMbUnit(0);
             for (var g = 0; g < gone.length; g++) if (typeof lmMbPlayerEvent === 'function') lmMbPlayerEvent('playerRemoved', gone[g], 'disabled');
             if (closed && !this.play && window.application && typeof window.application.showMenu === 'function') window.application.showMenu();
@@ -54505,9 +54506,10 @@ function thelegendmodproject() {
             /* every player slot is free again (the profiles keep their slots, application.mbSlots) */
             if (typeof lmMbPlayers !== 'undefined') lmMbPlayers.releaseAll();
             /* No multibox player exists any more; a stale true made every later
-             * death silently spawn a new multibox unit instead of the death menu. */
-            this.multiBoxPlayerExists = false;
-            if (window.legendmod) window.legendmod.multiBoxPlayerExists = false;
+             * death silently spawn a new multibox unit instead of the death menu.
+             * lmMbSyncExists is its one writer. */
+            if (typeof lmMbSyncExists === 'function') lmMbSyncExists();
+            else { this.multiBoxPlayerExists = false; if (window.legendmod) window.legendmod.multiBoxPlayerExists = false; }
             /* every unit is closed: a focus left on one froze the main cell and camera
              * (HUD "[MB 2/1]") */
             lmSetMbUnit(0);
