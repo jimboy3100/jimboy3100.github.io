@@ -472,18 +472,22 @@ function lmMbPlayerEvent(type, p, reason, extra) {
 window.lmMbPlayerEvent = lmMbPlayerEvent;
 /* Closes one unit for good (removePlayer, a captcha): its life ends ('removed': no death menu
  * latch), the focus moves on if it had it, its socket closes, it leaves spects and its slot is
- * freed (the others keep theirs). Once per unit. */
+ * freed (the others keep theirs). Once per unit. With nothing of ours alive after it the menu
+ * opens (terminate opens it for a living unit; a dead one, as the one the switch key chose that
+ * met a captcha on its spawn, only moved the focus and left no menu). */
 function lmMbRemoveUnit(sp, reason) {
     if (!sp || sp.player !== true || sp._lmRemoved) return false;
     sp._lmRemoved = true;
     reason = reason || 'removed';
-    if (sp.active === true && typeof sp.terminate === 'function') sp.terminate(reason);
+    var live = sp.active === true && typeof sp.terminate === 'function';
+    if (live) sp.terminate(reason);
     else if (+window.multiboxPlayerEnabled === +sp.number) lmSetMbUnit(lmMbFallbackUnit(sp, reason));
     if (typeof sp.closeConnection === 'function') sp.closeConnection();
     var list = window.spects, i = list ? list.indexOf(sp) : -1;
     if (i !== -1) list.splice(i, 1);
     if (sp.slotId) lmMbPlayers.release(sp.slotId, sp.slotEpoch);
     lmMbSyncExists();
+    if (!live && reason !== 'disabled' && !lmMbLiving() && window.application && typeof window.application.showMenu === 'function') window.application.showMenu();
     lmMbPlayerEvent('playerRemoved', sp, reason);
     return true;
 }
@@ -25808,22 +25812,32 @@ function thelegendmodproject() {
             }
         },
         /* the switch keys: no unit yet (Full Map tiles do not count) starts multibox, else the
-         * next / previous player (mbSelectAdjacent) */
+         * next / previous player (mbSelectAdjacent). The menu goes, except the death menu (nothing
+         * of ours alive) when the player chosen is a dead unit: its spawn hides it (the latch of
+         * beforecalculation), and when it never spawns (a captcha on its socket) it stays. */
         multiboxchange() {
-            this.hideMenu();
             if (!lmMbUnits().length) {
+                this.hideMenu();
                 this._lmMbStart();
                 return;
             }
+            var dead = !lmMbLiving();
             this.mbSelectAdjacent(1);
+            var t = window.multiboxPlayerEnabled ? lmMbFocused() : null;
+            if (dead && t && !lmMbAlive(t)) window._lmMbDeathMenuAt = Date.now();
+            else this.hideMenu();
         },
         multiboxback() {
-            this.hideMenu();
             if (!lmMbUnits().length) {
+                this.hideMenu();
                 this._lmMbStart();
                 return;
             }
+            var dead = !lmMbLiving();
             this.mbSelectAdjacent(-1);
+            var t = window.multiboxPlayerEnabled ? lmMbFocused() : null;
+            if (dead && t && !lmMbAlive(t)) window._lmMbDeathMenuAt = Date.now();
+            else this.hideMenu();
         },
         /* The multibox roster in the stats HUD, only while multibox is on: one chip per open player
          * in slot order (its colour, a dot for alive / dead / connecting / offline, its mass; the
@@ -46234,8 +46248,14 @@ function thelegendmodproject() {
                             this._spawnGateTimer = null;
                         }
                     }
-                    this.playerCellIDs.push(data.getUint32(s, true));
-                    if (this._playerCellIDSet) this._playerCellIDSet.add(this.playerCellIDs[this.playerCellIDs.length - 1]);
+                    var _lmOwnId = data.getUint32(s, true), _lmOwnC = this.indexedCells[_lmOwnId];
+                    this.playerCellIDs.push(_lmOwnId);
+                    if (this._playerCellIDSet) this._playerCellIDSet.add(_lmOwnId);
+                    /* the cell's record came before its id: ownership was only decided when the
+                     * cell was created, so it stayed a stranger's cell for its whole life */
+                    if (_lmOwnC && !_lmOwnC.removed && !_lmOwnC.isFood && !_lmOwnC.isVirus && !_lmOwnC.isEjected && !(_lmOwnC.spectator > 0)) {
+                        this._lmOwnCellAdopt(_lmOwnC, _lmOwnC.color, _lmOwnC._lmRawColor || null);
+                    }
                     if (!this.play) {
                         /* Spawned: cancel a pending 1.8 s spawn retry (sendNick), so dying
                          * before it fires does not send an unrequested respawn. */
@@ -56363,7 +56383,7 @@ function thelegendmodproject() {
                     }
                 }
                 //				
-                cellUpdateCells = this.indexedCells[id];
+                var cellUpdateCells = this.indexedCells[id];
                 if (imsoloOwnerID > 0) {
                     cellUpdateCells ? (cellUpdateCells.imsoloOwnerID = imsoloOwnerID) : null;
                 }
@@ -56403,22 +56423,7 @@ function thelegendmodproject() {
                          * Player ownership must come exclusively from authoritative protocol IDs.
                          * Never infer ownership from colour, nickname, position, size or skin.
                          */
-                        if (!isEjected && isOwnPlayerCell && lmIdxOf(this.playerCells, cellUpdateCells, '_playerIdx') === -1) {
-                            cellUpdateCells.isPlayerCell = true;
-                            cellUpdateCells.rawServerColor = rawServerColor;
-                            if (this.gameMode === ":teams") {
-                                this.playerColor = color;
-                            } else {
-                                if (profiles[application.selectedProfile] && profiles[application.selectedProfile].color && defaultmapsettings.myCustomColor) {
-                                    color = profiles[application.selectedProfile].color;
-                                }
-                                this.playerColor = color || this.playerColor;
-                                cellUpdateCells.color = this.playerColor || color;
-                            }
-                            this.playerRawServerColor = rawServerColor;
-                            indexedPush(this.playerCells, cellUpdateCells, '_playerIdx');
-                            lmTimeAlive(this, this.playerCells.length); /* the first own cell starts the time alive */
-                        }
+                        if (!isEjected && isOwnPlayerCell) this._lmOwnCellAdopt(cellUpdateCells, color, rawServerColor);
                     } else if (isFood) {
                         indexedPush(this.food, cellUpdateCells, '_foodIdx');
                     }
@@ -57225,6 +57230,27 @@ function thelegendmodproject() {
             }
             if (keep) this.playerColor = keep;
         },
+        /* The cell becomes one of the player's own (its id came in opcode 32): when updateCells
+         * creates it, or at opcode 32 when its record came first (it stayed a stranger's cell: no
+         * own mass, camera or time alive). color: the colour it is shown with, rawServerColor:
+         * the server's. Once per cell. */
+        _lmOwnCellAdopt(cell, color, rawServerColor) {
+            if (lmIdxOf(this.playerCells, cell, '_playerIdx') !== -1) return;
+            cell.isPlayerCell = true;
+            cell.rawServerColor = rawServerColor;
+            if (this.gameMode === ":teams") {
+                this.playerColor = color;
+            } else {
+                if (profiles[application.selectedProfile] && profiles[application.selectedProfile].color && defaultmapsettings.myCustomColor) {
+                    color = profiles[application.selectedProfile].color;
+                }
+                this.playerColor = color || this.playerColor;
+                cell.color = this.playerColor || color;
+            }
+            this.playerRawServerColor = rawServerColor;
+            indexedPush(this.playerCells, cell, '_playerIdx');
+            lmTimeAlive(this, this.playerCells.length); /* the first own cell starts the time alive */
+        },
         color2Hex(number) {
             var color = number.toString(16);
             return 1 === color.length ? '0' + color : color;
@@ -57295,7 +57321,7 @@ function thelegendmodproject() {
             var x = 0;
             var y = 0;
             var minSize = Infinity, maxSize = 0;
-            playersLength = this.playerCells.length;
+            var playersLength = this.playerCells.length;
             /* optional 16-pieces sounds of the main player (its own cells; the units: spect.js) */
             lmPieceSound(this, playersLength, this.play);
             /* LMEvents 'merge': own merges counted in updateCells(), reported here once per frame */

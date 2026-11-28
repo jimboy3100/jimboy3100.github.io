@@ -993,6 +993,37 @@ for (const withUnit of [false, true]) {
             e.focus() === 0 && e.LM.play === true && !e.ctx.menuShown && e.same(grid, socks) &&
             (how === 'close' || (e.units().length === 0 && e.LM.multiBoxPlayerExists === false)), [e.focus(), e.ctx.menuShown, e.units().length].join());
     }
+    /* nothing of ours alive (the main player in the menu), Full Map on: the switch key chooses the
+     * dead unit and leaves the menu to its spawn; the server then asks it for a captcha (opcode 85):
+     * the menu again (the switch hid it and the removal of a dead unit only moved the focus, so none
+     * was left). The socket of the last living player closing: the menu too (a lost socket never
+     * showed one, also when it never came back); the tiles untouched in both */
+    for (const how of ['captcha', 'close']) {
+        const e = mk({ mainAlive: false });
+        e.app.setShowFullSpectator();
+        e.tiles().forEach(e.handshake);
+        const grid = e.tiles(), socks = e.sockOf(grid);
+        e.app.multiboxchange();
+        const unit = e.units()[0];
+        unit.socket.readyState = 1; unit.socket.onopen();
+        let hidden = 0;
+        e.app.hideMenu = () => { hidden++; };
+        const shown = e.ctx.menuShown || 0;
+        if (how === 'captcha') {
+            unit.active = false;
+            e.ctx.lmSetMbUnit(0);
+            e.app.multiboxchange();
+            const kept = hidden === 0 && e.focus() === unit.number && !!e.ctx._lmMbDeathMenuAt;
+            unit.handleMessage(new DataView(Uint8Array.of(85).buffer));
+            check('23. nothing alive, the switch key on the dead unit: the menu stays for its spawn; a captcha on it shows the menu, focus on P1, the tiles untouched',
+                kept && (e.ctx.menuShown || 0) - shown === 1 && e.focus() === 0 && e.units().length === 0 && e.same(grid, socks), [kept, hidden, (e.ctx.menuShown || 0) - shown, e.focus()].join());
+        } else {
+            unit.active = true;
+            unit.socket.readyState = 3; unit.socket.closed = true; unit.socket.onclose();
+            check('23. nothing else alive, the last unit\'s socket closes: the menu once (its spawn after the reconnect may hide it), focus on P1, the tiles untouched',
+                (e.ctx.menuShown || 0) - shown === 1 && !!e.ctx._lmMbDeathMenuAt && e.focus() === 0 && e.same(grid, socks), [(e.ctx.menuShown || 0) - shown, e.focus()].join());
+        }
+    }
 }
 
 /* 24. the login with the other provider's account (real spect.js, case 242): one unit holds it, a

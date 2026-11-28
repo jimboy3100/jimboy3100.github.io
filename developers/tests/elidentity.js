@@ -217,6 +217,35 @@ check('agar.io: another connection drops the identities', L._lmCellIdentity == n
     check('main player: a spawn counts one life, an own id of the same life none, the next spawn the next life',
         first === 1 && split === 1 && L._lmLife === 2 && L.play === true, [first, split, L._lmLife].join());
 }
+/* opcode 32 after the record of its cell: the cell becomes the player's own then (it stayed a
+ * stranger's cell for its whole life: no own mass, camera or time alive), once; food, a virus, an
+ * ejected cell and a multibox unit's cell never do; the id before the record still makes the cell
+ * own when it is created (one helper for both) */
+{
+    const own = (id) => { const v = new DataView(new ArrayBuffer(5)); v.setUint8(0, 32); v.setUint32(1, id, true); L.handleMessage(v); };
+    const alive = [];
+    g.lmTimeAlive = (p, n) => { alive.push(n); };
+    L.flushCellsData();
+    L.playerCells = []; L.playerCellIDs = []; L.play = true; L._spawnTransitGate = false; alive.length = 0;
+    feed([], [{ id: 601, size: 120, color: [90, 90, 200], skin: '', name: 'Me' }, { id: 602, size: 80, color: [9, 9, 9], skin: '', name: 'Virus' },
+        { id: 603, size: 30, color: [7, 7, 7] }, { id: 604, size: 90, color: [8, 8, 8], skin: '', name: 'Unit' }, { id: 962, size: 12, color: [1, 2, 3], food: true }], []);
+    const c = cell(601), stranger = !!c && !c.isPlayerCell && L.playerCells.length === 0;
+    own(601);
+    check('opcode 32 after its cell\'s record: the cell is the player\'s own (was never adopted), its time alive starts',
+        stranger && c.isPlayerCell === true && L.playerCells.length === 1 && L.playerCells[0] === c && c._playerIdx === 0 && alive.join() === '1');
+    own(601);
+    check('    ... a second opcode 32 for it lists it once', L.playerCells.length === 1);
+    cell(602).isVirus = true; cell(603).isEjected = true; cell(604).spectator = 2;
+    [602, 603, 604, 962].forEach(own);
+    check('    ... food, a virus, an ejected cell and a unit\'s cell are never adopted', L.playerCells.length === 1 &&
+        ![602, 603, 604, 962].some((id) => cell(id).isPlayerCell));
+    own(605);
+    feed([], [{ id: 605, size: 100, color: [90, 90, 200], skin: '', name: 'Me' }], []);
+    check('    ... the id before the record: own at its creation', !!cell(605) && cell(605).isPlayerCell === true && L.playerCells.length === 2 && cell(605)._playerIdx === 1);
+    delete g.lmTimeAlive;
+}
+/* updateCells keeps its cell in a local (it was an implicit global, written for every record) */
+check('updateCells: no implicit global cellUpdateCells', !Object.keys(g.__env).includes('cellUpdateCells'));
 check('nothing logged as an error', g.errors.length === 0);
 
 console.log(fail ? fail + ' FAILED' : 'all passed');

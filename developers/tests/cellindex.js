@@ -458,6 +458,21 @@ reset();
     delete g.createLegendWebSocket;
 }
 
+/* the main player's own cell count of a frame (calculatePlayerMassAndPosition) is a local: it was an
+ * implicit global written every frame (strict mode: a ReferenceError for an undeclared name) */
+{
+    const c = { window: { LMEvents: { _has: () => false } }, lmPieceSound() { } };
+    vm.createContext(c);
+    let err = null, m = null;
+    try {
+        m = vm.runInContext('"use strict"; ({\n' + slice('        calculatePlayerMassAndPosition() {', '        recalculatePlayerMass() {') + '\n})', c);
+        Object.assign(m, { playerCells: [{ x: 10, y: 20, size: 40, targetSize: 40 }, { x: 30, y: 40, size: 20, targetSize: 20 }], play: false, recalculatePlayerMass() { }, updateMultiboxUnitPositions() { } });
+        m.calculatePlayerMassAndPosition();
+    } catch (e) { err = e; }
+    check('calculatePlayerMassAndPosition: no implicit global playersLength (runs in strict mode)' + (err ? ' [' + err.message + ']' : ''),
+        !err && !('playersLength' in c) && m.viewX === 20 && m.viewY === 30);
+}
+
 console.log('\nindexOf/includes calls on the indexed lists per step, and the list lengths they covered:');
 for (const c of counts) console.log('  ' + String(c.lists).padStart(6) + String(c.elems).padStart(10) + '  ' + c.name);
 if (fail) { console.log(fail + ' check(s) failed'); process.exit(1); }

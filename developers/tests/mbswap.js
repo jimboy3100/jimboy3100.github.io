@@ -176,6 +176,33 @@ for (const how of ['terminate', 'beforecalculation']) {
     e.ctx.application.multiboxchange();
     check('    ... nobody alive: the next player (P2) is taken and spawned, as with two', e.ctx.multiboxPlayerEnabled === 1 && e.unit(1).respawns === 1, e.ctx.multiboxPlayerEnabled);
 }
+/* the switch keys with nothing alive: the death menu stays over the dead unit they choose (its spawn
+ * hides it, the latch), and a captcha on that spawn (lmMbRemoveUnit) shows the menu again; the
+ * switch hid the menu first and the removal of a dead unit showed none, so there was no menu */
+{
+    for (const key of ['multiboxchange', 'multiboxback']) {
+        const e = env({ focus: null, mainAlive: false, units: 2, slots: true });
+        let hidden = 0;
+        e.ctx.application.hideMenu = () => { hidden++; };
+        e.unit(1).active = false; e.unit(2).active = false;
+        e.ctx._lmMbDeathMenuAt = 0;
+        e.ctx.application[key]();
+        const t = e.ctx.lmMbFocused();
+        check(key + ', nothing alive: the dead unit chosen, the menu stays, its latch set', hidden === 0 && t && t.player && t.respawns === 1 && !!e.ctx._lmMbDeathMenuAt,
+            hidden + ' hidden, focus ' + e.ctx.multiboxPlayerEnabled);
+        const shown = e.ctx.menuShown;
+        e.ctx.lmMbRemoveUnit(t, 'removed');
+        check('    ... it meets a captcha and is removed: the menu is shown, the focus back on P1', e.ctx.menuShown === shown + 1 && !e.ctx.multiboxPlayerEnabled, e.ctx.menuShown - shown);
+    }
+    const e = env({ focus: null, mainAlive: true, units: 2, slots: true });
+    let hidden = 0;
+    e.ctx.application.hideMenu = () => { hidden++; };
+    e.unit(1).active = false;
+    e.ctx.application.multiboxchange();
+    const shown = e.ctx.menuShown;
+    e.ctx.lmMbRemoveUnit(e.unit(1), 'removed');
+    check('switch key to a dead unit while the main player lives: the menu goes; its removal shows none', hidden === 1 && e.ctx.menuShown === shown, hidden + ' / ' + (e.ctx.menuShown - shown));
+}
 /* Q free spectate (spectateBlind) while the main player is dead and a unit has the focus: Q
  * double splits the unit and must not also toggle free spectate on the main connection */
 {

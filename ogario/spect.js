@@ -2747,7 +2747,8 @@ class Spect {
     }
 
     /* The unit's life ended. reason: 'death' (no own cell left; the default), 'disconnect' (its
-     * socket closed: no death, so no game-over menu; it reconnects in its slot) or 'removed'
+     * socket closed: no death, so no game-over menu while something else of ours lives; it
+     * reconnects in its slot, and its spawn hides the menu shown when it was the last one) or 'removed'
      * (closed for good: Remove Player, a captcha; the menu when nothing of ours lives, but a
      * later spawn does not hide it). */
     terminate(reason) {
@@ -2805,9 +2806,6 @@ class Spect {
             }
             lmSetMbUnit(nextUnit);
         }
-        /* a lost socket is no game over */
-        if (reason === 'disconnect') return;
-
         // Check if any unit is still alive (main player or other units; a spectator is no player)
         var anyAlive = legendmod.play;
         if (!anyAlive) {
@@ -2815,6 +2813,9 @@ class Spect {
                 if (lmMbAlive(spects[i])) { anyAlive = true; break; }
             }
         }
+        /* a lost socket is no game over while something else of ours lives; the last living
+         * player's lost socket left no menu at all (also when it never reconnected) */
+        if (reason === 'disconnect' && (anyAlive || !wasAlive)) return;
         /* the player you control died, or nothing of ours lives: its Pause, permanent feed and keys
          * end with it (a background unit's death leaves the ones of the player you steer) */
         if (died && (wasActive || !anyAlive) && typeof application !== 'undefined' && application && typeof application._lmLifeInputEnd === 'function') application._lmLifeInputEnd();
@@ -2822,10 +2823,10 @@ class Spect {
         if (!anyAlive) {
             // Last unit died — show menu
             application.showMenu();
-            if (reason !== 'death') return;
-            /* the unit's own background respawn may hide this menu again (beforecalculation),
-             * unless the player uses it first (nick, server list, death card) or it is older
-             * than LM_MB_DEATH_MENU_MS */
+            if (reason === 'removed') return;
+            /* the unit's own background respawn (after a lost socket: the one after its reconnect)
+             * may hide this menu again (beforecalculation), unless the player uses it first (nick,
+             * server list, death card) or it is older than LM_MB_DEATH_MENU_MS */
             window._lmMbDeathMenuAt = Date.now();
             if (!window._lmMbMenuUse && typeof document !== 'undefined' && document && document.addEventListener) {
                 window._lmMbMenuUse = function (e) {

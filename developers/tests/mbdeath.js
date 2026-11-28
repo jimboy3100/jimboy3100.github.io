@@ -600,16 +600,79 @@ function death(o) {
         check('game over after the main player died first: the last unit\'s death is the one scope all, the controlled ones are active',
             ev.join() === '4:unit:-:2,2:unit:a:1,3:all:a:0', ev.join());
     }
-    /* a lost socket is no death: no menu, the others' scores stay */
+    /* a lost socket is no death: no menu while another player lives, the others' scores stay */
+    {
+        const s = MB.scene(Object.assign({ players: 3 }, opt));
+        MB.populate(s); s.step(2);
+        const app = s.ctx.application;
+        s.kill(1); s.step(1);
+        const other = s.player(2).unit;
+        other.playerScore = 77;
+        s.reconnect(3, { respawn: false }); s.step(1);
+        check('a unit\'s socket drops while another one lives: no menu, the other unit\'s score kept', app.menuShown === 0 && other.playerScore === 77 && !s.ctx._lmMbDeathMenuAt);
+    }
+    /* the last living player's socket drops: the menu (there was none at all, also when it never
+     * reconnected), and its spawn after the reconnect hides it as after a death */
     {
         const s = MB.scene(Object.assign({ players: 3 }, opt));
         MB.populate(s); s.step(2);
         const app = s.ctx.application;
         s.kill(1); s.step(1); s.kill(2); s.step(1);
-        const p3 = s.player(3).unit, other = s.player(2).unit;
+        const other = s.player(2).unit;
         other.playerScore = 77;
-        p3.terminate('disconnect');
-        check('the last living unit\'s socket drops: no game-over menu, the other unit\'s score kept', app.menuShown === 0 && other.playerScore === 77 && !s.ctx._lmMbDeathMenuAt);
+        s.reconnect(3, { respawn: false }); s.step(1);
+        const shown = app.menuShown, latch = !!s.ctx._lmMbDeathMenuAt, hidden = app.menuHidden;
+        check('the last living unit\'s socket drops: the menu once, its latch set, the other unit\'s score kept', shown === 1 && latch && other.playerScore === 77, shown + ' latch ' + latch);
+        s.respawn(3, undefined, { background: true }); s.step(1);
+        check('    ... its spawn after the reconnect hides it and takes the focus', app.menuHidden - hidden === 1 && s.focus() === s.player(3).src && app.menuShown === 1,
+            (app.menuHidden - hidden) + ' focus ' + s.focus());
+    }
+    /* the switch key with nothing alive: the death menu stays until the dead unit it chose spawns;
+     * a captcha on that spawn (opcode 85: lmMbRemoveUnit) left no menu at all */
+    for (const how of ['spawn', 'captcha']) {
+        const s = MB.scene(Object.assign({ players: 3 }, opt));
+        MB.populate(s); s.step(2);
+        const app = s.ctx.application;
+        s.kill(1); s.step(1); s.kill(2); s.step(1); s.kill(3); s.step(1);
+        const shown = app.menuShown, hidden = app.menuHidden;
+        app.multiboxchange(); s.step(1);
+        const p2 = s.player(2);
+        check('switch key, nothing alive (' + how + '): the dead unit chosen keeps the death menu (its latch set)',
+            shown === 1 && app.menuHidden === hidden && s.focus() === p2.src && !!s.ctx._lmMbDeathMenuAt, shown + ' / ' + (app.menuHidden - hidden) + ' focus ' + s.focus());
+        if (how === 'spawn') {
+            s.respawn(2, undefined, { background: true }); s.step(1);
+            check('    ... its spawn hides it', app.menuHidden - hidden === 1 && app.menuShown === 1 && s.focus() === p2.src, (app.menuHidden - hidden) + ' / ' + app.menuShown);
+        } else {
+            s.ctx.lmMbRemoveUnit(p2.unit, 'removed'); s.step(1);
+            check('    ... a captcha removes it: the menu is shown again, nothing hidden', app.menuShown === 2 && app.menuHidden === hidden && s.focus() !== p2.src,
+                app.menuShown + ' / ' + (app.menuHidden - hidden) + ' focus ' + s.focus());
+        }
+    }
+    /* a dead unit removed while another player lives: no menu; with multibox off ('disabled') none either */
+    {
+        const s = MB.scene(Object.assign({ players: 3 }, opt));
+        MB.populate(s); s.step(2);
+        const app = s.ctx.application;
+        s.kill(2); s.step(1);
+        s.ctx.lmMbRemoveUnit(s.player(2).unit, 'removed');
+        s.kill(1); s.step(1); s.kill(3); s.step(1);
+        const shown = app.menuShown;
+        const t = MB.scene(Object.assign({ players: 2 }, opt));
+        MB.populate(t); t.step(2);
+        t.kill(2); t.step(1); t.ctx.legendmod.play = false;
+        t.ctx.lmMbRemoveUnit(t.player(2).unit, 'disabled');
+        check('a dead unit removed while another player lives: no menu (the last death shows it once); \'disabled\': none',
+            shown === 1 && t.ctx.application.menuShown === 0, shown + ' / ' + t.ctx.application.menuShown);
+    }
+    /* the switch key with a player alive: the menu goes as before (a dead target spawns again) */
+    {
+        const s = MB.scene(Object.assign({ players: 2 }, opt));
+        MB.populate(s); s.step(2);
+        const app = s.ctx.application;
+        s.kill(2); s.step(1);
+        const hidden = app.menuHidden;
+        app.multiboxchange();
+        check('switch key to a dead unit while the main player lives: the menu goes, no latch', app.menuHidden - hidden === 1 && !s.ctx._lmMbDeathMenuAt);
     }
 }
 /* 5c. the roster in the stats HUD (application._lmMbRosterHtml / _lmMbRosterBind): a chip per open player
