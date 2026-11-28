@@ -1634,7 +1634,7 @@ win.LM_PRIVATE_SERVER_URL = "wss://ffa.legendmod.ml:8080";
    [LM] Delta Chat Commands (IIFE)
    - Delta chat DOM: .chat-messages-container ul.chatmessages li.message
    - Optional: also parse toastr.* content
-   - Commands: [url], [tag], [yut], [img], [discord], [skype]
+   - Commands: [url], [tag], [yut], [img], [discord]
    - [yut] => embedded YouTube iframe (no Play button)
    - Close (✕) => removes the toast itself
    - FIXES:
@@ -1654,7 +1654,7 @@ win.LM_PRIVATE_SERVER_URL = "wss://ffa.legendmod.ml:8080";
     // Toggle: remove the original chat line after we handle a command
     // win.REMOVE_CHAT_MESSAGE_AFTER_PARSE = true;
 
-    const TAGS = ["url", "tag", "yut", "img", "discord", "skype"];
+    const TAGS = ["url", "tag", "yut", "img", "discord"];
     const CMD_OPEN_RE = new RegExp("\\[(" + TAGS.join("|") + ")\\]", "i");
     const CMD_CLOSE_RE = new RegExp("\\[\\/(" + TAGS.join("|") + ")\\]", "i");
 
@@ -1862,29 +1862,6 @@ win.LM_PRIVATE_SERVER_URL = "wss://ffa.legendmod.ml:8080";
         bindCloseForToastRoot(tid);
     }
 
-    function handleSkypeCommand(payload, nick) {
-        const url = normalizeUrl(payload);
-        if (!url) return;
-
-        if (!/join\.skype\.com\//i.test(url)) return;
-
-        const tid = makeToastId();
-        toast("warning",
-            `<div id="${tid}">
-               <div style="display:flex;justify-content:space-between;align-items:center;gap:10px;">
-                 <div><b>${nick}</b> shared Skype</div>
-                 <button data-lm-close="1"
-                   style="cursor:pointer;background:#111;border:1px solid #444;color:#fff;border-radius:6px;padding:2px 8px;">✕</button>
-               </div>
-               <div style="margin-top:8px;">
-                 <a href="${url}" target="_blank" rel="noreferrer" style="color:#3aa0ff">${url}</a>
-               </div>
-             </div>`,
-            20000
-        );
-        bindCloseForToastRoot(tid);
-    }
-
     function handleImgCommand(payload, nick) {
         const url = normalizeUrl(payload);
         if (!url) return;
@@ -1992,15 +1969,6 @@ win.LM_PRIVATE_SERVER_URL = "wss://ffa.legendmod.ml:8080";
             const payload = extractBetween(text, "[img]", "[/img]");
             const url = extractUrlPreferAnchor(textEl, payload || "");
             handleImgCommand(url || payload, nick);
-            if (win.REMOVE_CHAT_MESSAGE_AFTER_PARSE && liToOptionallyRemove) try { liToOptionallyRemove.remove(); } catch (_) { }
-            return true;
-        }
-
-        // [skype]
-        if (/\[skype\]/i.test(text) && /\[\/skype\]/i.test(text)) {
-            const payload = extractBetween(text, "[skype]", "[/skype]");
-            const url = extractUrlPreferAnchor(textEl, payload || "");
-            handleSkypeCommand(url || payload, nick);
             if (win.REMOVE_CHAT_MESSAGE_AFTER_PARSE && liToOptionallyRemove) try { liToOptionallyRemove.remove(); } catch (_) { }
             return true;
         }
