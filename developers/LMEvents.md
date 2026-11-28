@@ -45,7 +45,7 @@ All three return `LMEvents`, so calls can be chained.
 | `gameModeChange` | `{ mode, previous }` | the game mode changes, e.g. `'ffa'`, `'teams'`, `'party'`, `'experimental'`, `'battleroyale'` (no leading `:`). Not sent for the mode that is set when you start listening |
 | `multiboxSwap` | `{ unit, previous, slot, previousSlot }` | the multibox unit you control changes, whatever changed it: the swap hotkey (and its gamepad and phone buttons), the roster, adding a unit, a unit taking the focus when it spawns, the unit you control dying (the focus goes back to the main player or to the next living unit), the switch after your main player died, a unit's connection closing, a reconnect or a server change. One event per change, none when the unit stays the same; `0` is the main player, other numbers are the unit numbers (connection numbers: a Full Map or in-game spectator connection takes one too, so a single unit is not always `1`). `slot` / `previousSlot` are the player slots (`1` the main player, `2` to `6` the units; a slot keeps its number while its unit is open) |
 | `playerAdded` | `{ slot, source, slotEpoch, socketGeneration, life, role, active, living, reason }` | a multibox unit is opened in a slot (multibox on, Add Player). `source` is its connection number, `slotEpoch` changes each time a slot is taken again, `role` is `'unit'` (`'main'` for the main player in `playerSpawned` / `playerDied`), `active` whether it is the player you control, `living` how many of your players live. Each of these player events comes once per change |
-| `playerRemoved` | same | a unit is closed for good: Remove Player, multibox off (`reason` `'disabled'`), a captcha (`'removed'`) or a server change / lost main connection (`'closed'`). The other units keep their slots |
+| `playerRemoved` | same | a unit is closed for good. `reason` is `'removed'` (Remove Player: the roster's x or `application.mbRemovePlayer`; also a captcha the server asked of that unit's connection, which closes it the same way), `'disabled'` (multibox off: the Multibox off hotkey or `application.mbDisable`, one event per unit closed) or `'closed'` (a server change or a lost main connection, every unit at once). The other units keep their slots |
 | `playerSpawned` | same | one of your players starts a life: a multibox unit (its first own cell) or the main player (`role` `'main'`, `slot` `1`, with `spawn`); `life` counts its lives |
 | `playerDied` | same, and `mass`, `msAlive`, `scope` | one of your players dies: a multibox unit (its last own cell is gone) or the main player (with `death`). `mass` is the best mass of that life, `msAlive` its time alive in ms (first own cell to none left), `active` whether it was the player you controlled (sent before the focus moves on), `scope` `'unit'` while another of your players lives and `'all'` for the last one (the game over, once). A unit's lost connection is no death: it sends `playerDisconnected` instead and no game-over menu |
 | `playerDisconnected` | same | a unit's connection closed by the server or the network; `reason` `'reconnect'` while it reconnects in its slot |
@@ -71,6 +71,32 @@ events whose `context` is not `'live'`.
 | `getServerType()` | e.g. `'agario'`, `'expandingland'`, `'private'` (empty before the first connection) |
 | `sendChat(text)` | sends a chat line the same way the chat box does, with the same rate limits (and at most one per second from scripts). Returns false when it was not sent (not connected, too soon, empty text) |
 | `toast(text)` | shows a small notification; `text` is shown as plain text |
+
+## Multibox players
+
+`window.lmMbPlayers` is the slot registry: read it, do not change it (the calls below change it).
+
+| Field / call | What it is |
+| --- | --- |
+| `get(slot)` | the player in that slot: `1` is the main player (`window.legendmod`), `2` to `6` the units; `null` for an empty slot |
+| `getBySource(n)` | the unit with that connection number (`source` in the player events), or `null` |
+| `count()` | how many players are open, the main one included (a slot being opened counts) |
+| `ordered` | the open units in slot order (the main player is not in it) |
+| `activeSlot` | the slot of the player you control (`1` for the main player) |
+| `revision` | a number that grows each time a slot is taken or freed |
+
+The same calls as the keys and the roster, on `application`:
+
+| Call | Returns |
+| --- | --- |
+| `mbEnable()` | multibox on with P2 only, as the switch key starts it: the new unit, the first unit when multibox is already on (nothing more is opened), `null` when it could not be opened |
+| `mbDisable()` | the units (P2 to P6) close and the main player is controlled again; Full Map and the in-game spectator stay. Returns how many units it closed |
+| `mbAddPlayer()` | one more unit in the lowest free slot, up to Settings "Multibox slots" (2 to 6); with multibox off it is `mbEnable()`. The new unit, or `null` (all slots in use, or it could not be opened) |
+| `mbRemovePlayer(slot)` | closes the unit in that slot (`playerRemoved`, `reason` `'removed'`); the others keep their slots. `true`, or `false` for slot `1`, an empty slot or a unit already closed |
+| `mbSelectPlayer(slot)` | controls that player (a dead one spawns again). `true`, or `false` for an empty slot |
+| `mbSelectAdjacent(dir)` | controls the next (`1`) or previous (`-1`) player in slot order, as the switch keys (with more than two players dead and connecting ones are passed). `true`, or `false` while multibox is off |
+
+Only `mbEnable()` and `mbAddPlayer()` open connections.
 
 ## Examples
 
