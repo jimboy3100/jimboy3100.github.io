@@ -3193,7 +3193,6 @@ class Spect {
                 this._lmSpawnedOnce = true;
                 this._lmFocusOnSpawn = false;
             }
-            this.calculatePlayerMassAndPosition(ownCells);
         } else if (window.multiboxPlayerEnabled === this.number &&
             !(this._lmWantFocusAt && Date.now() - this._lmWantFocusAt < 25000)) {
             let nextUnit = 0;
@@ -3205,6 +3204,8 @@ class Spect {
             }
             lmSetMbUnit(nextUnit);
         }
+        /* also without own cells: its numbers are 0 then (kept the last cells' until terminate) */
+        this.calculatePlayerMassAndPosition(ownCells);
     }
 
     getOwnPlayerCells() {
@@ -3230,7 +3231,12 @@ class Spect {
         let y = 0;
         ownCells = ownCells || this.getOwnPlayerCells();
         const playersLength = ownCells.length;
-        if (!playersLength) return;
+        /* no own cell (none yet, or all gone before terminate): no stale mass, size or split numbers */
+        if (!playersLength) {
+            this.playerSize = this.playerMass = this.playerMinMass = this.playerMaxMass = this.playerSplitCells = 0;
+            this.STE = this.MTE = this.BMTE = this.BSTE = this.TTE = this.PTE = 0;
+            return;
+        }
         for (let length = 0; length < playersLength; length++) {
             const n = ownCells[length];
             size += n.size;
@@ -3262,7 +3268,7 @@ class Spect {
      * it copied and sorted the cells every frame for two values. */
     recalculatePlayerMass(ownCells) {
         if (this.playerScore = Math.max(this.playerScore, this.playerMass),
-        defaultmapsettings.virColors || defaultmapsettings.splitRange || defaultmapsettings.oppColors || defaultmapsettings.oppRings || defaultmapsettings.showStatsSTE) {
+        defaultmapsettings.virColors || defaultmapsettings.splitRange || defaultmapsettings.oppColors || defaultmapsettings.oppRings || defaultmapsettings.showStatsSTE || defaultmapsettings.tripleSplitRange) {
             const cells = ownCells || this.getOwnPlayerCells();
             const CellLength = cells.length;
             if (CellLength > 0) {

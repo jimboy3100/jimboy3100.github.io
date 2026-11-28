@@ -233,6 +233,33 @@ function death(o) {
     }
     check('the unit\'s split / eat numbers equal the main player\'s for the same mass (STE, MTE used other rates)', !diffs.length, diffs.join('; '));
 
+    /* Triple split range alone: the unit's smallest / biggest cell mass is kept up to date, as the
+     * main player's (its guard had every setting but tripleSplitRange) */
+    const dms = ctx.defaultmapsettings, keepDms = Object.assign({}, dms);
+    dms.showStatsSTE = false; dms.tripleSplitRange = true;
+    u.playerMinMass = u.playerMaxMass = 0;
+    u.calculatePlayerMassAndPosition([{ size: 100, targetSize: 100, x: 0, y: 0, spectator: 1, removed: false },
+        { size: 300, targetSize: 300, x: 10, y: 0, spectator: 1, removed: false }]);
+    check('Triple split range alone: the unit\'s smallest and biggest cell mass are updated (stayed 0)',
+        u.playerMinMass === 100 && u.playerMaxMass === 900 && u.playerSplitCells === 2, u.playerMinMass + ',' + u.playerMaxMass + ',' + u.playerSplitCells);
+    delete dms.tripleSplitRange;
+    Object.assign(dms, keepDms);
+
+    /* a unit with no own cell any more (before terminate): its numbers are 0, not the last cells' */
+    const nums = () => [u.playerMass, u.playerSize, u.playerMinMass, u.playerMaxMass, u.playerSplitCells, u.STE, u.MTE, u.BMTE, u.BSTE, u.TTE, u.PTE].join(',');
+    const one = () => [{ size: 300, targetSize: 300, x: 0, y: 0, spectator: 1, removed: false }];
+    u.calculatePlayerMassAndPosition(one());
+    const had = u.playerMass;
+    u.calculatePlayerMassAndPosition([]);
+    const z1 = nums();
+    u.calculatePlayerMassAndPosition(one());
+    ctx.legendmod.playerCellsMulti = [];
+    ctx.multiboxPlayerEnabled = null;
+    u.beforecalculation();                                 /* a packet with no own cell in it */
+    const z2 = nums();
+    check('no own cell: mass, size, smallest / biggest, cell count and split / eat numbers are 0 (kept the last cells\')',
+        had === 900 && z1 === '0,0,0,0,0,0,0,0,0,0,0' && z2 === z1, had + ' / ' + z1 + ' / ' + z2);
+
     /* opcode 87: the token answers the socket that asked, never a newer one */
     const sent = [];
     let answer = null;
