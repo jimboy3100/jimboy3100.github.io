@@ -12,7 +12,7 @@ const check = (n, c) => { console.log((c ? 'ok   ' : 'FAIL ') + n); if (!c) fail
 
 const resize = [];
 const env = () => {
-    const e = makeEnv({ recordReplays: true }, { toastr: { info() {}, success() {}, warning() {}, error() {} }, navigator: {}, performance: { now: () => Date.now() },
+    const e = makeEnv({}, { toastr: { info() {}, success() {}, warning() {}, error() {} }, navigator: {}, performance: { now: () => Date.now() },
         addEventListener(t, f) { if (t === 'resize') resize.push(f); } });
     i18n(e.ctx);
     return e;

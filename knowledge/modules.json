@@ -25,7 +25,7 @@
       "id": "analytics",
       "file": "ogario/modules/analytics.js",
       "lines": 1159,
-      "description": "Game stats for the Replays window: the Dashboard, Heatmaps, Coach (play pattern analysis) and Objectives (daily and personal) views, from game summaries recorded with Record replays. Tracks position samples, splits, kills.",
+      "description": "Game stats for the Replays window: the Dashboard, Heatmaps, Coach (play pattern analysis) and Objectives (daily and personal) views, from the summaries of every game (always recorded). Tracks position samples, splits, kills.",
       "feature": "Replay tools and Replay Studio"
     },
     {

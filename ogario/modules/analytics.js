@@ -1,12 +1,9 @@
 /* Legend Mod game stats: the Dashboard, Heatmaps, Coach and Objectives views of the Replays window
  * (ogario/modules/replaystudio.js draws them with LMAnalytics.paint; its Match history view is
  * ogario.v4.js _lmMatchHistoryPaint).
- * Games are recorded with "Record replays" (recordReplays, Settings > Replays, on by default), the one
- * switch for the replay packets, the match history and these stats. While it is off this file adds no
- * LMEvents listeners (checked again at every settings change, and at each game event: the saved
- * value can be read after this file started); the views still show the games stored
- * before, the old match history (lmMatchHistory) and the all-time personal bests (highest mass,
- * longest time alive). Practice arena lives and replay playback are never recorded.
+ * Every game is recorded (no switch), as its replay and match history are; the views show the stored
+ * games, the match history (lmMatchHistory) and the all-time personal bests (highest mass, longest
+ * time alive). Practice arena lives and replay playback are never recorded.
  * Everything stays in this browser (localStorage, capped and validated on every read). No network.
  */
 (function () {
@@ -430,7 +427,7 @@
      * else English. vals fill {0} {1} {2}. */
     var TP = 'modules.analytics.';
     function T(key, vals) { return typeof window.lmT === 'function' ? window.lmT(TP + key, vals) : key; }
-    /* texts that name the one recording switch (developers/i18n/src/pkg-rpm.json) */
+    /* texts by their full key (developers/i18n/src/pkg-rpm.json) */
     function TF(key) { return typeof window.lmT === 'function' ? window.lmT(key) : key; }
     /* dates in the chosen language (zh is Traditional Chinese) */
     function locale() { var c = window.LMi18n && window.LMi18n.lang ? window.LMi18n.lang() : 'en'; return c === 'zh' ? 'zh-TW' : c; }
@@ -571,11 +568,9 @@
     /* practice arena lives (ogario/modules/practice.js) are not games */
     function practising() { return !!(window.LMPractice && window.LMPractice.on); }
     /* replays too: LMEvents says where an event comes from (context); older cores: the flags */
-    /* and nothing while Record replays is off: this file can start listening before the saved
-     * settings are read, and reading them announces no settingsChange */
-    function notLive(e) { return !enabled() || (e && e.context ? e.context !== 'live' : practising() || !!window._lmEvReplayOn); }
+    function notLive(e) { return e && e.context ? e.context !== 'live' : practising() || !!window._lmEvReplayOn; }
     function onSpawn(e) {
-        if (notLive(e)) { life = null; if (!enabled() && typeof setTimeout === 'function') setTimeout(tick, 0); return; }
+        if (notLive(e)) { life = null; return; }
         beginLife(+e.time || Date.now());
     }
     function onMass(e) {
@@ -699,10 +694,6 @@
         var host = typeof window._lmHostOnly === 'function' ? window._lmHostOnly(o.ws) : '';
         if (life.srv && host && host !== life.srv) life = null;
     }
-    /* Record replays: an undefined setting counts as on, as for the replay packets. legendmod5 is set
-     * only when the core starts (after this file can have run); defaultmapsettings is the same object,
-     * there from the start, and the saved values are read into it */
-    function enabled() { var s = window.legendmod5 || window.defaultmapsettings; return !!(s && s.recordReplays !== false); }
 
     /* ------------------------------------------------------------------ views */
     var VIEWS = { dash: 1, heat: 1, coach: 1, goals: 1 };
@@ -784,7 +775,6 @@
     }
     function paintDash(body) {
         var t = theme(), games = allGames(), pb = personalBests(), a = aggregate(games, Date.now(), pb.m, pb.t);
-        if (!enabled()) note(body, TF('pkg.rpm.recOff'));
         if (!games.length) { note(body, TF('pkg.rpm.noGames')); return; }
         var row = el('div', 'display:flex;flex-wrap:wrap;gap:6px;');
         row.id = 'lm-analytics-tiles';
@@ -877,7 +867,6 @@
     }
     function paintHeat(body) {
         var t = theme(), all = loadTracks();
-        if (!enabled()) note(body, TF('pkg.rpm.recOff'));
         if (!all.length) { note(body, TF('pkg.rpm.noTracks')); return; }
         /* map sizes, newest first; the newest game's map is the default */
         var maps = [], count = {};
@@ -957,8 +946,7 @@
         var t = theme(), games = allGames();
         var idxs = [];
         games.forEach(function (g, i) { if (g.src === 'lm') idxs.push(i); });
-        if (!enabled()) note(body, TF('pkg.rpm.recOff'));
-        if (!idxs.length) { note(body, T('coachNone')); return; }
+        if (!idxs.length) { note(body, T('coachNoneYet')); return; }
         idxs = idxs.slice(-50);
         if (coachIdx < 0 || coachIdx >= idxs.length) coachIdx = idxs.length - 1;
         var gi = idxs[coachIdx], g = games[gi], s = coachScores(g), rec = recentAverages(games, gi);
@@ -1032,7 +1020,6 @@
     function paintGoals(body) {
         var t = theme(), games = allGames(), now = Date.now(), st = loadGoals();
         if (ensureDaily(st, games, now)) saveGoals(st);
-        if (!enabled()) note(body, TF('pkg.rpm.recOff'));
         section(body, T('today'));
         var daily = el('div');
         daily.id = 'lm-analytics-daily';
@@ -1088,11 +1075,10 @@
         body.appendChild(el('div', 'margin-top:8px;font-size:11px;color:' + t.tc2 + ';', T('goalsNote')));
     }
 
-    /* ------------------------------------------------------------------ recording switch */
+    /* ------------------------------------------------------------------ recording (always on) */
     function tick() {
-        var on = enabled();
-        try { setListening(on); } catch (e) { }
-        try { if (on) checkSession(); } catch (e) { }
+        try { setListening(true); } catch (e) { }
+        try { checkSession(); } catch (e) { }
     }
 
     window.LMAnalytics = Object.freeze({
@@ -1110,12 +1096,6 @@
         })
     });
     tick();
-    /* a preset or import (or the switch) that changes Record replays */
-    if (window.LMEvents && typeof window.LMEvents.on === 'function') {
-        window.LMEvents.on('settingsChange', function (d) {
-            if (d && d.key === 'recordReplays' && typeof setTimeout === 'function') setTimeout(tick, 0);
-        });
-    }
     /* language change: a shown view follows it */
     if (window.LMi18n && typeof window.LMi18n.onChange === 'function') window.LMi18n.onChange(function () {
         try { if (shown && shown.parentNode) redraw(); } catch (e) { }

@@ -1,12 +1,9 @@
 {
-  "pkg.rpm.recOff": {
-    "en": "Record replays is off (Settings > Replays): new games are not recorded."
-  },
   "pkg.rpm.noGames": {
-    "en": "No games yet. Play a game with Record replays on."
+    "en": "No games yet. Play a game."
   },
   "pkg.rpm.noTracks": {
-    "en": "No heatmap data yet. Play with Record replays on."
+    "en": "No heatmap data yet. Play a game."
   },
   "pkg.rpm.mhClearAsk": {
     "en": "Clear the match history list of this device? Its games also leave the Dashboard, except the ones recorded with their full stats. Your account's history on the server is kept."

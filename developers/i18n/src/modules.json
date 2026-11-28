@@ -2756,23 +2756,8 @@
     "ja": "閉じる",
     "it": "Chiudi"
   },
-  "modules.replaystudio.noRec": {
-    "en": "No recording yet. Play a game with \"Record replays\" on.",
-    "el": "Καμία εγγραφή ακόμα. Παίξε με ενεργή την «Καταγραφή replays».",
-    "es": "Aún no hay grabaciones. Juega con «Grabar repeticiones» activado.",
-    "bg": "Още няма запис. Играй с включено „Записвай повторения“.",
-    "fr": "Aucun enregistrement. Jouez avec « Enregistrer les replays » activé.",
-    "ar": "لا يوجد تسجيل بعد. العب مع تفعيل «تسجيل الإعادات».",
-    "zh": "尚無錄影。請在開啟「錄製重播」後玩一局。",
-    "ru": "Записей пока нет. Сыграйте с включённой опцией «Записывать реплеи».",
-    "de": "Noch keine Aufnahme. Spiele mit „Replays aufnehmen“ an.",
-    "tr": "Henüz kayıt yok. \"Tekrarları kaydet\" açıkken bir oyun oyna.",
-    "pl": "Brak nagrań. Zagraj z włączonym „Nagrywaj powtórki”.",
-    "nl": "Nog geen opname. Speel met \"Replays opnemen\" aan.",
-    "pt": "Nenhuma gravação ainda. Jogue uma partida com \"Gravar replays\" ligado.",
-    "id": "Belum ada rekaman. Mainkan game dengan \"Rekam replay\" aktif.",
-    "ja": "録画はまだありません。「リプレイを録画」をオンにしてプレイしてください。",
-    "it": "Ancora nessuna registrazione. Gioca una partita con \"Registra replay\" attivo."
+  "modules.replaystudio.noRecYet": {
+    "en": "No recording yet. Play a game."
   },
   "modules.replaystudio.play": {
     "en": "Play",
@@ -6032,23 +6017,8 @@
     "ja": "多い",
     "it": "più"
   },
-  "modules.analytics.coachNone": {
-    "en": "No Coach reports yet. Play a game with Record replays on.",
-    "el": "Δεν υπάρχουν ακόμη αναφορές. Παίξε με ενεργή την καταγραφή.",
-    "es": "Aún no hay informes del coach. Juega con la grabación de Analíticas activada.",
-    "bg": "Още няма отчети от треньора. Изиграй игра с включен запис на Анализи.",
-    "fr": "Pas encore de rapport du coach. Joue avec l'enregistrement activé.",
-    "ar": "لا توجد تقارير من المدرب بعد. العب مع تفعيل تسجيل التحليلات.",
-    "zh": "尚無教練報告。請在開啟分析記錄時進行遊戲。",
-    "ru": "Отчётов тренера пока нет. Сыграйте с включённой записью аналитики.",
-    "de": "Noch keine Coach-Berichte. Spiele mit eingeschalteter Analyse-Aufzeichnung.",
-    "tr": "Henüz koç raporu yok. Analiz kaydı açıkken bir oyun oyna.",
-    "pl": "Brak raportów trenera. Zagraj z włączonym nagrywaniem Analityki.",
-    "nl": "Nog geen coachrapporten. Speel met Analyse-opname aan.",
-    "pt": "Ainda não há relatórios do Treinador. Jogue uma partida com a gravação de Análises ligada.",
-    "id": "Belum ada laporan Pelatih. Mainkan game dengan perekaman Analitik aktif.",
-    "ja": "コーチのレポートはまだありません。分析の記録をオンにしてプレイしてください。",
-    "it": "Ancora nessun report del Coach. Gioca una partita con la registrazione delle Statistiche attiva."
+  "modules.analytics.coachNoneYet": {
+    "en": "No Coach reports yet. Play a game."
   },
   "modules.analytics.overall": {
     "en": "Overall",

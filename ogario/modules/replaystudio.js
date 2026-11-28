@@ -2,8 +2,8 @@
  * speed (0.25x-4x) forwards or backwards, pause and packet-by-packet stepping, colour filters,
  * a replay library in IndexedDB and clip export (.lm). Next to the Player and the Library it shows the
  * recorded games: the Match history list (ogario.v4.js _lmMatchHistoryPaint) and their stats, the
- * Dashboard, Heatmaps, Coach and Objectives (ogario/modules/analytics.js LMAnalytics.paint); "Record replays" records
- * all of them. It plays every replay: the Replay button, a replay^ server token, Death recap links and
+ * Dashboard, Heatmaps, Coach and Objectives (ogario/modules/analytics.js LMAnalytics.paint); every game
+ * is recorded (no switch) and only the latest game's replay stays in memory (the library keeps saved ones). It plays every replay: the Replay button, a replay^ server token, Death recap links and
  * ?replay= links (with ?replayStart= / ?replayEnd= packet numbers) all open it.
  *
  * Loaded the first time it is opened (window.lmReplayStudio in ogario.v4.js). The recording side
@@ -1998,7 +1998,7 @@
         var lb = document.getElementById('lm-replay-bar');
         W.style.bottom = lb && lb.style.display !== 'none' && W.offsetHeight < innerHeight - 80 ? (parseInt(lb.style.bottom, 10) || 14) + 16 + 'px' : '';
         if (!REC) {
-            W.info.textContent = T('noRec');
+            W.info.textContent = T('noRecYet');
             W.time.textContent = '';
             W.marks.textContent = '';
             W.chips.textContent = '';

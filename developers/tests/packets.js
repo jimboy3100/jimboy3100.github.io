@@ -10,7 +10,7 @@ const body = src.slice(start, end).replace(/,\s*$/, '');
 const warns = [];
 const ctx = {
     console: { log() { }, warn: (...a) => warns.push(a.join(' ')), error: (...a) => warns.push('ERROR ' + a.join(' ')) },
-    defaultmapsettings: { recordReplays: false }, TextDecoder, Uint8Array, DataView, Date, Math, RangeError,
+    defaultmapsettings: {}, lmRecRoom: () => false /* no replay recording in this test */, TextDecoder, Uint8Array, DataView, Date, Math, RangeError,
     $: () => ({ val: () => '' }), drawRender: { drawPieChart() { } }, _lmElTeamsActive: () => false,
     application: { customSkinsMap: {}, loadSkin() { } }, LM: { fbOnline: [] },
 };

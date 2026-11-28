@@ -57,7 +57,9 @@ const GONE = ['hudMergeCountdown', 'menuFpsCap', 'adaptivePerfTarget', 'adaptive
   /* the stopwatch above the minimap (Settings > Stats "Show stopwatch") */
   'showStopwatch',
   /* Settings > Performance and network: Performance mode and its automatic choice */
-  'performanceMode', 'adaptivePerf'];
+  'performanceMode', 'adaptivePerf',
+  /* Record replays: every game is recorded (only the latest one is kept in memory) */
+  'recordReplays'];
 /* restored (owner): the 16 pieces sounds, the triple split range, the leaderboard bot collapse and
  * the chat #id are settings again, off by default, and a saved value is read */
 check('x16Sound / non16Sound / tripleSplitRange / lbHideBots / chatShowId: settings again, off by default, true kept', ['x16Sound', 'non16Sound', 'tripleSplitRange', 'lbHideBots', 'chatShowId'].every(k => D[k] === false && V(k, true) === true));
@@ -88,6 +90,9 @@ check('import: values fitted, unusable ones dropped (their defaults apply)', J(i
 const importedV = { ogarioSettings: { videoSkinSoundLevel: 0.9, volVideo: 0.5 } };
 vm.runInContext('(function (importValue) {\n' + impLoop.replace(/\}\s*$/, '') + '\n})', ctx)(importedV);
 check('import: an old export with the second video volume keeps its loudness', J(importedV.ogarioSettings) === J({ videoSkinSoundLevel: 0.45 }));
+const importedR = { ogarioSettings: { recordReplays: false, showMass: false } };
+vm.runInContext('(function (importValue) {\n' + impLoop.replace(/\}\s*$/, '') + '\n})', ctx)(importedR);
+check('import: an old recordReplays false is dropped quietly (every game is recorded)', J(importedR.ogarioSettings) === J({ showMass: false }));
 
 // ── S1 loading (the real loadSettings): a damaged save is fitted, the rest kept
 const app = vm.runInContext('({\n' + cut('        loadSettings() {', '        exportSettings() {') + '\n})', ctx);
@@ -182,6 +187,9 @@ check('timeFormat is no setting: refused, and a saved value is skipped on load',
   check('clock: one format, the browser date and time, also with an old saved format', clock.timeHUD.textContent === 'DATE+TIME');
 }
 /* the all-time personal bests are always on: the old switch is no setting, a saved value of it is skipped */
+ctx.localStorage.setItem('ogarioSettings', JSON.stringify(Object.assign({}, saved, { recordReplays: false })));
+app.loadSettings();
+check('recordReplays is no setting: a saved false is skipped on load', !('recordReplays' in D) && !('recordReplays' in S));
 ctx.localStorage.setItem('ogarioSettings', JSON.stringify(Object.assign({}, saved, { personalBests: false })));
 app.loadSettings();
 check('personalBests is no setting: refused, and a saved value is skipped on load', !('personalBests' in D) && V('personalBests', true) === undefined && !('personalBests' in S));

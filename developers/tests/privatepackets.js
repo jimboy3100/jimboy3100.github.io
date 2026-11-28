@@ -40,7 +40,7 @@ function makeWorld(src) {
         console: { log() { }, warn: (...a) => ctx.warns.push(a.join(' ')), error: (...a) => ctx.warns.push('ERROR ' + a.join(' ')) },
         warns: [], Math, JSON, Uint8Array, DataView, ArrayBuffer, TextDecoder, RangeError, TypeError, Error, String, Number, Object, Array, Map, Set,
         Date: { now: () => ctx.clock }, clock: 1000, queueMicrotask() { },
-        defaultmapsettings: { recordReplays: false, shortMass: false, virMassShots: false, virusesRange: false },
+        lmRecRoom: () => false /* no replay recording in this test */, defaultmapsettings: { shortMass: false, virMassShots: false, virusesRange: false },
         $: () => ({ val: () => '' }), lmT: (k) => k, toastr: { warning() { ctx.toasts++; } }, toasts: 0,
         application: { hideMenu() { }, showMenu() { ctx.menus++; }, onPlayerSpawn() { ctx.spawns++; }, onPlayerDeath() { ctx.deaths++; }, customSkinsMap: {}, loadSkin() { } },
         menus: 0, spawns: 0, deaths: 0, allocs: [],

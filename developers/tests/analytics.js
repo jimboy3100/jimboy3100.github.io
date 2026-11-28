@@ -39,8 +39,7 @@ vm.createContext(ctx);
 i18n(ctx);
 vm.runInContext(src, ctx);
 const A = ctx.LMAnalytics, C = A.core;
-/* the option (Record replays) is applied by LMAnalytics.sync (settingsChange); older versions ran
- * it from a 1 s timer */
+/* LMAnalytics.sync checks the session again; older versions ran it from a 1 s timer */
 if (!tickFn) tickFn = A.sync;
 
 let fail = 0;
@@ -49,8 +48,8 @@ const near = (a, b, e) => Math.abs(a - b) <= (e || 1e-9);
 const MIN = 60000, DAYMS = 86400000;
 const G = o => C.sanitizeGame(Object.assign({ src: 'lm', t: clock, ms: 5 * MIN, peak: 1000, end: 800, srv: 'a.example', mode: 'FFA', map: 14142, n: 300, cov: 20, edge: 0.1 }, o));
 
-/* ---------- Record replays off: no listeners */
-check('Record replays off: no LMEvents listeners', !['spawn', 'massUpdate', 'split', 'leaderboard', 'death'].some(n => LMEvents._has(n)));
+/* ---------- every game is recorded: listening from the start, an old saved recordReplays false is ignored */
+check('no switch: LMEvents listeners from the start, also with an old saved recordReplays false', ['spawn', 'massUpdate', 'split', 'leaderboard', 'death'].every(n => LMEvents._has(n)));
 
 /* ---------- positions and heatmap binning */
 check('encode corners', C.encodeCell(0, 0) === 'AA' && C.encodeCell(1, 1) === '__' && C.encodeCell(-3, 7) === 'A_');
@@ -206,7 +205,6 @@ check('niceFloor keeps 2 digits, rounds down', C.niceFloor(3456) === 3400 && C.n
 
 /* ---------- practice / replay lives and a life cut by a server change or disconnect (audit A16) */
 {
-  ctx.legendmod5.recordReplays = true;
   tickFn();
   ctx.legendmod = { mapSize: 14142, mapOffset: 7071, mapOffsetX: 0, mapOffsetY: 0, playerX: 0, playerY: 0, isLegendWorld: false, ws: 'wss://a.example:443', serverType: 'agario' };
   const games = () => { const g = store.get('lmAnalyticsGames'); return g ? JSON.parse(g).games : []; };
@@ -238,16 +236,14 @@ check('niceFloor keeps 2 digits, rounds down', C.niceFloor(3456) === 3400 && C.n
   tickFn();
   LMEvents.emit('death', { time: clock, mass: 600, msAlive: 2000, context: 'live' });
   check('disconnect: the unfinished life is dropped', games().length === 0);
-  ctx.legendmod5.recordReplays = false;
   tickFn();
   store.clear();
 }
 
 /* ---------- a recorded life through the LMEvents hooks */
 {
-    ctx.legendmod5.recordReplays = true;
     tickFn();
-    check('recording on: listeners added', ['spawn', 'massUpdate', 'split', 'leaderboard', 'death'].every(n => LMEvents._has(n)));
+    check('listeners there', ['spawn', 'massUpdate', 'split', 'leaderboard', 'death'].every(n => LMEvents._has(n)));
     store.clear();
     toasts.length = 0;
     ctx.legendmod = { mapSize: 14142, mapOffset: 7071, mapOffsetX: 0, mapOffsetY: 0, playerX: -7071, playerY: 0, isLegendWorld: false, ws: 'wss://live.example:443/?token=secret', serverType: 'agario' };
@@ -295,7 +291,7 @@ check('niceFloor keeps 2 digits, rounds down', C.niceFloor(3456) === 3400 && C.n
     check('the broken track store was replaced by a valid one', JSON.parse(store.get('lmAnalyticsTracks')).tracks.length === 1);
     ctx.legendmod5.recordReplays = false;
     tickFn();
-    check('recording off again: listeners removed', !['spawn', 'massUpdate', 'split', 'leaderboard', 'death'].some(n => LMEvents._has(n)));
+    check('no switch: an old recordReplays false keeps the listeners', ['spawn', 'massUpdate', 'split', 'leaderboard', 'death'].every(n => LMEvents._has(n)));
 }
 
 console.log(fail ? fail + ' failed' : 'all analytics checks passed');

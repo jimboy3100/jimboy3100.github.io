@@ -467,24 +467,6 @@
     "ja": "高DPI描画（鮮明だが重い）",
     "it": "Rendering High DPI (più nitido, più lento)"
   },
-  "settings.recordReplays": {
-    "en": "Record replays and game stats (uses memory)",
-    "el": "Καταγραφή replays (χρησιμοποιεί μνήμη)",
-    "es": "Grabar repeticiones (usa memoria)",
-    "bg": "Записвай повторения (използва памет)",
-    "fr": "Enregistrer les replays (utilise de la mémoire)",
-    "ar": "تسجيل الإعادات (يستهلك الذاكرة)",
-    "zh": "錄製重播（佔用記憶體）",
-    "ru": "Записывать реплеи (занимает память)",
-    "de": "Replays aufnehmen (braucht Speicher)",
-    "tr": "Tekrarları kaydet (bellek kullanır)",
-    "pl": "Nagrywaj powtórki (zużywa pamięć)",
-    "nl": "Replays opnemen (gebruikt geheugen)",
-    "pt": "Gravar replays (usa memória)",
-    "id": "Rekam replay (memakai memori)",
-    "ja": "リプレイを録画（メモリを使用）",
-    "it": "Registra replay (usa memoria)"
-  },
   "settings.glAntialias": {
     "en": "Anti-aliasing (smoother edges, after reload)",
     "el": "Anti-aliasing (πιο ομαλές άκρες, μετά την επαναφόρτωση)",
@@ -3655,24 +3637,6 @@
     "id": "Ukuran teks HUD (1 = normal, di atas skala HUD)",
     "ja": "HUDの文字サイズ（1 = 標準、HUD倍率に上乗せ）",
     "it": "Dimensione testo dell'HUD (1 = normale, oltre alla scala dell'HUD)"
-  },
-  "settings.replayGroup": {
-    "en": "Replays and history",
-    "el": "Replays και ιστορικό",
-    "es": "Repeticiones e historial",
-    "bg": "Повторения и история",
-    "fr": "Replays et historique",
-    "ar": "الإعادات والسجل",
-    "zh": "重播與紀錄",
-    "ru": "Реплеи и история",
-    "de": "Replays und Verlauf",
-    "tr": "Tekrarlar ve geçmiş",
-    "pl": "Powtórki i historia",
-    "nl": "Replays en geschiedenis",
-    "pt": "Replays e histórico",
-    "id": "Replay dan riwayat",
-    "ja": "リプレイと履歴",
-    "it": "Replay e cronologia"
   },
   "settings.mergeGroup": {
     "en": "Merging",

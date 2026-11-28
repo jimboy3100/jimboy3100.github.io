@@ -40,7 +40,7 @@ const g = { console: { log: noop, warn: noop, error: (...a) => { g.errors.push(a
 g.window = g;
 g.LMEvents = { _has: () => false, emit: noop, on: noop, off: noop };
 g.buffer = { Buffer: function (ab) { return Buffer.from(ab); } };
-g.defaultmapsettings = { recordReplays: false };
+g.defaultmapsettings = {};
 g.$ = () => ({ val: () => '' });
 g.application = new Proxy({ teamPlayers: [], customSkinsMap: {}, deaths: 0 }, { get: (t, k) => k in t ? t[k] : noop });
 g.drawRender = new Proxy({}, { get: () => noop });

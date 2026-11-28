@@ -1,8 +1,7 @@
 /* Game stats (ogario/modules/analytics.js) without a timer and without a window of their own: the
- * module runs in a vm with a small fake document. No setInterval at all; "Record replays"
- * (recordReplays, an undefined value counts as on) is the one switch: turned on or off by a preset or
- * import (settingsChange) it adds or removes the listeners at once, and the old "analytics" switch
- * does nothing. No profile button, footer link or window is made: the Dashboard and Heatmaps are
+ * module runs in a vm with a small fake document. No setInterval at all; every game is recorded:
+ * there is no switch, an old saved or imported recordReplays false and the old "analytics" switch
+ * change nothing, and no "recording is off" note is shown. No profile button, footer link or window is made: the Dashboard and Heatmaps are
  * drawn into the element the Replays window gives (LMAnalytics.paint) and drawn again when a game
  * ends while one is shown. A life cut by a lost connection or a new connection to the same server
  * is dropped when its next event comes, without a timer.
@@ -20,7 +19,7 @@ const check = (n, c) => { console.log((c ? 'ok   ' : 'FAIL ') + n); if (!c) fail
 
 function suite(label, src) {
   const res = {};
-  /* undefined recordReplays: recording on (as for the replay packets) */
+  /* no settings: recording on */
   const u = makeEnv({}, { toastr: { info() {}, success() {}, warning() {} } });
   i18n(u.ctx);
   u.run(src);
@@ -45,16 +44,12 @@ function suite(label, src) {
   e.flush();
   const E = e.ctx.LMEvents, S = e.ctx.defaultmapsettings, id = x => e.doc.getElementById(x), T = k => e.ctx.lmT(k);
   res.noTimer = e.intervals.size === 0 && e.started() === 0;
-  res.offQuiet = !E._has('spawn') && !E._has('death');
-  /* the old Analytics switch on: nothing records */
-  E.emit('settingsChange', { key: 'analytics', value: true });
+  /* an old saved recordReplays false: listening all the same */
+  res.oldOffIgnored = E._has('spawn') && E._has('massUpdate') && E._has('death');
+  /* the old Analytics switch changes nothing */
+  E.emit('settingsChange', { key: 'analytics', value: false });
   e.flush();
-  res.oldSwitchIgnored = !E._has('spawn');
-  /* a preset turns Record replays on */
-  S.recordReplays = true;
-  E.emit('settingsChange', { key: 'recordReplays', value: true });
-  e.flush();
-  res.onAtOnce = E._has('spawn') && E._has('massUpdate') && E._has('death');
+  res.oldSwitchIgnored = E._has('spawn');
   res.noEntryPoints = !id('lm-analytics-btn') && !id('lm-analytics-link') && !id('lm-analytics') && !id('lm-mh-btn');
   res.api = typeof e.ctx.LMAnalytics.paint === 'function' && !e.ctx.LMAnalytics.open && !e.ctx.LMAnalytics.close;
   /* lives: a lost connection, then a late death: nothing stored */
@@ -105,25 +100,19 @@ function suite(label, src) {
   for (let i = 0; i < 4; i++) E.emit('massUpdate', { mass: 700, cells: 1, context: 'live' });
   E.emit('death', { time: Date.now(), mass: 700, msAlive: 4000, context: 'live' });
   res.otherViewKept = host.children.length === 1 && !id('lm-analytics-tiles');
-  /* the saved "off" read after this file started listening (loadSettings announces no change):
-   * a live life stores nothing and the listeners go */
+  /* an old recordReplays false read late or imported (settingsChange): the next life is stored all
+   * the same, the listeners stay and the Dashboard has no "recording is off" note */
   const before = stored();
   S.recordReplays = false;
+  E.emit('settingsChange', { key: 'recordReplays', value: false });
+  e.flush();
   E.emit('spawn', { time: Date.now() - 4000, context: 'live' });
   for (let i = 0; i < 4; i++) E.emit('massUpdate', { mass: 700, cells: 1, context: 'live' });
   E.emit('death', { time: Date.now(), mass: 700, msAlive: 4000, context: 'live' });
   e.flush();
-  res.silentOff = stored() === before && !E._has('spawn') && !E._has('death');
-  S.recordReplays = true;
-  E.emit('settingsChange', { key: 'recordReplays', value: true });
-  e.flush();
-  /* Record replays off by an import: listeners gone at once; the Dashboard says recording is off */
-  S.recordReplays = false;
-  E.emit('settingsChange', { key: 'recordReplays', value: false });
-  e.flush();
-  res.offAtOnce = !E._has('spawn') && !E._has('massUpdate') && !E._has('death');
+  res.oldOffRecords = stored() === before + 1 && E._has('spawn') && E._has('death');
   if (res.api) e.ctx.LMAnalytics.paint(host, 'dash');
-  res.offNote = host.children.length > 0 && host.children[0].textContent === T('pkg.rpm.recOff') && T('pkg.rpm.recOff') !== 'pkg.rpm.recOff';
+  res.noOffNote = !!id('lm-analytics-tiles') && !host.children.some(c => /off/i.test(c.textContent || '') && /record/i.test(c.textContent || '')) && T('pkg.rpm.recOff') === 'pkg.rpm.recOff';
   res.noTimerEnd = e.started() === 0;
   console.log('  ' + label + ': ' + JSON.stringify(res));
   return res;
@@ -131,10 +120,9 @@ function suite(label, src) {
 
 const r = suite('current', fs.readFileSync(srcPath, 'utf8'));
 check('no setInterval at all', r.noTimer && r.noTimerEnd);
-check('Record replays not set: recording on', r.undefinedOn);
+check('no settings: recording on', r.undefinedOn);
 check('loaded before the core started (no legendmod5 yet): recording on', r.earlyOn);
-check('Record replays off: no listeners; the old Analytics switch records nothing', r.offQuiet && r.oldSwitchIgnored);
-check('settingsChange recordReplays on: listeners at once', r.onAtOnce);
+check('an old saved recordReplays false: listening all the same; the old Analytics switch changes nothing', r.oldOffIgnored && r.oldSwitchIgnored);
 check('no profile button, footer link or window of its own; LMAnalytics.paint, no open / close', r.noEntryPoints && r.api);
 check('connection lost mid-life: the late death stores nothing', r.lostDropped);
 check('connected again to the same server: the old life is not continued', r.reconnectNew);
@@ -142,8 +130,8 @@ check('Dashboard drawn into the given element, with the old match history merged
 check('a game that ends while the Dashboard is shown draws it again', r.dashRedrawn);
 check("Heatmaps: the heat canvas of the recorded lives; without data they say so", r.heatNote);
 check('another view shown in the element is not drawn over', r.otherViewKept);
-check('Record replays off without a settingsChange (saved value read late): nothing stored, listeners go', r.silentOff);
-check('settingsChange recordReplays off: listeners gone at once; the Dashboard says recording is off', r.offAtOnce && r.offNote);
+check('an old recordReplays false read late or imported: the life is stored, listeners stay', r.oldOffRecords);
+check('no "recording is off" note on the Dashboard (the text is gone)', r.noOffNote);
 if (oldPath) {
   const o = suite('older', fs.readFileSync(oldPath, 'utf8'));
   check('older version: a window and entry points of its own (comparison is real)', !o.api || !o.noEntryPoints);

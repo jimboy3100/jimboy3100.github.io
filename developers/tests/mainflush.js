@@ -36,7 +36,7 @@ function client() {
     g.clearTimeout = (id) => { g.cleared.push(id); };
     g.LMEvents = { _has: () => false, emit: noop, on: noop, off: noop };
     g.buffer = { Buffer: function (ab) { return Buffer.from(ab); } };
-    g.defaultmapsettings = { recordReplays: false, virusesRange: true };
+    g.defaultmapsettings = { virusesRange: true };
     g.$ = () => new Proxy({}, { get: (t, k) => k === 'val' ? () => '' : () => g.$() });
     g.document = { getElementById: () => null };
     g.application = new Proxy({ teamPlayers: [], customSkinsMap: {}, deaths: 0, onPlayerDeath() { g.deaths++; } }, { get: (t, k) => k in t ? t[k] : noop });

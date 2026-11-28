@@ -341,14 +341,6 @@
       ]
     },
     {
-      "id": "replay",
-      "name": "Replay",
-      "description": "Replay recording and playback settings. Record replays is the one switch for the replays, the match history and the game stats.",
-      "settings": [
-        "recordReplays"
-      ]
-    },
-    {
       "id": "macro",
       "name": "Macro",
       "description": "Macro feeding and split timing settings.",

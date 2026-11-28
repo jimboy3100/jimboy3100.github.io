@@ -1,5 +1,5 @@
-// Recorded games in the Replays window (ogario/modules/replaystudio.js): "Record replays" is the one
-// switch (no Analytics or Match history switch, window, button, footer link or hotkey any more); the
+// Recorded games in the Replays window (ogario/modules/replaystudio.js): every game is recorded, no
+// switch (no Record replays, Analytics or Match history switch, window, button, footer link or hotkey any more); the
 // Match history, Dashboard, Heatmaps, Coach and Objectives tabs draw with sample data in that same window, which fits the
 // screen. Restores localStorage after.
 (async () => {
@@ -11,8 +11,8 @@
   need('LMAnalytics loaded, a painter for the Replays window (no window of its own)', !!A && typeof A.paint === 'function' && !A.open);
   if (!A) return { fail: fail, info: info };
   var S = window.legendmod5 || {};
-  need('one switch: Record replays on by default, no Analytics or Match history switch', S.recordReplays === true && !('analytics' in S) && !('matchHistory' in S));
-  need('recording listeners with Record replays on', window.LMEvents._has('massUpdate') && window.LMEvents._has('death'));
+  need('no switch: no Record replays, Analytics or Match history setting', !('recordReplays' in S) && !('analytics' in S) && !('matchHistory' in S));
+  need('recording listeners (every game is recorded)', window.LMEvents._has('massUpdate') && window.LMEvents._has('death'));
   need('no Analytics hotkey, profile button or footer links', !(typeof hotkeysCommand === 'object' && hotkeysCommand['hk-analytics']) &&
     !document.getElementById('lm-analytics-btn') && !document.getElementById('lm-analytics-link') && !document.getElementById('lm-mh-btn'));
   var keys = ['lmAnalyticsGames', 'lmAnalyticsTracks', 'lmAnalyticsGoals', 'lmMatchHistory'], saved = {}, origConfirm = window.confirm;

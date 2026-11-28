@@ -1079,23 +1079,8 @@
     "ja": "自分のプレイを見返して、共有できます。",
     "it": "Rivedi le tue partite e condividile."
   },
-  "site.features.recordsYourGamesTurn": {
-    "en": "Records your games (turn off <i>Record replays</i> to save memory)",
-    "el": "Καταγράφει τα παιχνίδια σας (απενεργοποιήστε το <i>Record replays</i> για εξοικονόμηση μνήμης)",
-    "es": "Graba tus partidas (desactiva <i>Record replays</i> para ahorrar memoria)",
-    "bg": "Записва игрите ви (изключете <i>Записване на повторения</i>, за да пестите памет)",
-    "fr": "Enregistre vos parties (désactivez <i>Record replays</i> pour économiser la mémoire)",
-    "ar": "يسجّل مبارياتك (عطّل <i>تسجيل الإعادات</i> لتوفير الذاكرة)",
-    "zh": "錄製你的對局（關閉 <i>錄製重播</i> 可節省記憶體）",
-    "ru": "Записывает ваши игры (выключите <i>Запись повторов</i>, чтобы сэкономить память)",
-    "de": "Zeichnet deine Spiele auf (deaktiviere <i>Record replays</i>, um Speicher zu sparen)",
-    "tr": "Oyunlarınızı kaydeder (bellek tasarrufu için <i>Tekrarları kaydet</i> seçeneğini kapatın)",
-    "pl": "Nagrywa twoje gry (wyłącz <i>Nagrywanie powtórek</i>, aby oszczędzać pamięć)",
-    "nl": "Neemt je games op (zet <i>Replays opnemen</i> uit om geheugen te sparen)",
-    "pt": "Grava as suas partidas (desative <i>Gravar replays</i> para economizar memória)",
-    "id": "Merekam game kamu (nonaktifkan <i>Rekam replay</i> untuk menghemat memori)",
-    "ja": "プレイを自動で録画（メモリを節約したい場合は<i>リプレイを録画</i>をオフに）",
-    "it": "Registra le tue partite (disattiva <i>Registra replay</i> per risparmiare memoria)"
+  "site.features.recordsYourGamesLatest": {
+    "en": "Records your games (only the latest game stays in memory; save a replay to the library to keep it)"
   },
   "site.features.pauseFasterSlowerAnd": {
     "en": "Pause, faster / slower and seek hotkeys",
@@ -1278,7 +1263,7 @@
     "it": "Riga opzionale <i>Mangiato da</i> con il nick e la massa di chi ti ha mangiato"
   },
   "site.features.matchHistoryReplaysWindow": {
-    "en": "Match history: your last 50 games in the Replays window, next to the Dashboard and Heatmaps (recorded with Record replays)"
+    "en": "Match history: your last 50 games in the Replays window, next to the Dashboard and Heatmaps"
   },
   "site.features.sessionSummaryUnderThe": {
     "en": "Session summary under the menu",

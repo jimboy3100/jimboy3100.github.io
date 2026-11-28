@@ -47,7 +47,7 @@
     {
       "id": "replays",
       "name": "Replay tools and Replay Studio",
-      "description": "Record server packets for faithful replays. Replay Studio: full timeline with automatic bookmarks, variable speed (0.25x-4x), pause, packet-by-packet stepping, forward/backward seeking, timeline scrubbing. Clip export as .lm files. Replay library in IndexedDB. The same window shows the recorded games: Match history (last 50 lives: mass, time alive, killer, server, mode), a Dashboard (500 game summaries) and Heatmaps. Record replays is the one switch for all of it. Personal bests tracked (Game Over card).",
+      "description": "Record server packets for faithful replays. Replay Studio: full timeline with automatic bookmarks, variable speed (0.25x-4x), pause, packet-by-packet stepping, forward/backward seeking, timeline scrubbing. Clip export as .lm files. Replay library in IndexedDB. The same window shows the recorded games: Match history (last 50 lives: mass, time alive, killer, server, mode), a Dashboard (500 game summaries) and Heatmaps. Every game is recorded (no switch); only the latest game's replay stays in memory (saved ones stay in the library). Personal bests tracked (Game Over card).",
       "url": "https://www.legendmod.ml/features.html"
     },
     {

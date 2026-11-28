@@ -39,7 +39,7 @@ const ctx = {
   LMEvents: { on(n, f) { (listeners[n] = listeners[n] || []).push(f); }, off(n, f) { listeners[n] = (listeners[n] || []).filter(x => x !== f); } }
 };
 ctx.window = ctx;
-ctx.legendmod5 = { gameOverStats: false, massLossAlert: false, massLossPct: 30, recordReplays: true };
+ctx.legendmod5 = { gameOverStats: false, massLossAlert: false, massLossPct: 30 };
 ctx.legendmod = { play: false, playerCells: [], cells: [], playerMass: 0, ws: 'wss://x' };
 vm.createContext(ctx);
 i18n(ctx);
@@ -273,30 +273,12 @@ check('off again: listeners removed, flag off', !(listeners.spawn || []).length 
   ctx.legendmod5.gameOverStats = false; D.sync();
 }
 
-/* who ate me (ogario.v4.js lmKillerWanted): one rule for the server's report, the remove packets
- * and the guard against naming my own multibox unit; the Game Over card (which shows Eaten by and
- * the death recap: one switch, no switch per part) and the match history each need it */
+/* who ate me: the match history records every life (no switch), so the server's report, the
+ * remove-packet killer and the multibox guard always run; no switch decides it any more */
 {
   const core = fs.readFileSync(path.join(__dirname, '..', '..', 'ogario', 'ogario.v4.js'), 'utf8').replace(/\r\n/g, '\n');
-  const a = core.indexOf('\nfunction lmKillerWanted(');
-  check('lmKillerWanted in the core', a >= 0);
-  if (a >= 0) {
-    const b = core.indexOf('\n}\n', a);
-    const kc = { defaultmapsettings: { gameOverStats: false, recordReplays: false } };
-    vm.createContext(kc);
-    vm.runInContext(core.slice(a, b + 3), kc);
-    const W = (o) => kc.lmKillerWanted(Object.assign({ gameOverStats: false, recordReplays: false }, o));
-    check('killer: not kept with both off', W({}) === false && kc.lmKillerWanted() === false);
-    /* the match history is recorded with Record replays (on by default; not set counts as on) */
-    check('killer: kept for each of the Game Over card, Record replays (match history) alone', W({ gameOverStats: true }) && W({ recordReplays: true }) && W({ recordReplays: undefined }));
-    /* the retired switches of old saved settings (part switches, the removed kill feed and match history) no longer keep it */
-    check('killer: old showKiller / deathRecap / killFeed / matchHistory values alone do not keep it', W({ showKiller: true }) === false && W({ deathRecap: true }) === false && W({ killFeed: true }) === false && W({ matchHistory: true }) === false);
-    kc.defaultmapsettings.gameOverStats = true;
-    check('killer: reads the live settings by default', kc.lmKillerWanted() === true);
-    /* every place that keeps the killer or the multibox guard uses the one rule */
-    const sites = (core.match(/lmKillerWanted\(\)/g) || []).length;
-    check('killer: the server report, the remove-packet killer and the multibox guard use it (' + sites + ')', sites >= 3 && !/\(defaultmapsettings\.showKiller \|\| defaultmapsettings\.matchHistory\)/.test(core));
-  }
+  check('killer: always kept, no switch rule left (lmKillerWanted gone)', core.indexOf('lmKillerWanted') < 0 && !/\(defaultmapsettings\.showKiller \|\| defaultmapsettings\.matchHistory\)/.test(core) &&
+    core.indexOf('if (u.lmKiller && !(Date.now() - (this._lmKillerMultiAt || 0) < 3000))') >= 0);
 }
 
 /* one killer on the Game Over card (ogario.v4.js lmKillerShown): the "Eaten by" row and the match

@@ -230,7 +230,7 @@ check('determinism: every exercise runs and repeats exactly', allEx);
         /* the page always defines LMEvents before the game runs (emit points check _has first) */
         g.LMEvents = { _has: function () { return false; }, emit: noop, on: noop, off: noop };
         g.buffer ={ Buffer: function (ab) { return Buffer.from(ab); } };
-        g.defaultmapsettings = { recordReplays: false };
+        g.defaultmapsettings = {};
         g.$ = () => ({ val: () => '' });
         g.application = new Proxy({ teamPlayers: [], customSkinsMap: {}, deaths: 0 }, { get: (t, k) => k in t ? t[k] : (k === 'onPlayerDeath' ? () => { g.deaths = (g.deaths || 0) + 1; } : noop) });
         g.drawRender = new Proxy({}, { get: () => noop });

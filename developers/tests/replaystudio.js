@@ -243,7 +243,7 @@ function driverEnv(packets, opts) {
   g.setInterval = () => 0; g.clearInterval = () => { };
   g.requestAnimationFrame = () => 0; g.cancelAnimationFrame = () => { };
   g.localStorage = { getItem: () => null, setItem() { } };
-  g.defaultmapsettings = { recordReplays: true };
+  g.defaultmapsettings = {};
   const env = { g, handled: 0, seenCtx: [], log: [], ctxLog: [], hist: [], costMs: opts.costMs || 0, busy: 0 };
   /* a live connection or a replay one (recreateWS: replay tokens play 500 ms after the connect) */
   const connect = t => {
@@ -571,8 +571,8 @@ if (Object.keys(coreSrc).every(k => coreSrc[k])) {
     check(name + ': the clip starts at that clear all, with the newest border, beacon, leaderboard and camera from before it at time 0',
       !!c && c.packets.length === 5 + (out + 1 - cp) && c.packets[5] === rec[cp] && [0, 1, 20, 21, 22].every((j, i) => c.packets[i] === rec[j]) && c.packets[c.side.start] === rec[a]);
   });
-  /* the game's death handler: no session stats, personal bests or match history for a replay; the match
-   * history of a live death comes with Record replays (no switch of its own), not with it off */
+  /* the game's death handler: no session stats, personal bests or match history for a replay; a live
+   * death always has its match history (no switch: an old saved recordReplays false is ignored) */
   {
     const noop = () => { };
     const calls = [];
@@ -580,7 +580,7 @@ if (Object.keys(coreSrc).every(k => coreSrc[k])) {
     g.window = g;
     g.LMEvents = { _has: () => false, emit: noop };
     /* no personalBests option: the all-time personal bests are always kept */
-    g.defaultmapsettings = { recordReplays: true };
+    g.defaultmapsettings = {};
     g.ogario = { playerScore: 900, play: true };
     g._lmSessionStats = () => calls.push('stats'); g._lmPersonalBests = () => { calls.push('best'); return {}; }; g._lmMatchHistory = () => calls.push('history');
     g.$ = () => ({ text: () => '', val: () => '' });
@@ -597,7 +597,7 @@ if (Object.keys(coreSrc).every(k => coreSrc[k])) {
     calls.length = 0; g.defaultmapsettings = { recordReplays: false, matchHistory: true }; app._lmLastDeathAt = 0; g.ogario.play = true; app._lmLifeStartAt = Date.now() - 5000;
     app.onPlayerDeath();
     check('death in a replay: no session stats, personal best or match history (' + inReplay.join(',') + '); a live death has them (' + live.join(',') + ')', !inReplay.length && live.join() === 'stats,best,history');
-    check('Record replays off: a live death keeps the session stats and personal bests, no match history (an old matchHistory on is ignored): ' + calls.join(','), calls.join() === 'stats,best');
+    check('an old saved recordReplays false: a live death still has session stats, personal bests and match history: ' + calls.join(','), calls.join() === 'stats,best,history');
   }
   /* What packets do besides the world (chat lines, sounds, toasts, spawn / death / respawn
    * handling, menu, LMEvents) happens once, when they are played; seeks and steps backwards, which

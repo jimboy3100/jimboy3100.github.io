@@ -1,8 +1,9 @@
-/* Replay memory checks: the shared memory budget of all kept recordings (which recordings are
- * freed, when the current one stops), the size of a packet (a view keeps its whole buffer) and
- * that the Replay Studio data (_lmRecM) stops exactly when the packets stop. The code is taken
- * from ogario/ogario.v4.js: the helpers, _lmRecM, _lmRecEv, _lmRecBudgetCheck and the packet
- * recording branch of _lmHandlePacket.
+/* Replay memory checks: only the latest game stays in memory (a new recording frees the older
+ * ones at its 11th packet, except a playing or saving one), the memory budget (which recordings
+ * are freed, when the current one stops), the size of a packet (a view keeps its whole buffer)
+ * and that the Replay Studio data (_lmRecM) stops exactly when the packets stop. Every game is
+ * recorded: there is no switch. The code is taken from ogario/ogario.v4.js: the helpers, _lmRecM,
+ * _lmRecEv, _lmRecBudgetCheck, _lmRecKeepLatest and the packet recording branch of _lmHandlePacket.
  * node developers/tests/replaymemory.js */
 const fs = require('fs'), path = require('path'), vm = require('vm');
 const src = fs.readFileSync(process.argv[2] || path.join(__dirname, '..', '..', 'ogario', 'ogario.v4.js'), 'utf8').replace(/\r\n/g, '\n');
@@ -22,10 +23,11 @@ vm.createContext(ctx);
 const overhead = /\nvar LM_REC_PKT_OVERHEAD = \d+;/.exec(src);
 if (!overhead) throw Error('LM_REC_PKT_OVERHEAD not found');
 vm.runInContext([overhead[0], fn('lmRecRoom'), fn('lmRecByteBudget'), fn('lmRecPacketBytes'), fn('lmRecArrBytes'), fn('lmRecBudgetPlan'), fn('_lmTokenBoxValue'),
-    block('window._lmRecM = function') + ';', block('window._lmRecEv = function') + ';', block('window._lmRecBudgetCheck = function') + ';'].join('\n'), ctx);
+    block('window._lmRecM = function') + ';', block('window._lmRecEv = function') + ';', block('window._lmRecBudgetCheck = function') + ';',
+    block('window._lmRecKeepLatest = function') + ';'].join('\n'), ctx);
 /* the packet recording branch, run as a function of one packet */
 vm.runInContext('function recordPacket(data) { var _recServerToken;\n' +
-    block('if (defaultmapsettings.recordReplays !== false && lmRecRoom(') + '\n}', ctx);
+    block('if (lmRecRoom(') + '\n}', ctx);
 let failed = 0;
 const check = (name, ok) => { console.log((ok ? 'ok   ' : 'FAIL ') + name); if (!ok) failed++; };
 const C = ctx, MiB = 1048576, O = ctx.LM_REC_PKT_OVERHEAD;
@@ -76,7 +78,7 @@ function session(budget) {
     C.RecordedProtocolArenas = [];
     C.RecordedArenasSpecifications = [];
     C.legendmod = { playingReplayServer: null };
-    C.defaultmapsettings = { recordReplays: true };
+    C.defaultmapsettings = {};
     C.$ = () => ({ val: () => 'wss://live-arena-x.agar.io' });
     C._lmRecBudget = budget;
     C.infos = 0;
@@ -103,19 +105,52 @@ function start(key) {
 }
 const pkt = (n) => new DataView(new ArrayBuffer(n));
 
+/* ---- only the latest game in memory ---- */
+session(4096 * MiB);
+keep('game1', 1000); keep('game2', 1000);
+C.idbUsed = 0;
+C.indexedDB = new Proxy({}, { get() { C.idbUsed++; return () => null; } });
+start('game3');
+for (let i = 0; i < 10; i++) C.recordPacket(pkt(100));
+check('latest: 10 packets (a failed connect or reconnect) free nothing yet', C.RecordedProtocolArenas.join() === 'game1,game2,game3' && !!C.RecordedProtocol.game1 && !!C.RecordedProtocol.game2);
+C.recordPacket(pkt(100));
+check('latest: the 11th packet frees the previous games', C.RecordedProtocolArenas.join() === 'game3' && !C.RecordedProtocol.game1 && !C.RecordedProtocol.game2 &&
+    !C.RecordedArenasSpecifications.game1 && !C.RecordedArenasSpecifications.game2 && C.infos === 1);
+for (let i = 0; i < 30; i++) C.recordPacket(pkt(100));
+check('latest: freed once, the current recording goes on', C.infos === 1 && C.catholicCalculator === 41 && C.RecordedProtocol.game3.length === 41 && !C._lmRecFull);
+check('latest: the library (IndexedDB) is not touched', C.idbUsed === 0);
+session(4096 * MiB);
+keep('watched', 1000); keep('saving', 1000); keep('older', 1000);
+C.legendmod.playingReplayServer = 'watched';
+C.RecordedProtocol.saving._lmSaving = true;
+start('now');
+for (let i = 0; i < 11; i++) C.recordPacket(pkt(100));
+check('latest: a playing replay and one being saved stay, the others go', C.RecordedProtocolArenas.join() === 'watched,saving,now' && !C.RecordedProtocol.older &&
+    C.RecordedProtocol.watched.length === 21 && C.RecordedProtocol.saving.length === 21);
+/* an old saved recordReplays: false does nothing: the game is recorded and the previous one freed */
+session(4096 * MiB);
+keep('before', 1000);
+C.defaultmapsettings.recordReplays = false;
+start('stillOn');
+for (let i = 0; i < 100; i++) C.recordPacket(pkt(100));
+check('no switch: an old saved recordReplays false still records, the previous game is freed', C.catholicCalculator === 100 && C._lmRecM() !== null && C.RecordedProtocolArenas.join() === 'stillOn');
+
+/* ---- the budget: recordings opened from the library during a game count too ---- */
 session(10 * MiB);
-keep('old1', 3 * MiB); keep('old2', 3 * MiB); keep('old3', 3 * MiB);
 start('cur');
 C.recordPacket(pkt(100));
-check('live: first packet checks the budget, nothing freed while it fits', C.RecordedProtocolArenas.length === 4 && C._lmRecChkAt === 100 + MiB);
+check('live: first packet checks the budget', C._lmRecChkAt === 100 + MiB);
+for (let i = 0; i < 10; i++) C.recordPacket(pkt(100));
+keep('old1', 3 * MiB); keep('old2', 3 * MiB); keep('old3', 3 * MiB);
+check('live: opened after the 11th packet, nothing freed while it fits', C.RecordedProtocolArenas.length === 4);
 for (let i = 0; i < 20; i++) C.recordPacket(pkt(100 * 1024)); /* 2 MiB */
-check('live: over the budget frees the oldest recording only', C.RecordedProtocolArenas.join() === 'old2,old3,cur' && !C.RecordedProtocol.old1 && !C.RecordedArenasSpecifications.old1);
-check('live: still recording', !C._lmRecFull && C.catholicCalculator === 21);
+check('live: over the budget frees the oldest recording only', C.RecordedProtocolArenas.join() === 'cur,old2,old3' && !C.RecordedProtocol.old1 && !C.RecordedArenasSpecifications.old1);
+check('live: still recording', !C._lmRecFull && C.catholicCalculator === 31);
 C.legendmod.playingReplayServer = 'old2';
 for (let i = 0; i < 40; i++) C.recordPacket(pkt(100 * 1024));
-check('live: the playing replay is kept, the next oldest is freed', C.RecordedProtocolArenas.join() === 'old2,cur' && !!C.RecordedProtocol.old2);
+check('live: the playing replay is kept, the next oldest is freed', C.RecordedProtocolArenas.join() === 'cur,old2' && !!C.RecordedProtocol.old2);
 for (let i = 0; i < 80 && !C._lmRecFull; i++) C.recordPacket(pkt(100 * 1024));
-check('live: nothing left to free: the current recording stops', C._lmRecFull === true && C.RecordedProtocolArenas.join() === 'old2,cur');
+check('live: nothing left to free: the current recording stops', C._lmRecFull === true && C.RecordedProtocolArenas.join() === 'cur,old2');
 const n = C.catholicCalculator, bytes = C._lmRecSlotBytes, arrCur = C.RecordedProtocol.cur;
 C.recordPacket(pkt(100));
 check('live: no packets after the stop', C.catholicCalculator === n && C._lmRecSlotBytes === bytes && arrCur.length === n);
@@ -145,18 +180,6 @@ check('100 MiB: Studio data stops exactly then', C._lmRecM() === null && C.Recor
 start('next');
 C.recordPacket(pkt(10));
 check('new recording: recording again with Studio data', C.catholicCalculator === 1 && C._lmRecM() !== null);
-
-/* recordReplays off: nothing recorded and the budget check never runs */
-session(1);
-keep('old', 3 * MiB);
-start('off');
-C.defaultmapsettings.recordReplays = false;
-let calls = 0;
-const real = C._lmRecBudgetCheck;
-C._lmRecBudgetCheck = () => { calls++; };
-for (let i = 0; i < 100; i++) C.recordPacket(pkt(100));
-check('off: no packets, no budget check, nothing freed', C.catholicCalculator === 0 && calls === 0 && !!C.RecordedProtocol.old);
-C._lmRecBudgetCheck = real;
 
 /* the budget is worked out once from the device when not set */
 session(0);

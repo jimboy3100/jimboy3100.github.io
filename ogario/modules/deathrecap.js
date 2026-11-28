@@ -232,8 +232,8 @@
 
     /* packet index of the replay recording now (catholicCalculator), -1 when not recording */
     function recPacket(lm) {
-        var s = window.legendmod5, rp = window.RecordedProtocol, slot = window.temporaryRecordedProtocol;
-        if ((s && s.recordReplays === false) || !rp || !slot || !rp[slot] || rp[slot].length !== window.catholicCalculator) return -1;
+        var rp = window.RecordedProtocol, slot = window.temporaryRecordedProtocol;
+        if (!rp || !slot || !rp[slot] || rp[slot].length !== window.catholicCalculator) return -1;
         if (lm.ws && String(lm.ws).indexOf('replay') !== -1) return -1;
         if (recSlot === null) recSlot = slot;
         else if (recSlot !== slot) return -1;

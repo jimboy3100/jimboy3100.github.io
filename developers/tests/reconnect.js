@@ -149,10 +149,10 @@ const EL = 'wss://ffa.legendmod.ml:8080', AG = 'wss://live-arena-abcde.agar.io:4
     const box = { value: '', _lmHeld: null, _lmTyped: false };
     const document = { getElementById: () => box, activeElement: null };
     const $ = () => ({ val: (v) => { if (v === undefined) return box.value; box.value = v; }, each: (fn) => fn.call(box) });
-    const window = { RecordedProtocol: { 'ffa.legendmod.ml:8080': [] }, temporaryRecordedProtocol: 'ffa.legendmod.ml:8080', catholicCalculator: 0, _lmRecSlotBytes: 0, _lmRecFull: false, _lmRecChkAt: 1e9, _lmRecBudgetCheck() { } };
+    const window = { RecordedProtocol: { 'ffa.legendmod.ml:8080': [] }, temporaryRecordedProtocol: 'ffa.legendmod.ml:8080', catholicCalculator: 0, _lmRecSlotBytes: 0, _lmRecFull: false, _lmRecChkAt: 1e9, _lmRecBudgetCheck() { }, _lmRecKeepLatest() { } };
     const f = new Function('window', '$', 'document', 'defaultmapsettings', 'lmRecPacketBytes', 'data', 'write',
         rf + '\n' + tb + '\nif (write !== undefined) { _lmSetTokenBox("#server-token", write); return; }\n' + step);
-    const rec = () => f(window, $, document, { recordReplays: true }, () => 10, { byteLength: 10 });
+    const rec = () => f(window, $, document, {}, () => 10, { byteLength: 10 });
     const write = (v) => f(window, $, document, {}, null, null, v); /* updateServerInfo */
     const n = () => window.RecordedProtocol['ffa.legendmod.ml:8080'].length;
     write('ffa.legendmod.ml:8080');

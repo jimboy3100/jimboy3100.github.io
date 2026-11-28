@@ -290,7 +290,7 @@ function lmEnv() {
     const warns = [];
     const ctx = {
         console: { log() { }, warn: (...a) => warns.push(a.join(' ')), error: (...a) => warns.push('ERROR ' + a.join(' ')) },
-        defaultmapsettings: { recordReplays: true }, TextDecoder, Uint8Array, DataView, Date, Math, RangeError,
+        defaultmapsettings: {}, TextDecoder, Uint8Array, DataView, Date, Math, RangeError,
         $: () => ({ val: () => 'wss://example.test' }), document: { getElementById: () => null, activeElement: null }, drawRender: {}, _lmElTeamsActive: () => false,
         application: {}, LM: {}, catholicCalculator: 0, temporaryRecordedProtocol: 'x', RecordedProtocol: { x: [] }, _lmRecChkAt: 1048576, _lmRecBudgetCheck() { },
         buffer: { Buffer: function (ab) { return Buffer.from(ab); } },

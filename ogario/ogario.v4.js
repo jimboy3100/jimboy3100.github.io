@@ -454,7 +454,7 @@ function _lmPersonalBests(update) {
     return res;
 }
 window._lmPersonalBests = _lmPersonalBests;
-/* Match history: the last 50 lives, recorded while "Record replays" is on (with the game's
+/* Match history: the last 50 lives, every one but practice is recorded (with the game's
  * stats, see analytics.js), kept in this browser only (localStorage 'lmMatchHistory').
  * Shown in the Replays window (Match history view). Corrupt data reads as an empty list. */
 function _lmMatchHistory(add) {
@@ -578,14 +578,6 @@ function _lmMatchHistoryPaint(host) {
     var fill = function () {
         while (body.firstChild) body.removeChild(body.firstChild);
         var list = _lmMatchHistory().slice().reverse();
-        /* Record replays off: one short line, the same as the Dashboard and Heatmaps (the list keeps
-         * its old games); the switch is Record replays in Settings > Replays only */
-        if (typeof defaultmapsettings !== 'undefined' && defaultmapsettings.recordReplays === false) {
-            var off = el('div', 'padding:6px 8px;margin:4px 0;border-radius:var(--lm-radius-s,4px);background:rgba(255,255,255,0.05);color:' + tc2 + ';', lmT('pkg.rpm.recOff'));
-            off.id = 'lm-mh-off';
-            body.appendChild(off);
-            if (!list.length) return;
-        }
         if (!list.length) { body.appendChild(el('div', 'padding:16px;text-align:center;color:' + tc2 + ';', _lmMhT('mhEmpty', 'No games recorded yet.'))); return; }
         var tb = el('table', 'width:100%;border-collapse:collapse;white-space:nowrap;');
         var tr = el('tr');
@@ -5260,21 +5252,22 @@ window.catholicCalculator = 0;
  * the time of every packet (ms since the recording started) and a few cheap samples: mass,
  * cells and leaderboard place (4/s, while playing), the cursor (at most 10/s, while playing),
  * own deaths, spawns, kills, virus pops and splits. It lives on the recording's packet array
- * as ._lm, so it is freed together with it. Nothing is kept while recordReplays is off, during a
- * replay or on connections that are not recorded (_lmRecLive is set per connection). */
+ * as ._lm, so it is freed together with it. Nothing is kept during a replay or on connections
+ * that are not recorded (_lmRecLive is set per connection). */
 window._lmRecLive = false;
 window._lmRecM = function () {
-    if (!window._lmRecLive || typeof defaultmapsettings === 'undefined' || defaultmapsettings.recordReplays === false) return null;
+    if (!window._lmRecLive) return null;
     var a = window.RecordedProtocol[window.temporaryRecordedProtocol];
     /* the same limits as the packets (lmRecRoom), so the timeline ends where the packets end */
     return a && a._lm && lmRecRoom(window.catholicCalculator, window._lmRecSlotBytes, window._lmRecFull) ? a._lm : null;
 };
-/* Replay memory. One recording stops at 90000 packets or 100 MiB; all kept recordings together
- * also share one budget that depends on the device (lmRecByteBudget). When it is used up the
- * oldest recordings are freed (the one being recorded, a replay that is playing and one being
- * saved stay), then the current recording stops like at 100 MiB. Only memory is freed: the
- * Replay Studio library (IndexedDB) and saved .lm files are not touched. Nothing here runs while
- * recordReplays is off: the check is called from the packet recording branch only. */
+/* Replay memory. Every game is recorded, and only the latest game's recording stays in memory:
+ * when a new recording becomes a game (window._lmRecKeepLatest) the older ones are freed, except
+ * a replay that is playing and one being saved. One recording stops at 90000 packets or 100 MiB,
+ * and at a budget that depends on the device (lmRecByteBudget), counted with the kept ones: when
+ * it is used up the others are freed (the playing and saving ones stay), then the current
+ * recording stops like at 100 MiB. Only memory is freed: the Replay Studio library (IndexedDB)
+ * and saved .lm files are not touched. Both checks are called from the packet recording branch. */
 var LM_REC_PKT_OVERHEAD = 64; /* the DataView, its ArrayBuffer object and the time slot of a packet */
 function lmRecRoom(count, bytes, full) {
     return count < 90000 && (bytes || 0) < 104857600 && !full;
@@ -5336,6 +5329,24 @@ window._lmRecBudgetCheck = function () {
         window._lmRecFull = true;
         console.info('[Replays] Memory budget reached: this recording stops here');
     }
+};
+/* Only the latest game stays in memory: frees every other recording except a replay that is
+ * playing and one being saved (the keep rule of the budget). Called at the current recording's
+ * 11th packet: a connection that got 10 packets or fewer (a failed connect or reconnect, not
+ * listed as a replay) frees nothing, so it never costs the last game. */
+window._lmRecKeepLatest = function () {
+    var list = window.RecordedProtocolArenas, rp = window.RecordedProtocol, cur = window.temporaryRecordedProtocol;
+    if (!Array.isArray(list) || !rp) return;
+    var play = window.legendmod && window.legendmod.playingReplayServer, freed = 0;
+    for (var i = list.length - 1; i >= 0; i--) {
+        var k = list[i], a = rp[k];
+        if (k === cur || k === play || (a && a._lmSaving)) continue;
+        list.splice(i, 1);
+        delete rp[k];
+        if (window.RecordedArenasSpecifications) delete window.RecordedArenasSpecifications[k];
+        freed++;
+    }
+    if (freed) console.info('[Replays] Only the latest game is kept: freed ' + freed + ' older recording(s) from memory');
 };
 /* event types: d death (best mass), s spawn, k own cell ate a player cell (its mass),
  * v own cell popped a virus, p split sent (1 split, 2 double...), f feeding */
@@ -21291,7 +21302,6 @@ var defaultmapsettings = {
     autoZoom: false,
     unlockedFPS: false,
     highDPI: false,
-    recordReplays: true,          /* off = no packets kept for replays (saves memory), and no match history or game stats */
     glAntialias: true,            /* WebGL anti-aliasing (MSAA); read when the GPU context is created */
     fpsLimit: 0,                  /* frames per second cap (0 = off): less heat/battery on laptops and phones */
     reducedMotion: false,         /* no death screen shake, death particles or Expanding Land entrance spin */
@@ -21464,8 +21474,9 @@ var defaultmapsettings = {
     massLossPct: 30,              /* mass-loss alert threshold in % (10-90) */
     /* personalBests is gone: the all-time personal bests are always kept (localStorage) and shown on the
      * Game Over card, so a saved value of the old switch is skipped on load */
-    /* matchHistory and analytics are gone: "Record replays" (recordReplays) records the game and its
-     * stats (match history, Dashboard and Heatmaps in the Replays window); saved values are skipped on load */
+    /* matchHistory, analytics and recordReplays are gone: every game is recorded with its stats (the
+     * replay, match history, Dashboard and Heatmaps in the Replays window; only the latest game's
+     * replay stays in memory, window._lmRecKeepLatest); saved values are skipped on load */
     streamMode: false,
     hideSkinUrl: false,
     showQuickMenu: true,
@@ -21793,14 +21804,6 @@ function lmRenameOldHotkeys(map) {
         changed = true;
     }
     return changed;
-}
-/* Who ate me: kept while anything shows it: the Game Over card ("Eaten by" and its death recap)
- * and the match history (recorded with Record replays). One rule for the server's report (lmKiller)
- * and the one seen in the remove packets, and for the guard against my own multibox unit being
- * named, so no switch combination gets the killer from one and not the other. */
-function lmKillerWanted(s) {
-    s = s || defaultmapsettings;
-    return !!(s && (s.gameOverStats || s.recordReplays !== false));
 }
 /* The killer shown by the Game Over card ("Eaten by") and kept in the match history: while the
  * death recap records eats (_lmDROn), its rule (deathrecap.js killerNow: the server's
@@ -25598,29 +25601,6 @@ function thelegendmodproject() {
                             drawRender.resizeCanvas();
                         }
                         break;
-                    case 'recordReplays':
-                        /* Switched off: only new packets stop. The recordings already in memory stay
-                         * (a preset turning this off must not destroy them); Replay Studio's library
-                         * lists them and deletes them. The recording of this connection ends here
-                         * (_lmRecFull, reset by connect()), so switching back on does not resume it
-                         * with a gap: a new recording starts with the next connection. */
-                        if (!checked && window.RecordedProtocol && window.temporaryRecordedProtocol && window.RecordedProtocol[window.temporaryRecordedProtocol]) {
-                            /* told only when it was on (_lmSetWas): the old value a switch press sends
-                             * first must not say "not recorded any more" next to "recorded again" */
-                            if (_lmSetWas !== false && window.toastr) toastr.info(lmT('game1.rec.off'));
-                            window._lmRecFull = true;
-                            window._lmRecLive = false;
-                        }
-                        /* Switched back on during a game: this connection's recording stopped (above,
-                         * or it was never started). A new one starts with the next connection
-                         * (connect() opens a proper slot: array, list entry, details, counters).
-                         * Resuming here cannot give a replay: it would lack the packets in between
-                         * or the connection's first packets (map border, own cells). */
-                        if (checked && _lmSetWas === false && window.RecordedProtocol && window.temporaryRecordedProtocol &&
-                            (!window.RecordedProtocol[window.temporaryRecordedProtocol] || window._lmRecFull) && window.toastr) {
-                            toastr.info(lmT('game1.rec.again'));
-                        }
-                        break;
                     case 'showMiniMap':
                         this.setMiniMap();
                         break;
@@ -26919,7 +26899,7 @@ function thelegendmodproject() {
             })();
             //this.addOptions(["unlockedFPS"], "animationGroup");
             /* Settings menu layout: one place per option. Ids and stored keys did not change when
-             * options moved (recordReplays to Replays, reducedMotion to Expanding Land, the gameplay
+             * options moved (reducedMotion to Expanding Land, the gameplay
              * sounds to Sounds, merge options to Merging, click spectate and the stream overlay to
              * Spectating, jelly physics and the eat animation from Skins to Animation). */
             this.addOptions(["highDPI", "glAntialias", "jellyPhisycs", "suckAnimation"], "animationGroup");
@@ -26964,8 +26944,6 @@ function thelegendmodproject() {
             //this.addOptions(["showTop5", "showTargeting", "showLbData", "centeredLb", "normalLb", "fpsAtTop", "tweenMaxEffect"], "hudGroup"),
             this.addOptions(["showTop5", "showTargeting", "showLbData", "lbHideBots", "centeredLb", "tweenMaxEffect", "top5skins", "notificationCentre"], "hudGroup");
             this.addOptions(["showStats", "showStatsMass", "showStatsESTE", "showStatsEMTE", "showStatsMTE", "showStatsSTE", "showStatsTTE", "showStatsPTE", "showStatsN16", "showStatsFPS", "showStatsPPS", "showStatsAlive", "gameOverStats", "showTime", "massLossAlert", "showDevConsole"], "statsGroup");
-            /* Replays and history */
-            this.addOptions(["recordReplays"], "replayGroup");
             this.addOptions(["oneColoredSpectator", "multiBoxShadow", "multiKeepMoving", "middleMultiViewWhenClose", "middleMultiView", "mbSwitchAfterDeath", "mbFreeze", "mbAutoRespawn", "cameraSmoothLerp"], "multiBox");
             /* Line split section; its key is set in Hotkeys ("Line split"). */
             this.addOptions([], "lineSplitGroup");
@@ -27043,10 +27021,9 @@ function thelegendmodproject() {
                     showMapBorders: ['rainbowMapBorders']
                 };
                 /* option -> the server types it works on (checked against the code): the merge sound
-                 * needs agar.io's merge times (LM.integrity && !LM.isLegendWorld); replays are
-                 * recorded in _lmHandlePacket, which Sigmally and Senpa packets never reach */
-                var SRV_AGARIO = ['agario'], SRV_REPLAYS = ['agario', 'expandingland', 'garix', 'imsolo', 'agar2', 'deltio', 'private'];
-                var SRV = { hudMergeSound: SRV_AGARIO, recordReplays: SRV_REPLAYS };
+                 * needs agar.io's merge times (LM.integrity && !LM.isLegendWorld) */
+                var SRV_AGARIO = ['agario'];
+                var SRV = { hudMergeSound: SRV_AGARIO };
                 /* server type (window.legendmod.serverType) -> its name; private servers: pkg.n56.protoPriv */
                 // i18n-ok: server proper names
                 var SRV_NAMES = { agario: 'agar.io', expandingland: 'Expanding Land', senpa: 'Senpa', garix: 'Garix', sigmally: 'Sigmally', imsolo: 'Imsolo', agar2: 'Agar2', deltio: 'delt.io', private: '' };
@@ -28595,8 +28572,8 @@ function thelegendmodproject() {
                     if (window.legendmod && typeof legendmod._lmRefreshBestRow === 'function') legendmod._lmRefreshBestRow();
                 } catch (e) { }
             }
-            /* match history (with Record replays): one record per life (server host only, no tokens) */
-            if (defaultmapsettings.recordReplays !== false && !_lmPracticeLife) {
+            /* match history (every life but practice): one record per life (server host only, no tokens) */
+            if (!_lmPracticeLife) {
                 try {
                     var _lmMhK = lmKillerShown(_lmNow);
                     _lmMatchHistory({
@@ -42639,23 +42616,19 @@ function thelegendmodproject() {
                 }
                 window.catholicCalculator = 0
                 window._lmRecSlotBytes = 0
-                /* memory budget (window._lmRecBudgetCheck): not full, check on the first packet.
-                 * Joined with recording off: this connection's recording is stopped from its start,
-                 * so switching it on during the game (a profile, a script, the switch) does not
-                 * record from the middle (no map border, own cells or times); the next one records */
-                window._lmRecFull = defaultmapsettings.recordReplays === false
+                /* memory budget (window._lmRecBudgetCheck): not full, check on the first packet */
+                window._lmRecFull = false
                 window._lmRecChkAt = 0
                 window.RecordedProtocol[window.temporaryRecordedProtocol] = []
-                /* Replay Studio times and samples (see window._lmRecM), only while recording */
-                window._lmRecLive = defaultmapsettings.recordReplays !== false;
-                if (window._lmRecLive) {
-                    window.RecordedProtocol[window.temporaryRecordedProtocol]._lm = { v: 1, t0: Date.now(), ct: 0, st: 0, t: [], s: [], e: [], c: [] };
-                    /* the server's protocol, so a replay is read the same way whatever its file is called */
-                    if (window.LM_REPLAY_PROTOCOLS && window.LM_REPLAY_PROTOCOLS.indexOf(this.serverType) !== -1) window.RecordedProtocol[window.temporaryRecordedProtocol]._lm.p = this.serverType;
-                }
+                /* Replay Studio times and samples (see window._lmRecM) */
+                window._lmRecLive = true;
+                window.RecordedProtocol[window.temporaryRecordedProtocol]._lm = { v: 1, t0: Date.now(), ct: 0, st: 0, t: [], s: [], e: [], c: [] };
+                /* the server's protocol, so a replay is read the same way whatever its file is called */
+                if (window.LM_REPLAY_PROTOCOLS && window.LM_REPLAY_PROTOCOLS.indexOf(this.serverType) !== -1) window.RecordedProtocol[window.temporaryRecordedProtocol]._lm.p = this.serverType;
                 window.RecordedProtocolArenas.push(window.temporaryRecordedProtocol)
                 window.RecordedArenasSpecifications[window.temporaryRecordedProtocol] = [Date.now(), application.gameMode, application.region, $("#nick").val()]
-                /* Keep only the newest recordings in memory (each holds every packet of a session). */
+                /* At most 5 in memory, a safety net: the 11th packet of this recording frees the
+                 * older ones anyway (window._lmRecKeepLatest, only the latest game is kept). */
                 while (window.RecordedProtocolArenas.length > 5) {
                     var _lmOldIdx = -1;
                     for (var _lmJ = 0; _lmJ < window.RecordedProtocolArenas.length - 1; _lmJ++) {
@@ -44307,11 +44280,10 @@ function thelegendmodproject() {
             /* Cap one recording at ~1 hour of packets so long sessions cannot exhaust memory. */
             /* One #server-token lookup per packet instead of two. */
             var _recServerToken;
-            /* recordReplays off: keep no packets (an undefined setting counts as on) */
-            /* also stop at 100 MB per recording (5 are kept): busy servers send big packets,
-             * and when all kept recordings use up the memory budget (lmRecRoom, _lmRecFull);
-             * the connected server, not text still typed into the Join box, says what is recorded */
-            if (defaultmapsettings.recordReplays !== false && lmRecRoom(window.catholicCalculator, window._lmRecSlotBytes, window._lmRecFull) && !(_recServerToken = _lmTokenBoxValue('server-token')).includes("replay") && !_recServerToken.includes("imsolo.pro:2109/") && window.RecordedProtocol[window.temporaryRecordedProtocol]) {
+            /* every game is recorded; it stops at 100 MB (busy servers send big packets) and when
+             * the memory budget is used up (lmRecRoom, _lmRecFull); the connected server, not text
+             * still typed into the Join box, says what is recorded */
+            if (lmRecRoom(window.catholicCalculator, window._lmRecSlotBytes, window._lmRecFull) && !(_recServerToken = _lmTokenBoxValue('server-token')).includes("replay") && !_recServerToken.includes("imsolo.pro:2109/") && window.RecordedProtocol[window.temporaryRecordedProtocol]) {
                 var _lmRecArr = window.RecordedProtocol[window.temporaryRecordedProtocol];
                 _lmRecArr[window.catholicCalculator] = data
                 /* its time for Replay Studio (accurate playback speed and seeking) */
@@ -44321,6 +44293,9 @@ function thelegendmodproject() {
                 //window.RecordedProtocolArenas[legendmod.ws][]
                 //window.RecordedProtocolArenas[window.specificRecordedProtocol[legendmod.ws]] = window.RecordedProtocol[window.catholicCalculator] 
                 window.catholicCalculator++
+                /* past the 10 packets a replay needs to be listed: this recording is a game now,
+                 * so only it stays in memory (the playing and the saving one stay too) */
+                if (window.catholicCalculator === 11) window._lmRecKeepLatest();
                 /* all kept recordings within the memory budget, checked once per MiB */
                 if (!(window._lmRecSlotBytes < window._lmRecChkAt)) {
                     window._lmRecChkAt = window._lmRecSlotBytes + 1048576;
@@ -46807,7 +46782,7 @@ function thelegendmodproject() {
                     /* Expanding Land killer info (lmKiller, sent only after our opcode 240 caps):
                      * the server's "Eaten by" for the Game Over card. Skipped when my own multibox
                      * unit ate my cell just before (the server sees that unit as another player). */
-                    if (u.lmKiller && lmKillerWanted() && !(Date.now() - (this._lmKillerMultiAt || 0) < 3000)) {
+                    if (u.lmKiller && !(Date.now() - (this._lmKillerMultiAt || 0) < 3000)) {
                         this._lmKiller = { nick: String(u.lmKiller.nick || ''), mass: Number(u.lmKiller.mass) || 0, virus: !!u.lmKiller.virus, bot: !!u.lmKiller.bot, server: true, at: Date.now() };
                         /* field 5 (newer servers): the eating cell's id, for "Watch killer" */
                         if (u.lmKiller.cellId) this._lmKiller.cellId = Number(u.lmKiller.cellId) >>> 0;
@@ -54143,14 +54118,14 @@ function thelegendmodproject() {
                 /* not when the eater is one of mine: own cell (ownership set of this packet) or my
                  * multibox unit (its copy is stored under lmUnitCellId(id, unit number) with isPlayerCellMulti) */
                 /* (a server report from this death, lmKiller, is kept: the last remove packet can come after it) */
-                if (lmKillerWanted() && _victimWasPlayer && eaterID && !eaterID.isPlayerCell && !eaterID.isPlayerCellMulti && this.playerCells.indexOf(eaterID) === -1 &&
+                if (_victimWasPlayer && eaterID && !eaterID.isPlayerCell && !eaterID.isPlayerCellMulti && this.playerCells.indexOf(eaterID) === -1 &&
                     !(this._playerCellIDSet && this._playerCellIDSet.has(eaterRawID)) &&
                     !(window.spects || []).some(function (s) { var c = s && s.player && legendmod.indexedCells[lmUnitCellId(eaterRawID, s.number)]; return !!(c && c.isPlayerCellMulti); }) &&
                     !(this._lmKiller && this._lmKiller.server && Date.now() - this._lmKiller.at < 3000)) {
                     this._lmKiller = { nick: String(eaterID.targetNick || ''), mass: ~~(eaterID.size * eaterID.size / 100), virus: !!eaterID.isVirus, at: Date.now() };
                 }
                 /* my multibox unit ate my cell: a server lmKiller report right after would name that unit */
-                if (lmKillerWanted() && _victimWasPlayer && eaterID && !eaterID.isPlayerCell && (eaterID.isPlayerCellMulti ||
+                if (_victimWasPlayer && eaterID && !eaterID.isPlayerCell && (eaterID.isPlayerCellMulti ||
                     (window.spects || []).some(function (s) { var c = s && s.player && legendmod.indexedCells[lmUnitCellId(eaterRawID, s.number)]; return !!(c && c.isPlayerCellMulti); }))) {
                     this._lmKillerMultiAt = Date.now();
                 }
@@ -88395,7 +88370,7 @@ Object.defineProperty(Array.prototype, 'stDev', {
     } catch (e) {
         console.warn('[LM] Error loading death recap script:', e);
     }
-    /* Game stats for the Replays window's Dashboard, Heatmaps, Coach and Objectives; records only while Record replays is on */
+    /* Game stats for the Replays window's Dashboard, Heatmaps, Coach and Objectives; every game is recorded */
     try {
         var analyticsScript = document.createElement('script');
         analyticsScript.type = 'text/javascript';

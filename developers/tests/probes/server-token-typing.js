@@ -48,7 +48,7 @@
     if (tk.value !== 'api.le') fail.push('a reconnect while typing changed the box to "' + tk.value + '"');
     /* the reconnect's replay recording is named after the connected server, not the typing */
     info.slot = window.temporaryRecordedProtocol;
-    if (defaultmapsettings.recordReplays !== false && String(window.temporaryRecordedProtocol || '').indexOf('ffa.legendmod.ml:8080') !== 0)
+    if (String(window.temporaryRecordedProtocol || '').indexOf('ffa.legendmod.ml:8080') !== 0)
       fail.push('a reconnect while typing recorded into the slot "' + window.temporaryRecordedProtocol + '"');
     await type('gendmod.ml/el-teams');
     await send({ type: 'key', key: 'Enter', code: 'Enter', keyCode: 13 });

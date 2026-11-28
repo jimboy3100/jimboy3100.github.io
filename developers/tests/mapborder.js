@@ -63,7 +63,7 @@ function boot(opts) {
     const ctx = {
         console: { log() { }, info() { }, warn: (...a) => warns.push(a.join(' ')), error: (...a) => warns.push('ERROR ' + a.join(' ')) },
         Math, Date, Number, Object, Array, String, JSON, isFinite, DataView, ArrayBuffer, Uint8Array, RangeError, TextDecoder, setTimeout() { },
-        defaultmapsettings: { recordReplays: false }, defaultSettings: { foodSize: 5, bordersWidth: 20, bordersColor: '#ff0000' },
+        defaultmapsettings: {}, lmRecRoom: () => false /* no replay recording in this test */, defaultSettings: { foodSize: 5, bordersWidth: 20, bordersColor: '#ff0000' },
         $: () => ({ val: () => ctx.token || '' }), token: opts.token || '',
         toastr: { info() { }, warning() { }, error() { } }, _lmTH: (k, en) => en, consoleMsgLM: '',
         application: { sendElClanTag() { } }, master: { login() { } },

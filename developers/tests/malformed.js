@@ -78,7 +78,7 @@ function client(src) {
     vm.createContext(g);
     vm.runInContext(bufferSrc, g);
     g.LMEvents = { _has: () => false, emit: noop, on: noop, off: noop };
-    g.defaultmapsettings = { recordReplays: false };
+    g.defaultmapsettings = {};
     g.$ = () => new Proxy({}, { get: (t, k) => k === 'val' ? () => '' : () => g.$() });
     g.application = new Proxy({ teamPlayers: [], customSkinsMap: {}, deaths: 0 }, { get: (t, k) => k in t ? t[k] : noop });
     g.drawRender = new Proxy({}, { get: () => noop });

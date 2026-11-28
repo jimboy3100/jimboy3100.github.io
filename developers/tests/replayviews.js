@@ -21,7 +21,7 @@ const src = fs.readFileSync(argv[0] || path.join(ROOT, 'ogario', 'modules', 'rep
 let fail = 0;
 const check = (n, c) => { console.log((c ? 'ok   ' : 'FAIL ') + n); if (!c) fail++; };
 
-const e = makeEnv({ recordReplays: true }, { toastr: { info() {}, success() {}, warning() {}, error() {} }, navigator: {}, performance: { now: () => Date.now() } });
+const e = makeEnv({}, { toastr: { info() {}, success() {}, warning() {}, error() {} }, navigator: {}, performance: { now: () => Date.now() } });
 i18n(e.ctx);
 const calls = [];
 e.ctx._lmMatchHistoryPaint = host => { calls.push(['games', host && host.id]); host.appendChild(e.doc.createElement('div')); };
@@ -75,9 +75,9 @@ click(tH);
 e.flush();
 check('stats file from before the merge (no paint): the view says to reload the page, no loading wait', view.children.length === 1 && view.children[0].textContent === T('pkg.rptab.stale') && T('pkg.rptab.stale') !== 'pkg.rptab.stale');
 RS.run('close');
-/* the real Match history list of ogario.v4.js (_lmMatchHistoryPaint): with Record replays off it says
- * so in one short line, like the Dashboard and Heatmaps; no second switch (the old "Turn on" button
- * and the "Match history is off" notice are gone: Record replays is the one switch) */
+/* the real Match history list of ogario.v4.js (_lmMatchHistoryPaint): every game is recorded, so
+ * there is no switch and no "recording is off" line, also with an old saved recordReplays false
+ * (the old "Turn on" button and the "Match history is off" notice are gone too) */
 {
   const main = fs.readFileSync(path.join(__dirname, '..', '..', 'ogario', 'ogario.v4.js'), 'utf8').replace(/\r\n/g, '\n');
   const cut = (a, b) => { const i = main.indexOf(a), j = main.indexOf(b, i); if (i < 0 || j < 0) throw new Error('not found: ' + a); return main.slice(i, j); };
@@ -92,13 +92,9 @@ RS.run('close');
   const walk = n => (n.children || []).forEach(c => { if (c.textContent) texts.push(c.textContent); if (c.tagName === 'BUTTON') btns.push(c); walk(c); });
   m.ctx._lmMatchHistoryPaint(host); walk(host);
   const byId = (n, id) => n.id === id ? n : (n.children || []).reduce((f, c) => f || byId(c, id), null);
-  const off = byId(host, 'lm-mh-off');
-  check('Record replays off: one short line in the Match history, no Turn on button, the old games still listed',
-    !!off && off.textContent === T('pkg.rpm.recOff') && off.children.length === 0 && btns.length === 0 && texts.filter(x => x === T('pkg.rpm.recOff')).length === 1 &&
-    !texts.some(x => /Match history is off/i.test(x)) && !!byId(host, 'lm-mh-view') && texts.indexOf('500') !== -1 && main.indexOf('pkg.r14.mhTurnOn') < 0);
-  m.ctx.defaultmapsettings.recordReplays = true;
-  m.ctx._lmMatchHistoryPaint(host);
-  check('Record replays on: no note at all', !byId(host, 'lm-mh-off') && !!byId(host, 'lm-mh-view'));
+  check('an old saved recordReplays false: no "recording is off" line, no Turn on button, the games listed',
+    !byId(host, 'lm-mh-off') && btns.length === 0 && !texts.some(x => /is off/i.test(x)) && T('pkg.rpm.recOff') === 'pkg.rpm.recOff' &&
+    !!byId(host, 'lm-mh-view') && texts.indexOf('500') !== -1 && main.indexOf('pkg.r14.mhTurnOn') < 0);
 }
 
 /* ---- the real stats file and the real match history list in the real window ---- */
@@ -124,7 +120,7 @@ const sample = {
   ] }
 };
 function realEnv(an) {
-  const r = makeEnv({ recordReplays: true, analytics: true }, { toastr: { info() {}, success() {}, warning() {}, error() {} }, navigator: {}, performance: { now: () => Date.now() }, confirm: () => false });
+  const r = makeEnv({ analytics: true }, { toastr: { info() {}, success() {}, warning() {}, error() {} }, navigator: {}, performance: { now: () => Date.now() }, confirm: () => false });
   i18n(r.ctx);
   r.doc.createElementNS = (ns, t) => makeEl(r.doc, t);
   /* canvases note what is filled */
@@ -173,7 +169,7 @@ check('Dashboard tiles: games, highest, longest, average survival, average peak,
 const svg = rid('lm-analytics-weeks'), rAll = walkAll(rView);
 check('Dashboard: the weekly chart with a bar, the week table and Best modes (FFA first)', !!svg && svg.children.some(c => c.tagName === 'PATH') &&
   rAll.some(n => n.tagName === 'TABLE') && rAll.some(n => n.textContent === AT('bestModes')) && rAll.some(n => n.tagName === 'SPAN' && n.textContent === 'FFA'));
-check('Dashboard: no "Record replays is off" note while it is on, no window of its own', !rAll.some(n => n.textContent === RT('pkg.rpm.recOff')) && !rid('lm-analytics'));
+check('Dashboard: no "recording is off" note (every game is recorded), no window of its own', !rAll.some(n => n.textContent === RT('pkg.rpm.recOff')) && !rid('lm-analytics'));
 /* Heatmaps: layers Movement / Deaths / Spawns, Last games, Map size, legend, the canvas */
 rClick(rid('lm-rs-tab-heat'));
 const layerBtn = l => walkAll(rView).find(n => n.tagName === 'BUTTON' && n.getAttribute('data-layer') === l);

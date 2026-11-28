@@ -98,8 +98,8 @@
   var fsCount = 0, sv4 = { fs: lm.sendFreeSpectate, ds: app.doubleSplit, pm: app.protocolMode, play: lm.play,
     spd: app.sendPlayerDeath, ar: app.autoResp, udl: app.updateDeathLocations, lda: app._lmLastDeathAt,
     lsa: app._lmLifeStartAt, has: window.LMEvents && LMEvents._has, ss: null, ssEl: !!document.getElementById('lm-session-stats'),
-    pb: null, rr: window.legendmod5 && legendmod5.recordReplays };
-  try { sv4.ss = sessionStorage.getItem('lmSessionStats'); sv4.pb = localStorage.getItem('lmPersonalBests'); } catch (e) { }
+    pb: null, mh: null };
+  try { sv4.ss = sessionStorage.getItem('lmSessionStats'); sv4.pb = localStorage.getItem('lmPersonalBests'); sv4.mh = localStorage.getItem('lmMatchHistory'); } catch (e) { }
   lm.sendFreeSpectate = function () { fsCount++; };
   app.doubleSplit = function () { };
   function qPress() {
@@ -120,8 +120,6 @@
   function death() {
     app.sendPlayerDeath = app.autoResp = app.updateDeathLocations = function () { };
     if (window.LMEvents) LMEvents._has = function () { return false; };
-    /* no match history record for the test deaths (it comes with Record replays) */
-    if (window.legendmod5) legendmod5.recordReplays = false;
     app._lmLastDeathAt = 0;
     app.onPlayerDeath();
   }
@@ -154,9 +152,9 @@
   app.sendPlayerDeath = sv4.spd; app.autoResp = sv4.ar; app.updateDeathLocations = sv4.udl;
   app._lmLastDeathAt = sv4.lda; app._lmLifeStartAt = sv4.lsa;
   if (window.LMEvents) LMEvents._has = sv4.has;
-  if (window.legendmod5) legendmod5.recordReplays = sv4.rr;
-  /* the personal bests are always kept: the test deaths must not leave a record behind */
+  /* the personal bests and the match history are always kept: the test deaths must not leave a record behind */
   try { if (sv4.pb == null) localStorage.removeItem('lmPersonalBests'); else localStorage.setItem('lmPersonalBests', sv4.pb); } catch (e) { }
+  try { if (sv4.mh == null) localStorage.removeItem('lmMatchHistory'); else localStorage.setItem('lmMatchHistory', sv4.mh); } catch (e) { }
   try { if (sv4.ss == null) sessionStorage.removeItem('lmSessionStats'); else sessionStorage.setItem('lmSessionStats', sv4.ss); } catch (e) { }
   if (!sv4.ssEl && document.getElementById('lm-session-stats')) document.getElementById('lm-session-stats').remove();
   /* nothing left held for the probes that follow */

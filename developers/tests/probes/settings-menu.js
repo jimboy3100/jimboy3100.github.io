@@ -74,7 +74,7 @@
   $('#og-options input[type=checkbox][id], #og-options input[type=range][id]').each(function () { if (seen[this.id]) dup.push(this.id); seen[this.id] = 1; });
   if (dup.length) fail.push('options built twice: ' + dup.slice(0, 5).join(', '));
   // options in their section, and every heading has a text
-  var place = { recordReplays: 'replayGroup', showDevConsole: 'statsGroup', hudMergeSound: 'mergeGroup', mergeRings: 'mergeGroup', virusSound: 'soundsGroup',
+  var place = { showDevConsole: 'statsGroup', hudMergeSound: 'mergeGroup', mergeRings: 'mergeGroup', virusSound: 'soundsGroup',
     reducedMotion: 'expandingLandGroup', showStatsWorldSize: 'expandingLandGroup', showStatsDecayInfo: 'expandingLandGroup',
     showStatsServerHz: 'expandingLandGroup',
     'profileNumber-slider': 'profiles', showCellShadows: 'transparencyGroup' };
@@ -124,8 +124,8 @@
         LMc.serverType = 'private';
         application._lmDepRefresh();
         if (spWhy() !== application._lmMenuText('lmDepServer') + ' (' + lmT('pkg.n56.protoPriv') + ')') fail.push('private server note: ' + spWhy());
-        /* replays work on private servers: no note there */
-        if ($('#recordReplays').closest('label').attr('data-lm-why')) fail.push('replays dimmed on a private server');
+        /* every game is recorded: no Record replays switch any more */
+        if ($('#recordReplays').length) fail.push('the Record replays switch is still there');
         LMc.serverType = 'agario';
         application._lmDepRefresh();
         if (spWhy()) fail.push('merge sound dimmed on agar.io: ' + spWhy());
