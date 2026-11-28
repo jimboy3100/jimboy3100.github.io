@@ -3187,7 +3187,7 @@ if (window.LMi18n && typeof window.LMi18n.onChange === 'function') window.LMi18n
     var n = window.LMi18n.num();
     if (from !== 'peer' || String(languagemod) === n) return;
     languagemod = n;
-    if (typeof $ === 'function') $('#legendlanguages, #legendlanguages2').val(n);
+    if (typeof $ === 'function') $('#legendlanguages').val(n);
     _lmRunLanguageHandler();
 });
 function _lmEscLang(s) {
