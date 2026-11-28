@@ -2987,24 +2987,6 @@
     "ja": "パーティーサーバーはスキャンできません",
     "it": "I server party non si possono cercare"
   },
-  "game2.promoTitle": {
-    "en": "2020 development",
-    "el": "Εξέλιξη 2020",
-    "es": "Desarrollo 2020",
-    "bg": "Развитие 2020",
-    "fr": "Développement 2020",
-    "ar": "تطوير 2020",
-    "zh": "2020 開發",
-    "ru": "Разработка 2020",
-    "de": "Entwicklung 2020",
-    "tr": "2020 geliştirmesi",
-    "pl": "Rozwój 2020",
-    "nl": "Ontwikkeling 2020",
-    "pt": "Desenvolvimento 2020",
-    "id": "Pengembangan 2020",
-    "ja": "2020年の開発",
-    "it": "Sviluppo 2020"
-  },
   "game2.replayOnly": {
     "en": "Replay only: watch a replay first.",
     "el": "Μόνο σε replay: δείτε πρώτα ένα replay.",
