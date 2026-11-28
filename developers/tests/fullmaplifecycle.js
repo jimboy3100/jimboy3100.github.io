@@ -501,7 +501,13 @@ now = load(); G = groups();
     check('ghost with a name: an unnamed cell of a verified spectator does not hide it either', drawn(top(), [cell(2100, 1050, 700, { spectator: 3 })], () => { g._lmMbFeed[3] = true; }) === 1);
     check('ghost with a name: the unnamed cell beside his own named cell: hidden (his cell)', drawn(top(), [cell(2100, 1050, 700), cell(2050, 1000, 600, { _lmSrvName: 'Top' })]) === 0);
     check('ghost without a name (an unnamed player\'s row): an unnamed cell there hides it', drawn(top(), [cell(2100, 1050, 700)], () => { LM.leaderboard = [{ nick: '' }]; }) === 0);
-    check('ghost of me: my own unnamed cell hides it', drawn(top(), [cell(2030, 1000, 700, { isPlayerCell: true })]) === 0);
+    /* REVISED 2026-11-28 (ownership is not identity): my own cells hid any ghost whatever its name.
+     * They count for the row the leaderboard marks as mine (id 'isPlayer', the server's own flag:
+     * that row's nick is the client's, not the server's name) or with the ghost's name; my unnamed
+     * cell under another row of the board is not that player */
+    const mine = () => { LM.leaderboard = [{ nick: 'Top', id: 'isPlayer' }]; };
+    check('ghost of me (the board marks the row as mine): my own unnamed cell hides it', drawn(top(), [cell(2030, 1000, 700, { isPlayerCell: true })], mine) === 0);
+    check('ghost of a row not marked as mine: my own unnamed cell does not hide it', drawn(top(), [cell(2030, 1000, 700, { isPlayerCell: true })]) === 1);
     check('ghost: another named player inside its radius does not hide it', drawn(top(), [cell(2400, 1000, 300, { _lmSrvName: 'someone' })]) === 1);
     check('ghost: a cell of an unverified spectator does not hide it', drawn(top(), [cell(2050, 980, 700, { spectator: 3, _lmSrvName: 'Top' })], () => { g._lmMbFeed[3] = false; }) === 1);
     /* a copy hidden behind its twin is that cell: it counts while the twin is drawn; alone (no drawn
@@ -510,9 +516,16 @@ now = load(); G = groups();
         drawn(top(), [cell(2100, 1050, 700, { spectator: 4, invisible: true, _lmSrvName: 'Top', _lmMbTwin: cell(2100, 1050, 700, { _lmSrvName: 'Top' }) })], () => { g._lmMbFeed[4] = true; }) === 0);
     check('ghost: a verified spectator\'s hidden copy with no drawn copy in front does not hide it',
         drawn(top(), [cell(2100, 1050, 700, { spectator: 4, invisible: true, _lmSrvName: 'Top' })], () => { g._lmMbFeed[4] = true; }) === 1);
-    check('ghost of me: my own cell hides it whatever its server name', drawn(top(), [cell(2030, 1000, 700, { isPlayerCell: true, _lmSrvName: 'srv' })]) === 0);
-    check('ghost of a verified unit: the unit\'s own cell hides it whatever its server name', drawn(top(), [cell(2030, 1000, 700, { spectator: 2, isPlayerCellMulti: true, _lmSrvName: 'srv' })], () => { g._lmMbFeed[2] = true; }) === 0);
-    check('ghost of an unverified unit: the unit\'s own cell with the ghost\'s name hides it', drawn(top(), [cell(2030, 1000, 700, { spectator: 2, isPlayerCellMulti: true, _lmSrvName: 'Top' })], () => { g._lmMbFeed[2] = false; }) === 0);
+    check('ghost of me (the row marked as mine): my own cell hides it whatever its server name', drawn(top(), [cell(2030, 1000, 700, { isPlayerCell: true, _lmSrvName: 'srv' })], mine) === 0);
+    check('ghost of a row not marked as mine: my own cell of another server name does not hide it', drawn(top(), [cell(2030, 1000, 700, { isPlayerCell: true, _lmSrvName: 'srv' })]) === 1);
+    /* REVISED 2026-11-28: a unit's own cell hid any ghost whatever its name. The main board marks
+     * only the main player's row; a unit's row is known by its name (the unit's server name) */
+    check('ghost: a verified unit\'s own cell of another server name does not hide it', drawn(top(), [cell(2030, 1000, 700, { spectator: 2, isPlayerCellMulti: true, _lmSrvName: 'srv' })], () => { g._lmMbFeed[2] = true; }) === 1);
+    check('ghost of a verified unit: the unit\'s own cell with the ghost\'s name hides it', drawn(top(), [cell(2030, 1000, 700, { spectator: 2, isPlayerCellMulti: true, _lmSrvName: 'Top' })], () => { g._lmMbFeed[2] = true; }) === 0);
+    /* REVISED 2026-11-28 (stale or unverified own evidence): an unverified unit's own cell hid the
+     * ghost with its name. Its cells are drawn (and steered) where they may be mirrored or shifted,
+     * so that place is no evidence the player is there: the ghost stays drawn, the cell too */
+    check('ghost of an unverified unit: the unit\'s own cell with the ghost\'s name does not hide it', drawn(top(), [cell(2030, 1000, 700, { spectator: 2, isPlayerCellMulti: true, _lmSrvName: 'Top' })], () => { g._lmMbFeed[2] = false; }) === 1);
     /* an unverified unit's cells may be mirrored: its own cell of another player is no proof */
     check('ghost: an unverified unit\'s own cell of another name does not hide it', drawn(top(), [cell(2100, 1000, 300, { spectator: 2, isPlayerCellMulti: true, _lmSrvName: 'Other' })], () => { g._lmMbFeed[2] = false; }) === 1);
     check('ghost: an unverified unit\'s unnamed own cell does not hide it', drawn(top(), [cell(2100, 1000, 300, { spectator: 2, isPlayerCellMulti: true })], () => { g._lmMbFeed[2] = false; }) === 1);
@@ -602,16 +615,25 @@ now = load(); G = groups();
     check('ghost with a name: a far bigger player with the same nick does not hide it', drawn(top(), [cell(2100, 1000, 1000, { _lmSrvName: 'Top' })]) === 1);
     check('ghost with a name: two players of that nick there, twice its mass, do not hide it',
         drawn(top(), [cell(2200, 1000, 700, { _lmSrvName: 'Top' }), cell(1800, 1000, 700, { _lmSrvName: 'Top' })]) === 1);
+    /* REVISED 2026-11-28 (being near is not being one player): the split fixtures below had no
+     * server colour, and pieces near each other were one player by that alone (two players of the
+     * nick touching hid his ghost). A connection gives all cells of one player one server colour
+     * (_lmRawColor), so a split's pieces carry it: P is that colour. Without it the same pieces
+     * keep the ghost drawn (checked below). My own cells: the row marked as mine. */
+    const P = { _lmRawColor: '#33aa11' };
     const four = (extra) => [cell(1850, 850, 350, extra), cell(2150, 850, 350, extra), cell(1850, 1150, 350, extra), cell(2150, 1150, 350, extra)];
-    check('ghost with a name: the player split in four (his mass together) hides it', drawn(top(), four({ _lmSrvName: 'Top' })) === 0);
-    check('ghost of me split in four: my own cells hide it', drawn(top(), four({ isPlayerCell: true })) === 0);
+    check('ghost with a name: the player split in four (his mass together, one server colour) hides it', drawn(top(), four({ _lmSrvName: 'Top', _lmRawColor: P._lmRawColor })) === 0);
+    check('ghost with a name: four pieces of the nick without a server colour (maybe four players): drawn', drawn(top(), four({ _lmSrvName: 'Top' })) === 1);
+    check('ghost of me split in four: my own cells hide it', drawn(top(), four({ isPlayerCell: true }), mine) === 0);
     /* split with the pieces flown apart: the biggest piece at the ghost holds 0.42 of its mass,
      * three pieces 900 away (out of its radius 707) the rest */
     const spread = (extra) => [cell(2000, 1000, 458, extra), cell(2900, 1000, 311, extra), cell(1100, 1000, 311, extra), cell(2000, 1900, 311, extra)];
-    check('ghost with a name: the player split, pieces 900 apart (0.42 inside): hidden', drawn(top(), spread({ _lmSrvName: 'Top' })) === 0);
-    check('ghost of me split, pieces 900 apart: my own cells hide it', drawn(top(), spread({ isPlayerCell: true })) === 0);
+    check('ghost with a name: the player split, pieces 900 apart (0.42 inside): hidden', drawn(top(), spread({ _lmSrvName: 'Top', _lmRawColor: P._lmRawColor })) === 0);
+    check('ghost with a name: those pieces of the nick without a server colour: drawn', drawn(top(), spread({ _lmSrvName: 'Top' })) === 1);
+    check('ghost of me split, pieces 900 apart: my own cells hide it', drawn(top(), spread({ isPlayerCell: true }), mine) === 0);
+    /* REVISED 2026-11-28: the unit's cells had the name 'u' under the row 'Top' (ownership is not identity) */
     check('ghost of a verified unit split, pieces 900 apart: its own cells hide it',
-        drawn(top(), spread({ spectator: 2, isPlayerCellMulti: true, _lmSrvName: 'u' }), () => { g._lmMbFeed[2] = true; }) === 0);
+        drawn(top(), spread({ spectator: 2, isPlayerCellMulti: true, _lmSrvName: 'Top' }), () => { g._lmMbFeed[2] = true; }) === 0);
     check('ghost with a name: those pieces on two connections (none with his mass): drawn',
         drawn(top(), spread({ _lmSrvName: 'Top' }).map((c, i) => Object.assign(c, { spectator: i ? 3 : 0 })), () => { g._lmMbFeed[3] = true; }) === 1);
     check('ghost with a name: only the pieces out of it (none inside): drawn', drawn(top(), spread({ _lmSrvName: 'Top' }).slice(1).concat([cell(2000, 1000, 458)])) === 1);
@@ -639,8 +661,14 @@ now = load(); G = groups();
     check('ghost: the drawn copy changes to the tile\'s (main copy hidden): still hidden', drawn(top(), [copy(0, true), copy(3)], feed) === 0);
     check('ghost: only the tile\'s copy left: still hidden', drawn(top(), [copy(3)], feed) === 0);
     check('ghost: the player seen by three connections (not three times his mass): hidden', drawn(top(), [copy(0), copy(3, true), copy(4, true)], feed) === 0);
-    check('ghost: the player seen by three connections, each copy drawn (not three times his mass): hidden',
-        drawn(top(), [copy(0), copy(3), copy(4)], feed) === 0);
+    /* REVISED 2026-11-28 (copies on two connections are one cell only by the hide step's match):
+     * three drawn copies at one place were one player by being there. Copies the hide step did not
+     * match (else two of them would be hidden) may be three players of the nick, each about his
+     * mass (fixture 4 of the review): which one he is is not known, the ghost stays drawn */
+    check('ghost: the player seen by three connections, each copy drawn (not matched by the hide step): drawn',
+        drawn(top(), [copy(0), copy(3), copy(4)], feed) === 1);
+    check('ghost: the player seen by three connections, two copies matched behind the drawn one: hidden',
+        (() => { const d = copy(0); return drawn(top(), [d, Object.assign(copy(3, true), { _lmMbTwin: d }), Object.assign(copy(4, true), { _lmMbTwin: d })], feed); })() === 0);
     /* removed, stale and hidden observations: a copy the hide step hid counts only behind a drawn
      * copy (the same cell); a late or stale tile copy (hidden, no copy in front) is not the player */
     const twinOf = (tw, extra) => Object.assign(cell(tw.x, tw.y, tw.size, { spectator: 3, _lmSrvName: 'Top', invisible: true, _lmMbPosDup: true, _lmMbTwin: tw }), extra || {});
@@ -653,7 +681,9 @@ now = load(); G = groups();
         /* the main socket draws the piece inside, the tile hides its copy of it behind that one
          * and draws the three pieces only it sees: the tile's sum is his mass */
         const sp = spread({ _lmSrvName: 'Top' }), mainPiece = sp[0];
-        const tile = [twinOf(mainPiece)].concat(sp.slice(1).map((c) => Object.assign(c, { spectator: 3 })));
+        /* REVISED 2026-11-28: the tile's pieces carry the tile's server colour of that player (one
+         * player's pieces on one connection: one colour; each connection another one) */
+        const tile = [twinOf(mainPiece, { _lmRawColor: '#0a0b0c' })].concat(sp.slice(1).map((c) => Object.assign(c, { spectator: 3, _lmRawColor: '#0a0b0c' })));
         check('ghost: a tile\'s hidden copy behind the main copy, with the pieces only the tile sees: hidden', drawn(top(), [mainPiece].concat(tile), feed) === 0);
         check('ghost: those pieces without the hidden copy (none with his mass on one connection): drawn', drawn(top(), [mainPiece].concat(tile.slice(1)), feed) === 1);
     }
@@ -667,20 +697,35 @@ now = load(); G = groups();
         drawn(top(), [cell(2000, 1000, 592, { _lmSrvName: 'Top' }), cell(3500, 1000, 447, { spectator: 3, _lmSrvName: 'Top' }), cell(3500, 1600, 447, { spectator: 3, _lmSrvName: 'Top' })], feed) === 1);
     check('ghost with a name: the player at it, a much lighter same-nick player in the reach: hidden',
         drawn(top(), [cell(2000, 1000, 592, { _lmSrvName: 'Top' }), cell(3500, 1000, 200, { _lmSrvName: 'Top' })]) === 0);
+    /* REVISED 2026-11-28: his chained pieces carry his server colour (P), as above */
+    const TP = { _lmSrvName: 'Top', _lmRawColor: P._lmRawColor };
     check('ghost with a name: his split chained piece to piece from the one inside out to the reach: hidden',
-        drawn(top(), [cell(2000, 1000, 400, { _lmSrvName: 'Top' }), cell(2800, 1000, 300, { _lmSrvName: 'Top' }), cell(3500, 1000, 300, { _lmSrvName: 'Top' }), cell(2000, 1700, 260, { _lmSrvName: 'Top' })]) === 0);
+        drawn(top(), [cell(2000, 1000, 400, TP), cell(2800, 1000, 300, TP), cell(3500, 1000, 300, TP), cell(2000, 1700, 260, TP)]) === 0);
+    check('ghost with a name: that chain with one piece of another server colour (another player) breaks: drawn',
+        drawn(top(), [cell(2000, 1000, 400, TP), cell(2800, 1000, 300, { _lmSrvName: 'Top', _lmRawColor: '#ff0000' }), cell(3500, 1000, 300, TP), cell(2000, 1700, 260, TP)]) === 1);
     check('ghost with a name: a same-nick piece out in the reach not chained to his (another player) is not added: drawn',
         drawn(top(), [cell(2000, 1000, 458, { _lmSrvName: 'Top' }), cell(2000, 1700, 150, { _lmSrvName: 'Top' }), cell(3600, 1000, 330, { _lmSrvName: 'Top' })]) === 1);
     check('ghost with a name: a same-nick cell heavier than the ghost beside a lighter one at it is not his split: drawn',
         drawn(top(), [cell(2000, 1000, 400, { _lmSrvName: 'Top' }), cell(2900, 1000, 760, { _lmSrvName: 'Top' })]) === 1);
     check('ghost with a name: he ate since the list (one cell heavier than the ghost) and a piece of the nick beside him: hidden',
         drawn(top(), [cell(2000, 1000, 760, { _lmSrvName: 'Top' }), cell(2000, 1900, 200, { _lmSrvName: 'Top' })], () => { LM.ghostCellsTime = Date.now() - 1000; }) === 0);
-    check('ghost with a name: that heavier cell seen by two connections (copies, not two players): hidden',
-        drawn(top(), [cell(2000, 1000, 760, { _lmSrvName: 'Top' }), cell(2010, 1000, 760, { spectator: 3, _lmSrvName: 'Top' })], () => { feed(); LM.ghostCellsTime = Date.now() - 1000; }) === 0);
+    /* REVISED 2026-11-28: two drawn copies 10 apart were one cell by where they were; the copies of
+     * one cell are the ones the hide step matched (the tile's hidden behind the main one) */
+    {
+        const heavy = cell(2000, 1000, 760, { _lmSrvName: 'Top' });
+        check('ghost with a name: that heavier cell seen by two connections (the hide step matched the copies): hidden',
+            drawn(top(), [heavy, cell(2010, 1000, 760, { spectator: 3, _lmSrvName: 'Top', invisible: true, _lmMbPosDup: true, _lmMbTwin: heavy })], () => { feed(); LM.ghostCellsTime = Date.now() - 1000; }) === 0);
+        check('ghost with a name: two such cells on two connections not matched (maybe two players): drawn',
+            drawn(top(), [cell(2000, 1000, 760, { _lmSrvName: 'Top' }), cell(2010, 1000, 760, { spectator: 3, _lmSrvName: 'Top' })], () => { feed(); LM.ghostCellsTime = Date.now() - 1000; }) === 1);
+    }
     check('ghost without a name: two unnamed players inside it far apart, each 0.3 of its mass: drawn',
         drawn(top(), [cell(1400, 1000, 387), cell(2600, 1000, 387)], unnamed) === 1);
-    check('ghost without a name: an unnamed player split in two touching pieces inside it: hidden',
-        drawn(top(), [cell(1800, 1000, 500), cell(2300, 1000, 500)], unnamed) === 0);
+    /* REVISED 2026-11-28: the two halves carry his server colour; without it each half alone is
+     * about the ghost's mass, so they may be two players: drawn */
+    check('ghost without a name: an unnamed player split in two touching pieces inside it (one server colour): hidden',
+        drawn(top(), [cell(1800, 1000, 500, P), cell(2300, 1000, 500, P)], unnamed) === 0);
+    check('ghost without a name: two touching unnamed cells each about its mass, no server colour: drawn',
+        drawn(top(), [cell(1800, 1000, 500), cell(2300, 1000, 500)], unnamed) === 1);
     check('ghost of me: my own cells hide it with a same-nick player beside me', drawn(top(), [cell(2030, 1000, 700, { isPlayerCell: true, _lmSrvName: 'Top' }), cell(3400, 1000, 680, { _lmSrvName: 'Top' })]) === 0);
     check('ghost with a name: ejected mass of a lighter same-nick player at it does not make up his mass: drawn',
         drawn(top(), [cell(2000, 1000, 470, { _lmSrvName: 'Top' })].concat(Array.from({ length: 20 }, (_, i) => cell(1500 + 50 * i, 1300, 120, { isEjected: true, _lmSrvName: 'Top' })))) === 1);
@@ -694,6 +739,95 @@ now = load(); G = groups();
     check('ghost list without a time (other servers): the bound is 1.5', drawn(top(), [cell(2000, 1000, 851, { _lmSrvName: 'Top' })], () => { LM.ghostCellsTime = 0; }) === 0);
     check('ghost bound by the list\'s age: 1.25 fresh, 1.4 at 0.6 s, 1.5 from 1 s',
         typeof g.lmGhostMassMax === 'function' && g.lmGhostMassMax(0) === 1.25 && Math.abs(g.lmGhostMassMax(600) - 1.4) < 1e-9 && Math.abs(g.lmGhostMassMax(1000) - 1.5) < 1e-9 && g.lmGhostMassMax(5000) === 1.5 && g.lmGhostMassMax(NaN) === 1.5);
+    /* The six identity fixtures of the 2026-11-28 Full Map review: ghost X at (0, 0), radius 100 (mass
+     * 100), its list just come (upper bound 1.25), four connection slots (0 main, 1-3 spectators that
+     * feed unless said). c(x, size, connection, extra): a cell of server name X at (x, 0). Each runs
+     * through _lmGhostMatch called directly (as in the review: _lmGhostHit[0] 1 hidden, 0 drawn) and
+     * through the real drawGhostCells. The distinct players of fixtures 3 and 4 are the fixture's
+     * ground truth, not something the protocol says: without evidence that the cells are one player
+     * (one server colour on one connection, a copy the hide step matched) the ghost stays drawn. */
+    {
+        const X = () => [gh(0, 0, 100)];
+        const c = (x, size, spectator, extra) => Object.assign({ x, y: 0, size, isFood: false, isVirus: false, invisible: false, spectator: spectator || 0, _lmSrvName: 'X' }, extra || {});
+        const slots = (off, lb) => { LM.leaderboard = [lb || { nick: 'X' }]; for (let s = 1; s <= 3; s++) g._lmMbFeed[s] = !(off && off.indexOf(s) >= 0); };
+        const direct = (cells, off, lb) => {
+            slots(off, lb);
+            g._lmGhostX[0] = 0; g._lmGhostY[0] = 0; g._lmGhostR2[0] = 100 * 100; g._lmGhostKind[0] = 1; g._lmGhostNames[0] = 'X';
+            if (g._lmGhostMe) g._lmGhostMe[0] = lb && lb.id === 'isPlayer' ? 1 : 0;
+            if (g._lmGhostGen) g._lmGhostGen.fill(NaN);
+            g._lmGhostMatch(cells, 1, 100, 4, 1.25);
+            return g._lmGhostHit[0];
+        };
+        const fix6 = [
+            ['1 c(0,100): the player himself', () => [c(0, 100)], null, 1],
+            ['2 no cells', () => [], null, 0],
+            ['3 c(-60,60), c(60,60): two players of the nick on one connection', () => [c(-60, 60), c(60, 60)], null, 0],
+            ['4 c(-45,80,1), c(45,80,2): two players on two connections', () => [c(-45, 80, 1), c(45, 80, 2)], null, 0],
+            ['5 c(0,100,0) my own cell named Y', () => [c(0, 100, 0, { isPlayerCell: true, _lmSrvName: 'Y' })], null, 0],
+            ['6 c(0,100,2) a unit\'s own cell, its connection not feeding', () => [c(0, 100, 2, { isPlayerCellMulti: true })], [2], 0],
+        ];
+        const res = [];
+        for (const [name, cells, off, hit] of fix6) {
+            const d = direct(cells(), off), r = drawn(X(), cells(), () => slots(off));
+            res.push(name.slice(0, 1) + ':' + d + '/' + (1 - r));
+            check('ghost fixture ' + name + ': ' + (hit ? 'hidden' : 'drawn') + ' (_lmGhostMatch)', d === hit, '_lmGhostHit ' + d);
+            check('ghost fixture ' + name + ': ' + (hit ? 'hidden' : 'drawn') + ' (drawGhostCells)', r === 1 - hit, r + ' drawn');
+        }
+        console.log('      ghost fixtures (hit _lmGhostMatch/drawGhostCells): ' + res.join(' '));
+        /* the evidence that does make them one player */
+        const col = (k) => ({ _lmRawColor: k });
+        check('ghost fixture 3 with one server colour on both pieces (one player split, the connection says so): hidden',
+            direct([c(-60, 60, 0, col('#aa1100')), c(60, 60, 0, col('#aa1100'))]) === 1);
+        check('ghost fixture 3 with two server colours (two players): drawn', direct([c(-60, 60, 0, col('#aa1100')), c(60, 60, 0, col('#0011aa'))]) === 0);
+        check('ghost fixture 3, colour known on one piece only: drawn', direct([c(-60, 60, 0, col('#aa1100')), c(60, 60, 0)]) === 0);
+        {
+            const a = c(0, 80, 1, col('#aa1100')), b = c(0, 80, 2, { _lmRawColor: '#33cc00', invisible: true, _lmMbPosDup: true, _lmMbTwin: a });
+            check('ghost fixture 4 as one cell the hide step matched (the copy on 2 hidden behind the one on 1): hidden', direct([a, b]) === 1);
+            /* a tile's copy of one cell says nothing of the cell beside it on that tile (no transitive link) */
+            const n = c(150, 80, 2);
+            check('ghost: a cell beside a matched copy on its tile is not linked through that copy: drawn', direct([a, b, n]) === 0);
+        }
+        check('ghost fixture 5 when the leaderboard marks the row as mine (isPlayer): hidden whatever the server name',
+            direct([c(0, 100, 0, { isPlayerCell: true, _lmSrvName: 'Y' })], null, { nick: 'X', id: 'isPlayer' }) === 1);
+        check('ghost fixture 5 with my own cell of the ghost\'s name: hidden', direct([c(0, 100, 0, { isPlayerCell: true })]) === 1);
+        check('ghost fixture 5: a verified unit\'s own cell named Y: drawn', direct([c(0, 100, 2, { isPlayerCellMulti: true, _lmSrvName: 'Y' })]) === 0);
+        check('ghost fixture 6 with the unit\'s connection feeding: hidden', direct([c(0, 100, 2, { isPlayerCellMulti: true })]) === 1);
+        /* the hide step's own verdict (the real lmMbFrameHide fills _lmMbFeed): a unit that is not
+         * verified (CONFLICTED, its cells drawn where they may be mirrored), stalled, of an older
+         * socket generation or removed says nothing of the ghost; its own cell stays drawn */
+        {
+            const unit = (o) => Object.assign({ number: 2, player: true, connectionGeneration: 5, _lmFeedOk: () => true, isSocketOpen: () => true,
+                transformReady: () => true, _lmWorldStamp: () => Date.now(), time: Date.now() }, o || {});
+            const run = (sp, extra) => {
+                const own = c(0, 100, 2, Object.assign({ isPlayerCellMulti: true, _lmGen: 5 }, extra || {}));
+                const n = drawn(X(), [own], () => { LM.leaderboard = [{ nick: 'X' }]; g.window.spects = [sp]; g.lmMbFrameHide(); });
+                return [n, own.invisible === true];
+            };
+            const ok = (r, n) => r[0] === n && r[1] === false;
+            check('ghost: a verified fresh unit\'s own cell (hide step): hidden, the cell drawn', ok(run(unit()), 0), run(unit()).join());
+            check('ghost: an unverified (CONFLICTED, draw-only) unit\'s own cell: ghost drawn, the cell drawn', ok(run(unit({ _lmFeedOk: () => false })), 1), run(unit({ _lmFeedOk: () => false })).join());
+            check('ghost: a stalled unit\'s own cell (no world update for 5 s): ghost drawn, the cell drawn', ok(run(unit({ _lmWorldStamp: () => Date.now() - 5000 })), 1));
+            check('ghost: a unit\'s own cell of an older socket generation: ghost drawn', run(unit(), { _lmGen: 4 })[0] === 1);
+            check('ghost: a unit\'s removed own cell: ghost drawn', run(unit(), { removed: true })[0] === 1);
+        }
+        /* The other path: a ghost with no cell proven his is stale only inside fresh verified
+         * coverage. Inside the view of a stalled or unverified connection (fixture 6's own unit
+         * among them) each fixture keeps its identity verdict: neither path hides it. Inside the
+         * fresh main view every fixture is hidden: that view has every cell there, so either his
+         * cells are drawn (fixture 1, and 3 / 4 if one of those is him) or he is not there. */
+        {
+            const view = (o) => Object.assign({ number: 3, player: true, connectionGeneration: 5, _lmFeedOk: () => true, isSocketOpen: () => true, transformReady: () => true,
+                _lmWorldStamp: () => Date.now(), time: Date.now(), _lmCoverageOk: () => true, _lmServerViewDisplay: (o) => { o[0] = -2000; o[1] = -2000; o[2] = 2000; o[3] = 2000; return o; } }, o || {});
+            const covered = (sp) => fix6.map(([, cells, off]) => 1 - drawn(X(), cells(), () => { g.window.spects = [sp]; slots(off); g._lmMbFeed[sp.number] = false; })).join('');
+            const ident = fix6.map((f) => f[3]).join('');
+            const st = covered(view({ _lmWorldStamp: () => Date.now() - 5000 })), un = covered(view({ _lmFeedOk: () => false }));
+            check('ghost fixtures inside a stalled unit\'s fresh-camera view: identity verdicts only (' + ident + ')', st === ident, st);
+            check('ghost fixtures inside an unverified unit\'s view: identity verdicts only (' + ident + ')', un === ident, un);
+            check('ghost fixture 6 inside its own stalled unit\'s view: drawn', drawn(X(), fix6[5][1](), () => { g.window.spects = [view({ number: 2, _lmWorldStamp: () => Date.now() - 5000 })]; slots([2]); }) === 1);
+            const mv = fix6.map(([, cells, off]) => 1 - drawn(X(), cells(), () => { slots(off); LM.srvViewMinX = LM.srvViewMinY = -2000; LM.srvViewMaxX = LM.srvViewMaxY = 2000; LM._lmLastWorldUpdate = Date.now(); })).join('');
+            check('ghost fixtures inside the fresh main view: all hidden (his cells there, or he is not)', mv === '111111', mv);
+        }
+    }
     /* one pass over the cells: 50 ghosts and 4000 cells */
     {
         let s = 11;

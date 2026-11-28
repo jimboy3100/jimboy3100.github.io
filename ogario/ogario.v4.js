@@ -2107,31 +2107,41 @@ function lmGhostListExpired(lm, now) {
     return lm.ghostCellsTime > 0 && !!gc && !!gc[0] && gc[0].rawX !== undefined && now - lm.ghostCellsTime > LM_GHOST_LIST_MAX_AGE;
 }
 /* A ghost is hidden by live cells only when they can be its player.
- * Own and unit cells (whatever their name): one player per connection; their mass summed per
- * connection inside the ghost, or within LM_GHOST_REACH times its radius with one of them inside
- * (a split player's pieces fly up to about 900 apart, out of the ghost: the list gives the position
- * of his biggest piece), between LM_GHOST_ID_MIN and the list's upper bound of the ghost's mass
- * (size squared). Summed per connection, so the copies of one cell seen by several connections
- * are not counted twice.
+ * Own and unit cells: one player per connection; their mass summed per connection inside the
+ * ghost, or within LM_GHOST_REACH times its radius with one of them inside (a split player's
+ * pieces fly up to about 900 apart, out of the ghost: the list gives the position of his biggest
+ * piece), between LM_GHOST_ID_MIN and the list's upper bound of the ghost's mass (size squared).
+ * Summed per connection, so the copies of one cell seen by several connections are not counted
+ * twice. Owning a cell is not being that ghost's player: own and unit cells count only with the
+ * ghost's name (none for an unnamed ghost), or, the main player's own cells, for the row the
+ * leaderboard marks as his (opcode 53 flag 8 / opcode 49 isMe: id 'isPlayer'; that row's nick is
+ * the client's, not the server's name). A ghost of another server's list (no row) as before.
  * Other cells only by identity: a named ghost's name (within the reach), no name for an unnamed
  * ghost and any player cell for another server's (inside it only). A name or no name is not one
  * player (two players share a nick, unnamed players are many), so those cells are grouped into
- * players first: two pieces are one player's only when they lie within LM_GHOST_LINK ghost radii
- * of each other's edge, and one connection's chain of such pieces is one group (an unrelated
- * player of the nick elsewhere in the reach was added to his mass), its mass that connection's
- * sum (copies on several connections are not added up; the groups of several connections that
- * link up are one player). The ghost is hidden when the groups of about his mass are one player
- * and one of them has its biggest piece inside the ghost; a piece heavier than the ghost is no
- * split piece of his (a player of its own, linked to none). Two such players (two of the nick, or two
- * unnamed, each about his mass): which one he is is not known, the ghost stays drawn. More than
- * LM_GHOST_GROUP_MAX such cells near one ghost are not judged (drawn).
+ * players first. Being near each other is not being one player (two players of the nick touch):
+ * two pieces on one connection are one player's only when that connection gives them one server
+ * colour (it gives all cells of one player the same one, two players of one name other ones;
+ * _lmRawColor) and they lie within LM_GHOST_LINK ghost radii of each other's edge; a chain of such
+ * pieces is one group, its mass that connection's sum. Copies on two connections are one player
+ * only when the hide step matched them as one cell (the copy hidden behind the other, _lmMbTwin),
+ * never by where they are (two players at one place seen by two connections; copies are not added
+ * up). The ghost is hidden when the groups of about his mass are one player and one of them has
+ * its biggest piece inside the ghost, and no other player of about his mass may be there: pieces
+ * near each other on one connection without one colour (maybe one player, maybe not) of about his
+ * mass, none of them his, keep it drawn; a piece heavier than the ghost is no split piece of his
+ * (a player of its own). Two such players (two of the nick, or two unnamed, each about his mass):
+ * which one he is is not known, the ghost stays drawn. More than LM_GHOST_GROUP_MAX such cells near
+ * one ghost are not judged (drawn).
  * The upper bound grows with the list's age (what he ate since): LM_GHOST_ID_FRESH of the ghost's
  * mass for a list just come, LM_GHOST_ID_GROW more per ms, at most LM_GHOST_ID_MAX (1.25 drew the
  * ghost over a player 30 % heavier 0.6 s after the list; twice the ghost's mass stays another
  * player). A list without a time (other servers): LM_GHOST_ID_MAX.
  * A removed cell, a copy the hide step hid (not drawn: a late or stale tile copy) unless the copy
- * it hides behind is drawn (the same cell), and a cell of a connection that does not feed hide
- * nothing. */
+ * it hides behind is drawn (the same cell), a cell of a connection that does not feed (not
+ * verified, stalled: _lmMbFeeds, the hide step's test; a unit's own cells too, which stay drawn
+ * and steered: where it draws them is no evidence) and a cell of an older socket of its connection
+ * (_lmGen) hide nothing. */
 var LM_GHOST_ID_MIN = 0.5, LM_GHOST_ID_MAX = 1.5, LM_GHOST_REACH = 2.5;
 var LM_GHOST_ID_FRESH = 1.25, LM_GHOST_ID_GROW = 0.00025, LM_GHOST_LINK = 0.5, LM_GHOST_GROUP_MAX = 128;
 /* the upper bound of a ghost's mass (times its own) for a list of that age (ms; not finite: no time) */
@@ -2140,37 +2150,98 @@ function lmGhostMassMax(age) {
     return Math.min(LM_GHOST_ID_MAX, LM_GHOST_ID_FRESH + LM_GHOST_ID_GROW * age);
 }
 /* drawGhostCells: the ghosts in view sorted by x (their x, y, size squared, kind and name); per
- * ghost and connection the own and unit cells' mass inside the ghost and within the reach (two
- * numbers per slot); the other cells that can be the player, per ghost a list in a pool (cell,
- * connection, inside or not; _lmGhostHead[ghost] the first, _lmGhostCN the next, -1 the end;
- * _lmGhostCnt their number); _lmGhostHit[ghost] 1 when his cells are there. Kept between frames. */
+ * ghost and connection the own and unit cells' mass inside the ghost and within the reach, and the
+ * mass of the other cells that can be the player (three numbers per slot); those cells, per ghost a
+ * list in a pool (cell, connection, inside or not; _lmGhostHead[ghost] the first, _lmGhostCN the
+ * next, -1 the end; _lmGhostCnt their number); _lmGhostHit[ghost] 1 when his cells are there. Kept
+ * between frames. */
 var _lmGhostX = new Float64Array(16), _lmGhostY = new Float64Array(16), _lmGhostR2 = new Float64Array(16);
 var _lmGhostKind = new Int32Array(16), _lmGhostNames = [], _lmGhostAcc = new Float64Array(64);
 var _lmGhostHead = new Int32Array(16), _lmGhostCnt = new Int32Array(16), _lmGhostHit = new Uint8Array(16);
+/* per ghost: its row is the one the leaderboard marks as the main player's (id 'isPlayer'); per
+ * connection number: the socket generation of that spectator (NaN: not known) */
+var _lmGhostMe = new Uint8Array(16), _lmGhostGen = new Float64Array(16);
 var _lmGhostCC = [], _lmGhostCS = new Int32Array(64), _lmGhostCI = new Uint8Array(64), _lmGhostCN = new Int32Array(64);
 var _lmGhostPar = new Int32Array(LM_GHOST_GROUP_MAX), _lmGhostPar1 = new Int32Array(LM_GHOST_GROUP_MAX), _lmGhostIdx = new Int32Array(LM_GHOST_GROUP_MAX);
-/* One pass over the cells: each cell finds the ghosts it lies near by a binary search of the
- * sorted x (the scan of every cell per ghost took 3 ms a frame with 50 ghosts and 4000 cells). n
- * ghosts, maxSz the largest ghost's size, conn the connection slots per ghost, hiR the upper bound
- * of the mass (lmGhostMassMax). Fills _lmGhostHit. */
+/* _lmGhostGroups: the possible players (pieces near each other on one connection), the mass of each
+ * group and possible player, a group's biggest piece and whether it is inside, a possible player
+ * with a piece of his */
+var _lmGhostPos = new Int32Array(LM_GHOST_GROUP_MAX), _lmGhostMO = new Float64Array(LM_GHOST_GROUP_MAX), _lmGhostMP = new Float64Array(LM_GHOST_GROUP_MAX);
+var _lmGhostBig = new Float64Array(LM_GHOST_GROUP_MAX), _lmGhostBigIn = new Uint8Array(LM_GHOST_GROUP_MAX), _lmGhostMark = new Uint8Array(LM_GHOST_GROUP_MAX);
+/* the candidates' x, sorted (_lmGhostGroups) */
+var _lmGhostXs = new Float64Array(LM_GHOST_GROUP_MAX);
+/* The ghosts' reach boxes in a grid of at most LM_GHOST_GRID_N squares a side (each at least
+ * LM_GHOST_GRID_MIN), filled per frame: _lmGhostGS[square] the start of its ghosts in _lmGhostGL,
+ * _lmGhostGS[square + 1] the end. A cell looks only at the ghosts whose box holds its square (a
+ * window of the largest ghost's reach in x made 17 ghost tests per cell, 14 % of them in reach). */
+var LM_GHOST_GRID_N = 32, LM_GHOST_GRID_MIN = 256;
+var _lmGhostGS = new Int32Array(64), _lmGhostGL = new Int32Array(64);
+/* the grid's left, top, 1 / square size, squares across and down */
+var _lmGhostGB = new Float64Array(5);
+function _lmGhostGrid(n) {
+    var gX = _lmGhostX, gY = _lmGhostY, gR2 = _lmGhostR2, gb = _lmGhostGB, j, ix, iy, rr;
+    var bx0 = Infinity, by0 = Infinity, bx1 = -Infinity, by1 = -Infinity;
+    for (j = 0; j < n; j++) {
+        rr = Math.sqrt(gR2[j]) * LM_GHOST_REACH;
+        if (gX[j] - rr < bx0) bx0 = gX[j] - rr;
+        if (gX[j] + rr > bx1) bx1 = gX[j] + rr;
+        if (gY[j] - rr < by0) by0 = gY[j] - rr;
+        if (gY[j] + rr > by1) by1 = gY[j] + rr;
+    }
+    var inv = 1 / Math.max(LM_GHOST_GRID_MIN, (bx1 - bx0) / LM_GHOST_GRID_N, (by1 - by0) / LM_GHOST_GRID_N);
+    var nx = Math.min(LM_GHOST_GRID_N, ((bx1 - bx0) * inv | 0) + 1), ny = Math.min(LM_GHOST_GRID_N, ((by1 - by0) * inv | 0) + 1), nb = nx * ny;
+    var gs = _lmGhostGS = _lmMbGrow(_lmGhostGS, nb + 1);
+    gs.fill(0, 0, nb + 1);
+    /* each square's count, then its end; then (ghosts from the last) each ghost put in place: a
+     * square's ghosts in their order, gs[square] its start */
+    for (j = 0; j < n; j++) {
+        rr = Math.sqrt(gR2[j]) * LM_GHOST_REACH;
+        var ix0 = (gX[j] - rr - bx0) * inv | 0, ix1 = Math.min(nx - 1, (gX[j] + rr - bx0) * inv | 0);
+        var iy0 = (gY[j] - rr - by0) * inv | 0, iy1 = Math.min(ny - 1, (gY[j] + rr - by0) * inv | 0);
+        for (iy = iy0; iy <= iy1; iy++) for (ix = ix0; ix <= ix1; ix++) gs[iy * nx + ix]++;
+    }
+    for (ix = 1; ix < nb; ix++) gs[ix] += gs[ix - 1];
+    gs[nb] = gs[nb - 1];
+    var gl = _lmGhostGL = _lmMbGrow(_lmGhostGL, gs[nb]);
+    for (j = n - 1; j >= 0; j--) {
+        rr = Math.sqrt(gR2[j]) * LM_GHOST_REACH;
+        var jx0 = (gX[j] - rr - bx0) * inv | 0, jx1 = Math.min(nx - 1, (gX[j] + rr - bx0) * inv | 0);
+        var jy0 = (gY[j] - rr - by0) * inv | 0, jy1 = Math.min(ny - 1, (gY[j] + rr - by0) * inv | 0);
+        for (iy = jy0; iy <= jy1; iy++) for (ix = jx0; ix <= jx1; ix++) gl[--gs[iy * nx + ix]] = j;
+    }
+    gb[0] = bx0;
+    gb[1] = by0;
+    gb[2] = inv;
+    gb[3] = nx;
+    gb[4] = ny;
+}
+/* One pass over the cells: each cell finds the ghosts it lies near in that grid (the scan of every
+ * cell per ghost took 3 ms a frame with 50 ghosts and 4000 cells). n ghosts, maxSz the largest
+ * ghost's size (not used any more: each ghost's own reach), conn the connection slots per ghost,
+ * hiR the upper bound of the mass (lmGhostMassMax). Fills _lmGhostHit. */
 function _lmGhostMatch(cells, n, maxSz, conn, hiR) {
-    var gX = _lmGhostX, gY = _lmGhostY, gR2 = _lmGhostR2, kind = _lmGhostKind, names = _lmGhostNames;
-    var acc = _lmGhostAcc = _lmMbGrow(_lmGhostAcc, n * conn * 2);
+    var gX = _lmGhostX, gY = _lmGhostY, gR2 = _lmGhostR2, kind = _lmGhostKind, names = _lmGhostNames, me = _lmGhostMe, gen = _lmGhostGen;
+    var ns = conn * 3;
+    var acc = _lmGhostAcc = _lmMbGrow(_lmGhostAcc, n * ns);
     var head = _lmGhostHead = _lmMbGrow(_lmGhostHead, n), cnt = _lmGhostCnt = _lmMbGrow(_lmGhostCnt, n);
     var hit = _lmGhostHit = _lmMbGrow(_lmGhostHit, n);
-    acc.fill(0, 0, n * conn * 2);
+    acc.fill(0, 0, n * ns);
     head.fill(-1, 0, n);
     cnt.fill(0, 0, n);
     var m = 0, cc = _lmGhostCC;
     var reach2 = LM_GHOST_REACH * LM_GHOST_REACH;
-    maxSz *= LM_GHOST_REACH;
-    var minX = gX[0] - maxSz, maxX = gX[n - 1] + maxSz;
+    /* the grid of the ghosts' reach boxes */
+    _lmGhostGrid(n);
+    var gb = _lmGhostGB, gs = _lmGhostGS, gl = _lmGhostGL, bx0 = gb[0], by0 = gb[1], inv = gb[2], nx = gb[3], ny = gb[4], j, e;
     for (var i = 0; i < cells.length; i++) {
         var c = cells[i];
         if (!c || c.isFood || c.isVirus || !(c.size >= 40)) continue;
         if (c.isEjected || c.removed) continue;
-        var cx = c.x;
-        if (!(cx >= minX && cx <= maxX)) continue;
+        var cx = c.x, cy = c.y;
+        var fx = (cx - bx0) * inv, fy = (cy - by0) * inv;
+        if (!(fx >= 0 && fx < nx && fy >= 0 && fy < ny)) continue;
+        var sq = (fy | 0) * nx + (fx | 0), e0 = gs[sq], e1 = gs[sq + 1];
+        if (e0 === e1) continue;
         /* a copy the hide step hid: only behind a drawn copy (the same cell, there) */
         if (c.invisible === true || c._lmMbPosDup) {
             var tw = c._lmMbTwin;
@@ -2179,36 +2250,37 @@ function _lmGhostMatch(cells, n, maxSz, conn, hiR) {
         var s = c.spectator > 0 ? c.spectator : 0;
         /* a connection not in window.spects any more: nothing says where its cells are */
         if (s >= conn) continue;
-        var feeds = _lmMbFeeds(c);
-        if (!feeds && !c.isPlayerCellMulti) continue;
+        /* a connection that does not feed (not verified, stalled): where its cells are drawn says
+         * nothing, a unit's own cells too (drawn and steered all the same) */
+        if (!_lmMbFeeds(c)) continue;
+        /* a cell of an older socket of that connection, still listed */
+        if (s > 0 && c._lmGen !== undefined && s < gen.length && gen[s] === gen[s] && c._lmGen !== gen[s]) continue;
         var own = !!(c.isPlayerCell || c.isPlayerCellMulti);
-        var name = c._lmSrvName || '', cy = c.y, r2 = c.size * c.size;
-        var lo = 0, hi = n;
-        while (lo < hi) {
-            var mid = (lo + hi) >> 1;
-            if (gX[mid] < cx - maxSz) lo = mid + 1;
-            else hi = mid;
-        }
-        for (var j = lo; j < n; j++) {
-            var dx = cx - gX[j];
-            if (dx < -maxSz) break;
-            var dy = cy - gY[j], d2 = dx * dx + dy * dy;
+        var name = c._lmSrvName || '', r2 = c.size * c.size;
+        for (e = e0; e < e1; e++) {
+            j = gl[e];
+            var dx = cx - gX[j], dy = cy - gY[j], d2 = dx * dx + dy * dy;
             if (!(d2 < gR2[j] * reach2)) continue;
             var k = kind[j], inside = d2 < gR2[j];
-            /* an unverified unit's own cell: only with the ghost's name */
-            if (!feeds && (k !== 1 || name !== names[j])) continue;
+            /* his name (a named ghost), none (an unnamed one), any (another server's) */
+            var named = k === 1 ? name === names[j] : k !== 2 || !name;
             if (own) {
-                var q = (j * conn + s) * 2;
+                /* owning a cell is not being his player: with his name, or the main player's own
+                 * cells for the row the leaderboard marks as his */
+                if (!named && !(s === 0 && me[j] === 1)) continue;
+                var q = j * ns + s * 3;
                 if (inside) acc[q] += r2;
                 acc[q + 1] += r2;
                 continue;
             }
-            if (k === 1 ? name !== names[j] : k === 2 && name) continue;
+            if (!named) continue;
             /* an unnamed ghost or another server's: the cells inside it only */
             if (!inside && k !== 1) continue;
             /* heavier than the whole bound: another player */
             if (r2 > hiR * gR2[j]) continue;
             if (++cnt[j] > LM_GHOST_GROUP_MAX) continue;
+            /* the mass of that connection's cells that can be his */
+            acc[j * ns + s * 3 + 2] += r2;
             if (m >= _lmGhostCN.length) {
                 _lmGhostCS = _lmMbGrow(_lmGhostCS, m + 1);
                 _lmGhostCI = _lmMbGrow(_lmGhostCI, m + 1);
@@ -2222,73 +2294,142 @@ function _lmGhostMatch(cells, n, maxSz, conn, hiR) {
         }
     }
     for (j = 0; j < n; j++) {
-        var gLo = LM_GHOST_ID_MIN * gR2[j], gHi = hiR * gR2[j], h = 0;
-        for (q = j * conn * 2, mid = q + conn * 2; q < mid; q += 2) {
+        var gLo = LM_GHOST_ID_MIN * gR2[j], gHi = hiR * gR2[j], h = 0, may = false;
+        for (q = j * ns, e = q + ns; q < e; q += 3) {
             if (acc[q] >= gLo && acc[q] <= gHi || acc[q] > 0 && acc[q + 1] >= gLo && acc[q + 1] <= gHi) { h = 1; break; }
+            /* a group is no heavier than its connection's cells: none of about his mass there */
+            if (acc[q + 2] >= gLo) may = true;
         }
-        if (!h && head[j] >= 0 && cnt[j] <= LM_GHOST_GROUP_MAX) h = _lmGhostGroups(j, gLo, gHi) ? 1 : 0;
+        if (!h && may && cnt[j] <= LM_GHOST_GROUP_MAX) h = _lmGhostGroups(j, gLo, gHi) ? 1 : 0;
         hit[j] = h;
     }
     /* the pool lets go of the cells (removed cells are not kept alive by it) */
     for (i = 0; i < m; i++) cc[i] = null;
 }
 /* The cells that can be ghost j's player (its list in the pool) grouped into players. A group is
- * one connection's chain of linked pieces (its mass that connection's sum: copies are not added
- * up); the groups of all connections that link up are one player seen by several. True when the
- * groups between gLo and gHi are of one player and one of them has its biggest piece inside the
- * ghost. */
+ * one connection's chain of linked pieces: near each other and of one server colour (its mass that
+ * connection's sum: copies are not added up); the groups of connections whose copies the hide step
+ * matched are one player seen by several. A possible player is one connection's chain of pieces
+ * near each other, whatever their colour. True when the groups between gLo and gHi are of one
+ * player, one of them has its biggest piece inside the ghost, and no possible player between gLo
+ * and gHi has none of his pieces. */
+function _lmGhostJoin(u, a, b) {
+    for (; u[a] !== a; a = u[a]) u[a] = u[u[a]];
+    for (; u[b] !== b; b = u[b]) u[b] = u[u[b]];
+    if (a !== b) u[a] = b;
+}
 function _lmGhostGroups(j, gLo, gHi) {
-    var cc = _lmGhostCC, cs = _lmGhostCS, idx = _lmGhostIdx, par = _lmGhostPar, one = _lmGhostPar1, m = 0, a, b, x, y;
-    for (var p = _lmGhostHead[j]; p >= 0; p = _lmGhostCN[p]) idx[m++] = p;
-    var gR2 = _lmGhostR2[j], gap = LM_GHOST_LINK * Math.sqrt(gR2);
-    for (a = 0; a < m; a++) par[a] = one[a] = a;
-    for (a = 1; a < m; a++) {
-        var ca = cc[idx[a]], ax = ca.x, ay = ca.y, ar = ca.size, as = cs[idx[a]], aBig = ar * ar > gR2;
-        for (b = 0; b < a; b++) {
-            var cb = cc[idx[b]], dx = ax - cb.x, dy = ay - cb.y, br = cb.size, lim = ar + br + gap, same = cs[idx[b]] === as;
-            /* a piece heavier than the ghost is no split piece of his (a player of its own): linked
-             * only to its copies on other connections (the centre of one inside the other) */
-            if (aBig || br * br > gR2) {
-                if (same) continue;
-                lim = ar > br ? ar : br;
-            }
-            if (dx * dx + dy * dy > lim * lim) continue;
-            for (x = a; par[x] !== x; x = par[x]) par[x] = par[par[x]];
-            for (y = b; par[y] !== y; y = par[y]) par[y] = par[par[y]];
-            if (x !== y) par[x] = y;
-            if (!same) continue;
-            for (x = a; one[x] !== x; x = one[x]) one[x] = one[one[x]];
-            for (y = b; one[y] !== y; y = one[y]) one[y] = one[one[y]];
-            if (x !== y) one[x] = y;
+    var cc = _lmGhostCC, cs = _lmGhostCS, idx = _lmGhostIdx, xs = _lmGhostXs, par = _lmGhostPar, one = _lmGhostPar1, pos = _lmGhostPos;
+    var mo = _lmGhostMO, mp = _lmGhostMP, big = _lmGhostBig, bigIn = _lmGhostBigIn, mark = _lmGhostMark, m = 0, a, b, x, p, maxR = 0;
+    /* sorted by x (at most LM_GHOST_GROUP_MAX): the pairs of one connection end where x is too far */
+    for (p = _lmGhostHead[j]; p >= 0; p = _lmGhostCN[p]) {
+        var px = cc[p].x;
+        if (cc[p].size > maxR) maxR = cc[p].size;
+        for (b = m++; b > 0 && xs[b - 1] > px; b--) {
+            xs[b] = xs[b - 1];
+            idx[b] = idx[b - 1];
         }
+        xs[b] = px;
+        idx[b] = p;
+    }
+    var gR2 = _lmGhostR2[j], gap = LM_GHOST_LINK * Math.sqrt(gR2);
+    for (a = 0; a < m; a++) {
+        par[a] = one[a] = pos[a] = a;
+        mo[a] = mp[a] = big[a] = 0;
+        mark[a] = 0;
+    }
+    /* two connections: one player only as the copies of one cell the hide step matched (the copy
+     * hidden behind the other: _lmMbTwin), not by where they are; its twin found by its x */
+    for (a = 0; a < m; a++) {
+        var ca = cc[idx[a]];
+        if (!(ca.invisible === true || ca._lmMbPosDup)) continue;
+        var tw = ca._lmMbTwin, tx = tw.x, lo = 0, hi = m;
+        while (lo < hi) {
+            x = (lo + hi) >> 1;
+            if (xs[x] < tx) lo = x + 1;
+            else hi = x;
+        }
+        for (; lo < m && xs[lo] === tx; lo++) {
+            if (cc[idx[lo]] !== tw) continue;
+            if (cs[idx[lo]] !== cs[idx[a]]) _lmGhostJoin(par, a, lo);
+            break;
+        }
+    }
+    /* one connection: one player's pieces near each other and of one server colour of that
+     * connection (and the possible players of the pieces with a colour); the groups, their mass and
+     * biggest piece (inside when one of its biggest is) */
+    /* (numbers to a call that is not inlined are boxed: in a typed array) */
+    _lmGhostNP[0] = gR2;
+    _lmGhostNP[1] = gap;
+    _lmGhostNP[2] = maxR;
+    _lmGhostNear(m, true);
+    for (a = 0; a < m; a++) {
+        for (x = a; one[x] !== x; x = one[x]);
+        one[a] = x;
+        _lmGhostJoin(par, a, x);
     }
     for (a = 0; a < m; a++) {
         for (x = a; par[x] !== x; x = par[x]);
         par[a] = x;
-        for (x = a; one[x] !== x; x = one[x]);
-        one[a] = x;
+        p = idx[a];
+        var r2 = cc[p].size * cc[p].size;
+        mo[one[a]] += r2;
+        if (r2 > big[one[a]]) {
+            big[one[a]] = r2;
+            bigIn[one[a]] = _lmGhostCI[p];
+        } else if (r2 === big[one[a]] && _lmGhostCI[p]) bigIn[one[a]] = 1;
     }
     var player = -1, anchored = false;
     for (a = 0; a < m; a++) {
-        if (one[a] !== a) continue;
-        var big = 0, bigIn = 0, mass = 0;
-        for (b = 0; b < m; b++) {
-            if (one[b] !== a) continue;
-            p = idx[b];
-            var r2 = cc[p].size * cc[p].size;
-            mass += r2;
-            if (r2 > big) {
-                big = r2;
-                bigIn = _lmGhostCI[p];
-            }
-        }
-        if (mass < gLo || mass > gHi) continue;
+        if (one[a] !== a || mo[a] < gLo || mo[a] > gHi) continue;
         /* two players of about his mass: not known which one he is */
         if (player >= 0 && par[a] !== player) return false;
         player = par[a];
-        if (bigIn) anchored = true;
+        if (bigIn[a]) anchored = true;
     }
-    return anchored;
+    if (!anchored) return false;
+    /* possible players: pieces near each other on one connection, whatever their colour (the
+     * pieces without one now); one of about his mass with none of his pieces may be another player */
+    for (a = 0; a < m; a++) _lmGhostJoin(pos, a, one[a]);
+    _lmGhostNear(m, false);
+    for (a = 0; a < m; a++) {
+        for (x = a; pos[x] !== x; x = pos[x]);
+        pos[a] = x;
+        p = idx[a];
+        mp[x] += cc[p].size * cc[p].size;
+    }
+    for (a = 0; a < m; a++) if (par[a] === player) mark[pos[a]] = 1;
+    for (a = 0; a < m; a++) if (pos[a] === a && !mark[a] && mp[a] >= gLo && mp[a] <= gHi) return false;
+    return true;
+}
+/* _lmGhostGroups: the pairs (a, b < a) of pieces of one connection (sorted by x: at most maxR + its
+ * radius + gap apart in x) within gap of each other's edge, neither heavier than the ghost (gR2: a
+ * piece heavier than the ghost is no split piece of his, a player of its own), each pair once. col:
+ * the pairs whose piece a has a server colour, those of one colour join the groups (_lmGhostPar1),
+ * the others the possible players (_lmGhostPos); else the pairs whose piece a has none join the
+ * possible players. (The groups are joined to the players and possible players after.) */
+var _lmGhostNP = new Float64Array(3);
+function _lmGhostNear(m, col) {
+    var cc = _lmGhostCC, cs = _lmGhostCS, idx = _lmGhostIdx, xs = _lmGhostXs, a, b;
+    var gR2 = _lmGhostNP[0], gap = _lmGhostNP[1], maxR = _lmGhostNP[2];
+    for (a = 1; a < m; a++) {
+        var ca = cc[idx[a]], aCol = ca._lmRawColor, ar = ca.size;
+        if (col !== !!aCol || ar * ar > gR2) continue;
+        var ax = xs[a], ay = ca.y, as = cs[idx[a]], farX = ar + maxR + gap;
+        for (b = a - 1; b >= 0; b--) {
+            var dx = ax - xs[b];
+            if (dx > farX) break;
+            var ib = idx[b];
+            if (cs[ib] !== as) continue;
+            var cb = cc[ib], br = cb.size;
+            if (br * br > gR2) continue;
+            var dy = ay - cb.y, lim = ar + br + gap;
+            if (dx * dx + dy * dy > lim * lim) continue;
+            /* one join per pair: the groups' links are added to the players and possible players after */
+            if (col && cb._lmRawColor === aCol) _lmGhostJoin(_lmGhostPar1, a, b);
+            else _lmGhostJoin(_lmGhostPos, a, b);
+        }
+    }
 }
 /* per connection number, whether it feeds this frame (filled by the frame's hide step); a
  * connection number not filled in is not in window.spects and does not feed */
@@ -86903,7 +87044,7 @@ function pickPlayerCellBySize(players, selectBiggest) {
                 var _gN = ghostsCells.length;
                 var _gS = this._lmGhostS = _lmMbGrow(this._lmGhostS || new Int32Array(16), _gN);
                 var _gSlot = this._lmGhostSlot = _lmMbGrow(this._lmGhostSlot || new Int32Array(16), _gN);
-                var _gKind = _lmGhostKind = _lmMbGrow(_lmGhostKind, _gN), _gNames = _lmGhostNames;
+                var _gKind = _lmGhostKind = _lmMbGrow(_lmGhostKind, _gN), _gNames = _lmGhostNames, _gMe = _lmGhostMe = _lmMbGrow(_lmGhostMe, _gN);
                 var _gX = _lmGhostX = _lmMbGrow(_lmGhostX, _gN);
                 var _gY = _lmGhostY = _lmMbGrow(_lmGhostY, _gN);
                 var _gR2 = _lmGhostR2 = _lmMbGrow(_lmGhostR2, _gN);
@@ -86940,6 +87081,7 @@ function pickPlayerCellBySize(players, selectBiggest) {
                     var _gRow = ghostsCells[length].rawX !== undefined && LM.leaderboard ? LM.leaderboard[length] : null;
                     _gNames[_gj] = _gRow && _gRow.nick ? _gRow.nick : '';
                     _gKind[_gj] = !_gRow ? 0 : _gNames[_gj] ? 1 : 2;
+                    _gMe[_gj] = _gRow && _gRow.id === 'isPlayer' ? 1 : 0;
                 }
                 /* Skip the ghost when the real player is on screen: his cells lie inside the ghost's
                  * radius (LM.cellsId never existed, so this never ran). Only cells that can be his
@@ -86949,11 +87091,15 @@ function pickPlayerCellBySize(players, selectBiggest) {
                  * named player nearby), with an unnamed one an unnamed cell, with a ghost of
                  * another server any player cell; own and unit cells whatever their name. Cells of
                  * a name or of no name are grouped into players first (two players of one nick or
-                 * two unnamed players are not added up; two of about his mass: drawn). A cell of
-                 * a Full Map spectator whose orientation is not verified, or that is stalled (_lmMbFeeds: not drawn, maybe mirrored or frozen; the frame's
-                 * hide step test), hides nothing. Ejected mass never hides a ghost (a blob of 40+
-                 * is no player cell). An unverified unit's own cell may be drawn at a wrong place:
-                 * it hides the ghost only with the ghost's name. A split player's pieces out of
+                 * two unnamed players are not added up; two of about his mass: drawn; pieces are one
+                 * player's by one server colour on one connection, copies by the hide step's match,
+                 * not by being near each other). Own and unit cells count only with the ghost's
+                 * name, or for the row the leaderboard marks as the main player's. A cell of a Full
+                 * Map spectator whose orientation is not verified, or that is stalled (_lmMbFeeds:
+                 * not drawn, maybe mirrored or frozen; the frame's hide step test), hides nothing;
+                 * an unverified or stalled unit's own cells neither (drawn where they may be wrong).
+                 * Ejected mass never hides a ghost (a blob of 40+ is no player cell). A split
+                 * player's pieces out of
                  * the ghost count too (LM_GHOST_REACH): own and unit cells, or a named ghost's
                  * name, within the reach with one of them inside it (for a name his group's biggest
                  * piece). A removed cell or a copy hidden by the hide step without a drawn copy in
@@ -86964,6 +87110,13 @@ function pickPlayerCellBySize(players, selectBiggest) {
                 var _gSps = window.spects, _gConn = Math.max(1, _lmMbFeed.length);
                 for (var _gs = 0; _gSps && _gs < _gSps.length; _gs++) {
                     if (_gSps[_gs] && _gSps[_gs].number >= _gConn) _gConn = (_gSps[_gs].number | 0) + 1;
+                }
+                /* each spectator's socket generation: a cell of an older one hides nothing */
+                var _gGen = _lmGhostGen = _lmMbGrow(_lmGhostGen, _gConn);
+                _gGen.fill(NaN, 0, _gConn);
+                for (_gs = 0; _gSps && _gs < _gSps.length; _gs++) {
+                    var _gSn = _gSps[_gs] && _gSps[_gs].number;
+                    if (_gSn > 0 && _gSn < _gConn && Number.isFinite(_gSps[_gs].connectionGeneration)) _gGen[_gSn] = _gSps[_gs].connectionGeneration;
                 }
                 /* the bound of his mass grows with the list's age (lmGhostMassMax) */
                 if (_gv) _lmGhostMatch(LM.cells, _gv, _gMaxSz, _gConn, lmGhostMassMax(LM.ghostCellsTime > 0 ? Math.max(0, _ghostNow - LM.ghostCellsTime) : NaN));

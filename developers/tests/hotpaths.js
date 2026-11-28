@@ -298,16 +298,18 @@ check('reversed time test is gone', !/lastUpdatedTime\) - tempTime < 6000/.test(
 }
 
 /* ---- ghost cells (drawGhostCells, decision 4): the matcher stays one pass over the cells ----
- * _lmGhostMatch walks LM.cells once, finds the ghosts near each cell by a binary search over the
- * ghosts sorted by x and adds up per connection; the old scan of every cell for every ghost must
- * not come back. The identity bounds are kept as decided (0.5 / 1.5 / reach 2.5). */
+ * _lmGhostMatch walks LM.cells once, finds the ghosts near each cell in a per-frame grid of the
+ * ghosts' reach boxes (_lmGhostGrid; until 2026-11-28 a binary search over the ghosts sorted by x
+ * with the largest ghost's reach: 17 ghost tests per cell, 14 % of them in reach) and adds up per
+ * connection; the old scan of every cell for every ghost must not come back. The identity bounds
+ * are kept as decided (0.5 / 1.5 / reach 2.5). */
 {
     const a = src.indexOf('function _lmGhostMatch('), b = src.indexOf('\nfunction _lmGhostGroups(', a);
     const body = a >= 0 && b > a ? src.slice(a, b) : '';
     const consts = (src.match(/\nvar LM_GHOST_ID_MIN = ([\d.]+), LM_GHOST_ID_MAX = ([\d.]+), LM_GHOST_REACH = ([\d.]+);/) || []).slice(1).join();
-    check('ghost match: one pass over the cells (one cells loop), a binary search over the ghosts by x, no per-ghost cell scan',
+    check('ghost match: one pass over the cells (one cells loop), the ghosts of its square of the reach grid, no per-ghost cell scan',
         !!body && (body.match(/for \(var i = 0; i < cells\.length; i\+\+\)/g) || []).length === 1 && (body.match(/cells\.length/g) || []).length === 1 &&
-        /while \(lo < hi\)/.test(body) && /\(lo \+ hi\) >> 1/.test(body) && /if \(dx < -maxSz\) break;/.test(body));
+        /_lmGhostGrid\(n\);/.test(body) && /e0 = gs\[sq\], e1 = gs\[sq \+ 1\]/.test(body) && /for \(e = e0; e < e1; e\+\+\)/.test(body) && /\nfunction _lmGhostGrid\(n\)/.test(src));
     check('ghost match: LM_GHOST_ID_MIN 0.5, LM_GHOST_ID_MAX 1.5, LM_GHOST_REACH 2.5 kept', consts === '0.5,1.5,2.5');
 }
 
