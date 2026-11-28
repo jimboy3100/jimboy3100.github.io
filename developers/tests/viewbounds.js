@@ -42,6 +42,8 @@ vm.runInContext([
     'function getActiveSpect() { return null; }',
     /* the multibox hide step of the frame (no other connection here; fullmaplifecycle.js tests it) */
     'function lmMbFrameHide() { }',
+    /* Dying Light on / off for the frame (overlayfx.js tests it) */
+    'function lmDlSync() { return false; }',
     'var LM = {', block('        compareCells() {'), '};',
     'var legendmod = LM; window.legendmod = LM;',
     'this.LM = LM;',

@@ -191,10 +191,10 @@ const lateSrc = block(src, lateA);
 const textClassSrc = block(src, src.indexOf('function irenderfromagario()'));
 const autoHideSrc = block(src, src.indexOf('setAutoHideCellInfo(t) {'));
 /* the multibox ring rule and the skin gate cell.draw uses (absent in older versions) */
-const ringSrc = ['lmMultiboxRingPlayer', 'lmMultiboxRing', 'lmSkinsShown', 'lmColorInt'].map((n) => {
+const ringSrc = ['lmMultiboxRingPlayer', 'lmMultiboxRing', 'lmSkinsShown', 'lmColorInt', 'lmDlSync', 'lmDlSkinCell', 'lmDlSkinKey', 'lmWorldSkinKey'].map((n) => {
     const i = src.indexOf('\nfunction ' + n + '(');
     return i < 0 ? '' : block(src, i + 1);
-}).join('\n') + '\n' + ['LM_MB_RING_DEFAULT_COLORS', 'LM_MB_RING_MIN_SCREEN_PX', 'LM_MB_RING_SIZE', '_lmMbRingOut', '_lmColorIntCache'].map((n) => {
+}).join('\n') + '\n' + ['LM_MB_RING_DEFAULT_COLORS', 'LM_MB_RING_MIN_SCREEN_PX', 'LM_MB_RING_SIZE', '_lmMbRingOut', '_lmColorIntCache', '_lmDl'].map((n) => {
     const m = new RegExp('\\nvar ' + n + ' = [^\\n]*').exec(src);
     return m ? m[0].slice(1) : '';
 }).join('\n');
@@ -1026,6 +1026,14 @@ if (C) {
     check('  every reason has a name', Object.keys(G).every((k) => typeof R.GLW_IDS[G[k]] === 'string') && new Set(R.GLW_IDS).size === R.GLW_IDS.length);
 }
 
+/* ---- Dying Light: no WebGL fallback of its own (the BODY_FX gate is gone) ---- */
+reset();
+scene([makeCell({ x: 0, y: 0, size: 70, targetNick: 'zed' })]);
+globalThis.dyinglight1load = 'yes';
+r = frame(S1);
+globalThis.dyinglight1load = 'no';
+check('Dying Light saved on: the frame stays WebGL (no "bodyFx" Canvas2D frame), equal', r.gl && why() !== 'bodyFx' && r.d.n === 0, 'gl ' + r.gl + ' ' + why() + ' ' + r.d.n + ' px');
+
 /* ---- the mark box check of later cells: same first hit as the full scan, far cells skip it ---- */
 reset(); setSettings();
 {
@@ -1189,6 +1197,142 @@ if (haveMethods.includes('setMass')) {
     k.shortMass = false;
     k.setMass(401);
     check('mass text: 12.3k -> exact redraws the exact number at once', kTxt === '1.6k' && k.redrawMass === true && k.massTxt === '1608', kTxt + ' ' + k.redrawMass + ' ' + k.massTxt);
+}
+
+/* section: Dying Light in the world renderers with the real code: the world skin key every skin
+ * path uses (lmWorldSkinKey: the cell's own key, else the Dying Light skin of an eligible cell
+ * while it is on, lmDlSync once per frame) and the map background (drawCustomBackgrounds with
+ * the Dying Light scene: the Theme's setting unchanged, the two cross-fading, save / restore) */
+if (src.includes('\nfunction lmWorldSkinKey(')) {
+const F = rendererFactory(src);
+const D = new Function('return ' + F.defaults)();
+const LMd = { cells: [], playerCells: [], playerCellsMulti: [], gameMode: ':ffa', showCustomSkins: true, mapMinX: -500, mapMinY: -500, mapMaxX: 500, mapMaxY: 500 };
+const loads = [];
+const OWN = 'https://own.test/a.png', PEND = 'https://own.test/pending.png', ZOMBIE = 'https://www.legendmod.ml/banners/icondyinglightzombie.png';
+const app = { customSkinsCache: { [OWN]: { width: 9 } }, _lmSkinCacheKey(u) { return u; }, loadSkin(c, u) { loads.push(u); } };
+const win = { legendmod: LMd, application: app };
+const env = { window: win, LM: LMd, application: app, defaultSettings: D.defaultSettings, defaultmapsettings: D.defaultmapsettings, ogarcopythelb: {}, ogario: {} };
+const R = new Function('return (' + F.factory.replace(/return R;\n\}$/, 'R.__dl = { sync: lmDlSync, key: lmWorldSkinKey }; return R;\n}') + ')')()(env);
+const X = R.__dl;
+const cell = (o) => Object.assign({ x: 0, y: 0, size: 60, targetNick: 'enemy', isPlayerCell: false, isPlayerCellMulti: false, isFood: false, isEjected: false, isVirus: false, removed: false, invisible: false }, o);
+const enemy = cell({});
+let asked = 0;
+const dl = { on: false, isEnabled() { return this.on; }, getFallbackSkinKey() { asked++; return ZOMBIE; }, getBackground() { return this.bg || null; } };
+
+/* off: never enabled, and LMDyingLight there but off */
+check('Dying Light off: lmDlSync says off', X.sync() === false);
+check('  a cell keeps its own key, no key stays none', X.key(enemy, OWN) === OWN && X.key(enemy, null) === null && X.key(enemy, PEND) === PEND);
+win.LMDyingLight = dl;
+check('  LMDyingLight off: the same keys, its skin never asked', X.sync() === false && X.key(enemy, null) === null && X.key(enemy, OWN) === OWN && asked === 0 && loads.length === 0, asked + ' ' + loads.length);
+
+/* on */
+dl.on = true;
+check('Dying Light on: lmDlSync says on', X.sync() === true);
+check('  another player without a skin gets the Dying Light skin, loaded once through loadSkin', X.key(enemy, null) === ZOMBIE && loads.length === 1 && loads[0] === ZOMBIE, loads.join());
+app.customSkinsCache[ZOMBIE] = { width: 9 };
+X.key(enemy, null);
+check('  ... and not loaded again once in the skin cache', loads.length === 1, loads.length);
+check('  the own skin wins', X.key(enemy, OWN) === OWN);
+check('  a skin still loading (or failed) wins too: no Dying Light skin over it', X.key(enemy, PEND) === PEND);
+const no = {
+    'the own cell': cell({ isPlayerCell: true }), 'a multibox unit cell': cell({ isPlayerCellMulti: true }), food: cell({ isFood: true }),
+    'ejected mass': cell({ isEjected: true }), virus: cell({ isVirus: true }), 'a removed cell': cell({ removed: true }),
+    'a hidden cell': cell({ invisible: true }), 'a copy hidden behind another connection': cell({ _lmMbPosDup: true }),
+    'mass 9': cell({ size: 30 }), 'no name': cell({ targetNick: '' }), 'a blank name': cell({ targetNick: '   ' })
+};
+const wrong = Object.keys(no).filter((k) => X.key(no[k], null) !== null);
+check('  none for ' + Object.keys(no).join(', '), wrong.length === 0, wrong.join());
+LMd.gameMode = ':teams';
+check('  none in Teams (no skins there)', X.key(enemy, null) === null);
+LMd.gameMode = ':ffa';
+
+/* off again: as before */
+dl.on = false;
+asked = 0;
+check('Dying Light off again: the same keys as before it was on', X.sync() === false && X.key(enemy, null) === null && X.key(enemy, OWN) === OWN && asked === 0);
+/* the old expansion script only: its saved switch, its one zombie icon */
+delete win.LMDyingLight;
+globalThis.dyinglight1load = 'yes';
+check('old expansion script (no LMDyingLight), saved on: its zombie icon', X.sync() === true && X.key(enemy, null) === D.defaultSettings.commanderImageDyingLight && X.key(enemy, OWN) === OWN);
+globalThis.dyinglight1load = 'no';
+check('  saved off: none', X.sync() === false && X.key(enemy, null) === null);
+
+/* the map background */
+const pic = (name, ok) => ({ name: name, naturalWidth: ok ? 64 : 0, naturalHeight: ok ? 64 : 0, width: ok ? 64 : 0, height: ok ? 64 : 0 });
+function bgCtx() {
+    return {
+        globalAlpha: 1, depth: 0, draws: [], save() { this.depth++; }, restore() { this.depth--; this.globalAlpha = 1; },
+        drawImage(im, x, y, w, h) { if (im.boom) throw new Error('boom'); this.draws.push(im.name + '@' + Math.round(this.globalAlpha * 100) / 100 + ' ' + [x, y, w, h].join(',')); }
+    };
+}
+const keepLm = globalThis.legendmod, keepImage = globalThis.Image;
+globalThis.legendmod = LMd;
+/* an image that never loads by itself (the test sets its size) */
+globalThis.Image = function () { };
+try {
+    const ds = env.defaultSettings;
+    ds.customBackground = 'https://bg.test/theme.png'; ds.backgroundAlpha = 0.8;
+    win.LMDyingLight = dl; dl.on = false; X.sync();
+    let ctx = bgCtx();
+    R.drawCustomBackgrounds(ctx);
+    const themePic = LMd.customMidPic;
+    check('background, Dying Light off: the Theme image is the one loaded', !!themePic && themePic._src === ds.customBackground);
+    Object.assign(themePic, pic('theme', true));
+    ctx = bgCtx();
+    R.drawCustomBackgrounds(ctx);
+    check('  drawn over the map at the Theme alpha, save / restore balanced', ctx.draws.join('|') === 'theme@0.8 -500,-500,1000,1000' && ctx.depth === 0, ctx.draws.join('|'));
+    const night = pic('night', false);
+    dl.on = true; dl.bg = { img: night, alpha: 0.5 }; X.sync();
+    ctx = bgCtx();
+    R.drawCustomBackgrounds(ctx);
+    check('Dying Light on, its scene not loaded yet: the Theme image stays', ctx.draws.join('|') === 'theme@0.8 -500,-500,1000,1000' && LMd.customMidPic === themePic, ctx.draws.join('|'));
+    Object.assign(night, pic('night', true));
+    R.drawCustomBackgrounds(bgCtx());
+    LMd._lmMidFadeAt -= 1500;
+    ctx = bgCtx();
+    R.drawCustomBackgrounds(ctx);
+    const half = ctx.draws.map((d) => d.split(' ')[0]);
+    check('  scene loaded: the two cross-fade (old under new, only these two)', half.length === 2 && /^theme@0\.[34]/.test(half[0]) && /^night@0\.2[45]/.test(half[1]) && ctx.depth === 0, ctx.draws.join('|'));
+    LMd._lmMidFadeAt -= 5000;
+    ctx = bgCtx();
+    R.drawCustomBackgrounds(ctx);
+    check('  after the fade: only the scene, at its alpha; the Theme setting unchanged', ctx.draws.join('|') === 'night@0.5 -500,-500,1000,1000' && ds.customBackground === 'https://bg.test/theme.png' && !LMd._lmMidPicNext, ctx.draws.join('|'));
+    const bad = pic('bad', false); bad._failed = true;
+    dl.bg = { img: bad };
+    ctx = bgCtx();
+    R.drawCustomBackgrounds(ctx);
+    check('  a next scene that failed is skipped: the shown one stays', ctx.draws.join('|') === 'night@0.8 -500,-500,1000,1000', ctx.draws.join('|'));
+    const boom = pic('boom', true); boom.boom = true;
+    dl.bg = { img: boom, alpha: 1 };
+    LMd.customMidPic = boom; LMd._lmMidPicNext = null;
+    ctx = bgCtx();
+    let threw = false;
+    try { R.drawCustomBackgrounds(ctx); } catch (e) { threw = true; }
+    check('  a draw that throws: no error, the context restored', !threw && ctx.depth === 0 && ctx.globalAlpha === 1, threw + ' ' + ctx.depth);
+    dl.bg = { img: night, alpha: 0.5 }; LMd.customMidPic = night; LMd._lmMidDl = true;
+    R.drawCustomBackgrounds(bgCtx());
+    dl.on = false; X.sync();
+    ctx = bgCtx();
+    R.drawCustomBackgrounds(ctx);
+    const back = LMd._lmMidPicNext;
+    check('Dying Light off: the Theme image comes back (loaded again, the scene shown until then)', !!back && back._src === ds.customBackground && ctx.draws.join('|') === 'night@0.5 -500,-500,1000,1000', ctx.draws.join('|'));
+    Object.assign(back, pic('theme2', true));
+    R.drawCustomBackgrounds(bgCtx());
+    LMd._lmMidFadeAt -= 5000;
+    ctx = bgCtx();
+    R.drawCustomBackgrounds(ctx);
+    check('  after its fade: the Theme image alone at the Theme alpha, as before Dying Light', ctx.draws.join('|') === 'theme2@0.8 -500,-500,1000,1000' && LMd.customMidPic === back && !LMd._lmMidDl && !LMd._lmMidPicNext, ctx.draws.join('|'));
+    LMd.customMidPic = night; LMd._lmMidDl = true; LMd._lmMidPicNext = null; ds.customBackground = 'https://bg.test/broken.png';
+    R.drawCustomBackgrounds(bgCtx());
+    LMd._lmMidPicNext._failed = true;
+    ctx = bgCtx();
+    R.drawCustomBackgrounds(ctx);
+    check('  the Theme image failing to come back: nothing drawn, as without Dying Light (no scene left over)', ctx.draws.length === 0 && !LMd._lmMidDl && LMd.customMidPic && LMd.customMidPic._src === ds.customBackground, ctx.draws.join('|'));
+} finally {
+    globalThis.legendmod = keepLm;
+    globalThis.Image = keepImage;
+    delete win.LMDyingLight;
+}
 }
 
 console.log(failed ? failed + ' overlay check(s) FAILED' : 'overlayfx ok');

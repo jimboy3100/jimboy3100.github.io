@@ -5731,6 +5731,84 @@ function lmSkinsShown() {
     var ms = typeof defaultmapsettings !== 'undefined' ? defaultmapsettings : null, lm = window.legendmod;
     return !!(ms && (ms.customSkins || ms.vanillaSkins || ms.ownVanillaSkin) && lm && lm.showCustomSkins);
 }
+/* Dying Light in the world renderers. While it is on, another real player's cell that has no
+ * skin of its own is drawn with the theme's skin (LMDyingLight.getFallbackSkinKey) by every skin
+ * path (Cell.draw, the WebGL fixed-circle batch, the WebGL jelly resolver) through
+ * lmWorldSkinKey, so Canvas2D and WebGL show the same cell the same way and WebGL stays on; its
+ * scene is drawn as the map background (lmDlBackground) without changing the Theme's background
+ * setting. _lmDl is refreshed once per frame (lmDlSync): while it is off a cell costs one boolean
+ * check. Without LMDyingLight (only the old expansion script) its saved switch gives its one
+ * zombie icon. */
+var _lmDl = false, _lmDlApi = null;
+function lmDlSync() {
+    var dl = window.LMDyingLight, on = false, api = null;
+    try {
+        if (dl && typeof dl.isEnabled === 'function') {
+            on = !!dl.isEnabled();
+            api = on ? dl : null;
+        } else {
+            on = typeof dyinglight1load !== 'undefined' && dyinglight1load === 'yes';
+        }
+    } catch (e) { on = false; api = null; }
+    _lmDl = on;
+    _lmDlApi = api;
+    return on;
+}
+/* The cells that may get the Dying Light skin: real player bodies only (no food, ejected mass,
+ * virus, removed cell or hidden copy of a cell another connection draws), never an own cell of
+ * the main player or of a multibox unit, mass 12 or more as before, a cell with a name (a cell
+ * without one shows no skin in any path) and no Teams (no skins there). */
+function lmDlSkinCell(cell) {
+    var lm = window.legendmod;
+    return !!(cell && !cell.removed && !cell.invisible && !cell._lmMbPosDup &&
+        !cell.isFood && !cell.isEjected && !cell.isVirus &&
+        !cell.isPlayerCell && !cell.isPlayerCellMulti &&
+        cell.size * cell.size >= 1200 &&
+        cell.targetNick && String(cell.targetNick).trim() &&
+        !(lm && lm.gameMode === ':teams'));
+}
+/* The customSkinsCache key of a cell's Dying Light skin, loading it when needed (as
+ * customSkinKey does), or null. */
+function lmDlSkinKey(cell) {
+    if (!lmDlSkinCell(cell)) return null;
+    var app = window.application, url = null;
+    try {
+        if (_lmDlApi) url = typeof _lmDlApi.getFallbackSkinKey === 'function' ? _lmDlApi.getFallbackSkinKey(cell) : null;
+        else url = typeof defaultSettings !== 'undefined' && defaultSettings ? defaultSettings.commanderImageDyingLight : null;
+    } catch (e) { url = null; }
+    if (!url || typeof url !== 'string' || !app || !app.customSkinsCache || typeof app._lmSkinCacheKey !== 'function') return null;
+    var key = app._lmSkinCacheKey(url);
+    if (!app.customSkinsCache.hasOwnProperty(key)) app.loadSkin(app.customSkinsCache, url, undefined, true);
+    return key;
+}
+/* The skin key a cell is drawn with in the world: its own (normalKey from customSkinKey, also
+ * while it loads, failed or is a video) always wins; else, while Dying Light is on, its skin. */
+function lmWorldSkinKey(cell, normalKey) {
+    return normalKey || (_lmDl ? lmDlSkinKey(cell) : null);
+}
+/* The map background while Dying Light is on: { url, img, alpha } from LMDyingLight.getBackground()
+ * (img: an image it loaded itself; alpha: its own, else the Theme's background alpha), or null. */
+function lmDlBackground() {
+    if (!_lmDl || !_lmDlApi || typeof _lmDlApi.getBackground !== 'function') return null;
+    try {
+        var bg = _lmDlApi.getBackground();
+        return bg && (bg.img || (bg.url && typeof bg.url === 'string')) ? bg : null;
+    } catch (e) { return null; }
+}
+/* A background alpha setting as 0..1 (not a number: 1). */
+function lmBgAlpha(v) {
+    var a = Number(v);
+    if (!Number.isFinite(a)) a = 1;
+    return Math.max(0, Math.min(1, a));
+}
+/* How long a Dying Light scene and the background before or after it cross-fade. */
+var LM_BG_FADE_MS = 3000;
+/* A map background image that can be drawn (loaded, not failed). */
+function lmBgReady(pic) {
+    return !!(pic && !pic._failed && (
+        (pic.naturalWidth > 0 && pic.naturalHeight > 0) ||
+        (pic.width > 0 && pic.height > 0)));
+}
 /* A CSS colour as 0xRRGGBB for the WebGL renderers, -1 when it is no colour. Canvas2D draws every
  * colour the Theme tab accepts (#rgb, #rgba, #rrggbb, #rrggbbaa, rgb()/rgba(), names); WebGL read
  * only #rgb and #rrggbb and drew the others grey (a green virus became grey whenever no skin made
@@ -20054,26 +20132,6 @@ iconSpecialSkinEffectsTiger.src = 'https://www.legendmod.ml/banners/iconSpecialS
 iconSpecialSkinEffectsPanicAtDisco = new Image;
 iconSpecialSkinEffectsPanicAtDisco.src = 'https://www.legendmod.ml/banners/iconSpecialSkinEffectsPanicAtDisco.png';
 */
-if (dyinglight1load === "yes") {
-    cimgDyingLight = new Image;
-    cimgDyingLight.src = defaultSettings.commanderImageDyingLight;
-    //cimgDyingLightvirus = new Image;
-    //cimgDyingLightvirus.src = defaultSettings.commanderImageDyingLightvirus;
-}
-/*
-                cimgDyingLight1 = new Image;
-                cimgDyingLight1.src = 'https://www.legendmod.ml/banners/icondyinglightzombie2.png';
-                cimgDyingLight2 = new Image;
-                cimgDyingLight2.src = 'https://www.legendmod.ml/banners/icondyinglightzombie3.png';
-                cimgDyingLight3 = new Image;
-                cimgDyingLight3.src = 'https://www.legendmod.ml/banners/icondyinglightzombie4.png';
-                cimgDyingLight4 = new Image;
-                cimgDyingLight4.src = 'https://www.legendmod.ml/banners/icondyinglightzombie5.png';
-                cimgDyingLight5 = new Image;
-                cimgDyingLight5.src = 'https://www.legendmod.ml/banners/icondyinglightzombiebig.png';
-                cimgDyingLight6 = new Image;
-                cimgDyingLight6.src = 'https://www.legendmod.ml/banners/icondyinglightvolaltile.png';
-                */
 
 
 /* ═══════════════════════════════════════════════════════════════════════
@@ -38713,10 +38771,14 @@ function thelegendmodproject() {
                         }
                         //style.filter='grayscale(100%)';
                         //
-                        var node = null, _lmSkinKey = null;
+                        var node = null, _lmSkinKey = null, _lmDlFb = false;
                         if (lmSkinsShown() && !this.isEjected) {
                             /* getCustomSkin in two steps: the key also names the video skin below */
-                            _lmSkinKey = application.customSkinKey(this.targetNick, this.color, this.skin, false, !!(this.isPlayerCell || this.isPlayerCellMulti));
+                            var _lmOwnKey = application.customSkinKey(this.targetNick, this.color, this.skin, false, !!(this.isPlayerCell || this.isPlayerCellMulti));
+                            /* no own skin: the Dying Light skin while it is on (as the WebGL paths);
+                             * _lmDlFb: that skin hides no name (Hide teammates' names) */
+                            _lmSkinKey = lmWorldSkinKey(this, _lmOwnKey);
+                            _lmDlFb = _lmSkinKey !== _lmOwnKey;
                             node = _lmSkinKey ? application.getCachedSkin(application.customSkinsCache, _lmSkinKey) : null;
                         }
                         var node2, node2IsVideo = false;
@@ -39764,11 +39826,6 @@ function thelegendmodproject() {
                                         }
                                     }
                                 }
-                                if (dyinglight1load === "yes" && node == null && this.targetNick.includes(LM.playerNick) === false && !this.isFood && this.mass > 12) {
-                                    try {
-                                        style.drawImage(cimgDyingLight, this.x - y, this.y - y, 2 * y, 2 * y);
-                                    } catch (e) { }
-                                }
                             }
                             this.drawSpecialSkin(style, y)
                         }
@@ -39822,7 +39879,7 @@ function thelegendmodproject() {
                                     _tc.globalAlpha *= defaultSettings.textAlpha;
                                 }
                                 _txtReady = true;
-                                if (!(defaultmapsettings.noNames || recursive && defaultmapsettings.autoHideNames || this.isPlayerCell && defaultmapsettings.hideMyName || node && defaultmapsettings.hideTeammatesNames)) {
+                                if (!(defaultmapsettings.noNames || recursive && defaultmapsettings.autoHideNames || this.isPlayerCell && defaultmapsettings.hideMyName || node && !_lmDlFb && defaultmapsettings.hideTeammatesNames)) {
                                     if (this.setNick(this.targetNick)) {
                                         this.drawNick(_tc);
                                         _nickDone = true;
@@ -61581,13 +61638,15 @@ function pickPlayerCellBySize(players, selectBiggest) {
             var node = null;
 
             try {
-                node = application.getCustomSkin(
+                /* the same key as Cell.draw and the cell batch (lmWorldSkinKey) */
+                var _wKey = lmWorldSkinKey(cell, application.customSkinKey(
                     cell.targetNick,
                     cell.color,
                     cell.skin,
                     false,
                     !!(cell.isPlayerCell || cell.isPlayerCellMulti)
-                );
+                ));
+                node = _wKey ? application.getCachedSkin(application.customSkinsCache, _wKey) : null;
             } catch (error) { }
 
             if (
@@ -61900,19 +61959,6 @@ function pickPlayerCellBySize(players, selectBiggest) {
                 )
             ) {
                 return this._lmNoGL(this.GLW.REPLAY);
-            }
-
-
-            /*
-             * These features contain Canvas-only body-attached effects whose
-             * DOM ordering cannot be reproduced atomically against a separate
-             * WebGL canvas.
-             */
-            if (
-                dyinglight1load ===
-                    'yes'
-            ) {
-                return this._lmNoGL(this.GLW.BODY_FX);
             }
 
 
@@ -75306,9 +75352,10 @@ function pickPlayerCellBySize(players, selectBiggest) {
 
             /* The same lookup as Canvas2D, the teamboard and the WebGL cell batch
              * (application.customSkinKey: team list skins, chat socket skins, the cell's own
-             * URL, vanilla skins, and the cache key loadSkin really used). */
-            var skinUrl =
-                application.customSkinKey(cell.targetNick, cell.color, cell.skin, false, !!(cell.isPlayerCell || cell.isPlayerCellMulti));
+             * URL, vanilla skins, and the cache key loadSkin really used); no own skin: the
+             * Dying Light skin while it is on (lmWorldSkinKey, as Cell.draw). */
+            var skinUrl = lmWorldSkinKey(cell,
+                application.customSkinKey(cell.targetNick, cell.color, cell.skin, false, !!(cell.isPlayerCell || cell.isPlayerCellMulti)));
 
 
             if (
@@ -77647,8 +77694,9 @@ function pickPlayerCellBySize(players, selectBiggest) {
                     /* The same lookup as Canvas2D and the teamboard (getCustomSkin): chat socket
                      * skins first, then the cell's own URL and vanilla skins, and the cache key
                      * loadSkin really used. This copy had its own lookup that missed those, so
-                     * such skins showed only in frames drawn by Canvas2D. */
-                    var skinUrl = application.customSkinKey(cell.targetNick, cell.color, cell.skin, false, !!(cell.isPlayerCell || cell.isPlayerCellMulti));
+                     * such skins showed only in frames drawn by Canvas2D. No own skin: the Dying
+                     * Light skin while it is on (lmWorldSkinKey, as Cell.draw). */
+                    var skinUrl = lmWorldSkinKey(cell, application.customSkinKey(cell.targetNick, cell.color, cell.skin, false, !!(cell.isPlayerCell || cell.isPlayerCellMulti)));
                     if (skinUrl) {
                         /* A video URL found through an alternate skin-map key must
                          * also force the complete batch to Canvas2D. */
@@ -78357,6 +78405,8 @@ function pickPlayerCellBySize(players, selectBiggest) {
             /* which copy of a cell seen by several connections is drawn, before the opponent
              * colours, rings and ranges look at the cells (they skip the hidden ones) */
             lmMbFrameHide();
+            /* Dying Light on or off for this frame's skins and background (one check per cell) */
+            lmDlSync();
             LM.compareCells();
 
             /* Build chat/command lookup map once per frame — with message filters */
@@ -79202,7 +79252,8 @@ function pickPlayerCellBySize(players, selectBiggest) {
                  */
                 if (
                     this.backgroundCtx &&
-                    defaultSettings.customBackground
+                    /* the same background drawCustomBackgrounds draws (Dying Light's scene) */
+                    (defaultSettings.customBackground || (_lmDl && lmDlBackground()))
                 ) {
                     this.backgroundCtx.clearRect(
                         0,
@@ -79244,6 +79295,11 @@ function pickPlayerCellBySize(players, selectBiggest) {
                     this._lmBgDirty !== false
                 ) {
                     this._lmBgDirty = false;
+                    /* a Dying Light scene that was shown is let go with it */
+                    if (legendmod._lmMidDl || legendmod._lmMidPicNext) {
+                        legendmod.customMidPic = legendmod._lmMidPicNext = null;
+                        legendmod._lmMidDl = false;
+                    }
                     this.backgroundCtx.clearRect(
                         0,
                         0,
@@ -81183,147 +81239,135 @@ function pickPlayerCellBySize(players, selectBiggest) {
                 return;
             }
 
+            /* The background drawn: Dying Light's scene while it is on (lmDlBackground: an
+             * image it loaded, or its URL), else the Theme's customBackground, which is never
+             * changed by it. */
+            var dlBg = _lmDl ? lmDlBackground() : null;
+            var src = dlBg ? (dlBg.img || dlBg.url) : defaultSettings.customBackground;
+
             if (
-                !defaultSettings.customBackground ||
-                defaultSettings.customBackground ===
+                !src ||
+                src ===
                     ''
             ) {
                 return;
             }
 
+            var cur = legendmod.customMidPic, next = null, fadeT = 1, now = 0;
             /* Compare the configured string (_src), not img.src: the browser normalizes
              * src (encoding, case, trailing slash), which created a new Image every frame. */
             if (
-                !legendmod.customMidPic ||
-                legendmod.customMidPic._src !==
-                defaultSettings.customBackground
+                !cur ||
+                (cur !== src && cur._src !== src)
             ) {
-                legendmod.customMidPic =
-                    new Image();
+                if (!dlBg && !legendmod._lmMidDl) {
+                    /* the Theme's background changed: replaced at once, as always */
+                    cur = legendmod.customMidPic =
+                        new Image();
 
-                legendmod.customMidPic._src =
-                    defaultSettings.customBackground;
-
-                legendmod.customMidPic.src =
-                    defaultSettings.customBackground;
+                    cur._src = src;
+                    cur.src = src;
+                    legendmod._lmMidPicNext = null;
+                }
+                else {
+                    /* to or from a Dying Light scene: the shown one stays until the next one has
+                     * loaded, then they cross-fade (only these two kept); a next one that fails is
+                     * skipped and the shown one stays */
+                    next = legendmod._lmMidPicNext;
+                    if (!next || (next !== src && next._src !== src)) {
+                        if (typeof src === 'string') {
+                            next = new Image();
+                            next._src = src;
+                            next.onerror = function () { this._failed = true; };
+                            next.src = src;
+                        }
+                        else {
+                            next = src;
+                        }
+                        legendmod._lmMidPicNext = next;
+                        legendmod._lmMidFadeAt = 0;
+                        legendmod._lmMidNextDl = !!dlBg;
+                    }
+                    /* the Theme's image coming back failed: shown as failed, as without Dying
+                     * Light (no scene left over) */
+                    var nextGone = !legendmod._lmMidNextDl && next._failed;
+                    if (lmBgReady(next) || nextGone) {
+                        now = performance.now();
+                        if (!legendmod._lmMidFadeAt) legendmod._lmMidFadeAt = now;
+                        fadeT = lmBgReady(cur) && !nextGone ? (now - legendmod._lmMidFadeAt) / LM_BG_FADE_MS : 1;
+                        if (!(fadeT < 1)) {
+                            cur = legendmod.customMidPic = next;
+                            legendmod._lmMidDl = legendmod._lmMidNextDl;
+                            legendmod._lmMidPicNext = next = null;
+                            fadeT = 1;
+                        }
+                    }
+                    else {
+                        next = null;
+                    }
+                }
+            }
+            else if (legendmod._lmMidPicNext) {
+                /* back to the shown one before the next one came: it is let go */
+                legendmod._lmMidPicNext = null;
             }
 
             var alpha =
-                Number(
+                lmBgAlpha(
                     defaultSettings.backgroundAlpha
                 );
 
-            if (
-                !Number.isFinite(alpha)
-            ) {
-                alpha =
-                    1;
-            }
-
-            alpha =
-                Math.max(
-                    0,
-                    Math.min(
-                        1,
-                        alpha
-                    )
-                );
+            /* a Dying Light scene has its own alpha (kept for its fade after it is turned off) */
+            if (dlBg) legendmod._lmDlAlpha = dlBg.alpha != null ? lmBgAlpha(dlBg.alpha) : alpha;
+            var dlAlpha = legendmod._lmDlAlpha != null ? legendmod._lmDlAlpha : alpha;
+            var curAlpha = legendmod._lmMidDl ? dlAlpha : alpha;
+            var nextAlpha = legendmod._lmMidNextDl ? dlAlpha : alpha;
 
             var previousAlpha =
                 ctx.globalAlpha;
 
+            /* alpha, composite and transform come back even if a draw throws */
+            ctx.save();
+            try {
+                /*
+                 * Normal custom map background (or the Dying Light scene).
+                 */
+                if (next) {
+                    if (lmBgReady(cur)) this._lmDrawMidPic(ctx, cur, curAlpha * (1 - fadeT));
+                    this._lmDrawMidPic(ctx, next, nextAlpha * fadeT);
+                }
+                else if (lmBgReady(cur)) {
+                    this._lmDrawMidPic(ctx, cur, curAlpha);
+                }
+            }
+            finally {
+                ctx.restore();
+                ctx.globalAlpha =
+                    previousAlpha;
+            }
+        },
+        /* One background image over the map, at that alpha. */
+        _lmDrawMidPic(ctx, pic, alpha) {
             ctx.globalAlpha =
                 alpha;
+            try {
+                ctx.drawImage(
+                    pic,
 
-            /*
-             * Dying-light background image.
-             */
-            if (
-                dyinglight1load ===
-                    'yes' &&
-                typeof cimg5 !==
-                    'undefined' &&
-                cimg5 &&
-                !cimg5._failed &&
-                (
-                    cimg5.width > 0 ||
-                    cimg5.naturalWidth > 0
-                )
-            ) {
-                try {
-                    ctx.drawImage(
-                        cimg5,
+                    legendmod.mapMinX,
+                    legendmod.mapMinY,
 
-                        legendmod.mapMinX -
-                            LM.mapSize -
-                            1,
-
-                        legendmod.mapMinY -
-                            LM.mapSize -
-                            1,
-
-                        (
-                            legendmod.mapMaxX -
-                            legendmod.mapMinX
-                        ) *
-                            3,
-
-                        (
-                            legendmod.mapMaxY -
-                            legendmod.mapMinY
-                        ) *
-                            3
-                    );
-                }
-                catch (error) {
-                }
-            }
-
-            /*
-             * Normal custom map background.
-             */
-            if (
-                legendmod.customMidPic &&
-                !legendmod.customMidPic._failed &&
-                (
-                    (
-                        legendmod.customMidPic
-                            .naturalWidth >
-                            0 &&
-                        legendmod.customMidPic
-                            .naturalHeight >
-                            0
-                    ) ||
-                    (
-                        legendmod.customMidPic.width >
-                            0 &&
-                        legendmod.customMidPic.height >
-                            0
-                    )
-                )
-            ) {
-                try {
-                    ctx.drawImage(
-                        legendmod.customMidPic,
-
+                    legendmod.mapMaxX -
                         legendmod.mapMinX,
-                        legendmod.mapMinY,
 
-                        legendmod.mapMaxX -
-                            legendmod.mapMinX,
-
-                        legendmod.mapMaxY -
-                            legendmod.mapMinY
-                    );
-                }
-                catch (error) {
-                    legendmod.customMidPic._failed =
-                        true;
-                }
+                    legendmod.mapMaxY -
+                        legendmod.mapMinY
+                );
             }
-
-            ctx.globalAlpha =
-                previousAlpha;
+            catch (error) {
+                pic._failed =
+                    true;
+            }
         },
         /* Food box of each connection in `list` (units and spectators) from LM.foodMulti, one pass:
          * the area its server sends, i.e. its observed coverage. Debug boxes only (drawViewPorts

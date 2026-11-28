@@ -262,6 +262,8 @@ const protoSrc = '(function (env) {\n' +
     '  defaultmapsettings = env.defaultmapsettings, drawRender = env.drawRender, ogario = env.ogario, ogarcopythelb = env.ogarcopythelb,\n' +
     '  SpecialEffectPlayers = {}, profiles = [], dyinglight1load = "no", _EAT_PULSE_DURATION = 150, _EAT_PULSE_MAGNITUDE = 0.08;\n' +
     block('\nfunction lmSkinsShown(').slice(1) + '\n' + lmc.slice(1) + '\nvar _lmColorIntCache = new Map(), _lmColorCtx = null;\n' +
+    /* the world skin key, Dying Light off: the cell's own key (absent in older versions) */
+    (src.includes('\nfunction lmWorldSkinKey(') ? block('\nfunction lmWorldSkinKey(').slice(1) + '\nvar _lmDl = false;\n' : '') +
     /* the gradient avatar of a cell without colour: stubbed to the plain grey under it */
     'function _getFallbackGradient() { return null; }\n' +
     'return { draw: ' + cellMethod('draw') + ' };\n})';
