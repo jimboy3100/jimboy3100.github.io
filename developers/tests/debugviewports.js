@@ -20,7 +20,8 @@
  * and neighbouring views overlap, while the drawn boxes do not overlap, each inside its view, and
  * neighbours meet; on FFA, Experimental and Party captures every pellet is inside its view and the
  * farthest one per axis is within LM_FULLMAP_EDGE of the planned view, and no pellet of the
- * captures is out of view by the radius-aware test (isOutsideServerView).
+ * captures is out of view by the radius-aware model of what the server sends (outsideServerView
+ * below: the pellet box grown by radius - 10).
  * node developers/tests/debugviewports.js [ogario.v4.js] */
 'use strict';
 const fs = require('fs'), path = require('path'), vm = require('vm');
@@ -46,7 +47,7 @@ function block(start, from, text) {
 const methods = ['        drawViewPorts(ctx) {', '        _lmViewTrim(g, n) {', '        _lmConnFoodBoxes(list) {', '        calMinMax() {'].map((m) => [m, block(m)]);
 const spectMethods = ['    getX(x) {', '    getY(y) {', '    convertX(x) {', '    convertY(y) {', '    _lmTileDisplay() {', '    _lmTileRaw(now) {', '    _lmTileTick(now) {',
     '    _lmXf() {', '    worldToRawX(x) {', '    worldToRawY(y) {', '    rawToWorldX(x) {', '    rawToWorldY(y) {', '    _lmTileArrived(raw, now) {',
-    '    _lmWorldRectDisplay(r, out) {', '    _lmServerViewDisplay(out, anyAge) {', '    _lmServerViewWorld(out, anyAge) {', '    _lmFeedOk() {', '    isOutsideServerView(rawX, rawY, size) {',
+    '    _lmWorldRectDisplay(r, out) {', '    _lmServerViewDisplay(out, anyAge) {', '    _lmServerViewWorld(out, anyAge) {', '    _lmFeedOk() {',
     '    _lmCamFresh(now) {', '    _lmWorldStamp() {', '    _lmFresh(now) {', '    _lmCoverageOk(now) {', '    isSocketOpen() {']
     .map((m) => [m, block(m, 0, spectSrc)]);
 /* the coordinate contract (lmRawToWorld ... lmXfInv), top of spect.js, which those methods use */
@@ -86,7 +87,12 @@ function env(o) {
         /* a spectator connection with spect.js's own coordinate and tile code */
         'var SpectXY = class { constructor(p) { this.sent = []; this.socket = null; Object.assign(this, p); }\n' +
         'sendPosition(x, y) { if (this.offline) return; this.sent.push([x, y, this.clock]); return true; }\n' +
-        spectMethods.map((m) => m[1]).join('\n') + '\n};', c);
+        spectMethods.map((m) => m[1]).join('\n') + '\n' +
+        /* the view model of the live captures: the server sends a cell while its circle reaches into
+         * the pellet (radius 10) view box, so a bigger cell is in view up to (size - 10) past it */
+        'outsideServerView(rawX, rawY, size) { var v = this._lmServerViewWorld(); if (!v) return false;\n' +
+        'var x = this.rawToWorldX(rawX), y = this.rawToWorldY(rawY), pad = size > 10 ? size - 10 : 0;\n' +
+        'return x < v[0] - pad || y < v[1] - pad || x > v[2] + pad || y > v[3] + pad; }\n};', c);
     const dr = c.drawRender;
     /* pellets put into foodMulti go into their connection's index too, as in spect.js */
     Object.defineProperty(LM.foodMulti, 'track', { value: (cell, n) => c.lmObsTrack(cell, n) });
@@ -504,7 +510,7 @@ const covers = (plan, vw, vh, half) => {
             const b = { minX: r[0], minY: r[1], maxX: r[2], maxY: r[3] };
             const pts = q.ext.map((f) => [sp.getX(f[0]), sp.getY(f[1])]);
             /* every pellet the server sent is in view by the radius-aware test */
-            for (const f of q.ext) if (sp.isOutsideServerView(f[0], f[1], f[2])) sent++;
+            for (const f of q.ext) if (sp.outsideServerView(f[0], f[1], f[2])) sent++;
             for (const p of pts) if (p[0] < b.minX - 2 || p[0] > b.maxX + 2 || p[1] < b.minY - 2 || p[1] > b.maxY + 2) outside.push(q.n + ':' + p.map((v) => v.toFixed(1)));
             /* world distance from the camera per side (-x, +x, -y, +y) */
             const cx = sp.rawToWorldX(q.cam[0]), cy = sp.rawToWorldY(q.cam[1]);
@@ -514,7 +520,7 @@ const covers = (plan, vw, vh, half) => {
             }
         });
         check('live: every pellet nearest a side of a settled view is inside its view' + tag, !outside.length, outside.slice(0, 5).join(' '));
-        check('live: no pellet the server sent is out of view by isOutsideServerView with its size' + tag, sent === 0, sent);
+        check('live: no pellet the server sent is out of view by the radius-aware view model with its size' + tag, sent === 0, sent);
         if (rot) continue;
         const plan = e.c.lmFullMapPlan(W, W, ...e.c.lmServerViewSize(e.c.LM_SPECT_FREE_SCALE));
         const edge = vm.runInContext('LM_FULLMAP_EDGE', e.c);

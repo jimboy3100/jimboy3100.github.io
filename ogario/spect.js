@@ -414,7 +414,7 @@ window.addSpectator = addSpectator;
  * while its circle reaches into the view, not only its centre (recorded captures: the farthest
  * centre grows with the radius, centre distance minus radius stays within 2525.8 x 1475.1), so a
  * cell of radius r is sent while its centre is within half + (r - 10) of the camera
- * (isOutsideServerView). The Full Map plan and the drawn box use the pellet box (larger cells
+ * (the model in developers/tests/debugviewports.js). The Full Map plan and the drawn box use the pellet box (larger cells
  * are seen farther out, so coverage is never less).
  * scale is pow(min(64 / total size, 1), 0.4) for a player (an estimate: its boxes say "est.")
  * and 0.4 for a free spectator.
@@ -2506,7 +2506,7 @@ class Spect {
     /*
      * This connection's server view in world coordinates: its camera (opcode 17, raw) and
      * the measured view for its scale (lmServerViewSize): where a pellet's centre is seen (a
-     * bigger cell is sent while its circle reaches into it, isOutsideServerView). null until
+     * bigger cell is sent while its circle reaches into it, up to radius - 10 past). null until
      * the border and a camera are known, and while the camera is not fresh (_lmCamFresh) unless
      * anyAge (Show viewports draws an old one as "stale").
      */
@@ -2519,19 +2519,6 @@ class Spect {
         var o = out || [0, 0, 0, 0];
         o[0] = x - v[0] / 2; o[1] = y - v[1] / 2; o[2] = x + v[0] / 2; o[3] = y + v[1] / 2;
         return o;
-    }
-
-    /* true when a cell of this connection (raw centre, size = radius) is OUTSIDE its server
-     * view, compared in world units (it was isInView: it compared raw x / viewX with world
-     * sizes, and the cell parser, its only user, threw its result away). The view box is the
-     * pellet (radius 10) one and the server sends a cell while its circle reaches into the
-     * view, so a bigger cell is still in view up to (size - 10) past the box: without that a
-     * big cell would count as out of view while it is still sent. No size: a pellet. */
-    isOutsideServerView(rawX, rawY, size) {
-        var v = this._lmServerViewWorld();
-        if (!v) return false;
-        var x = this.rawToWorldX(rawX), y = this.rawToWorldY(rawY), pad = size > 10 ? size - 10 : 0;
-        return x < v[0] - pad || y < v[1] - pad || x > v[2] + pad || y > v[3] + pad;
     }
 
     /*
