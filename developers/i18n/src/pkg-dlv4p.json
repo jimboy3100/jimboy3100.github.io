@@ -1,0 +1,20 @@
+{
+  "pkg.dlv4p.intro": {
+    "en": "Dying Light turns the game into a night of the infected: other players look like zombies, the map goes from day to night, with its own sounds and rare scares. Only the look changes, and only while it is on."
+  },
+  "pkg.dlv4p.competitiveTip": {
+    "en": "A fixed night scene, no scares"
+  },
+  "pkg.dlv4p.immersiveTip": {
+    "en": "Day and night, radio calls, rare figures"
+  },
+  "pkg.dlv4p.nightmareTip": {
+    "en": "The same, more often"
+  },
+  "pkg.dlv4p.kept": {
+    "en": "Your gameplay settings stay unchanged. The same banner turns it off at any time."
+  },
+  "pkg.dlv4p.cancel": {
+    "en": "Cancel"
+  }
+}

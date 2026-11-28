@@ -334,6 +334,65 @@ async function dyingLightLifecycle() {
         c3._lmSettingsReload = true; delete store.ogarioSettings;
         flushPics(true); await q2;
         check('Restore defaults while it loads: the settings are not saved back', store.ogarioSettings === undefined && saved !== undefined);
+        c3._lmSettingsReload = false;
+    }
+
+    /* the question in Legend's dialog look (no browser confirm): what it does, the intensity,
+     * "your gameplay settings stay unchanged"; Cancel / Esc / a click beside it / a turn-off say no */
+    {
+        let focused = null;
+        const mkEl = tag => ({ tag, kids: [], attrs: {}, style: {}, ls: {}, parentNode: null, className: '', textContent: '',
+            appendChild(n) { n.parentNode = this; this.kids.push(n); return n; },
+            removeChild(n) { this.kids.splice(this.kids.indexOf(n), 1); n.parentNode = null; },
+            setAttribute(k, v) { this.attrs[k] = String(v); }, addEventListener(n, f) { this.ls[n] = f; }, focus() { focused = this; } });
+        const body4 = mkEl('body'), dLs = {};
+        const doc4 = { head: mkEl('head'), body: body4, documentElement: { classList: { add() { }, remove() { } } }, createElement: mkEl,
+            addEventListener(n, f) { (dLs[n] = dLs[n] || []).push(f); }, removeEventListener(n, f) { dLs[n] = (dLs[n] || []).filter(x => x !== f); } };
+        const all = (n, out = []) => { out.push(n); n.kids.forEach(k => all(k, out)); return out; };
+        const text = n => all(n).map(x => x.textContent).join(' ');
+        let natives = 0, saves4 = 0, uiKit = 0;
+        const c4 = { document: doc4, Image: Img, console: { warn() { }, log() { } }, Promise, setTimeout, clearTimeout, Object, JSON, Array, String, Number, Error, Map,
+            confirm: () => { natives++; return true; }, lmT: k => k, _lmEnsureModalCSS: () => { uiKit++; },
+            defaultmapsettings: { dyingLight: false, dyingLightIntensity: 'immersive' }, application: { saveSettings: () => { saves4++; } } };
+        c4.window = c4; vm.createContext(c4);
+        vm.runInContext(dl, c4);
+        const L4 = c4.LMDyingLight, D4 = c4.defaultmapsettings;
+        const dialog = () => body4.kids.find(n => n.id === 'lm-dl-ask');
+        const buttons = () => all(dialog()).filter(n => n.tag === 'button');
+        const btn = v => buttons().find(b => b._lmV === v || b.textContent === v);
+        let q = L4.enable({ confirm: true });
+        const dg = dialog();
+        check('the question: Legend\'s dialog (shared window chrome), not the browser\'s', !!dg && natives === 0 && uiKit === 1 && /lm-modal-overlay/.test(dg.className) &&
+            /lm-modal-container/.test(dg.kids[0].className) && dg.attrs.role === 'dialog' && dg.attrs['aria-modal'] === 'true' && L4.state === 'off');
+        check('...it says what it does, offers the three intensities (the saved one chosen) and that the gameplay settings stay',
+            /pkg\.dlv4p\.intro/.test(text(dg)) && /pkg\.dlv4p\.kept/.test(text(dg)) && buttons().length === 5 &&
+            ['competitive', 'immersive', 'nightmare'].every(v => !!btn(v) && text(btn(v)).includes('pkg.dlv3dir.' + v) && text(btn(v)).includes('pkg.dlv4p.' + v + 'Tip')) &&
+            btn('immersive').attrs['aria-pressed'] === 'true' && focused === btn('pkg.dlv3life.turnOn'));
+        check('one question at a time', L4.enable({ confirm: true }) !== null && body4.kids.filter(n => n.id === 'lm-dl-ask').length === 1);
+        btn('nightmare').ls.click({});
+        check('an intensity picked is shown as picked', btn('nightmare').attrs['aria-pressed'] === 'true' && btn('immersive').attrs['aria-pressed'] === 'false');
+        btn('pkg.dlv3life.turnOn').ls.click({});
+        await tick(); flushPics(true); await tick(); flushPics(true);
+        check('Turn on: on with the intensity picked (its setting saved), the dialog and its key listener gone',
+            (await q) === true && L4.isEnabled() && L4.intensity() === 'nightmare' && D4.dyingLightIntensity === 'nightmare' && D4.dyingLight === true &&
+            !dialog() && (dLs.keydown || []).length === 0);
+        await L4.disable();
+        saves4 = 0;
+        q = L4.enable({ confirm: true });
+        (dLs.keydown || []).forEach(f => f({ key: 'Escape', preventDefault() { } }));
+        check('Esc: no, off, nothing saved, nothing left', (await q) === false && L4.state === 'off' && !dialog() && saves4 === 0 && D4.dyingLight === false &&
+            D4.dyingLightIntensity === 'nightmare' && (dLs.keydown || []).length === 0);
+        q = L4.enable({ confirm: true });
+        btn('competitive').ls.click({});
+        btn('pkg.dlv4p.cancel').ls.click({});
+        check('Cancel: no, the intensity not changed', (await q) === false && L4.state === 'off' && D4.dyingLightIntensity === 'nightmare' && saves4 === 0);
+        q = L4.enable({ confirm: true });
+        dialog().ls.click({ target: dialog() });
+        check('a click beside the dialog: no', (await q) === false && !dialog());
+        q = L4.enable({ confirm: true });
+        await L4.disable();
+        check('turned off while it asks: answered no, the dialog gone', (await q) === false && !dialog() && L4.state === 'off');
+        check('no browser question at all', natives === 0);
     }
 }
 

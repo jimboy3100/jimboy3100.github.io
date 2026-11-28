@@ -312,10 +312,125 @@
         W.dyinglight1load = null;
     }
 
+    /* The question before a new activation, in Legend's dialog look (the shared window chrome of
+     * lm_extended_ui.js / lmUiKit: .lm-modal-overlay, .lm-modal-container, header, body, footer; the
+     * player's theme colours): what it does, the intensity to start with (its setting
+     * dyingLightIntensity, as the control under the banner) and that the gameplay settings stay.
+     * One at a time; Cancel, Esc, a click beside it or a turn-off meanwhile answer no. Resolves
+     * true or false. With no page to show it on, the browser's question. */
+    var asking = null, askEnd = null;
     function confirmed() {
-        try {
-            return !!W.confirm(tx('pkg.dlv3life.confirm'));
-        } catch (e) { return false; }
+        if (asking) return asking;
+        var d = W.document, body = d && d.body;
+        if (!body || typeof d.createElement !== 'function' || typeof body.appendChild !== 'function') {
+            return Promise.resolve(nativeAsk());
+        }
+        asking = new Promise(function (resolve) {
+          var ov = null;
+          try {
+            try {
+                if (typeof W._lmEnsureModalCSS === 'function') W._lmEnsureModalCSS();
+                else if (typeof W.lmUiKit === 'function') W.lmUiKit();
+            } catch (e) { }
+            var s = W.defaultmapsettings, pick = s && INTENSITIES[s.dyingLightIntensity] === 1 ? s.dyingLightIntensity : intensityV;
+            var mk = function (tag, cls, text, css) {
+                var n = d.createElement(tag);
+                if (cls) n.className = cls;
+                if (text != null) n.textContent = text;
+                if (css) n.style.cssText = css;
+                return n;
+            };
+            /* i18n-ok: CSS */
+            ov = mk('div', 'lm-modal-overlay lm-dl-ask', null, 'position:fixed;left:0;top:0;right:0;bottom:0;z-index:999990;display:flex;align-items:center;justify-content:center;background:rgba(0,0,0,.72)');
+            ov.id = 'lm-dl-ask';
+            ov.setAttribute('role', 'dialog');
+            ov.setAttribute('aria-modal', 'true');
+            ov.setAttribute('aria-labelledby', 'lm-dl-ask-title');
+            /* i18n-ok: CSS */
+            var box = mk('div', 'lm-modal-container', null, 'width:440px;max-width:calc(100vw - 32px);max-height:calc(100vh - 32px);overflow:auto;background:var(--lm-w-surface,var(--lm-pc,#00243e));color:var(--lm-tc,#fff)');
+            var head = mk('div', 'lm-modal-header');
+            var title = mk('div', 'lm-modal-title', 'Dying Light'); // i18n-ok: name
+            title.id = 'lm-dl-ask-title';
+            head.appendChild(title);
+            var main = mk('div', 'lm-modal-body', null, 'padding:14px 18px;font-size:13px;line-height:1.45'); // i18n-ok: CSS
+            main.appendChild(mk('div', null, tx('pkg.dlv4p.intro'), 'margin:0 0 12px'));
+            main.appendChild(mk('div', null, tx('pkg.dlv3dir.intensity'), 'font-weight:700;margin:0 0 6px')); // i18n-ok: CSS
+            var group = mk('div', null, null, 'display:flex;flex-wrap:wrap;gap:6px;margin:0 0 12px'); // i18n-ok: CSS
+            group.setAttribute('role', 'group');
+            group.setAttribute('aria-label', tx('pkg.dlv3dir.intensity'));
+            var opts = [], names = ['competitive', 'immersive', 'nightmare'];
+            var mark = function () {
+                for (var i = 0; i < opts.length; i++) {
+                    var on = opts[i]._lmV === pick;
+                    opts[i].setAttribute('aria-pressed', on ? 'true' : 'false');
+                    opts[i].style.borderColor = on ? '#a12b30' : 'var(--lm-w-sep,rgba(255,255,255,.15))';
+                    opts[i].style.background = on ? 'rgba(161,43,48,.28)' : 'var(--lm-w-btn,rgba(255,255,255,.06))'; // i18n-ok: CSS
+                }
+            };
+            names.forEach(function (v) {
+                /* i18n-ok: CSS */
+                var b = mk('button', null, null, 'flex:1 1 120px;min-height:var(--lm-w-ctl,28px);padding:6px 8px;text-align:left;cursor:pointer;color:inherit;border:1px solid;border-radius:var(--lm-radius-s,4px)');
+                b.type = 'button';
+                b._lmV = v;
+                b.appendChild(mk('div', null, tx('pkg.dlv3dir.' + v), 'font-weight:700'));
+                b.appendChild(mk('div', null, tx('pkg.dlv4p.' + v + 'Tip'), 'font-size:11px;opacity:.8')); // i18n-ok: CSS
+                b.addEventListener('click', function (e) { if (e && e.preventDefault) e.preventDefault(); pick = v; mark(); });
+                opts.push(b);
+                group.appendChild(b);
+            });
+            mark();
+            main.appendChild(group);
+            main.appendChild(mk('div', null, tx('pkg.dlv4p.kept'), 'opacity:.85'));
+            var foot = mk('div', 'lm-modal-footer', null, 'display:flex;gap:10px;padding:10px 18px'); // i18n-ok: CSS
+            /* i18n-ok: CSS */
+            var no = mk('button', null, tx('pkg.dlv4p.cancel'), 'flex:1;min-height:var(--lm-w-ctl,32px);cursor:pointer;color:inherit;background:var(--lm-w-btn,rgba(255,255,255,.08));border:1px solid var(--lm-w-sep,rgba(255,255,255,.15));border-radius:var(--lm-radius,6px)');
+            /* i18n-ok: CSS */
+            var ok = mk('button', null, tx('pkg.dlv3life.turnOn'), 'flex:1;min-height:var(--lm-w-ctl,32px);cursor:pointer;color:#fff;font-weight:700;background:#a12b30;border:1px solid #c4383d;border-radius:var(--lm-radius,6px)');
+            no.type = ok.type = 'button';
+            foot.appendChild(no);
+            foot.appendChild(ok);
+            box.appendChild(head);
+            box.appendChild(main);
+            box.appendChild(foot);
+            ov.appendChild(box);
+            function onKey(e) {
+                if (e && (e.key === 'Escape' || e.keyCode === 27)) { if (e.preventDefault) e.preventDefault(); end(false); }
+            }
+            function onBack(e) { if (e && e.target === ov) end(false); }
+            function end(yes) {
+                if (askEnd !== end) return;
+                askEnd = null;
+                asking = null;
+                try { d.removeEventListener('keydown', onKey, true); } catch (e) { }
+                if (ov.parentNode) ov.parentNode.removeChild(ov);
+                /* the intensity chosen is its setting, saved like the control under the banner does */
+                var ms = W.defaultmapsettings;
+                if (yes && ms && typeof ms === 'object' && ms.dyingLightIntensity !== pick && !W._lmSettingsReload) {
+                    ms.dyingLightIntensity = pick;
+                    try { W.application.saveSettings(ms, 'ogarioSettings'); } catch (e) { }
+                }
+                resolve(!!yes);
+            }
+            askEnd = end;
+            no.addEventListener('click', function () { end(false); });
+            ok.addEventListener('click', function () { end(true); });
+            ov.addEventListener('click', onBack);
+            try { d.addEventListener('keydown', onKey, true); } catch (e) { }
+            body.appendChild(ov);
+            try { if (typeof ok.focus === 'function') ok.focus(); } catch (e) { }
+          } catch (e) {
+            /* the page could not show it: the browser's question */
+            warn('question', e);
+            askEnd = null;
+            asking = null;
+            try { if (ov && ov.parentNode) ov.parentNode.removeChild(ov); } catch (e2) { }
+            resolve(nativeAsk());
+          }
+        });
+        return asking || Promise.resolve(false);
+    }
+    function nativeAsk() {
+        try { return !!W.confirm(tx('pkg.dlv3life.confirm')); } catch (e) { return false; }
     }
 
     /* opts.confirm: ask first (a new activation); a start with the switch saved on does not ask.
@@ -323,19 +438,25 @@
     function enable(opts) { return begin(opts, false); }
     /* the player turns on the theme a replay shows: from now on it is the player's own (saved) */
     function own(opts) {
-        if (opts && opts.confirm && !confirmed()) return false;
-        scoped = false;
-        if (state === 'on') persist(true);
-        emit();
-        return true;
+        return (opts && opts.confirm ? confirmed() : Promise.resolve(true)).then(function (yes) {
+            if (!yes) return false;
+            /* the replay's activation ended while the question was open: a new one of the player's */
+            if (state === 'off') return begin(null, false);
+            if (state === 'disabling') return false;
+            scoped = false;
+            if (state === 'on') persist(true);
+            emit();
+            return state === 'loading' && job ? job : true;
+        });
     }
     /* forReplay: an activation for a replay only (replayLook), never saved */
     function begin(opts, forReplay) {
-        if (state === 'on') return Promise.resolve(forReplay || !scoped || own(opts));
-        if (state === 'loading' && job) return !forReplay && scoped && !own(opts) ? Promise.resolve(false) : job;
+        if (state === 'on') return forReplay || !scoped ? Promise.resolve(true) : own(opts);
+        if (state === 'loading' && job) return !forReplay && scoped ? own(opts) : job;
         /* asked from a listener of the turn-off: that one finishes first */
         if (state === 'disabling') return Promise.resolve(false);
-        if (!forReplay && opts && opts.confirm && !confirmed()) return Promise.resolve(false);
+        /* the answer comes later: the state may have changed meanwhile, so it starts over */
+        if (!forReplay && opts && opts.confirm) return confirmed().then(function (yes) { return yes ? begin(null, false) : false; });
         scoped = !!forReplay;
         /* a change of the setting while it was off (an import) */
         syncIntensity();
@@ -369,6 +490,8 @@
     /* Safe at any time, also while loading or after a failed start; the switch is saved off. A
      * replay showing the theme shows the normal look from then on (rpTried: not turned on again). */
     function disable() {
+        /* an open question is answered no */
+        if (askEnd) askEnd(false);
         if (rp) rpTried = true;
         rp = null;
         scoped = false;
