@@ -2,8 +2,10 @@
  * ogario/ogario.v4.js (drawViewPorts, _lmConnFoodBoxes, calMinMax, drawViewport,
  * drawn on a recording context) and ogario/spect.js (the server view estimate, lmFullMapPlan,
  * getX/getY/convertX/convertY and the tile target code of a spectator connection).
- * Boxes: 1 = the main connection's food box, 2, 3 ... = a multibox unit's (unit number + 1),
- * "n est." = a unit without food (estimated from its size), "Viewport# n" = a spectator's server
+ * Boxes: P1 = the main connection's food box, P2 ... P6 = a multibox unit's, by its slot (lmMbSlotOf,
+ * not its connection number) and while multibox runs in its slot's colour (LM_MB_RING_DEFAULT_COLORS,
+ * as its ring, minimap dot and roster chip), "Pn est." = a unit without food (estimated from its
+ * size), "Viewport# n" = a spectator's server
  * view around its server camera (measured size; settled views that overlap drawn up to the middle
  * of the overlap), "Viewport# n moving" = the same on its way to its tile, "Viewport# n stale" = its
  * socket closed or its camera (1 s) or world (3 s) not fresh, "... unverified" = its
@@ -22,7 +24,7 @@
  * farthest one per axis is within LM_FULLMAP_EDGE of the planned view, and no pellet of the
  * captures is out of view by the radius-aware model of what the server sends (outsideServerView
  * below: the pellet box grown by radius - 10); Rotate Map with a tile open through the real flip
- * (section 14): its box still holds its cells, its target stays, box 1 is mirrored.
+ * (section 14): its box still holds its cells, its target stays, box P1 is mirrored.
  * node developers/tests/debugviewports.js [ogario.v4.js] */
 'use strict';
 const fs = require('fs'), path = require('path'), vm = require('vm');
@@ -58,10 +60,13 @@ const head0 = spectSrc.indexOf('var LM_VIEW_BASE_W'), head1 = spectSrc.indexOf('
 const dv = block('        drawViewport: function (ctx, text');
 /* the per-connection observation index (lmObsTrack, lmObsOfSource) the test pellets are tracked in */
 const obs0 = src.indexOf('var _lmSrcObs = new Map();'), obs1 = src.indexOf('/* Speed of a cell', obs0);
+/* a player's slot (lmMbSlotOf) and the slot colours (LM_MB_RING_DEFAULT_COLORS) the unit boxes are labelled and drawn in */
+const slotOf = block('function lmMbSlotOf(p) {'), slotCol = (src.match(/\nvar LM_MB_RING_DEFAULT_COLORS = \{[^}]*\};/) || [null])[0];
 const missing = methods.concat(spectMethods).filter((m) => !m[1]).map((m) => m[0].trim()).concat(dv ? [] : ['drawViewport'])
     .concat(head0 >= 0 && head1 > head0 ? [] : ['spect.js lmServerViewSize / lmFullMapPlan'])
     .concat(xf0 >= 0 && xf1 > xf0 ? [] : ['spect.js coordinate contract'])
-    .concat(obs0 >= 0 && obs1 > obs0 ? [] : ['lmObsTrack / lmObsOfSource']);
+    .concat(obs0 >= 0 && obs1 > obs0 ? [] : ['lmObsTrack / lmObsOfSource'])
+    .concat(slotOf ? [] : ['lmMbSlotOf']).concat(slotCol ? [] : ['LM_MB_RING_DEFAULT_COLORS']);
 if (missing.length) { console.log('FAIL code not found: ' + missing.join(', ')); process.exit(1); }
 
 function env(o) {
@@ -75,7 +80,7 @@ function env(o) {
         beginPath() { this._p = []; }, moveTo(x, y) { this._p.push([x, y]); }, lineTo(x, y) { this._p.push([x, y]); },
         closePath() { }, stroke() {
             const xs = this._p.map((p) => p[0]), ys = this._p.map((p) => p[1]);
-            boxes.push({ label: this._t, minX: Math.min(...xs), maxX: Math.max(...xs), minY: Math.min(...ys), maxY: Math.max(...ys) });
+            boxes.push({ label: this._t, color: this.strokeStyle, minX: Math.min(...xs), maxX: Math.max(...xs), minY: Math.min(...ys), maxY: Math.max(...ys) });
         }
     };
     const win = { fullSpectator: !!o.full, spects: o.spects || [] };
@@ -83,7 +88,7 @@ function env(o) {
     const c = { window: win, LM, legendmod: LM, spects: win.spects, defaultSettings: { foodSize: 5, bordersColor: '#ff0000' },
         defaultmapsettings: { multiboxAmount: 3 }, Math, Number, String, console, document: { hidden: false }, Date: FDate };
     vm.createContext(c);
-    vm.runInContext(src.slice(obs0, obs1) + spectSrc.slice(xf0, xf1) + spectSrc.slice(head0, head1) +
+    vm.runInContext(src.slice(obs0, obs1) + slotCol + '\n' + slotOf + '\n' + spectSrc.slice(xf0, xf1) + spectSrc.slice(head0, head1) +
         'var drawRender = {' + methods.map((m) => m[1]).concat([dv]).join(',\n') + '};' +
         /* a spectator connection with spect.js's own coordinate and tile code */
         'var SpectXY = class { constructor(p) { this.sent = []; this.socket = null; Object.assign(this, p); }\n' +
@@ -109,12 +114,13 @@ function food(list, cx, cy, r, spectator) {
         if (list.track && spectator > 0) list.track(f, spectator);
     }
 }
-const unit = (number, x, y) => ({ number, player: true, playerCellIDs: [number * 1e9 + 1], playerX: x, playerY: y, playerSize: 100 });
+/* a unit as addBox makes it: its connection number and its slot (here number + 1) */
+const unit = (number, x, y, slotId) => ({ number, slotId: slotId || number + 1, player: true, playerCellIDs: [number * 1e9 + 1], playerX: x, playerY: y, playerSize: 100 });
 const byLabel = (bs, l) => bs.find((b) => b.label === l);
 const same = (a, b) => !!a && !!b && a.minX === b.minX && a.maxX === b.maxX && a.minY === b.minY && a.maxY === b.maxY;
 const MAP = 15957;
 
-/* 1. boxes 1, 2, 3: food boxes padded on both sides; unchanged by zoom, window size, unit switch */
+/* 1. boxes P1, P2, P3: food boxes padded on both sides; unchanged by zoom, window size, unit switch */
 {
     const u1 = unit(1, 4000, 3000), u2 = unit(2, -6000, -2000);
     const e = env({ spects: [u1, u2], scale: 0.5 });
@@ -122,30 +128,30 @@ const MAP = 15957;
     food(e.LM.foodMulti, 4000, 3000, 2000, 1);
     food(e.LM.foodMulti, -6000, -2000, 1500, 2);
     const normal = e.frame();
-    const b1 = byLabel(normal, '1'), b2 = byLabel(normal, '2'), b3 = byLabel(normal, '3');
-    check('box 2 is unit 1\'s food box, padded by the food radius on both sides', b2 && b2.minX === 4000 - 2000 - 15 && b2.maxX === 4000 + 2000 + 15 && b2.maxY === 3000 + 2000 + 15, b2 && [b2.minX, b2.maxX, b2.maxY]);
-    check('box 3 is unit 2\'s food box (not unit 1\'s food)', b3 && b3.minX === -6000 - 1500 - 15 && b3.maxY === -2000 + 1500 + 15, b3 && [b3.minX, b3.maxY]);
-    check('box 1 is the main connection\'s food only, padded on both sides', b1 && b1.minX === -2515 && b1.maxX === 2515, b1 && [b1.minX, b1.maxX]);
+    const b1 = byLabel(normal, 'P1'), b2 = byLabel(normal, 'P2'), b3 = byLabel(normal, 'P3');
+    check('box P2 is unit 1\'s food box, padded by the food radius on both sides', b2 && b2.minX === 4000 - 2000 - 15 && b2.maxX === 4000 + 2000 + 15 && b2.maxY === 3000 + 2000 + 15, b2 && [b2.minX, b2.maxX, b2.maxY]);
+    check('box P3 is unit 2\'s food box (not unit 1\'s food)', b3 && b3.minX === -6000 - 1500 - 15 && b3.maxY === -2000 + 1500 + 15, b3 && [b3.minX, b3.maxY]);
+    check('box P1 is the main connection\'s food only, padded on both sides', b1 && b1.minX === -2515 && b1.maxX === 2515, b1 && [b1.minX, b1.maxX]);
     e.dr.scale = 0.02; /* World Spectate zoomed out over the whole map */
     const world = e.frame();
-    check('zoom: boxes 1, 2, 3 unchanged', same(byLabel(world, '1'), b1) && same(byLabel(world, '2'), b2) && same(byLabel(world, '3'), b3));
+    check('zoom: boxes P1, P2, P3 unchanged', same(byLabel(world, 'P1'), b1) && same(byLabel(world, 'P2'), b2) && same(byLabel(world, 'P3'), b3));
     e.dr.canvasWidth = 3840; e.dr.canvasHeight = 600; e.dr.scale = 1.3; /* browser resize */
-    check('window resize: boxes unchanged', same(byLabel(e.frame(), '2'), b2) && same(byLabel(e.frame(), '1'), b1));
+    check('window resize: boxes unchanged', same(byLabel(e.frame(), 'P2'), b2) && same(byLabel(e.frame(), 'P1'), b1));
     e.win.multiboxPlayerEnabled = 2; e.LM.viewXTrue = 0; /* switch the controlled unit */
     const sw = e.frame();
-    check('switching units: boxes 2 and 3 stay', same(byLabel(sw, '2'), b2) && same(byLabel(sw, '3'), b3));
-    check('unit boxes inside the map', [b2, b3].every((b) => b.minX > -MAP && b.maxX < MAP && b.minY > -MAP && b.maxY < MAP));
+    check('switching units: boxes P2 and P3 stay', same(byLabel(sw, 'P2'), b2) && same(byLabel(sw, 'P3'), b3));
+    check('unit boxes inside the map', [b2, b3].every((b) => !!b && b.minX > -MAP && b.maxX < MAP && b.minY > -MAP && b.maxY < MAP));
 }
 /* 2. a unit without food: estimated server view from its size, not the main screen around it */
 {
     const u1 = unit(1, 1000, 500);
     const e = env({ spects: [u1], scale: 0.5 });
     food(e.LM.food, 0, 0, 2500, 0);
-    const b = byLabel(e.frame(), '2 est.');
+    const b = byLabel(e.frame(), 'P2 est.');
     const s = Math.pow(64 / 100, 0.4), w = 2028.7 / s;
-    check('unit without food: "2 est." box from its size', b && Math.abs(b.maxX - b.minX - w) < 1e-6 && Math.abs((b.minX + b.maxX) / 2 - 1000) < 1e-6, b && [b.minX, b.maxX]);
+    check('unit without food: "P2 est." box from its size', b && Math.abs(b.maxX - b.minX - w) < 1e-6 && Math.abs((b.minX + b.maxX) / 2 - 1000) < 1e-6, b && [b.minX, b.maxX]);
     e.dr.scale = 0.05; e.dr.canvasWidth = 400;
-    check('unit without food: estimate unchanged by zoom and window size', same(byLabel(e.frame(), '2 est.'), b));
+    check('unit without food: estimate unchanged by zoom and window size', same(byLabel(e.frame(), 'P2 est.'), b));
 }
 /* 3. units by role and number: a spectator before the unit, a unit at x = 0 */
 {
@@ -154,19 +160,19 @@ const MAP = 15957;
     const u = e.spect(Object.assign(unit(2, 0, 0)));
     food(e.LM.foodMulti, 0, 0, 1000, 2);
     const bs = e.frame();
-    check('a unit after a spectator in spects gets its box (unit number + 1)', !!byLabel(bs, '3'), JSON.stringify(bs.map((b) => b.label)));
-    check('a unit at the map centre (x = 0) gets its box', byLabel(bs, '3') && byLabel(bs, '3').minX === -1015);
+    check('a unit after a spectator in spects gets its box (its slot)', !!byLabel(bs, 'P3'), JSON.stringify(bs.map((b) => b.label)));
+    check('a unit at the map centre (x = 0) gets its box', byLabel(bs, 'P3') && byLabel(bs, 'P3').minX === -1015);
     void u;
 }
-/* 4. no stale box 1 after the food is gone (disconnect, server switch) */
+/* 4. no stale box P1 after the food is gone (disconnect, server switch) */
 {
     const e = env({ spects: [], scale: 0.5 });
     food(e.LM.food, 9000, 9000, 2000, 0);
-    check('box 1 drawn while there is food', !!byLabel(e.frame(), '1'));
+    check('box P1 drawn while there is food', !!byLabel(e.frame(), 'P1'));
     e.LM.food = [];
-    check('no food: box 1 not drawn at the old server view', !byLabel(e.frame(), '1'));
+    check('no food: box P1 not drawn at the old server view', !byLabel(e.frame(), 'P1'));
 }
-/* 5. a Full Map spectator's food is not a unit's: box 2 and the multibox culling box exclude it */
+/* 5. a Full Map spectator's food is not a unit's: box P2 and the multibox culling box exclude it */
 {
     const e = env({ full: true });
     e.spect(Object.assign(unit(1, 2000, 1000), { mapOffsetFixed: true }));
@@ -174,8 +180,8 @@ const MAP = 15957;
     e.spect({ number: 2, player: false, staticX: -4500, staticY: -5600, mapOffsetFixed: true, mapOffsetX: 0, mapOffsetY: 0, fixX: 1, fixY: 1, fix3x: 0, fix3y: 0 });
     food(e.LM.foodMulti, -4500, -5600, 2400, 2);
     const bs = e.frame();
-    const b2 = byLabel(bs, '2'), v2 = byLabel(bs, 'Viewport# 2 food');
-    check('box 2 is the unit\'s food only', b2 && b2.minX === 2000 - 1500 - 15 && b2.maxY === 1000 + 1500 + 15, b2 && [b2.minX, b2.maxY]);
+    const b2 = byLabel(bs, 'P2'), v2 = byLabel(bs, 'Viewport# 2 food');
+    check('box P2 is the unit\'s food only', b2 && b2.minX === 2000 - 1500 - 15 && b2.maxY === 1000 + 1500 + 15, b2 && [b2.minX, b2.maxY]);
     check('the spectator has its own food box', v2 && v2.minX === -4500 - 2400 - 15);
     check('no full-spectator box around the unit', !byLabel(bs, 'Viewport# 1'));
 }
@@ -648,9 +654,9 @@ const covers = (plan, vw, vh, half) => {
             }
             food(LM.food, 100, 200, 300, 0);
             LM.food.forEach((f, i) => { LM.indexedCells[9000 + i] = f; });
-            const b1 = byLabel(e.frame(), '1');
+            const b1 = byLabel(e.frame(), 'P1');
             F._applyAbsoluteVnr(to);
-            const fr = e.frame(), b = byLabel(fr, 'Viewport# 1'), a1 = byLabel(fr, '1'), m = LM.vector[to];
+            const fr = e.frame(), b = byLabel(fr, 'Viewport# 1'), a1 = byLabel(fr, 'P1'), m = LM.vector[to];
             if (!b || !b1) { bad.push('no box around the flip to ' + to + ': ' + fr.map((x) => x.label).join()); NOW = null; continue; }
             for (const c of cells) {
                 const isIn = c.x >= b.minX && c.x <= b.maxX && c.y >= b.minY && c.y <= b.maxY;
@@ -661,11 +667,83 @@ const covers = (plan, vw, vh, half) => {
             if (!target || !t2 || t2[0] !== target[0] || t2[1] !== target[1]) bad.push('tile target moved ' + [target, t2].join(' / '));
             const mx = (v) => (m[0] ? LM.translateX(v) : v), my = (v) => (m[1] ? LM.translateY(v) : v);
             const want1 = { minX: Math.min(mx(b1.minX), mx(b1.maxX)), maxX: Math.max(mx(b1.minX), mx(b1.maxX)), minY: Math.min(my(b1.minY), my(b1.maxY)), maxY: Math.max(my(b1.minY), my(b1.maxY)) };
-            if (!a1 || ['minX', 'maxX', 'minY', 'maxY'].some((k) => Math.abs(a1[k] - want1[k]) > 1e-6)) bad.push('box 1 after the flip to ' + to + ': ' + JSON.stringify(a1) + ' want ' + JSON.stringify(want1));
+            if (!a1 || ['minX', 'maxX', 'minY', 'maxY'].some((k) => Math.abs(a1[k] - want1[k]) > 1e-6)) bad.push('box P1 after the flip to ' + to + ': ' + JSON.stringify(a1) + ' want ' + JSON.stringify(want1));
             NOW = null;
         }
-        check('Rotate Map with a tile open (real flip, 3 orientations): its box holds exactly the cells in its view (' + n + ' cells), its raw target stays, box 1 mirrored with the main food',
+        check('Rotate Map with a tile open (real flip, 3 orientations): its box holds exactly the cells in its view (' + n + ' cells), its raw target stays, box P1 mirrored with the main food',
             !bad.length, bad.slice(0, 4).join(' | '));
+    }
+}
+
+/* 15. Slot indicators (decision 9): a unit's box says its slot (P2 ... P6, lmMbSlotOf), not its
+ *     connection number (16 and more with Full Map tiles open, a slot freed between two units), and
+ *     is drawn in its slot's colour (LM_MB_RING_DEFAULT_COLORS: the colour of its ring, minimap dot
+ *     and roster chip), its estimate too; P1 (the main connection) in P1's colour while multibox
+ *     runs, the border colour without it. The player you control changes no box: the selection is
+ *     shown apart (ring, minimap, roster), the slot colour is the player's. */
+{
+    const e = env({ full: true });
+    const C = e.c.LM_MB_RING_DEFAULT_COLORS;
+    e.spect({ number: 1, player: false, staticX: 0, staticY: 0, mapOffsetFixed: false });
+    const p2 = unit(16, 4000, 3000, 2), p4 = unit(18, -6000, -2000, 4), p6 = unit(19, 1000, 500, 6);
+    e.win.spects.push(p2, p4, p6);
+    food(e.LM.food, 0, 0, 2500, 0);
+    food(e.LM.foodMulti, 4000, 3000, 2000, 16);
+    food(e.LM.foodMulti, -6000, -2000, 1500, 18);
+    const bs = e.frame(), labels = JSON.stringify(bs.map((b) => b.label + ' ' + b.color));
+    const b2 = byLabel(bs, 'P2'), b4 = byLabel(bs, 'P4'), b6 = byLabel(bs, 'P6 est.'), b1 = byLabel(bs, 'P1');
+    check('slots: units 16 / 18 / 19 in slots 2 / 4 / 6 are boxes P2 / P4 / "P6 est." (not their connection numbers + 1)',
+        !!b2 && !!b4 && !!b6 && b2.minX === 4000 - 2000 - 15 && b4.minX === -6000 - 1500 - 15 && !bs.some((b) => /^(17|19|20)\b/.test(b.label)), labels);
+    check('slots: each unit box in its slot\'s colour (P2 ' + C[2] + ', P4 ' + C[4] + ', P6 ' + C[6] + '), the estimate too',
+        !!b2 && b2.color === C[2] && !!b4 && b4.color === C[4] && !!b6 && b6.color === C[6], labels);
+    check('slots: P1 (the main connection) in P1\'s colour while multibox runs', !!b1 && b1.color === C[1], labels);
+    e.win.multiboxPlayerEnabled = 18;
+    const sw = e.frame();
+    check('slots: controlling P4 changes no box, label or colour (the selection is shown apart)',
+        JSON.stringify(sw.map((b) => [b.label, b.color, b.minX, b.maxX, b.minY, b.maxY])) === JSON.stringify(bs.map((b) => [b.label, b.color, b.minX, b.maxX, b.minY, b.maxY])));
+    /* a unit not made by addBox (no slot): P2, as its ring and lmMbSlotOf */
+    const old = unit(1, 2000, 1000);
+    delete old.slotId;
+    const e2 = env({ spects: [old] });
+    food(e2.LM.foodMulti, 2000, 1000, 1500, 1);
+    const o2 = byLabel(e2.frame(), 'P2');
+    check('slots: a unit without a slot (not made by addBox) is P2 in P2\'s colour', !!o2 && o2.color === C[2]);
+    /* single player: the main box as before, in the border colour */
+    const e3 = env({ spects: [], mb: false });
+    food(e3.LM.food, 0, 0, 2500, 0);
+    const s1 = byLabel(e3.frame(), 'P1');
+    check('slots: without multibox the main box P1 keeps the border colour', !!s1 && s1.color === '#ff0000', s1 && s1.color);
+}
+
+/* 16. Rotate Map (decision 5): the real _applyAbsoluteVnr / _retranslateAllOnFlip also mirror the
+ *     ghost cells, the predicted ghost cells, a virus and the main player's centre at once (the
+ *     cells, pellets, velocity, jelly, trail, cursor and unit centres are checked in fullmapfood.js
+ *     6a, spectcoords.js 14 and fullmaplifecycle.js) */
+{
+    const flipSrc = ['        _getRotationMatrix(vnr) {', '        _resetRotationVectorTable() {', '        _applyAbsoluteVnr(newVnr) {', '        _retranslateAllOnFlip('].map((m) => block(m));
+    if (flipSrc.some((b) => !b)) check('the flip code is in ogario.v4.js', false);
+    else {
+        const bad = [];
+        for (const to of [1, 2, 3]) {
+            const e = env({ mb: false, vector: [[0, 0], [1, 0], [1, 1], [0, 1]] });
+            const LM = e.LM;
+            LM.translateX = (v) => LM.mapMaxX - (v - LM.mapMinX);
+            LM.translateY = (v) => LM.mapMaxY - (v - LM.mapMinY);
+            const virus = { id: 5, x: 1200, y: -800, targetX: 1210, targetY: -790, startX: 1190, startY: -810, isVirus: true, size: 100 };
+            LM.indexedCells = { 5: virus };
+            LM.ghostCells = [{ x: 3000, y: 2000, mass: 900 }, { x: -4000, y: 500, mass: 1500 }];
+            e.win.predictedGhostCells = [{ x: 100, y: -6000 }];
+            LM.playerX = 700; LM.playerY = -300;
+            const F = vm.runInContext('({ deathLocations: [],\n' + flipSrc.join(',\n') + '\n})', e.c);
+            F._applyAbsoluteVnr(to);
+            const m = LM.vector[to], mx = (v) => (m[0] ? LM.translateX(v) : v), my = (v) => (m[1] ? LM.translateY(v) : v);
+            const want = (o, x, y) => o.x === mx(x) && o.y === my(y);
+            if (!want(LM.ghostCells[0], 3000, 2000) || !want(LM.ghostCells[1], -4000, 500)) bad.push(to + ' ghosts ' + JSON.stringify(LM.ghostCells));
+            if (!want(e.win.predictedGhostCells[0], 100, -6000)) bad.push(to + ' predicted ' + JSON.stringify(e.win.predictedGhostCells));
+            if (!want(virus, 1200, -800) || virus.targetX !== mx(1210) || virus.targetY !== my(-790) || virus.startX !== mx(1190) || virus.startY !== my(-810)) bad.push(to + ' virus ' + JSON.stringify(virus));
+            if (LM.playerX !== mx(700) || LM.playerY !== my(-300)) bad.push(to + ' centre ' + [LM.playerX, LM.playerY]);
+        }
+        check('Rotate Map (3 orientations): ghost cells, predicted ghosts, a virus (drawn, start and target) and the main centre mirrored at once', !bad.length, bad.slice(0, 3).join(' | '));
     }
 }
 

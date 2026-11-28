@@ -26182,8 +26182,8 @@ function thelegendmodproject() {
          *                         it; once on, it opens nothing more
          *   mbDisable()           the units (P2..P6) close and the focus is back on P1; Full Map and
          *                         the in-game spectator stay (LM._lmMbStop)
-         *   mbAddPlayer()         one more unit in the lowest free slot, up to Settings "Multibox
-         *                         slots" (lmMbCapacity, six at most); with multibox off it is mbEnable.
+         *   mbAddPlayer()         one more unit in the lowest free slot, up to Settings "Maximum
+         *                         Multibox players" (lmMbCapacity, six at most); with multibox off it is mbEnable.
          *                         It is controlled once chosen, its spawn does not take the focus
          *   mbRemovePlayer(slot)  that unit closes; the others keep their slots and the slot is
          *                         free for the next Add (with a new slotEpoch)
@@ -84642,9 +84642,13 @@ function pickPlayerCellBySize(players, selectBiggest) {
         /*
          * "Show viewports" (debug). Kept apart, never blended or smoothed:
          *   map                 the map border (opcode 64)
-         *   1                   the main connection's observed coverage (its food box, calMinMax)
-         *   2, 3 ...            a multibox unit's observed coverage (label = unit number + 1)
-         *   n est.              a unit without food yet: its estimated server view (from its size)
+         *   P1                  the main connection's observed coverage (its food box, calMinMax)
+         *   P2 ... P6           a multibox unit's observed coverage, by its slot (lmMbSlotOf), not
+         *                       its connection number (16 and more with Full Map tiles open)
+         *   Pn est.             a unit without food yet: its estimated server view (from its size)
+         *                       P1 and the units are drawn in their slot's colour while multibox
+         *                       runs (LM_MB_RING_DEFAULT_COLORS, as their ring, minimap dot and
+         *                       roster chip; the player you control is shown apart, not here)
          *   Viewport# n         a spectator connection's server view: its server camera (opcode 17)
          *                       and the measured view for its scale (spect.js lmServerViewSize; live,
          *                       every pellet it gets is inside it, up to 1-2 units from its edge);
@@ -84677,7 +84681,8 @@ function pickPlayerCellBySize(players, selectBiggest) {
             if (Number.isFinite(LM.mapMinX) && Number.isFinite(LM.mapMaxX) && Number.isFinite(LM.mapMinY) && Number.isFinite(LM.mapMaxY)) {
                 this.drawViewport(ctx, 'map', LM.mapMinX, LM.mapMinY, LM.mapMaxX, LM.mapMaxY, '#808080', 15);
             }
-            if (Number.isFinite(LM.srvViewMinX)) this.drawViewport(ctx, '1', LM.srvViewMinX, LM.srvViewMinY, LM.srvViewMaxX, LM.srvViewMaxY, seenColor, 15);
+            var mbOn = !!legendmod.multiBoxPlayerExists;
+            if (Number.isFinite(LM.srvViewMinX)) this.drawViewport(ctx, 'P1', LM.srvViewMinX, LM.srvViewMinY, LM.srvViewMaxX, LM.srvViewMaxY, mbOn ? LM_MB_RING_DEFAULT_COLORS[1] : seenColor, 15);
             var list = window.spects || (typeof spects !== "undefined" ? spects : null);
             if (!list || !list.length) return;
             var sizeOf = typeof window.lmServerViewSize === 'function' ? window.lmServerViewSize : null;
@@ -84698,13 +84703,13 @@ function pickPlayerCellBySize(players, selectBiggest) {
                     /* 0 is a valid coordinate (the map centre): only a missing centre skips the unit */
                     if (!legendmod.multiBoxPlayerExists || !sp.playerCellIDs || !sp.playerCellIDs.length ||
                         !Number.isFinite(sp.playerX) || !Number.isFinite(sp.playerY)) continue;
-                    var label = String(sp.number + 1);
+                    var slot = lmMbSlotOf(sp), label = 'P' + slot, slotColor = LM_MB_RING_DEFAULT_COLORS[slot] || seenColor;
                     if (seen) {
-                        this.drawViewport(ctx, label, seen.minX, seen.minY, seen.maxX, seen.maxY, seenColor, 15);
+                        this.drawViewport(ctx, label, seen.minX, seen.minY, seen.maxX, seen.maxY, slotColor, 15);
                     } else if (sizeOf) {
                         v = sizeOf(typeof window.lmPlayerViewScale === 'function' ? window.lmPlayerViewScale(sp.playerSize) : 1);
                         var hw = v[0] / mkx / 2, hh = v[1] / mky / 2;
-                        this.drawViewport(ctx, label + ' est.', sp.playerX - hw, sp.playerY - hh, sp.playerX + hw, sp.playerY + hh, estColor, 15);
+                        this.drawViewport(ctx, label + ' est.', sp.playerX - hw, sp.playerY - hh, sp.playerX + hw, sp.playerY + hh, slotColor, 15);
                     }
                     continue;
                 }
