@@ -402,7 +402,7 @@ for (const withUnit of [false, true]) {
         const tiles = () => e.ctx.spects.filter((s) => !s.player && s.tile != null);
         const ingame = () => e.ctx.spects.filter((s) => !s.player && s.tile == null);
         const unitOk = () => !unit || (e.ctx.spects.includes(unit) && !unit.socket.closed && !unit.closedByUser);
-        const live = (s, now) => { s._lmOri = 'VERIFIED'; const raw = s._lmTileRaw(now); s.viewX = raw[0]; s.viewY = raw[1]; s.scale = 0.4; s._lmCamAt = now; s.time = now; };
+        const live = (s, now) => { s._lmOri = 'VERIFIED'; const raw = s._lmTileRaw(now); s.viewX = raw[0]; s.viewY = raw[1]; s.scale = 0.4; s._lmCamAt = now; s.time = s._lmWorldAt = now; };
         const drop = (s) => { s.socket.readyState = 3; s.socket.closed = true; s.socket.onclose(); };
         const op = (code) => new DataView(Uint8Array.of(code).buffer);
         return Object.assign(e, { unit, tiles, ingame, unitOk, live, drop, op });
@@ -492,7 +492,7 @@ for (const withUnit of [false, true]) {
             e.timers.has(a._lmRefuseTimer) && e.timers.get(a._lmRefuseTimer).ms === 3000 && [...e.timers.values()].filter((x) => x.ms === 3000 && !x.repeat).length === 3);
         /* c is served anyway: a fresh camera and world before the check */
         const now = Date.now();
-        c._lmCamAt = now; c.time = now; c.viewX = c.viewY = 0;
+        c._lmCamAt = now; c.time = c._lmWorldAt = now; c.viewX = c.viewY = 0;
         [a, b, c].forEach((s) => { const id = s._lmRefuseTimer, t = e.timers.get(id); e.timers.delete(id); t.fn(); });
         e.LM.addSpect();
         check('    ... no fresh view 3 s later: refused, sockets closed, no reconnect or tile sender, kept in their slots, one toast' + tag, a._lmTileState === 'refused' && b._lmTileState === 'refused' &&
@@ -535,9 +535,9 @@ for (const withUnit of [false, true]) {
             t._lmCamAt === now + 40 && t.viewX === cam[0] && t.viewY === cam[1] && !t._lmCoverageOk(now + 60) && e.timers.has(t.staticPositionController));
         t._lmTileTick(now + 60);
         check('    ... the tile target is sent again at once' + tag, t.socket.sent === sent + 1, t.socket.sent - sent);
-        t.time = now + 3000;
+        t.time = t._lmWorldAt = now + 3000;
         check('    ... the next world update, no further 17 (camera 3 s old, on its target): live again' + tag, t._lmCoverageOk(now + 3010) && t._lmTileStateNow(now + 3010) === 'live');
-        t.time = now - 60000; t._lmCamAt = now - 60000; t._openedAt = now - 70000;
+        t.time = t._lmWorldAt = now - 60000; t._lmCamAt = now - 60000; t._openedAt = now - 70000;
         check('    camera and world updates a minute old: not arrived, no server view, no coverage, stalled' + tag, !t._lmTileArrived(null, now) && !t._lmServerViewWorld() && !t._lmCoverageOk(now) &&
             t._lmTileStateNow(now) === 'stalled');
     }
@@ -549,11 +549,11 @@ for (const withUnit of [false, true]) {
         e.tiles().forEach(e.handshake);
         const t = e.tiles()[0], now = 1e12;
         e.live(t, now); t._openedAt = now - 20000;
-        t._lmTileTick(now); t._lmCamAt = now + 40; t.time = now + 40;
+        t._lmTileTick(now); t._lmCamAt = now + 40; t.time = t._lmWorldAt = now + 40;
         const s0 = t.socket.sent, states = {};
         for (let ms = 100; ms <= 10000; ms += 100) {
             const n = now + ms;
-            t.time = n - 20; /* opcode 16 every tick */
+            t.time = t._lmWorldAt = n - 20; /* a whole opcode 16 every tick */
             if (every) t._lmCamAt = n - 20;
             t._lmTileTick(n);
             const st = t._lmTileStateNow(n); states[st] = (states[st] || 0) + 1;

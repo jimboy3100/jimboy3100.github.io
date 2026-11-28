@@ -645,7 +645,7 @@ class Spect {
         this._lmBadRun = 0
         /* the last world packet (_lmWorldStamp) was the old socket's */
         this.time = 0
-        if (this._lmWorldAt !== undefined) this._lmWorldAt = 0
+        this._lmWorldAt = 0
         this.playerCellIDs = []
         this.playerScore = 0
         this.fix3x = 0
@@ -1237,10 +1237,10 @@ class Spect {
             Math.abs(this.viewX - this._lmTileSentX) <= LM_TILE_SETTLED && Math.abs(this.viewY - this._lmTileSentY) <= LM_TILE_SETTLED;
     }
 
-    /* time of the last world packet: _lmWorldAt (a parsed update), or the time updateCells
-     * started (this.time) where _lmWorldAt is not kept */
+    /* time of the last whole world update (_lmWorldAt, set by updateCells once it is parsed to
+     * its end; 0 before the first one of this socket) */
     _lmWorldStamp() {
-        return (this._lmWorldAt !== undefined ? this._lmWorldAt : this.time) || 0;
+        return this._lmWorldAt || 0;
     }
 
     /* socket open, camera fresh and a world packet within LM_TILE_STALE_MS */
@@ -1734,7 +1734,7 @@ class Spect {
                     this.isSpectateEnabled = spOn;
                     this.isFreeSpectate = freeOn;
                     this.time = 0;
-                    if (this._lmWorldAt !== undefined) this._lmWorldAt = 0;
+                    this._lmWorldAt = 0;
                     this._lmTileSentAt = 0;
                 }
                 console.log('[SPECT] case 18');
