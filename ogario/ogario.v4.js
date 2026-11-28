@@ -24549,7 +24549,7 @@ function thelegendmodproject() {
             return view;
         },
         /* true once for the echo of a line this socket sent in the last 5 s (same text); the
-         * echo then counts as our own line: no sound, mute button, word filter or mention.
+         * echo then counts as our own line: no sound, mute button or mention.
          * 'team' for a team line (202), which is already shown when it is sent */
         _lmElOwnChatEcho(text, socket) {
             var q = this._lmElSentChat;

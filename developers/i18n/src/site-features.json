@@ -1478,24 +1478,6 @@
     "ja": "チャットのニックネームをクリックすると、メッセージに挿入されます",
     "it": "Clicca su un nick nella chat per inserirlo nel tuo messaggio"
   },
-  "site.features.optionalWordFilterHides": {
-    "en": "Optional word filter hides lines with words you choose",
-    "el": "Προαιρετικό φίλτρο λέξεων κρύβει γραμμές με λέξεις που επιλέγετε",
-    "es": "Filtro de palabras opcional que oculta las líneas con las palabras que elijas",
-    "bg": "Незадължителен филтър на думи скрива редовете с избрани от вас думи",
-    "fr": "Filtre de mots optionnel qui masque les lignes contenant les mots choisis",
-    "ar": "مرشّح كلمات اختياري يخفي الأسطر التي تحوي كلمات تختارها",
-    "zh": "可選的字詞過濾器，會隱藏含有你指定字詞的訊息",
-    "ru": "Фильтр слов по желанию скрывает строки с выбранными вами словами",
-    "de": "Optionaler Wortfilter blendet Zeilen mit von dir gewählten Wörtern aus",
-    "tr": "İsteğe bağlı kelime filtresi, seçtiğiniz kelimeleri içeren satırları gizler",
-    "pl": "Opcjonalny filtr słów ukrywa wiersze z wybranymi przez ciebie słowami",
-    "nl": "Optioneel woordfilter verbergt regels met woorden die jij kiest",
-    "pt": "Filtro de palavras opcional que esconde as linhas com as palavras que você escolher",
-    "id": "Filter kata opsional menyembunyikan baris yang berisi kata pilihanmu",
-    "ja": "指定した単語を含む行を隠すワードフィルター（任意）",
-    "it": "Filtro parole opzionale che nasconde le righe con le parole che scegli tu"
-  },
   "site.features.smartSettingsNew": {
     "en": "Smart Settings <span class=\"badge badge-new\">New</span>",
     "el": "Έξυπνες ρυθμίσεις <span class=\"badge badge-new\">Νέο</span>",

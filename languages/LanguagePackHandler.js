@@ -207,7 +207,6 @@ $(".options-box.statsGroup>LABEL").replace('Game stats: FPS', Languageletter101 
 $(".options-box.statsGroup>LABEL").replace('Show current time', Languageletter105);
 $(".options-box.extrasGroup>h5").text(Languageletter106);
 $(".options-box.extrasGroup>LABEL").replace('Skip stats after death', Languageletter107);
-$(".options-box.extrasGroup>LABEL").replace('Show quest', Languageletter108);
 $(".options-box.extrasGroup>LABEL").replace('Game sounds', Languageletter108a);
 $(".options-box.extrasGroup>LABEL").replace('Menu sounds', Languageletter108b);
 $(".options-box.extrasGroup>LABEL").replace('Block popups', Languageletter109);
@@ -290,7 +289,7 @@ $("#close-exp-imp").text(Languageletter283);
 $("#youtubeplayer>h5").text(Languageletter284);
 $("#musicUrl").attr('placeholder', Languageletter284a).attr('data-original-title',Languageletter285);
 /* the sound URL rows of Settings > Sounds, each by its own field (the old Sounds panel these spans
- * were counted in is gone); the first text only, so a NEW badge next to a name stays */
+ * were counted in is gone); the first text only */
 [["messageSound", Languageletter287], ["commandSound", Languageletter288], ["virusSoundurl", Languageletter41d]].forEach(function (r) {
     var t = $("#" + r[0]).closest(".input-box").find(".title-box")[0];
     if (!t || typeof r[1] !== "string" || !r[1]) return;

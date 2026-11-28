@@ -1306,7 +1306,7 @@
 "lmx.ex.website": "Website",
 "lmx.ex.improvePerformance": "How to improve performance",
 "lmx.ex.updatedTitle": "Legend Mod updated ({0})",
-"lmx.ex.updatedNews": "• Expanding Land: daily challenges, server events with a countdown, match history on your account<br>• Settings presets (with Undo) and NEW badges; settings in 12 languages<br>• Team pings (Help, Danger, Go here, Virus here) and gamepad support<br>• Replays: pause, speed, seek and a progress bar; Game Over card extras<br>• New options are off: type a word in the settings search to find them",
+"lmx.ex.updatedNews": "• Expanding Land: daily challenges, server events with a countdown, match history on your account<br>• Settings presets (with Undo); settings in 12 languages<br>• Team pings (Help, Danger, Go here, Virus here) and gamepad support<br>• Replays: pause, speed, seek and a progress bar; Game Over card extras<br>• New options are off: type a word in the settings search to find them",
 "lmx.ex.serverNotFound": "Server not found!",
 "lmx.ex.playerFoundConnected": "Player {0} contains {1}! Connected to the server.",
 "lmx.ex.bestChoice": "Best choice: region {0}, mode {1}",
