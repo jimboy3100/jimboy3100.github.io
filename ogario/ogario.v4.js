@@ -2018,9 +2018,64 @@ function lmSrcStale(sp, now) {
     return now - w > LM_MB_STALL_MS;
 }
 /* Ghost cells (drawGhostCells): an agar.io ghost list older than this is not drawn; a spectator's
- * server view counts as coverage when its last update came at most LM_GHOST_COV_SLACK ms before
- * the list and less than LM_GHOST_COV_MAX_AGE ms ago. */
+ * server view counts as coverage when its last world update came at most LM_GHOST_COV_SLACK ms
+ * before the list and less than LM_GHOST_COV_MAX_AGE ms ago. */
 var LM_GHOST_LIST_MAX_AGE = 3000, LM_GHOST_COV_SLACK = 200, LM_GHOST_COV_MAX_AGE = 500;
+/* A ghost is hidden by live cells only when they can be its player: the cells of one connection
+ * that can be his (his own cells, or cells with his name; with no name, unnamed cells) inside the
+ * ghost hold between LM_GHOST_ID_MIN and LM_GHOST_ID_MAX of the ghost's mass (size squared). A
+ * smaller player there with the same nick (or none), or own cells much lighter or heavier than
+ * the ghost, are not his: the ghost stays drawn. Summed per connection, so the copies of one cell
+ * seen by several connections are not counted twice. */
+var LM_GHOST_ID_MIN = 0.5, LM_GHOST_ID_MAX = 1.25;
+/* drawGhostCells: the ghosts in view sorted by x (their x, y, size squared, kind and name) and, per
+ * ghost and connection, the mass (size squared) of the cells inside it that can be its player:
+ * own and unit cells in the even slot, the others in the odd one. Kept between frames. */
+var _lmGhostX = new Float64Array(16), _lmGhostY = new Float64Array(16), _lmGhostR2 = new Float64Array(16);
+var _lmGhostKind = new Int32Array(16), _lmGhostNames = [], _lmGhostAcc = new Float64Array(64);
+/* One pass over the cells: each cell finds the ghosts it lies in by a binary search of the sorted
+ * x (the scan of every cell per ghost took 3 ms a frame with 50 ghosts and 4000 cells). n ghosts,
+ * maxSz the largest ghost's size, conn the connection slots per ghost. */
+function _lmGhostMatch(cells, n, maxSz, conn) {
+    var gX = _lmGhostX, gY = _lmGhostY, gR2 = _lmGhostR2, kind = _lmGhostKind, names = _lmGhostNames, acc = _lmGhostAcc;
+    acc.fill(0, 0, n * conn * 2);
+    var minX = gX[0] - maxSz, maxX = gX[n - 1] + maxSz;
+    for (var i = 0; i < cells.length; i++) {
+        var c = cells[i];
+        if (!c || c.isFood || c.isVirus || !(c.size >= 40)) continue;
+        if (c.isEjected) continue;
+        var cx = c.x;
+        if (!(cx >= minX && cx <= maxX)) continue;
+        var s = c.spectator > 0 ? c.spectator : 0;
+        /* a connection not in window.spects any more: nothing says where its cells are */
+        if (s >= conn) continue;
+        var feeds = _lmMbFeeds(c);
+        if (!feeds && !c.isPlayerCellMulti) continue;
+        var own = !!(c.isPlayerCell || c.isPlayerCellMulti);
+        var name = c._lmSrvName || '', cy = c.y, r2 = c.size * c.size;
+        var lo = 0, hi = n;
+        while (lo < hi) {
+            var mid = (lo + hi) >> 1;
+            if (gX[mid] < cx - maxSz) lo = mid + 1;
+            else hi = mid;
+        }
+        for (var j = lo; j < n; j++) {
+            var dx = cx - gX[j];
+            if (dx < -maxSz) break;
+            var dy = cy - gY[j];
+            if (!(dx * dx + dy * dy < gR2[j])) continue;
+            var k = kind[j];
+            /* an unverified unit's own cell: only with the ghost's name */
+            if (!feeds && (k !== 1 || name !== names[j])) continue;
+            var cls = 0;
+            if (!own) {
+                if (k === 1 ? name !== names[j] : k === 2 && name) continue;
+                cls = 1;
+            }
+            acc[(j * conn + s) * 2 + cls] += r2;
+        }
+    }
+}
 /* per connection number, whether it feeds this frame (filled by the frame's hide step); a
  * connection number not filled in is not in window.spects and does not feed */
 var _lmMbFeed = [];
@@ -85890,14 +85945,90 @@ function pickPlayerCellBySize(players, selectBiggest) {
                  */
                 var _showSkins = lmSkinsShown();
 
-                var _cullingScale = this.scale || 1;
-                var _halfW = this.canvasWidth / _cullingScale / 2;
-                var _halfH = this.canvasHeight / _cullingScale / 2;
-                var _cx = this.camX, _cy = this.camY;
-                var _vx = LM.viewX || 0, _vy = LM.viewY || 0;
-                if (Math.abs(_cx - _vx) > _halfW || Math.abs(_cy - _vy) > _halfH) { _cx = _vx; _cy = _vy; }
-                var _vMinX = _cx - _halfW, _vMaxX = _cx + _halfW;
-                var _vMinY = _cy - _halfH, _vMaxY = _cy + _halfH;
+                /* Culled by the frame's view box (LM.camMin/Max: the camera's box of this frame,
+                 * grown by calMinMax), the box the cells are culled by (isInView). It was built
+                 * again here from camX/Y and moved to the main player's view (LM.viewX/Y) when the
+                 * two were half a screen apart, so with the camera on a distant unit (or framing
+                 * several) the ghosts on screen were culled and the ones round the main player
+                 * kept. The camera, then the main view, stand in only when that box is not there. */
+                var _vMinX = LM.camMinX, _vMinY = LM.camMinY, _vMaxX = LM.camMaxX, _vMaxY = LM.camMaxY;
+                if (!(Number.isFinite(_vMinX) && Number.isFinite(_vMinY) && Number.isFinite(_vMaxX) && Number.isFinite(_vMaxY) &&
+                    _vMinX <= _vMaxX && _vMinY <= _vMaxY)) {
+                    var _cullingScale = this.scale || 1;
+                    var _halfW = this.canvasWidth / _cullingScale / 2;
+                    var _halfH = this.canvasHeight / _cullingScale / 2;
+                    var _cx = this.camX, _cy = this.camY;
+                    if (!Number.isFinite(_cx) || !Number.isFinite(_cy)) { _cx = LM.viewX || 0; _cy = LM.viewY || 0; }
+                    _vMinX = _cx - _halfW; _vMaxX = _cx + _halfW;
+                    _vMinY = _cy - _halfH; _vMaxY = _cy + _halfH;
+                }
+
+                /* The ghosts in view (standard viewport culling: skip if fully outside view),
+                 * sorted by x into _gS (their x, y and size squared in _gX, _gY, _gR2);
+                 * _gSlot[list index] is the ghost's place there (-1: not in view). Kept between
+                 * frames. */
+                var _gN = ghostsCells.length;
+                var _gS = this._lmGhostS = _lmMbGrow(this._lmGhostS || new Int32Array(16), _gN);
+                var _gSlot = this._lmGhostSlot = _lmMbGrow(this._lmGhostSlot || new Int32Array(16), _gN);
+                var _gKind = _lmGhostKind = _lmMbGrow(_lmGhostKind, _gN), _gNames = _lmGhostNames;
+                var _gX = _lmGhostX = _lmMbGrow(_lmGhostX, _gN);
+                var _gY = _lmGhostY = _lmMbGrow(_lmGhostY, _gN);
+                var _gR2 = _lmGhostR2 = _lmMbGrow(_lmGhostR2, _gN);
+                var _gv = 0, _gMaxSz = 0, _gj;
+                for (var length = 0; length < _gN; length++) {
+                    _gSlot[length] = -1;
+                    var ghost = ghostsCells[length];
+                    if (!ghost) continue;
+                    var x = ghost.x;
+                    var y = ghost.y;
+                    var sz = ghost.size || 50;
+                    if (!Number.isFinite(x) || !Number.isFinite(y)) continue;
+                    if (x + sz < _vMinX || x - sz > _vMaxX || y + sz < _vMinY || y - sz > _vMaxY) {
+                        continue;
+                    }
+                    if (sz > _gMaxSz) _gMaxSz = sz;
+                    for (_gj = _gv++; _gj > 0 && _gX[_gj - 1] > x; _gj--) {
+                        _gS[_gj] = _gS[_gj - 1];
+                        _gX[_gj] = _gX[_gj - 1];
+                        _gY[_gj] = _gY[_gj - 1];
+                        _gR2[_gj] = _gR2[_gj - 1];
+                    }
+                    _gS[_gj] = length;
+                    _gX[_gj] = x;
+                    _gY[_gj] = y;
+                    _gR2[_gj] = sz * sz;
+                }
+                for (_gj = 0; _gj < _gv; _gj++) {
+                    length = _gS[_gj];
+                    _gSlot[length] = _gj;
+                    /* The name of an opcode-69 ghost is the leaderboard's (its label): 1 named, 2
+                     * unnamed (an unnamed player's row); 0 not known (another server's list, or no
+                     * row for it). */
+                    var _gRow = ghostsCells[length].rawX !== undefined && LM.leaderboard ? LM.leaderboard[length] : null;
+                    _gNames[_gj] = _gRow && _gRow.nick ? _gRow.nick : '';
+                    _gKind[_gj] = !_gRow ? 0 : _gNames[_gj] ? 1 : 2;
+                }
+                /* Skip the ghost when the real player is on screen: his cells lie inside the ghost's
+                 * radius (LM.cellsId never existed, so this never ran). Only cells that can be his
+                 * count (LM_GHOST_ID_MIN / MAX: their mass, summed per connection, is about his;
+                 * proximity alone hid the ghost behind another player's cell): with a named ghost
+                 * a cell with that server name (an unnamed cell is not his: it hid the ghost of a
+                 * named player nearby), with an unnamed one an unnamed cell, with a ghost of
+                 * another server any player cell; own and unit cells (_gAcc class 0) whatever
+                 * their name. A cell of a Full Map spectator whose orientation is not verified, or
+                 * that is stalled (_lmMbFeeds: not drawn, maybe mirrored or frozen; the frame's
+                 * hide step test), hides nothing. Ejected mass never hides a ghost (a blob of 40+
+                 * is no player cell). An unverified unit's own cell may be drawn at a wrong place:
+                 * it hides the ghost only with the ghost's name. One pass over LM.cells
+                 * (_lmGhostMatch), not one per ghost. (The hide step's search index is not used: it is built only with other
+                 * connections and only in frames that search a copy, and it holds the cells by
+                 * their server positions moved on in time, not by where they are drawn.) */
+                var _gSps = window.spects, _gConn = Math.max(1, _lmMbFeed.length);
+                for (var _gs = 0; _gSps && _gs < _gSps.length; _gs++) {
+                    if (_gSps[_gs] && _gSps[_gs].number >= _gConn) _gConn = (_gSps[_gs].number | 0) + 1;
+                }
+                var _gAcc = _lmGhostAcc = _lmMbGrow(_lmGhostAcc, _gv * _gConn * 2);
+                if (_gv) _lmGhostMatch(LM.cells, _gv, _gMaxSz, _gConn);
 
                 this.ctx.beginPath();
                 /* Info (skin, nick) is drawn after the ghost fill: drawn inside this loop it
@@ -85914,40 +86045,17 @@ function pickPlayerCellBySize(players, selectBiggest) {
                 var _ghostCovF = false;
                 var _ghostLag = LM.ghostCellsTime > 0 ? (typeof LM_GHOST_TOL0 === 'number' ? LM_GHOST_TOL0 : 60) +
                     (typeof LM_GHOST_SPEED === 'number' ? LM_GHOST_SPEED : 0.5) * Math.max(0, _ghostNow - LM.ghostCellsTime) : NaN;
-                for (var length = 0; length < ghostsCells.length; length++) {
-                    var ghost = ghostsCells[length];
-                    if (!ghost) continue;
-                    var x = ghost.x;
-                    var y = ghost.y;
-                    var sz = ghost.size || 50;
+                for (length = 0; length < _gN; length++) {
+                    _gj = _gSlot[length];
+                    if (_gj < 0) continue;
+                    ghost = ghostsCells[length];
+                    x = ghost.x;
+                    y = ghost.y;
+                    sz = ghost.size || 50;
 
-                    /* Standard viewport culling: skip if fully outside view */
-                    if (x + sz < _vMinX || x - sz > _vMaxX || y + sz < _vMinY || y - sz > _vMaxY) {
-                        continue;
-                    }
-
-                    /* Skip the ghost when the real player is on screen: a visible non-food cell
-                     * lies inside the ghost's radius (LM.cellsId never existed, so this never ran).
-                     * Only his cells count: a cell of another player there, or one of a Full Map
-                     * spectator whose orientation is not verified (not drawn, maybe mirrored: the
-                     * frame's hide step test), hid the ghost while the player was not shown. The
-                     * name of an opcode-69 ghost is the leaderboard's (its label); a ghost with a
-                     * name is hidden only by a cell with that server name (an unnamed cell is not
-                     * his: it hid the ghost of a named player nearby), a ghost without one by any
-                     * player cell; own and unit cells always count. Ejected
-                     * mass never hides a ghost (a blob of 40+ is no player cell). An unverified
-                     * unit's own cell may be drawn at a wrong place: it hides the ghost only with
-                     * the ghost's name. */
-                    var _ghostName = ghost.rawX !== undefined && LM.leaderboard && LM.leaderboard[length] ? LM.leaderboard[length].nick : '';
-                    var _ghostHasReal = false;
-                    for (var _gc = 0; _gc < LM.cells.length; _gc++) {
-                        var _rc = LM.cells[_gc];
-                        if (!_rc || _rc.isFood || _rc.isVirus || _rc.size < 40) continue;
-                        if (_rc.isEjected) continue;
-                        if (_rc.spectator > 0 && !_lmMbFeeds(_rc) && (!_rc.isPlayerCellMulti || !_ghostName || _rc._lmSrvName !== _ghostName)) continue;
-                        if (_ghostName && _rc._lmSrvName !== _ghostName && !_rc.isPlayerCell && !_rc.isPlayerCellMulti) continue;
-                        var _gdx = _rc.x - x, _gdy = _rc.y - y;
-                        if (_gdx * _gdx + _gdy * _gdy < sz * sz) { _ghostHasReal = true; break; }
+                    var _gM = sz * sz, _ghostHasReal = false;
+                    for (var _gq = _gj * _gConn * 2, _gqEnd = _gq + _gConn * 2; _gq < _gqEnd; _gq++) {
+                        if (_gAcc[_gq] >= LM_GHOST_ID_MIN * _gM && _gAcc[_gq] <= LM_GHOST_ID_MAX * _gM) { _ghostHasReal = true; break; }
                     }
                     if (_ghostHasReal) {
                         continue;
@@ -85957,21 +86065,35 @@ function pickPlayerCellBySize(players, selectBiggest) {
                         if (!_ghostCovF) {
                             _ghostCovF = true;
                             _ghostCov.length = 0;
-                            if (Number.isFinite(LM.srvViewMinX) && Number.isFinite(LM.srvViewMinY) && Number.isFinite(LM.srvViewMaxX) && Number.isFinite(LM.srvViewMaxY)) {
+                            /* the main server view only while the main socket's world updates are
+                             * fresh (lmSrcMainFresh, the reconciliation's test; its last one is 0 on
+                             * a new connection until that one's first) and its last one came at most
+                             * LM_GHOST_COV_SLACK before the list: four finite numbers were taken
+                             * as coverage through a stall of the main socket */
+                            var _gMw = LM._lmLastWorldUpdate;
+                            if (Number.isFinite(LM.srvViewMinX) && Number.isFinite(LM.srvViewMinY) && Number.isFinite(LM.srvViewMaxX) && Number.isFinite(LM.srvViewMaxY) &&
+                                lmSrcMainFresh(_ghostNow) && _gMw >= LM.ghostCellsTime - LM_GHOST_COV_SLACK) {
                                 _ghostCov.push(LM.srvViewMinX, LM.srvViewMinY, LM.srvViewMaxX, LM.srvViewMaxY);
                             }
-                            var _gSps = window.spects;
                             /* one array kept between frames (it made two new ones per spectator) */
                             var _gRect = this._lmGhostCovR || (this._lmGhostCovR = [0, 0, 0, 0]);
-                            if (_gSps) for (var _gs = 0; _gs < _gSps.length; _gs++) {
+                            if (_gSps) for (_gs = 0; _gs < _gSps.length; _gs++) {
                                 var _gSp = _gSps[_gs];
                                 if (!_gSp || typeof _gSp._lmServerViewDisplay !== 'function') continue;
                                 /* its view says something only while it is fresh: a spectator covers
-                                 * an area when its last update came at most LM_GHOST_COV_SLACK before
-                                 * the list and less than LM_GHOST_COV_MAX_AGE ago (a stalled socket
-                                 * kept its last camera for good) */
+                                 * an area when its last world update came at most LM_GHOST_COV_SLACK
+                                 * before the list and less than LM_GHOST_COV_MAX_AGE ago (a stalled
+                                 * socket kept its last camera for good). The time of its last whole
+                                 * world update (_lmWorldStamp), not of its last packet: a socket that
+                                 * still gets packets but no world update has no current view. */
                                 if (typeof _gSp._lmCoverageOk === 'function' ? !_gSp._lmCoverageOk(_ghostNow) : (!_gSp._lmFeedOk() || !_gSp.isSocketOpen())) continue;
-                                if (!(_gSp.time >= LM.ghostCellsTime - LM_GHOST_COV_SLACK && _ghostNow - _gSp.time < LM_GHOST_COV_MAX_AGE)) continue;
+                                /* a source the reconciliation leaves out (lmSrcFeeds: stalled against
+                                 * the main socket; _lmMbStalled: no world update for LM_MB_STALL_MS;
+                                 * the frame's hide step test) draws none of its cells, so its view
+                                 * cannot say a player is not there */
+                                if (!lmSrcFeeds(_gSp) || _lmMbStalled(_gSp, _ghostNow)) continue;
+                                var _gW = typeof _gSp._lmWorldStamp === 'function' ? _gSp._lmWorldStamp() : _gSp.time;
+                                if (!(_gW >= LM.ghostCellsTime - LM_GHOST_COV_SLACK && _ghostNow - _gW < LM_GHOST_COV_MAX_AGE)) continue;
                                 var _gR = _gSp._lmServerViewDisplay(_gRect);
                                 if (_gR) _ghostCov.push(_gR[0], _gR[1], _gR[2], _gR[3]);
                             }

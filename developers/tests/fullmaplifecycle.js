@@ -7,8 +7,12 @@
 // apart); a copy that leaves its view while another connection still sees the cell plays no fade
 // on top of the live copy; a copy that sat behind a main cell dropped without removeCell() is drawn
 // again (a ClearAll flush keeping the other connections' cells is tested in fullmapfood.js).
-// Ghost cells (opcode 69): hidden only by the player's own cells (same server name, not another
-// player's, not an unverified spectator's) or, without them, inside verified coverage.
+// Ghost cells (opcode 69): hidden only by cells that can be the player's (his server name, or his
+// own cells, with about his mass on one connection; not another player's of the same nick or none,
+// not an unverified or stalled spectator's) or, without them, inside verified fresh coverage (the
+// main view only while the main socket's world updates are fresh, a spectator's only while the
+// reconciliation takes its cells); culled by the frame's view box, also with the camera on a
+// distant unit.
 // Playing with Full Map on, with the real flushCellsData / flushSpecsData: a ClearAll on the same
 // socket (18 / 20: flushCellsData(false)) and the respawn flush (true) keep every tile open and its
 // observations (cells, viruses, the objects themselves), the main player's cells go; the
@@ -450,6 +454,7 @@ now = load(); G = groups();
     function drawn(ghosts, cells, setup) {
         LM.ghostCells = ghosts; LM.cells = cells; LM.leaderboard = [{ nick: 'Top' }];
         LM.ghostCellsTime = Date.now(); LM.srvViewMinX = LM.srvViewMinY = LM.srvViewMaxX = LM.srvViewMaxY = NaN;
+        LM.camMinX = LM.camMinY = LM.camMaxX = LM.camMaxY = NaN; LM._lmLastWorldUpdate = 0;
         g.window.spects = [];
         g._lmMbFeed.length = 0;
         if (setup) setup();
@@ -478,7 +483,7 @@ now = load(); G = groups();
     check('ghost: an unverified unit\'s unnamed own cell does not hide it', drawn(top(), [cell(2100, 1000, 300, { spectator: 2, isPlayerCellMulti: true })], () => { g._lmMbFeed[2] = false; }) === 1);
     check('ghost: ejected mass (size 45) inside it does not hide it', drawn(top(), [cell(2010, 1000, 45, { isEjected: true })]) === 1);
     check('ghost: a cell of a connection that is gone (not in spects) does not hide it', drawn(top(), [cell(2100, 1000, 300, { spectator: 9, _lmSrvName: 'Top' })]) === 1);
-    const mainView = () => { LM.srvViewMinX = 0; LM.srvViewMinY = -1000; LM.srvViewMaxX = 5000; LM.srvViewMaxY = 3000; };
+    const mainView = () => { LM.srvViewMinX = 0; LM.srvViewMinY = -1000; LM.srvViewMaxX = 5000; LM.srvViewMaxY = 3000; LM._lmLastWorldUpdate = Date.now(); };
     check('ghost inside the main server view without his cell: stale, not drawn', drawn(top(), [], mainView) === 0);
     check('ghost: another player there does not keep a stale ghost', drawn(top(), [cell(2400, 1000, 300, { _lmSrvName: 'someone' })], mainView) === 0);
     check('ghost near the edge of the main view (within the lag margin): drawn', drawn([gh(4950, 1000, 5000)], [], mainView) === 1);
@@ -502,12 +507,78 @@ now = load(); G = groups();
     /* 25 packets per second with a gap of 2.5 ticks: its last update 150 ms before the list still counts */
     check('ghost inside a spectator\'s view last updated 150 ms before the list: stale, not drawn', drawn(top(), [], () => { g.window.spects = [sp(true, true, 150)]; }) === 0);
     check('ghost inside the view of a spectator whose own coverage test says stale: drawn', drawn(top(), [], () => { const o = sp(true, true); o._lmCoverageOk = () => false; g.window.spects = [o]; }) === 1);
-    check('ghost: a spectator\'s own coverage test is used when it has one (fresh, covers it)', drawn(top(), [], () => { const o = sp(false, false); o._lmCoverageOk = () => true; g.window.spects = [o]; }) === 0);
+    check('ghost: a spectator\'s own coverage test is used when it has one (fresh, covers it)', drawn(top(), [], () => { const o = sp(true, false); o._lmCoverageOk = () => true; g.window.spects = [o]; }) === 0);
     /* the list has not come again for over 3 s: its players may be anywhere */
     check('ghost list past its max age: no ghost drawn', drawn([gh(2000, 1000, 5000), gh(-2000, 1000, 5000)], [], () => { LM.ghostCellsTime = Date.now() - 3500; }) === 0);
     check('ghost list within its max age outside every view: drawn', drawn([gh(-2000, 1000, 5000)], [], () => { mainView(); LM.ghostCellsTime = Date.now() - 2500; }) === 1);
     check('ghost: the cell of a stalled spectator (no world update for 5 s) does not hide it', drawn(top(), [cell(2100, 1050, 700, { spectator: 3, _lmSrvName: 'Top' })], () => {
         g.window.spects = [{ number: 3, _lmFeedOk: () => true, isSocketOpen: () => true, _lmWorldStamp: () => Date.now() - 5000 }]; g.lmMbFrameHide(); }) === 1);
+    /* culling: the frame's view box (LM.camMin/Max, the cells' culling), not a box moved to the
+     * main player's view when the camera is on a distant unit */
+    {
+        const cam = (cx, cy) => () => { Object.assign(R, { scale: 1, camX: cx, camY: cy }); LM.viewX = 0; LM.viewY = 0;
+            LM.camMinX = cx - 960; LM.camMaxX = cx + 960; LM.camMinY = cy - 540; LM.camMaxY = cy + 540; };
+        check('ghost culling: camera on a distant controlled unit, a ghost on screen there: drawn', drawn([gh(6100, 6000, 500)], [], cam(6000, 6000)) === 1);
+        check('ghost culling: camera on a distant unit, a ghost round the main player (off screen): not drawn', drawn([gh(100, 0, 500)], [], cam(6000, 6000)) === 0);
+        check('ghost culling: the frame\'s box framing two players (grown by calMinMax): a ghost between them drawn',
+            drawn([gh(3000, 3000, 500)], [], () => { cam(6000, 6000)(); LM.camMinX = -960; LM.camMinY = -540; }) === 1);
+        check('ghost culling: no frame box and no valid camera: the main view stands in', drawn([gh(100, 0, 500)], [], () => { cam(NaN, NaN)(); LM.camMinX = NaN; }) === 1);
+        Object.assign(R, { scale: 0.1, camX: 0, camY: 0 });
+    }
+    /* the main server view covers only while the main socket's world updates are fresh */
+    check('ghost inside the main server view, main socket stalled (last world update 2 s ago): drawn', drawn(top(), [], () => { mainView(); LM._lmLastWorldUpdate = Date.now() - 2000; }) === 1);
+    check('ghost inside the main server view of a new connection without a world update yet: drawn', drawn(top(), [], () => { mainView(); LM._lmLastWorldUpdate = 0; }) === 1);
+    check('ghost inside the main server view, its last world update 300 ms before the list: drawn', drawn(top(), [], () => { mainView(); LM._lmLastWorldUpdate = Date.now() - 300; }) === 1);
+    /* a source the reconciliation leaves out (stalled) gives no coverage, even with a fresh camera */
+    {
+        const fresh = (w, player) => ({ number: 3, player: !!player, _lmFeedOk: () => true, isSocketOpen: () => true, time: Date.now(), _lmCoverageOk: () => true,
+            _lmWorldStamp: () => w, _lmServerViewDisplay: (o) => { o[0] = 1000; o[1] = 0; o[2] = 4000; o[3] = 2000; return o; } });
+        check('ghost inside a tile\'s view, its world 700 ms behind the fresh main socket (lmSrcStale): drawn',
+            drawn(top(), [], () => { LM._lmLastWorldUpdate = Date.now(); g.window.spects = [fresh(Date.now() - 700)]; }) === 1);
+        check('ghost inside a unit\'s view, no world update for 1.5 s (_lmMbStalled): drawn',
+            drawn(top(), [], () => { g.window.spects = [fresh(Date.now() - 1500, true)]; }) === 1);
+        check('ghost inside the view of a spectator with packets but no world update yet: drawn',
+            drawn(top(), [], () => { g.window.spects = [fresh(0)]; }) === 1);
+        check('ghost inside a fresh tile\'s view (world update now): stale, not drawn',
+            drawn(top(), [], () => { LM._lmLastWorldUpdate = Date.now(); g.window.spects = [fresh(Date.now())]; }) === 0);
+    }
+    /* identity: proximity or a nick alone is not the player */
+    const unnamed = () => { LM.leaderboard = [{ nick: '' }]; };
+    check('ghost without a name: an unrelated small unnamed player beside it does not hide it', drawn(top(), [cell(2100, 1000, 200)], unnamed) === 1);
+    check('ghost without a name: a named player there does not hide it', drawn(top(), [cell(2100, 1000, 700, { _lmSrvName: 'someone' })], unnamed) === 1);
+    check('ghost without a name: two unnamed players there of twice its mass do not hide it', drawn(top(), [cell(2100, 1000, 700), cell(1900, 1000, 700)], unnamed) === 1);
+    check('ghost with a name: a smaller player with the same nick does not hide it', drawn(top(), [cell(2100, 1000, 200, { _lmSrvName: 'Top' })]) === 1);
+    check('ghost with a name: a far bigger player with the same nick does not hide it', drawn(top(), [cell(2100, 1000, 1000, { _lmSrvName: 'Top' })]) === 1);
+    check('ghost with a name: two players of that nick there, twice its mass, do not hide it',
+        drawn(top(), [cell(2200, 1000, 700, { _lmSrvName: 'Top' }), cell(1800, 1000, 700, { _lmSrvName: 'Top' })]) === 1);
+    const four = (extra) => [cell(1850, 850, 350, extra), cell(2150, 850, 350, extra), cell(1850, 1150, 350, extra), cell(2150, 1150, 350, extra)];
+    check('ghost with a name: the player split in four (his mass together) hides it', drawn(top(), four({ _lmSrvName: 'Top' })) === 0);
+    check('ghost of me split in four: my own cells hide it', drawn(top(), four({ isPlayerCell: true })) === 0);
+    check('ghost: my own much smaller cell inside another player\'s ghost does not hide it', drawn(top(), [cell(2100, 1000, 200, { isPlayerCell: true, _lmSrvName: 'me' })]) === 1);
+    check('ghost: a verified unit\'s much smaller own cell inside it does not hide it',
+        drawn(top(), [cell(2100, 1000, 200, { spectator: 2, isPlayerCellMulti: true, _lmSrvName: 'u' })], () => { g._lmMbFeed[2] = true; }) === 1);
+    check('ghost: ten blobs of ejected mass inside it do not hide it',
+        drawn(top(), Array.from({ length: 10 }, (_, i) => cell(1900 + 20 * i, 1000, 45, { isEjected: true, _lmSrvName: 'Top' }))) === 1);
+    /* the copy that is drawn changes: one connection's copy is enough, copies are not added up */
+    const copy = (sp, inv) => cell(2050, 1000, 700, { spectator: sp, _lmSrvName: 'Top', invisible: !!inv, _lmMbPosDup: !!inv });
+    const feed = () => { g._lmMbFeed[3] = g._lmMbFeed[4] = true; };
+    check('ghost: the player drawn by the main copy, a tile\'s copy hidden behind it: hidden', drawn(top(), [copy(0), copy(3, true)], feed) === 0);
+    check('ghost: the drawn copy changes to the tile\'s (main copy hidden): still hidden', drawn(top(), [copy(0, true), copy(3)], feed) === 0);
+    check('ghost: only the tile\'s copy left: still hidden', drawn(top(), [copy(3)], feed) === 0);
+    check('ghost: the player seen by three connections (not three times his mass): hidden', drawn(top(), [copy(0), copy(3, true), copy(4, true)], feed) === 0);
+    /* one pass over the cells: 50 ghosts and 4000 cells */
+    {
+        let s = 11;
+        const rnd = () => ((s = (Math.imul(s, 1103515245) + 12345) & 0x7fffffff) / 0x7fffffff);
+        const gs = [], cs = [];
+        for (let i = 0; i < 50; i++) gs.push(gh(-9000 + rnd() * 18000, -5000 + rnd() * 10000, 500 + ~~(rnd() * 20000)));
+        for (let i = 0; i < 4000; i++) cs.push(cell(-9000 + rnd() * 18000, -5000 + rnd() * 10000, 40 + rnd() * 260, { _lmSrvName: rnd() < 0.3 ? undefined : 'N' + ~~(rnd() * 300) }));
+        const lb = gs.map((_, i) => ({ nick: i % 5 ? 'P' + i : '' }));
+        let reads = 0;
+        const counted = cs.map((c) => new Proxy(c, { get(t, k) { if (k === 'isFood') reads++; return t[k]; } }));
+        drawn(gs, counted, () => { LM.leaderboard = lb; });
+        check('ghost: 50 ghosts and 4000 cells read each cell once (was once per ghost)', reads === 4000, reads + ' reads');
+    }
 }
 
 /* ---------- playing with Full Map: the main socket's flushes ---------- */
