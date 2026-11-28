@@ -414,11 +414,11 @@
             if (W.toastr) W.toastr.info(String(msg).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;'), '', { timeOut: 1800 });
         } catch (e) { }
     }
+    /* the HUD's own mass text (Settings > Mass > Mass format, as the leaderboard and team list) */
     function shortMass(m) {
         m = Math.round(m || 0);
-        if (m >= 1e6) return (m / 1e6).toFixed(1) + 'M';
-        if (m >= 1e4) return (m / 1e3).toFixed(1) + 'k';
-        return String(m);
+        var a = W.application;
+        return String(a && typeof a.shortMassFormat === 'function' ? a.shortMassFormat(m) : m);
     }
     function nickText(n) { return n && n.trim() ? n : t('noName'); }
 

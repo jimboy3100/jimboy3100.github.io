@@ -474,5 +474,27 @@ const sizeOf = m => Math.sqrt(m * 100);
   check('free spectate button from World Spectate: Spectate, then free spectate', fb && sent.join(',') === '1,18' && ctx.legendmod.isFreeSpectate && !ctx.legendmod._isWorldSpectating);
 }
 
+/* the director's mass texts (rows, its leaderboard, the broadcast HUD) follow Settings > Mass >
+ * Mass format: the real shortMass with the core's shortMassFormat and the real hudhelpers formatMass */
+{
+  const root = path.join(__dirname, '..', '..');
+  const v4 = fs.readFileSync(path.join(root, 'ogario', 'ogario.v4.js'), 'utf8').replace(/\r\n/g, '\n');
+  const hh = fs.readFileSync(path.join(root, 'ogario', 'modules', 'hudhelpers.js'), 'utf8').replace(/\r\n/g, '\n');
+  const cut = (s, h) => { const i = s.indexOf(h); if (i < 0) return null; let d = 0; for (let k = s.indexOf('{', i); k < s.length; k++) { if (s[k] === '{') d++; else if (s[k] === '}' && !--d) return s.slice(i, k + 1); } return null; };
+  const sm = cut(src.replace(/\r\n/g, '\n'), '    function shortMass(m) {'), smf = cut(v4, '        shortMassFormat(value) {'), fm = cut(hh, '    function formatMass(mass, mode, shortMass) {');
+  if (!sm || !smf || !fm) check('mass format code found', false);
+  else {
+    const c = { Math, String, Map, Number, defaultmapsettings: { massFormat: 1 } };
+    c.window = c; c.W = c;
+    vm.createContext(c);
+    vm.runInContext('var _massTxt = [new Map(), new Map(), new Map(), new Map()];\n' + fm + '\nwindow.LMHudHelpers = { formatMass: formatMass };\nvar LMHudHelpers = window.LMHudHelpers;\nwindow.application = {' + smf + '};\n' + sm, c);
+    const at = (mf, m) => { c.defaultmapsettings.massFormat = mf; return vm.runInContext('shortMass(' + m + ')', c); };
+    check('director mass: Exact shows 23456 (it showed 23.5k)', at(1, 23456.4) === '23456');
+    check('director mass: 12.3k shows 2.5k from 1000 (it showed 2500)', at(2, 2500) === '2.5k');
+    check('director mass: Auto as the HUD (9999, 23.5k, 1.2M)', at(3, 9999) === '9999' && at(3, 23456) === '23.5k' && at(3, 1234567) === '1.2M');
+    check('director mass: below 1000 a whole number', at(2, 512.6) === '513');
+  }
+}
+
 console.log(fail ? fail + ' FAILED' : 'all passed');
 process.exit(fail ? 1 : 0);
