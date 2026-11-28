@@ -86,6 +86,8 @@ function finish(code) {
 const sleep = ms => new Promise(r => setTimeout(r, ms));
 let id = 0; const pending = new Map(); const errors = []; const logs = [];
 let served = 0, missing = [], probeValue;
+/* every repository file the page loaded (result.json servedPaths: runtime evidence for developers/audit/network.js) */
+const servedPaths = new Set();
 /* console.debug('[lm-probe]', name) from the probe (run.js) starts the probe of that name ('' after
  * the last one): its time goes to probeTimes and <outDir>/progress.json names the running one */
 let probeStart = 0, probeNow = { name: '', at: 0 }, timedOut = null;
@@ -128,6 +130,7 @@ function probeMark(name) {
       const file = swap || path.join(repo, rel);
       if ((u.hostname === 'jimboy3100.github.io' || u.hostname === 'www.legendmod.ml' || u.hostname === 'legendmod.ml') && fs.existsSync(file) && fs.statSync(file).isFile()) {
         served++;
+        if (!swap) servedPaths.add(rel);
         let buf = fs.readFileSync(file);
         if (process.env.JQMIGRATE && rel.endsWith('lib/jquery-3.7.1.min.js')) buf = Buffer.concat([buf, Buffer.from('\n'), fs.readFileSync(process.env.JQMIGRATE)]);
         const body = buf.toString('base64');
@@ -247,7 +250,7 @@ function probeMark(name) {
   [...new Set(errors)].forEach(e => console.log('  ' + e));
   console.log('log errors:', logs.length);
   [...new Set(logs)].slice(0, 25).forEach(e => console.log('  ' + e));
-  fs.writeFileSync(path.join(out, 'result.json'), JSON.stringify({ served, missing: [...new Set(missing)], errors: [...new Set(errors)], errorCount: errors.length,
+  fs.writeFileSync(path.join(out, 'result.json'), JSON.stringify({ served, servedPaths: [...servedPaths].sort(), missing: [...new Set(missing)], errors: [...new Set(errors)], errorCount: errors.length,
     logErrors: [...new Set(logs)], logErrorCount: logs.length, probe: probeValue === undefined ? null : probeValue, probeTimes, timedOut }, null, 2));
   finish(timedOut ? 4 : 0);
 })().catch(e => { console.log('harness error', e); finish(3); });

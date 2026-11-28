@@ -75,13 +75,19 @@ English only: `i18n.js` passes and counts the languages that lack them; see deve
 ## Repository audit (before deleting or moving files)
 
 ```
-node developers/audit/audit.js            # [--no-cross] [--top N] [--quiet]
+node developers/audit/audit.js            # [--no-cross] [--top N] [--quiet] [--network DIR] [--perceptual]
+node developers/audit/perceptual.js       # pictures that look the same but differ in bytes [--max N] [--no-chrome]
+node developers/audit/network.js          # repository files the recorded headless runs loaded [dir]
 ```
 
 Writes `developers/tests/out/audit/` (ignored by git): `summary.txt` (printed too), `classification.json` /
 `.csv` (every tracked file with its class and why), `duplicates.json` (identical files by git blob),
 `reachability.json` (how each file is reached from the entry points), `references.json`, `missing.json`,
-`crossrepo.json`, `inventory.json`. Classes: ACTIVE (reached from an entry point of
+`crossrepo.json`, `inventory.json`, `network.json` (runtime network recording: every repository file a
+recorded smoke.js / run.js page load asked for, from the `servedPaths` of each `result.json` under
+`developers/tests/out`; a file loaded at run time is used whatever the static scan found) and, with
+`--perceptual`, `perceptual.json` (pictures that look alike: 9 x 8 colour cells and a difference hash of
+every picture, decoded by a headless Chrome when found, else real PNGs only). Classes: ACTIVE (reached from an entry point of
 `developers/audit/public-urls.json`: play.html, index.html, the sitemap pages, the userscript, the extension,
 LMmobile, the apps, knowledge/), COMPATIBILITY (old addresses, files other repositories use), GENERATED and
 DEVELOPMENT (rules in `exceptions.json`), HISTORICAL (archived pages in `developers/i18n/scan-config.json`,

@@ -108,7 +108,7 @@ function newest(dir) {
 /* the test Chromes' own temporary profiles in the system temp folder (fs.mkdtempSync names: the
  * prefix of the test and 6 random characters). The tests that start their own Chrome remove them
  * after proc.kill(), which fails while Chrome's child processes still hold the folder. */
-const TEMP_PROFILE = /^lm-(agarloader|bench|cellcolors|cellshadows|ext|extreal|glbatch|launch-ext|launch-prof|lmxupdate|skinbanks|skinqueue|trace|usload)-[A-Za-z0-9]{6}$/;
+const TEMP_PROFILE = /^lm-(agarloader|audit|bench|cellcolors|cellshadows|ext|extreal|glbatch|launch-ext|launch-prof|lmxupdate|skinbanks|skinqueue|trace|usload)-[A-Za-z0-9]{6}$/;
 
 /* a folder changed in the last hour is always kept: a running test also uses folders no Chrome
  * process names (a run folder before its Chrome starts or

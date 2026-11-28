@@ -4,7 +4,8 @@
  *   (as a path, a URL, or a relative name from a page in the same folder);
  * - re-encoded media keep what a player sees: the animated WebP that replaced a GIF has the GIF's
  *   size, frame count, total duration and loop.
- * - pictures re-encoded losslessly at their own address keep their size and bit depth.
+ * - pictures re-encoded losslessly at their own address keep their size and bit depth;
+ * - the audit's perceptual duplicates (PNG decoder) and runtime network recording (servedPaths).
  * node developers/tests/auditmedia.js */
 'use strict';
 const fs = require('fs'), path = require('path');
@@ -133,5 +134,57 @@ Object.keys(PNG).forEach((f) => {
         ok && b.readUInt32BE(16) === w && b.readUInt32BE(20) === h && b[24] === 8 && b.length < before);
 });
 
-console.log(fail ? fail + ' FAILED' : 'all passed');
-process.exit(fail ? 1 : 0);
+
+/* the audit's perceptual duplicates (developers/audit/perceptual.js, PNG decoder without Chrome):
+ * the same picture saved another way (other filter, palette, size, a few pixels changed) is one
+ * group; another picture, or the same shape in another colour, is not */
+{
+    const zlib = require('zlib');
+    const P = require(path.join(repo, 'developers', 'audit', 'perceptual.js'));
+    const crc = (b) => { let c = ~0; for (const x of b) { c ^= x; for (let k = 0; k < 8; k++) c = (c >>> 1) ^ (0xedb88320 & -(c & 1)); } return ~c >>> 0; };
+    const chunk = (type, data) => { const h = Buffer.alloc(8); h.writeUInt32BE(data.length); h.write(type, 4, 'latin1'); const c = Buffer.alloc(4); c.writeUInt32BE(crc(Buffer.concat([Buffer.from(type, 'latin1'), data]))); return Buffer.concat([h, data, c]); };
+    /* RGBA PNG of w x h from px(x, y) -> [r, g, b, a], every row with the given filter (0 none, 1 sub) */
+    const png = (w, h, px, filter) => {
+        const raw = [];
+        for (let y = 0; y < h; y++) {
+            raw.push(filter);
+            const row = [];
+            for (let x = 0; x < w; x++) row.push(...px(x, y));
+            for (let i = 0; i < row.length; i++) raw.push(filter === 1 ? (row[i] - (i >= 4 ? row[i - 4] : 0)) & 255 : row[i]);
+        }
+        const ih = Buffer.alloc(13); ih.writeUInt32BE(w); ih.writeUInt32BE(h, 4); ih[8] = 8; ih[9] = 6;
+        return Buffer.concat([Buffer.from('89504e470d0a1a0a', 'hex'), chunk('IHDR', ih), chunk('IDAT', zlib.deflateSync(Buffer.from(raw))), chunk('IEND', Buffer.alloc(0))]);
+    };
+    const face = (s, col, noise) => (x, y) => { const u = x / s, v = y / s, d = Math.hypot(u - 0.5, v - 0.5);
+        const on = d < 0.45 && !(Math.hypot(u - 0.33, v - 0.38) < 0.07 || Math.hypot(u - 0.67, v - 0.38) < 0.07 || (v > 0.62 && v < 0.7 && Math.abs(u - 0.5) < 0.2));
+        const n = noise && (x * 7 + y * 13) % 29 === 0 ? 9 : 0;
+        return on ? [Math.min(255, col[0] + n), col[1], col[2], 255] : [0, 0, 0, 0]; };
+    const files = {
+        'a.png': png(64, 64, face(64, [230, 40, 40]), 0),
+        'b.png': png(64, 64, face(64, [230, 40, 40], true), 1),
+        'c.png': png(48, 48, face(48, [230, 40, 40]), 1),
+        'blue.png': png(64, 64, face(64, [40, 40, 230]), 0),
+        'other.png': png(64, 64, (x, y) => [x * 4, y * 4, 128, 255], 0),
+        'flat.png': png(16, 16, () => [10, 200, 10, 255], 0)
+    };
+    const inv = { files: Object.keys(files).map((p, i) => ({ path: p, blob: 'b' + i, size: files[p].length })) };
+    const cells = P.pngCells(files['a.png']);
+    check('perceptual: the PNG decoder reads 64x64 RGBA into 9 x 8 colour cells', cells && cells.w === 64 && cells.h === 64 && cells.rgb.length === 216);
+    P.perceptualGroups(inv, repo, { chrome: false, read: (p) => files[p] }).then((res) => {
+        const g = res.groups.map((x) => x.paths.join(','));
+        check('perceptual: re-saved, resized and slightly changed copies are one group, the blue one, another picture and the flat one are not (' + JSON.stringify(g) + ')',
+            g.length === 1 && g[0] === 'a.png,b.png,c.png' && res.skipped.flat === 1 && res.decoder === 'png');
+        /* runtime network recording: servedPaths of every result.json below a folder */
+        const N = require(path.join(repo, 'developers', 'audit', 'network.js'));
+        const tmp = fs.mkdtempSync(path.join(require('os').tmpdir(), 'lm-auditnet-'));
+        fs.mkdirSync(path.join(tmp, 'run1', 'desktop'), { recursive: true });
+        fs.writeFileSync(path.join(tmp, 'run1', 'desktop', 'result.json'), JSON.stringify({ served: 2, servedPaths: ['play.html', 'lib/x.js'] }));
+        fs.writeFileSync(path.join(tmp, 'result.json'), JSON.stringify({ served: 1, servedPaths: ['play.html'] }));
+        fs.writeFileSync(path.join(tmp, 'other.json'), JSON.stringify({ servedPaths: ['nope.js'] }));
+        const net = N.runtimeLoaded(tmp);
+        fs.rmSync(tmp, { recursive: true, force: true });
+        check('network: two recorded runs, play.html loaded in both, lib/x.js in one, other files ignored', net.runs === 2 && net.paths.get('play.html') === 2 && net.paths.get('lib/x.js') === 1 && !net.paths.has('nope.js'));
+        console.log(fail ? fail + ' FAILED' : 'all passed');
+        process.exit(fail ? 1 : 0);
+    });
+}

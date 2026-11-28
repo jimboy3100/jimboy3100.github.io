@@ -14,8 +14,10 @@
 //   UNREACHABLE    no reference of any kind found (still not enough on its own to delete: old
 //                  installations and other sites may load it by URL)
 // Output (ignored by git): developers/tests/out/audit/ summary.txt, classification.json/.csv,
-// duplicates.json, reachability.json, references.json, missing.json, crossrepo.json, inventory.json.
-// Usage: node developers/audit/audit.js [--out DIR] [--no-cross] [--top N] [--quiet]
+// duplicates.json, reachability.json, references.json, missing.json, crossrepo.json, inventory.json,
+// network.json (files the recorded headless runs loaded: network.js) and, with --perceptual, perceptual.json
+// (pictures that look the same but differ in bytes: perceptual.js, headless Chrome when found).
+// Usage: node developers/audit/audit.js [--out DIR] [--no-cross] [--top N] [--quiet] [--network DIR] [--perceptual]
 'use strict';
 const fs = require('fs');
 const path = require('path');
@@ -23,6 +25,7 @@ const { inventory, textFiles, readTexts, otherRepoTexts, globMatcher, readJson, 
 const R = require('./references');
 const { duplicateGroups, folderPairs } = require('./duplicates');
 const { reach, orphanGroups, chain, named } = require('./reachability');
+const { runtimeLoaded } = require('./network');
 
 const CLASSES = ['ACTIVE', 'COMPATIBILITY', 'GENERATED', 'DEVELOPMENT', 'DUPLICATE', 'HISTORICAL', 'UNREACHABLE', 'UNKNOWN'];
 
@@ -276,6 +279,13 @@ function summarize(ctx, res, missing, top) {
     lines.push('Other repositories:');
     for (const c of ctx.cross) lines.push('  ' + c.name.padEnd(18) + (c.present ? c.files + ' text files, ' + c.scan.size + ' reference Legend Mod' : 'not found at ' + c.dir));
     lines.push('  ' + res.external.size + ' Legend Mod files are used by other repositories');
+    if (res.network) {
+        lines.push('');
+        const odd = res.files.filter((f) => f.runtimeRuns && f.class !== 'ACTIVE' && f.class !== 'GENERATED' && f.class !== 'DEVELOPMENT');
+        lines.push('Runtime network recording: ' + res.network.runs + ' recorded headless runs loaded ' + res.network.paths.size + ' repository files' +
+            (res.network.runs ? '; loaded at run time but not reached by the static scan: ' + odd.length : ' (none recorded: run developers/tests/run.js or smoke.js first)'));
+        odd.slice(0, top).forEach((f) => lines.push('  ' + f.path + ' [' + f.class + '] loaded in ' + f.runtimeRuns + ' runs'));
+    }
     const conflicts = res.files.filter((f) => f.note);
     if (conflicts.length) {
         lines.push('');
@@ -295,6 +305,9 @@ function main(argv) {
     const ctx = load(repo, { cache: true, cross: argv.indexOf('--no-cross') < 0 });
     const missing = missingRefs(ctx);
     const res = classify(ctx);
+    /* runtime evidence: what the recorded headless page loads asked for */
+    res.network = runtimeLoaded(path.resolve(opt('--network', path.join(repo, 'developers', 'tests', 'out'))));
+    for (const f of res.files) if (res.network.paths.has(f.path)) f.runtimeRuns = res.network.paths.get(f.path);
     const sum = summarize(ctx, res, missing, top);
     fs.mkdirSync(out, { recursive: true });
     const w = (name, data) => fs.writeFileSync(path.join(out, name), typeof data === 'string' ? data : JSON.stringify(data, null, 1));
@@ -313,6 +326,7 @@ function main(argv) {
     }
     w('references.json', refs);
     w('missing.json', missing);
+    w('network.json', { runs: res.network.runs, loaded: obj(res.network.paths) });
     w('crossrepo.json', ctx.cross.map((c) => ({ name: c.name, dir: c.dir, present: c.present, files: c.files,
         references: c.present ? Array.from(c.scan).map(([f, r]) => ({ file: f, refs: r.refs.map((x) => ({ line: x.line, kind: x.kind, raw: x.raw, status: x.status, target: x.target, comment: x.comment || undefined })) })) : [] })));
     if (argv.indexOf('--quiet') < 0) process.stdout.write(sum.text);
@@ -322,4 +336,17 @@ function main(argv) {
 
 module.exports = { load, loadCross, missingRefs, allowedMatcher, classify, summarize, main, CLASSES, reposBase };
 
-if (require.main === module) main();
+if (require.main === module) {
+    const argv = process.argv.slice(2);
+    const r = main(argv);
+    if (argv.indexOf('--perceptual') >= 0) {
+        const oi = argv.indexOf('--out');
+        const out = path.resolve(oi >= 0 ? argv[oi + 1] : path.join(r.ctx.repo, 'developers', 'tests', 'out', 'audit'));
+        const cls = (p) => (r.res.byPath.get(p) || {}).class;
+        require('./perceptual').perceptualGroups(r.ctx.inv, r.ctx.repo).then((pg) => {
+            pg.groups.forEach((g) => { g.classes = g.paths.map(cls); });
+            fs.writeFileSync(path.join(out, 'perceptual.json'), JSON.stringify(pg, null, 1));
+            console.log('perceptual duplicates: ' + pg.groups.length + ' groups (' + pg.hashed + ' pictures hashed by ' + pg.decoder + ', ' + pg.skipped.notDecoded + ' not decoded), perceptual.json written');
+        });
+    }
+}
