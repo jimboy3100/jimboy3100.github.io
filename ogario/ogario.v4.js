@@ -83781,6 +83781,22 @@ function pickPlayerCellBySize(players, selectBiggest) {
                 else if (lmBgReady(cur)) {
                     this._lmDrawMidPic(ctx, cur, curAlpha);
                 }
+                /* the light of the hour over a Dying Light scene (its grade colour at gradeA): on
+                 * this background canvas only, under the grid, the cells, the viruses and every
+                 * label; kept for the scene's fade after the turn-off, with the scene's share */
+                if (dlBg) {
+                    legendmod._lmDlGrade = typeof dlBg.grade === 'string' ? dlBg.grade : null;
+                    legendmod._lmDlGradeA = legendmod._lmDlGrade ? lmBgAlpha(dlBg.gradeA) : 0;
+                }
+                if (legendmod._lmDlGradeA > 0 && legendmod._lmDlGrade) {
+                    var gradeW = next ? (legendmod._lmMidDl && lmBgReady(cur) ? 1 - fadeT : 0) + (legendmod._lmMidNextDl ? fadeT : 0) :
+                        (legendmod._lmMidDl && lmBgReady(cur) ? 1 : 0);
+                    if (gradeW > 0) {
+                        ctx.globalAlpha = gradeW * legendmod._lmDlGradeA;
+                        ctx.fillStyle = legendmod._lmDlGrade;
+                        ctx.fillRect(legendmod.mapMinX, legendmod.mapMinY, legendmod.mapMaxX - legendmod.mapMinX, legendmod.mapMaxY - legendmod.mapMinY);
+                    }
+                }
             }
             finally {
                 ctx.restore();

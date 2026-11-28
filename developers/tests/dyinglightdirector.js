@@ -280,6 +280,78 @@ check('the new settings: off by default with Dying Light, immersive, full sound,
     }
     D.streamMode = false;
 
+    /* ═══ the light of the hour: gradual, darker towards deep night, the background's only ═══ */
+    {
+        /* a fresh activation (the scenes failed above are not asked again in that one) */
+        await L.disable(); p = L.enable(); flushPics(true); await p;
+        const samples = [];
+        for (let i = 0; i < 600; i++) {
+            endSounds(); advance(1000); flushPics(true);
+            const b = L.getBackground();
+            if (b && b.grade !== undefined) samples.push({ ph: info().phase, a: b.gradeA, g: b.grade, b });
+        }
+        const avg = ph => { const s = samples.filter(x => x.ph === ph); return s.reduce((n, x) => n + x.a, 0) / (s.length || 1); };
+        const steps = samples.slice(1).map((x, i) => Math.abs(x.a - samples[i].a));
+        check('light: a whole cycle of scenes with their light', samples.length >= 590 && ['day', 'dusk', 'night', 'deepNight', 'dawn'].every(ph => samples.some(x => x.ph === ph)));
+        check('light: gradual (at most 0.015 a second), never more than half dark', Math.max(...steps) <= 0.015 && samples.every(x => x.a >= 0 && x.a <= 0.5));
+        check('light: darker from day to dusk to night to deep night, dawn lifts it', avg('day') < avg('dusk') && avg('dusk') < avg('night') && avg('night') < avg('deepNight') &&
+            avg('dawn') < avg('deepNight') && samples.filter(x => x.ph === 'night').some(x => x.a > samples.find(y => y.ph === 'night').a + 0.05));
+        check('light: a colour with it, a new look only when it changed (one a second at most)', samples.every(x => x.a === 0 ? x.g === null : /^rgb\(\d+,\d+,\d+\)$/.test(x.g)) &&
+            L.getBackground() === L.getBackground() && Object.isFrozen(L.getBackground()));
+        L.setIntensity('competitive');
+        advance(1000);
+        check('light: none on the fixed scene (Competitive)', /back0-1920.webp$/.test(L.getBackground().url) && !L.getBackground().grade);
+        L.setIntensity('immersive');
+        advance(1000); flushPics(true); advance(1000);
+    }
+
+    /* ═══ the figures: drawn silhouettes, placed clear of the HUD, in the scene's layer ═══ */
+    {
+        const layer = { kids: [], insertBefore(n, ref) { n.parentNode = this; const i = this.kids.indexOf(ref); this.kids.splice(i < 0 ? this.kids.length : i, 0, n); return n; },
+            removeChild(n) { this.kids.splice(this.kids.indexOf(n), 1); n.parentNode = null; } };
+        const bgc = { style: { zIndex: '3' }, parentNode: layer, get nextSibling() { return layer.kids[layer.kids.indexOf(this) + 1] || null; } }, grid = { style: { zIndex: '4' } };
+        layer.kids.push(bgc, grid);
+        ctx.drawRender = { backgroundCanvas: bgc };
+        ctx.innerWidth = 1000; ctx.innerHeight = 600;
+        /* the minimap at the bottom right, the chat at the bottom left, the leaderboard top right */
+        const hud = { 'minimap-hud': { left: 800, right: 1000, top: 400, bottom: 600 }, 'chat-box': { left: 0, right: 300, top: 380, bottom: 600 },
+            'leaderboard-hud': { left: 820, right: 1000, top: 0, bottom: 260 } };
+        document.getElementById = id => hud[id] ? { getBoundingClientRect: () => Object.assign({ width: 1, height: 1 }, hud[id]) } : null;
+        const got = [];
+        const ins = layer.insertBefore.bind(layer);
+        layer.insertBefore = (n, ref) => { got.push({ n, after: layer.kids[layer.kids.indexOf(ref) - 1] }); return ins(n, ref); };
+        D.reducedMotion = false;
+        for (let i = 0; i < 3600 && got.length < 6; i++) { endSounds(); advance(1000); flushPics(true); }
+        const css = (head.kids.find(n => n.id === 'lm-dl-director-style') || {}).textContent || '';
+        const box = n => { const w = /lm-dl-watcher/.test(n.className), top = parseInt(n.style.top, 10), h = w ? 102 : 204, ww = w ? 46.2 : 122.4;
+            const x0 = /ghost-l/.test(n.className) ? (w ? 30 : 0) : 1000 - (w ? 30 + ww : ww * 0.8); return { x0, x1: x0 + ww, y0: top, y1: top + h }; };
+        const hits = got.filter(g => { const b = box(g.n); return Object.values(hud).some(r => r.left < b.x1 && r.right > b.x0 && r.top < b.y1 && r.bottom > b.y0); });
+        check('figures: drawn silhouettes (SVG made here), no zombie skin picture, no filter', got.length >= 2 &&
+            got.every(g => /^url\("data:image\/svg\+xml,/.test(g.n.style.backgroundImage) && !/webp|png/.test(g.n.style.backgroundImage)) && !/filter:/.test(css));
+        check('figures: both kinds, each moving its own way (lurker leans in from its side, watcher breathes)', got.some(g => /lm-dl-watcher/.test(g.n.className)) &&
+            got.some(g => !/lm-dl-watcher/.test(g.n.className)) && /@keyframes lm-dl-pass-l/.test(css) && /@keyframes lm-dl-pass-r/.test(css) && /@keyframes lm-dl-watch/.test(css));
+        check('figures: sized for phones too (at most 34 % of the short side, 240 px)', /height:min\(34vmin,240px\)/.test(css) && /height:min\(17vmin,120px\)/.test(css));
+        check('figures: placed clear of the HUD parts on the screen', got.every(g => /^\d+px$/.test(g.n.style.top)) && hits.length === 0);
+        check('figures: in the scene\'s layer, right above the map background canvas (under the grid and the cells), no clicks',
+            got.every(g => g.after === bgc && g.n.style.zIndex === '3') && /pointer-events:none/.test(css) && got.every(g => g.n.attrs['aria-hidden'] === 'true'));
+        /* Legend's Reduced motion: only a fade */
+        D.reducedMotion = true;
+        const n1 = got.length;
+        for (let i = 0; i < 3600 && got.length < n1 + 1; i++) { endSounds(); advance(1000); flushPics(true); }
+        check('Reduced motion: the watcher only fades (no movement)', got.length > n1 && got.slice(n1).every(g => /lm-dl-calm/.test(g.n.className) && /lm-dl-watcher/.test(g.n.className)) &&
+            /\.lm-dl-ghost\.lm-dl-calm\{animation-name:lm-dl-fade\}/.test(css) && !/@keyframes lm-dl-fade\{[^}]*transform/.test(css));
+        /* the whole side covered: no figure at all */
+        hud['chat-box'] = { left: 0, right: 1000, top: 0, bottom: 600 };
+        const n2 = got.length;
+        for (let i = 0; i < 1800; i++) { endSounds(); advance(1000); flushPics(true); }
+        check('no free place: no figure', got.length === n2);
+        layer.insertBefore = ins;
+        document.getElementById = () => null;
+        delete ctx.drawRender; delete ctx.innerWidth; delete ctx.innerHeight;
+        D.reducedMotion = true;
+        advance(5000);
+    }
+
     /* ═══ the threat look: compareCells' level, 4 Hz, up after 250 ms, down after 1.5 s ═══ */
     {
         let snap = null;

@@ -775,7 +775,30 @@
     var NIGHT = PHASES[2];
     /* [full, small] widths of the manifest's variants (1920 / 1280 unless listed) */
     var SCENE_W = { back7: [1800, 1200], back8: [1800, 1200] };
-    var GHOSTS = ['zombie2', 'zombie3', 'zombie4', 'zombiebig', 'volatile'];
+    /* The figures: silhouettes drawn for this theme here (SVG, transparent, nothing copied): a
+     * hunched lurker that leans in from the side and draws back, and a tall still watcher with
+     * two faint eyes; both dark with a thin crimson rim, fading out at the feet. Made into
+     * picture addresses once, at the first figure. */
+    var SIL = null;
+    function silhouettes() {
+        if (SIL) return SIL;
+        var svg = function (vb, body, extra) {
+            /* i18n-ok: SVG */
+            return 'url("data:image/svg+xml,' + encodeURIComponent('<svg xmlns="http://www.w3.org/2000/svg" viewBox="' + vb + '">' +
+                '<defs><linearGradient id="f" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#050607"/><stop offset=".72" stop-color="#07090a" stop-opacity=".92"/>' +
+                '<stop offset="1" stop-color="#07090a" stop-opacity="0"/></linearGradient></defs>' +
+                '<path d="' + body + '" fill="url(#f)" stroke="#a12b30" stroke-opacity=".35" stroke-width="1.2" stroke-linejoin="round"/>' + (extra || '') + '</svg>') + '")';
+        };
+        SIL = {
+            lurker: svg('0 0 120 200', 'M40 200L45 152Q41 134 43 120Q31 106 35 86Q39 64 57 54Q61 46 67 42Q71 31 81 31Q93 33 93 45Q93 55 85 59Q91 65 97 77Q105 91 113 101Q117 107 111 109Q105 105 99 99Q93 93 87 89Q85 101 87 113Q91 119 95 123Q99 129 93 129Q87 125 81 117Q77 113 75 117Q73 135 77 151L83 200L71 200L65 157Q61 147 57 157L53 200Z',
+                '<circle cx="86" cy="44" r="1.3" fill="#c4383d" fill-opacity=".55"/>'),
+            watcher: svg('0 0 100 220', 'M50 10C60 10 64 20 63 30C62 40 57 46 56 50C66 52 76 56 80 66C84 80 84 100 86 120C88 136 90 150 88 160C86 164 82 162 82 156C80 140 76 120 72 104C70 120 70 140 68 160L66 218L56 218L52 160L48 160L44 218L34 218L32 160C30 140 30 120 28 104C24 120 20 140 18 156C18 162 14 164 12 160C10 150 12 136 14 120C16 100 16 80 20 66C24 56 34 52 44 50C43 46 38 40 37 30C36 20 40 10 50 10Z',
+                '<circle cx="45" cy="28" r="1.6" fill="#c4383d" fill-opacity=".7"/><circle cx="55" cy="28" r="1.6" fill="#c4383d" fill-opacity=".7"/>')
+        };
+        return SIL;
+    }
+    /* the HUD and the phone controls a figure keeps clear of */
+    var HUD_IDS = ['minimap-hud', 'leaderboard-hud', 'top5-hud', 'stats-hud', 'time-hud', 'target-hud', 'chat-box', 'lm-notif-panel', 'lm-mc-l', 'lm-mc-r', 'lm-mc-sm'];
     /* the manifest's suggestedGain (levels the files to one loudness) ... */
     var SOUNDS = { 'radio-join': 0.5, 'radio-spectate': 0.39, 'radio-profile': 0.87, chime: 0.24, 'death-1': 0.15, 'death-2': 1, 'death-3': 1, 'signal-lost': 1 };
     var RADIO = ['radio-join', 'radio-spectate', 'radio-profile'];
@@ -811,11 +834,22 @@
     var CSS = /* i18n-ok: CSS */
         '#toast-container>.lm-dl-toast{background-color:#171d20;background-image:none;border-left:3px solid #a12b30;color:#d4d8d5;' +
         'width:auto;max-width:min(92vw,360px);opacity:.95}' +
-        '.lm-dl-ghost{position:fixed;bottom:-5vmin;width:30vmin;height:30vmin;background:center/contain no-repeat;filter:brightness(0);' +
-        'opacity:0;pointer-events:none;z-index:1;animation:lm-dl-ghost .6s ease-in-out forwards}' +
-        '.lm-dl-ghost-l{left:-7vmin}.lm-dl-ghost-r{right:-7vmin}' +
-        '.lm-dl-watcher{top:7vh;bottom:auto;width:14vmin;height:14vmin}.lm-dl-watcher.lm-dl-ghost-l{left:1vmin}.lm-dl-watcher.lm-dl-ghost-r{right:1vmin}' +
-        '@keyframes lm-dl-ghost{0%{opacity:0}35%{opacity:var(--lm-dl-a,.35)}65%{opacity:var(--lm-dl-a,.35)}100%{opacity:0}}';
+        /* a figure: at most 34 % of the short side of the screen (240 px), the watcher half of
+         * that; no clicks, never a filter */
+        '.lm-dl-ghost{position:fixed;top:40%;height:min(34vmin,240px);width:min(20.4vmin,144px);background:center bottom/contain no-repeat;' +
+        'opacity:0;pointer-events:none;will-change:transform,opacity;animation:lm-dl-pass-l .6s ease-in-out forwards}' +
+        '.lm-dl-ghost-l{left:calc(min(20.4vmin,144px) * -.22)}.lm-dl-ghost-r{right:calc(min(20.4vmin,144px) * -.22);animation-name:lm-dl-pass-r}' +
+        '.lm-dl-watcher{height:min(17vmin,120px);width:min(7.7vmin,55px);animation-name:lm-dl-watch;animation-timing-function:ease-in-out}' +
+        '.lm-dl-watcher.lm-dl-ghost-l{left:3vw}.lm-dl-watcher.lm-dl-ghost-r{right:3vw}' +
+        '.lm-dl-ghost.lm-dl-calm{animation-name:lm-dl-fade}' +
+        /* the lurker leans in from its side and draws back; the watcher stands, breathing */
+        '@keyframes lm-dl-pass-l{0%{opacity:0;transform:translateX(-55%)}35%{opacity:var(--lm-dl-a,.55);transform:translateX(0)}' +
+        '65%{opacity:var(--lm-dl-a,.55);transform:translateX(6%) rotate(2deg)}100%{opacity:0;transform:translateX(-45%)}}' +
+        '@keyframes lm-dl-pass-r{0%{opacity:0;transform:translateX(55%) scaleX(-1)}35%{opacity:var(--lm-dl-a,.55);transform:translateX(0) scaleX(-1)}' +
+        '65%{opacity:var(--lm-dl-a,.55);transform:translateX(-6%) scaleX(-1) rotate(2deg)}100%{opacity:0;transform:translateX(45%) scaleX(-1)}}' +
+        '@keyframes lm-dl-watch{0%{opacity:0;transform:scale(.97)}40%{opacity:var(--lm-dl-a,.3);transform:scale(1)}' +
+        '70%{opacity:var(--lm-dl-a,.3);transform:scale(1.02) rotate(-1deg)}100%{opacity:0;transform:scale(1)}}' +
+        '@keyframes lm-dl-fade{0%{opacity:0}40%{opacity:var(--lm-dl-a,.3)}70%{opacity:var(--lm-dl-a,.3)}100%{opacity:0}}';
 
     function tx(key) { return typeof W.lmT === 'function' ? W.lmT(key) : key; }
     function warn(what, e) { try { console.warn('[Dying Light] ' + what, e); } catch (e2) { } }
@@ -840,7 +874,7 @@
     var on = false, live = false, gen = 0, timer = 0, acc = 0, runAt = 0, lastTick = 0, late = 0, okTicks = 0, busy = false;
     var phase = null, nextRollAt = 0, lastEventAt = -Infinity, lastAt = {}, lastMajorAt = -Infinity;
     var quietUntil = 0, lastDeathAt = -Infinity, lastSignalAt = -Infinity, deathN = 0, radioN = 0;
-    var shown = null, pend = null, failed = {}, wasRec = false;
+    var shown = null, look = null, pend = null, failed = {}, wasRec = false;
     var audios = [], subs = [], onVis = null, styleEl = null, ghostEl = null, ghostUntil = 0, toastEls = [];
 
     function now() { return W.performance.now(); }
@@ -896,6 +930,7 @@
             wasRec = true;
             phase = rc ? phaseAt(r.ck) : NIGHT;
             scenes(rc ? r.ck : E, rc, phase, constrained);
+            light(rc ? r.ck : E, rc);
             hideGhost();
             return;
         }
@@ -909,6 +944,7 @@
             if (prev && cyc && ph === NIGHT) nightfall(E, p);
         }
         scenes(E, cyc, ph, constrained);
+        light(E, cyc);
         if (ghostEl && E > ghostUntil) hideGhost();
         if (p.events && E >= nextRollAt) {
             nextRollAt = E + p.rollMs * (0.7 + 0.6 * rnd());
@@ -956,6 +992,30 @@
         if (!p) return;
         p.img.onload = p.img.onerror = null;
         if (!p.ok) { try { if (typeof p.img.removeAttribute === 'function') p.img.removeAttribute('src'); } catch (e) { } }
+    }
+    /* The light of the hour: the scene shown gets darker and its colour turns with the cycle,
+     * gradually inside each phase (day clear, dusk a warm dark, night a cold blue-black that
+     * deepens, deep night nearly black with a hint of red, dawn lifting it). Only the map's
+     * background takes it (drawCustomBackgrounds lays the colour over the scene on the background
+     * canvas, under the grid, the cells, the viruses and every label); worked out once a second
+     * (a new look only when it changed), nothing per frame. [cycle ms, r, g, b, alpha] */
+    var LIGHT = [
+        [0, 0, 0, 0, 0], [150000, 10, 8, 6, 0.04], [180000, 34, 14, 8, 0.12], [235000, 12, 10, 14, 0.26],
+        [240000, 6, 10, 18, 0.28], [470000, 4, 8, 16, 0.4], [480000, 10, 4, 8, 0.44], [535000, 14, 3, 6, 0.5], [540000, 22, 10, 8, 0.47], [600000, 0, 0, 0, 0]
+    ];
+    function lightAt(ms) {
+        var t = ((ms % CYCLE_MS) + CYCLE_MS) % CYCLE_MS, i = 1;
+        while (i < LIGHT.length - 1 && LIGHT[i][0] <= t) i++;
+        var a = LIGHT[i - 1], b = LIGHT[i], k = (t - a[0]) / (b[0] - a[0]);
+        var c = function (j) { return Math.round(a[j] + (b[j] - a[j]) * k); };
+        return { c: 'rgb(' + c(1) + ',' + c(2) + ',' + c(3) + ')', a: Math.round((a[4] + (b[4] - a[4]) * k) * 200) / 200 };
+    }
+    /* the scene shown with its light (no cycle: no light, the fixed scene as it is) */
+    function light(E, cyc) {
+        if (!shown) { look = null; return; }
+        var g = cyc ? lightAt(E) : null, c = g && g.a > 0 ? g.c : null, a = c ? g.a : 0;
+        if (look && look.img === shown.img && look.url === shown.url && look.grade === c && look.gradeA === a) return;
+        look = Object.freeze({ url: shown.url, img: shown.img, alpha: shown.alpha, grade: c, gradeA: a });
     }
     /* one picture at a time besides the one shown; a failed one is not asked again this activation */
     function load(url) {
@@ -1074,20 +1134,66 @@
         }
     }
 
-    /* a dark figure at the edge of the screen (decorative, under the HUD, no clicks) */
+    /* Where a figure goes: a side of the screen and a height where it covers none of the HUD
+     * parts or phone controls on the screen (measured at that moment, rare). Its box: the
+     * class sizes above. null: no free place (no figure this time). An unknown screen size:
+     * the middle height of the side. */
+    function place(watcher, side) {
+        var vw = +W.innerWidth || 0, vh = +W.innerHeight || 0;
+        if (!(vw > 0 && vh > 0)) return { side: side, top: null };
+        var m = Math.min(vw, vh) / 100;
+        var h = watcher ? Math.min(17 * m, 120) : Math.min(34 * m, 240), w = watcher ? Math.min(7.7 * m, 55) : Math.min(20.4 * m, 144);
+        var d = W.document, boxes = [];
+        for (var i = 0; i < HUD_IDS.length; i++) {
+            var el = typeof d.getElementById === 'function' ? d.getElementById(HUD_IDS[i]) : null, r = null;
+            try { r = el && typeof el.getBoundingClientRect === 'function' ? el.getBoundingClientRect() : null; } catch (e) { r = null; }
+            if (r && r.width > 0 && r.height > 0) boxes.push(r);
+        }
+        var tops = watcher ? [0.22, 0.36, 0.5, 0.64] : [0.3, 0.44, 0.58, 0.16], sides = [side, side === 'l' ? 'r' : 'l'];
+        for (var s = 0; s < 2; s++) {
+            for (var t = 0; t < tops.length; t++) {
+                var y = Math.round(tops[t] * vh), x0 = sides[s] === 'l' ? (watcher ? vw * 0.03 : 0) : vw - (watcher ? vw * 0.03 + w : w * 0.8), x1 = x0 + w;
+                if (y + h > vh) continue;
+                var free = true;
+                for (var b = 0; b < boxes.length && free; b++) {
+                    var r2 = boxes[b];
+                    if (r2.left < x1 && r2.right > x0 && r2.top < y + h && r2.bottom > y) free = false;
+                }
+                if (free) return { side: sides[s], top: y };
+            }
+        }
+        return null;
+    }
+    /* Its layer: just above the map background canvas (same stacking, the next element), so it
+     * stands in the scene, under the grid, the cells, the viruses, their labels and the HUD; with
+     * no such canvas, low on the page (z-index 1) as before. */
+    function mount(d, el) {
+        var dr = W.drawRender, bc = dr && dr.backgroundCanvas, par = bc && bc.parentNode, z = bc && bc.style ? parseInt(bc.style.zIndex, 10) : NaN;
+        if (par && typeof par.insertBefore === 'function' && isFinite(z)) {
+            el.style.zIndex = String(z);
+            par.insertBefore(el, bc.nextSibling || null);
+            return;
+        }
+        el.style.zIndex = '1';
+        d.body.appendChild(el);
+    }
+    /* a figure at the side of the screen (decorative, no clicks); Legend's Reduced motion: it only
+     * fades (no movement) */
     function ghost(watcher, E) {
         var d = W.document;
         if (!d || !d.body || typeof d.createElement !== 'function') return;
         hideGhost();
+        var at = place(watcher, rnd() < 0.5 ? 'l' : 'r');
+        if (!at) return;
         var el = d.createElement('div'), ms = watcher ? 2500 : 400 + Math.round(400 * rnd());
-        var skin = GHOSTS[Math.floor(rnd() * GHOSTS.length) % GHOSTS.length];
-        el.className = 'lm-dl-ghost ' + (watcher ? 'lm-dl-watcher ' : '') + (rnd() < 0.5 ? 'lm-dl-ghost-l' : 'lm-dl-ghost-r');
+        el.className = 'lm-dl-ghost ' + (watcher ? 'lm-dl-watcher ' : '') + 'lm-dl-ghost-' + at.side + (setting('reducedMotion') ? ' lm-dl-calm' : '');
         el.setAttribute('aria-hidden', 'true');
-        el.style.backgroundImage = 'url("' + BASE + 'banners/dyinglight/skins/' + skin + '-256.webp")';
+        el.style.backgroundImage = watcher ? silhouettes().watcher : silhouettes().lurker;
         el.style.animationDuration = ms + 'ms';
-        if (watcher) el.style.setProperty('--lm-dl-a', '0.18');
+        if (at.top != null) el.style.top = at.top + 'px';
+        if (watcher) el.style.setProperty('--lm-dl-a', '0.3');
         el.addEventListener('animationend', hideGhost);
-        d.body.appendChild(el);
+        mount(d, el);
         ghostEl = el;
         ghostUntil = E + ms + 500;
     }
@@ -1653,7 +1759,7 @@
         timer = 0; acc = 0; runAt = 0; live = false; lastTick = 0; late = 0; okTicks = 0; busy = false;
         phase = null; wasRec = false; nextRollAt = 0; lastEventAt = -Infinity; lastAt = {}; lastMajorAt = -Infinity;
         quietUntil = 0; lastDeathAt = -Infinity; lastSignalAt = -Infinity; deathN = 0; radioN = 0;
-        shown = null; dropPend(); failed = {}; sfxN = {};
+        shown = null; look = null; dropPend(); failed = {}; sfxN = {};
     }
     function start(g) {
         var d = W.document;
@@ -1708,6 +1814,7 @@
         styleEl = null;
         safe('style', function () { if (st && st.parentNode) st.parentNode.removeChild(st); });
         shown = null;
+        look = null;
         safe('scene', dropPend);
     }
 
@@ -1823,7 +1930,7 @@
         start: function (g) { start(g); },
         stop: stop,
         replay: onReplay,
-        background: function () { return on ? shown : null; }
+        background: function () { return on ? look : null; }
     });
     /* its colours over the menu / HUD theme, while on (any intensity) */
     DL.addPart({

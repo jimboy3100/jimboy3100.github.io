@@ -1889,7 +1889,8 @@ const pic = (name, ok) => ({ name: name, naturalWidth: ok ? 64 : 0, naturalHeigh
 function bgCtx() {
     return {
         globalAlpha: 1, depth: 0, draws: [], save() { this.depth++; }, restore() { this.depth--; this.globalAlpha = 1; },
-        drawImage(im, x, y, w, h) { if (im.boom) throw new Error('boom'); this.draws.push(im.name + '@' + Math.round(this.globalAlpha * 100) / 100 + ' ' + [x, y, w, h].join(',')); }
+        drawImage(im, x, y, w, h) { if (im.boom) throw new Error('boom'); this.draws.push(im.name + '@' + Math.round(this.globalAlpha * 100) / 100 + ' ' + [x, y, w, h].join(',')); },
+        fillRect(x, y, w, h) { this.draws.push('fill ' + this.fillStyle + '@' + Math.round(this.globalAlpha * 100) / 100 + ' ' + [x, y, w, h].join(',')); }
     };
 }
 const keepLm = globalThis.legendmod, keepImage = globalThis.Image;
@@ -1924,6 +1925,17 @@ try {
     ctx = bgCtx();
     R.drawCustomBackgrounds(ctx);
     check('  after the fade: only the scene, at its alpha; the Theme setting unchanged', ctx.draws.join('|') === 'night@0.5 -500,-500,1000,1000' && ds.customBackground === 'https://bg.test/theme.png' && !LMd._lmMidPicNext, ctx.draws.join('|'));
+    /* the light of the hour (the director's grade): its colour over the scene, after it, on the
+     * background canvas (the cells, viruses and labels are drawn on the world layers above) */
+    dl.bg = { img: night, alpha: 0.5, grade: 'rgb(6,10,18)', gradeA: 0.3 };
+    ctx = bgCtx();
+    R.drawCustomBackgrounds(ctx);
+    check('  the light of the hour: its colour laid over the scene only, at its strength, context restored',
+        ctx.draws.join('|') === 'night@0.5 -500,-500,1000,1000|fill rgb(6,10,18)@0.3 -500,-500,1000,1000' && ctx.depth === 0, ctx.draws.join('|'));
+    dl.bg = { img: night, alpha: 0.5 };
+    ctx = bgCtx();
+    R.drawCustomBackgrounds(ctx);
+    check('  a scene without light: nothing laid over it', ctx.draws.join('|') === 'night@0.5 -500,-500,1000,1000', ctx.draws.join('|'));
     const bad = pic('bad', false); bad._failed = true;
     dl.bg = { img: bad };
     ctx = bgCtx();
