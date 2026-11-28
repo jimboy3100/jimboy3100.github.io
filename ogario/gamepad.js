@@ -38,7 +38,7 @@
         0: 'hk-split',        // A
         1: 'hk-macroFeed',    // B (held: macro feed)
         2: 'hk-doubleSplit',  // X
-        3: 'hk-quickResp',    // Y (quick respawn, or Play when dead)
+        3: 'hk-quickResp',    // Y (quick respawn, as its key)
         4: 'hk-multiboxswap', // LB (existing units only)
         5: 'hk-split16',      // RB
         9: 'menu'             // Start (toggle menu, like Esc)
@@ -46,8 +46,6 @@
     /* The gamepad's own actions of older versions are the hotkey commands that do the same: a
      * stored or imported map is read with these (saved again only when it changes). */
     var OLD_ACTIONS = { split: 'hk-split', feed: 'hk-macroFeed', doubleSplit: 'hk-doubleSplit', split16: 'hk-split16', multiboxSwap: 'hk-multiboxswap', respawn: 'hk-quickResp' };
-    /* what a button runs when the command is not there (the hotkeys file not loaded yet) */
-    var APP_FALLBACK = { 'hk-split': 'split', 'hk-doubleSplit': 'doubleSplit', 'hk-split16': 'split16' };
     var TRIGGERS = { 6: 1, 7: 1 };  // LT, RT: analog, pressed from the trigger threshold
     var AXIS_MOVE_X = 0, AXIS_MOVE_Y = 1, AXIS_ZOOM = 3;
     var DEAD_ZONE = 0.2;
@@ -344,21 +342,14 @@
         return /^hk-/.test(action) && /split/i.test(action) && !/^hk-show/.test(action);
     }
 
-    /* one held command down or up; macro feed without the hotkeys file goes to the game itself */
-    function holdHk(id, up) {
-        if (hk(id, up) || id !== 'hk-macroFeed') return;
-        var a = app();
-        if (a && a.macroFeed) a.macroFeed(!up);
-    }
-
     /* held hotkeys: keyUp for the ones let go, keyDown for the newly wanted */
     function setHolds(wanted) {
         var id;
         for (id in holdActive) {
-            if (!wanted[id]) { delete holdActive[id]; holdHk(id, true); }
+            if (!wanted[id]) { delete holdActive[id]; hk(id, true); }
         }
         for (id in wanted) {
-            if (!holdActive[id]) { holdActive[id] = true; holdHk(id, false); }
+            if (!holdActive[id]) { holdActive[id] = true; hk(id, false); }
         }
     }
 
@@ -369,25 +360,8 @@
         else if (a.showMenu) a.showMenu();
     }
 
-    function respawn() {
-        var a = app();
-        var s = window.legendmod5 || {};
-        var L = window.legendmod;
-        if (s.quickResp && a && a.quickResp) { a.quickResp(); return; }
-        /* quick respawn off: Play when not in a game. The main player alive while the multibox
-         * unit you control is dead: that unit spawns again, as the swap key does for a dead unit
-         * (multiboxchange: respawn() when it is not active) */
-        if (L && L.play) {
-            var n = window.multiboxPlayerEnabled, u = n && typeof window.getActiveSpect === 'function' ? window.getActiveSpect(n) : null;
-            if (u && u.player && !u.active && typeof u.respawn === 'function') u.respawn();
-            return;
-        }
-        var b = document.querySelector('.btn-play-guest');
-        if (!b || !(b.offsetWidth || b.offsetHeight)) b = document.querySelector('.btn-play');
-        if (b) b.click();
-    }
-
-    /* a button press runs its command as the key does, but for what the pad always did with these */
+    /* a button press runs the same command as its key; the pad's own limits: the swap only between
+     * existing units, and Start toggles the menu */
     function run(action) {
         var a = app();
         switch (action) {
@@ -395,15 +369,12 @@
                 /* only swap between existing units: with none, multiboxswap() would open a new connection */
                 if (a && a.multiboxswap && window.spects && window.spects.length && window.legendmod && window.legendmod.multiBoxPlayerExists) a.multiboxswap();
                 break;
-            case 'hk-quickResp':
-                respawn();
-                break;
             case 'menu':
                 toggleMenu();
                 break;
             default:
                 /* a hotkey without keyUp: one press */
-                if (/^hk-/.test(action) && !hk(action, false) && hasOwn(APP_FALLBACK, action) && a && typeof a[APP_FALLBACK[action]] === 'function') a[APP_FALLBACK[action]]();
+                if (/^hk-/.test(action)) hk(action, false);
         }
     }
 

@@ -8,6 +8,8 @@ const src=fs.readFileSync(process.argv[2] || require('path').join(__dirname, '..
 const v4=fs.readFileSync(require('path').join(__dirname, '..', '..', 'ogario', 'ogario.v4.js'),'utf8');
 const rnA=v4.indexOf('function lmRenameOldHotkeys(map) {'),rnB=v4.indexOf('\n}',rnA);
 const renameSrc=v4.slice(rnA,rnB+2);
+/* the real hotkey commands: a pad button runs the same command as its key (no own fallbacks) */
+const hkSrc=fs.readFileSync(require('path').join(__dirname, '..', '..', 'ogario', 'hotkeysCommand.js'),'utf8');
 let raf=[],listeners={},dlisteners={},pads=[],moves=[],calls=[],focus=true;
 const canvas={dispatchEvent(e){if(e.type==='mousemove')moves.push([e.clientX,e.clientY]);}};
 const ctx={
@@ -20,7 +22,7 @@ const ctx={
 ctx.window=ctx;ctx.addEventListener=(t,f)=>listeners[t]=f;
 ctx.legendmod5={gamepadEnabled:true,gamepadDeadzone:0.2};
 ctx.application={split(){calls.push('split')},macroFeed(on){calls.push('feed:'+on)}};
-vm.createContext(ctx);vm.runInContext(src,ctx);
+vm.createContext(ctx);vm.runInContext(hkSrc,ctx);vm.runInContext(src,ctx);
 const pad=(i,a0=false,b1=false,x=0,y=0)=>({index:i,id:'p'+i,connected:true,buttons:[{pressed:a0},{pressed:b1}],axes:[x,y,0,0]});
 const step=()=>{const q=raf;raf=[];q.forEach(f=>f());};
 let fail=0;const check=(n,c)=>{console.log((c?'ok   ':'FAIL ')+n);if(!c)fail++;};
@@ -53,11 +55,12 @@ function page(o={},pre){
  c.ev={};w.LMEvents={on(n,f){(c.ev[n]=c.ev[n]||[]).push(f);},off(n,f){c.ev[n]=(c.ev[n]||[]).filter(x=>x!==f);}};
  w.legendmod5=Object.assign({gamepadEnabled:true,gamepadDeadzone:0.2},o.settings||{});
  w.application={split(){c.calls.push('split')},doubleSplit(){c.calls.push('doubleSplit')},macroFeed(on){c.calls.push('feed:'+on)},saveSettings(){c.calls.push('saved')}};
- w.hotkeysCommand={
+ vm.createContext(w);vm.runInContext(hkSrc,w);
+ Object.assign(w.hotkeysCommand,{
   'hk-tripleSplit':{keyDown(){c.calls.push('triple')},keyUp:null},
   'hk-hold':{keyDown(){c.calls.push('hold:down')},keyUp(){c.calls.push('hold:up')}},
-  'hk-macroFeed':{keyDown(){c.calls.push('mf:down')},keyUp(){c.calls.push('mf:up')}}};
- vm.createContext(w);if(pre){vm.runInContext(pre,w);w.lmRenameOldHotkeys=vm.runInContext('lmRenameOldHotkeys',w);}vm.runInContext(src,w);
+  'hk-macroFeed':{keyDown(){c.calls.push('mf:down')},keyUp(){c.calls.push('mf:up')}}});
+if(pre){vm.runInContext(pre,w);w.lmRenameOldHotkeys=vm.runInContext('lmRenameOldHotkeys',w);}vm.runInContext(src,w);
  c.w=w;c.G=w.LMGamepad;c.store=st;
  c.step=()=>{const q=c.raf;c.raf=[];q.forEach(f=>f());};
  c.go=()=>{c.L.gamepadconnected({gamepad:c.pads[0]});c.step();};
@@ -219,17 +222,20 @@ const same=(a,b)=>JSON.stringify(a)===JSON.stringify(b);
   check('always on: a pad connected again works again',c.calls.filter(x=>x==='split').length===2); }
 { const c=page({pads:[gp()]});
   check('always on: a pad connected before the file loaded is read',c.raf.length===1&&c.tick===undefined); }
-/* Y (hk-quickResp) with quick respawn off: the main player alive and the multibox unit you control
- * dead: that unit spawns again (as the swap key does); a living unit is left alone */
-{ const c=page();const u={number:4,player:true,active:false,respawn(){c.calls.push('unit-respawn');}};
+/* Y runs hk-quickResp as its key does (the real command and core quickResp): with Quick respawn off
+ * nothing happens, also with a dead multibox unit or in the menu (the pad had its own Play / unit
+ * respawn there before) */
+{ const cutFn=(s,h)=>{const i=s.indexOf(h);if(i<0)return null;let d=0;for(let k=s.indexOf('{',i);k<s.length;k++){if(s[k]==='{')d++;else if(s[k]==='}'&&!--d)return s.slice(i,k+1);}return null;};
+  const qr=cutFn(v4.replace(/\r\n/g,'\n'),'        quickResp() {');
+  const c=page();const u={number:4,player:true,active:false,alive:false,respawn(){c.calls.push('unit-respawn');}};
   c.w.legendmod={play:true};c.w.spects=[{number:1,player:false},u];c.w.multiboxPlayerEnabled=4;
-  c.w.getActiveSpect=n=>c.w.spects.find(s=>s.number===n)||null;
+  c.w.getActiveSpect=n=>c.w.spects.find(s=>s.number===n)||null;c.w.defaultmapsettings={quickResp:false};
+  c.w.document.querySelector=()=>({offsetWidth:1,click(){c.calls.push('play-click');}});
+  vm.runInContext('Object.assign(application,{'+qr+',hideMenu(){window.lmCalls.push("hide")},gameServerConnect(){window.lmCalls.push("reconnect")}});',Object.assign(c.w,{lmCalls:c.calls}));
   c.pads=[gp({3:true})];c.go();c.step();
-  check('Y: the dead unit you control respawns while the main player lives',c.calls.filter(x=>x==='unit-respawn').length===1);
-  u.active=true;c.pads=[gp()];c.step();c.pads=[gp({3:true})];c.step();
-  check('Y: a living unit is not respawned',c.calls.filter(x=>x==='unit-respawn').length===1);
-  c.w.multiboxPlayerEnabled=null;u.active=false;c.pads=[gp()];c.step();c.pads=[gp({3:true})];c.step();
-  check('Y: the main player controlled and alive: nothing, as before',c.calls.filter(x=>x==='unit-respawn').length===1); }
+  c.w.legendmod.play=false;c.pads=[gp()];c.step();c.pads=[gp({3:true})];c.step();
+  const padCalls=c.calls.join();c.calls.length=0;c.w.hotkeysCommand['hk-quickResp'].keyDown();
+  check('Y with quick respawn off: nothing (no unit respawn, no Play click), the same as its key',padCalls===''&&c.calls.join()==='',padCalls); }
 /* Y with quick respawn on runs the real application.quickResp: with multibox units open only the dead
  * unit you control respawns; the main socket is not reconnected (that closed every unit) */
 { const cutFn=(s,h)=>{const i=s.indexOf(h);if(i<0)return null;let d=0;for(let k=s.indexOf('{',i);k<s.length;k++){if(s[k]==='{')d++;else if(s[k]==='}'&&!--d)return s.slice(i,k+1);}return null;};
