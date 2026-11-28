@@ -246,7 +246,7 @@
 "site.index.new": "New:",
 "site.index.replayPauseSpeedAnd": "optional virus sounds; a copy button on the Game Over card. Replays no longer jump to the end at Start.",
 "site.index.newReplayProgressBar": "<b>New:</b> replay progress bar (click to seek), hotkey to enlarge the minimap. <b>New options</b> (off by default): a mass graph on the Game Over card. Virus sounds now work on every server.",
-"site.index.newUpDownIn": "<b>New:</b> Up/Down in the chat box recalls your last messages. <b>New options</b> (off by default): stats at the bottom centre. Pasting a party link in search no longer leaves a dark overlay.",
+"site.index.newUpDownIn": "<b>New:</b> Up/Down in the chat box recalls your last messages. <b>New options</b> (off by default): camera on the centre of mass, stats at the bottom centre. Pasting a party link in search no longer leaves a dark overlay.",
 "site.index.newOptionsOffBy2": "<b>New options</b> (off by default): all-time personal bests with a New best! badge on the Game Over card and mobile Stop on release.",
 "site.index.newOptionOffBy": "<b>New option</b> (off by default): <b>Match history</b>, your last 50 games (mass, time alive, who ate you, server, mode) in a window under the menu.",
 "site.index.gridNoLongerShimmers": "Grid no longer shimmers or shakes while moving; the multibox camera follows your unit smoothly.",
