@@ -57,6 +57,12 @@
       "category": "core"
     },
     {
+      "input": "Alt+R",
+      "action": "Dance (hold)",
+      "notes": "Cells wiggle in place while held",
+      "category": "core"
+    },
+    {
       "input": "Enter",
       "action": "Chat message",
       "notes": "Open chat input / send message",

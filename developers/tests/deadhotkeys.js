@@ -13,12 +13,12 @@ const check = (n, c) => { console.log((c ? 'ok   ' : 'FAIL ') + n); if (!c) fail
 
 const hkSrc = read('ogario/hotkeysCommand.js').replace(/\r\n/g, '\n');
 const v4 = read('ogario/ogario.v4.js').replace(/\r\n/g, '\n');
-const gone = ['hk-switchServerMode', 'hk-showQuest', 'hk-multiboxback', 'hk-dance'];
+const gone = ['hk-switchServerMode', 'hk-showQuest', 'hk-multiboxback'];
 gone.forEach(c => check(c + ': no hotkey command', hkSrc.indexOf("'" + c + "'") < 0));
 /* texts of commands that do not exist are not shipped */
 {
   const en = read('languages/lm-en.js');
-  ['settings.hk-switchServerMode', 'settings.hk-showQuest', 'settings.hk-multiboxback', 'settings.hk-showDevConsole', 'game1.ps.toPrivate', 'settings.hk-dance']
+  ['settings.hk-switchServerMode', 'settings.hk-showQuest', 'settings.hk-multiboxback', 'settings.hk-showDevConsole', 'game1.ps.toPrivate']
     .forEach(k => check(k + ': no text', en.indexOf('"' + k + '"') < 0));
 }
 
@@ -29,9 +29,9 @@ gone.forEach(c => check(c + ': no hotkey command', hkSrc.indexOf("'" + c + "'") 
   const ctx = { hotkeys: hk };
   let err = null;
   try { vm.runInNewContext(v4.slice(a, b + 2) + '\nchanged = lmRenameOldHotkeys(hotkeys);', ctx); } catch (e) { err = e; }
-  check('stored keys on the removed hotkeys dropped', !err && ctx.changed === true && !('-' in hk) && !('ALT+Q' in hk) && !('ALT+R' in hk) && hk.W === 'hk-feed');
-  /* Dance (Alt+R): its state and the method that set it are gone with the hotkey */
-  check('no dance state or method left', !/\bLM\.dance\b|\n        dance\(on\) \{|\n        dance: false,/.test(v4) && read('ogario/spect.js').indexOf('legendmod.dance') < 0);
+  check('stored keys on the removed hotkeys dropped', !err && ctx.changed === true && !('-' in hk) && !('ALT+Q' in hk) && hk.W === 'hk-feed');
+  /* Dance is back: a saved Alt+R on it stays */
+  check('stored Alt+R on Dance kept', hk['ALT+R'] === 'hk-dance');
 }
 
 /* the public relay is the only one: connect() opens it, whatever an old page state says */

@@ -1,5 +1,5 @@
 /* Line split with the real code of ogario/ogario.v4.js and ogario/spect.js: a multibox unit keeps
- * the locked aim like the main cell (also while Limit position would steer it), the time
+ * the locked aim like the main cell (also while Limit position / dance would steer it), the time
  * between its splits is the split macros' one (macroSplitDelay), 2-4 splits per press, the status
  * line names the technique without a piece count, and the aim line is drawn while the lock runs.
  * node developers/tests/linesplit.js */
@@ -12,15 +12,14 @@ let fail = 0;
 const check = (n, c) => { console.log((c ? 'ok   ' : 'FAIL ') + n); if (!c) fail++; };
 
 /* multibox unit aim */
-const sctx = { Math, Number, Date, legendmod: { cursorX: 7069, cursorY: 2356, lineSplitActive: true }, window: { followStraight: true, multiboxPlayerEnabled: 1 } };
+const sctx = { Math, Number, Date, legendmod: { cursorX: 7069, cursorY: 2356, lineSplitActive: true, dance: false }, window: { followStraight: true, multiboxPlayerEnabled: 1 } };
 vm.createContext(sctx);
 const U = vm.runInContext('({number:1,playerX:0,playerY:0,' + cut(sp, '    _lmAimTarget() {', '    sendSpectate() {') + '})', sctx);
 check('line split on a multibox unit with Limit position held: the locked spot', U._lmAimTarget().join() === '7069,2356');
-sctx.legendmod.lineSplitActive = false;
-check('no line split: Limit position steers to the nearest of the 8 directions', U._lmAimTarget().join() === '50000,0');
-/* Dance (Alt+R) is removed: an old dance flag no longer steers the unit */
 sctx.window.followStraight = false; sctx.legendmod.dance = true;
-check('no Limit position: the unit follows the cursor, whatever an old dance flag says', U._lmAimTarget().join() === '7069,2356');
+check('line split on a multibox unit with dance on: the locked spot', U._lmAimTarget().join() === '7069,2356');
+sctx.legendmod.lineSplitActive = false;
+check('no line split: dance steers as before', U._lmAimTarget().join() !== '7069,2356');
 
 /* settings and status line */
 const helper = cut(main, 'window._lmSplitDelay = function (n) {', 'window._lmPopSplitDelay');

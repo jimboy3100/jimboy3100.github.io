@@ -21306,10 +21306,10 @@ function lmFoldClickFollow(s) {
  * Centre, deleted; precision zoom; enlarge the minimap; next / previous profile and Undo profile; the instant replay; Switch server [public/private], whose private relay never had an address; Show/hide quest, whose box nothing filled; the old Multibox toggle back;
  * Open the Lab; the keys that only opened a window or a panel or switched a rarely changed setting
  * (their window, panel or switch stays); Reconnect to the previous server; the Settings profiles
- * window, deleted with the settings profiles; Dance, removed) is free. For the stored hotkeys (loadHotkeys). Returns true when map changed. */
+ * window, deleted with the settings profiles) is free. For the stored hotkeys (loadHotkeys). Returns true when map changed. */
 function lmRenameOldHotkeys(map) {
     if (!map || typeof map !== 'object') return false;
-    var gone = /^hk-(?:lmLab|analytics|performanceMode|mergeRings|el(?:Leagues|Shop|Challenges|Potions|ClaimAll)|replay(?:Pause|Faster|Slower|Fwd|Back|Studio)|middleMultiView|gamepadWindow|lmProfilesWindow|copyServerLink|chatSounds|lmPlugins|hudEditor|prevServer|dance)$/;
+    var gone = /^hk-(?:lmLab|analytics|performanceMode|mergeRings|el(?:Leagues|Shop|Challenges|Potions|ClaimAll)|replay(?:Pause|Faster|Slower|Fwd|Back|Studio)|middleMultiView|gamepadWindow|lmProfilesWindow|copyServerLink|chatSounds|lmPlugins|hudEditor|prevServer)$/;
     var own = function (k) { return Object.prototype.hasOwnProperty.call(map, k); };
     var bound = function (cmd) {
         for (var x in map) if (own(x) && map[x] === cmd) return true;
@@ -23178,6 +23178,14 @@ function thelegendmodproject() {
                 }
             }
         },
+        dance(on) {
+            if (on) {
+                LM.dance = true;
+            } else {
+                LM.dance = false;
+            }
+        },
+
         Botsplit() {
             if (window.core && window.core.Botsplit) window.core.Botsplit();
         },
@@ -39866,6 +39874,7 @@ function thelegendmodproject() {
         selectBiggestCell: true,
         hideSmallBots: false,
         pressedKeys: {},
+        dance: false,
         chatableServer: false,
         connect(t) {
             //console.log('\x1b[32m%s\x1b[34m%s\x1b[0m', consoleMsgLM, ' Connecting to game server:', t);
@@ -42791,20 +42800,22 @@ function thelegendmodproject() {
                         cursorX = _viewServerX;
                         cursorY = _viewServerY;
                     }
-                } else if (window.followStraight && !this.lineSplitActive) {
-                    /* (a running line split keeps its locked cursor over this) */
-                    let d, distance = 50000;
-                    /* Snap to the nearest of the 8 directions (0 up, 1 up-right, 2 right,
-                     * 3 down-right, 4 down, 5 down-left, 6 left, 7 up-left). The sign-only
-                     * test could only reach the diagonals: straight needed dx or dy == 0.
-                     * Cursor on the cell: keep the last direction; none yet: the cursor itself
-                     * (like the multibox unit, spect.js _lmAimTarget). */
-                    var _lmLdx = this.cursorX - this.playerX, _lmLdy = this.cursorY - this.playerY;
-                    if (_lmLdx || _lmLdy) {
-                        d = (Math.round(Math.atan2(_lmLdy, _lmLdx) / (Math.PI / 4)) + 10) % 8;
-                        this._lmLineDir = d;
-                    } else if (this._lmLineDir !== undefined) {
-                        d = this._lmLineDir;
+                } else if ((LM.dance || window.followStraight) && !this.lineSplitActive) {
+                    /* (a running line split keeps its locked cursor over these) */
+                    let d = ~~((Date.now() / 40) % 8),
+                        distance = 50000;
+                    if (window.followStraight) {
+                        /* Snap to the nearest of the 8 directions (0 up, 1 up-right, 2 right,
+                         * 3 down-right, 4 down, 5 down-left, 6 left, 7 up-left). The sign-only
+                         * test could only reach the diagonals: straight needed dx or dy == 0.
+                         * Cursor on the cell: keep the last direction (it used the dance clock). */
+                        var _lmLdx = this.cursorX - this.playerX, _lmLdy = this.cursorY - this.playerY;
+                        if (_lmLdx || _lmLdy) {
+                            d = (Math.round(Math.atan2(_lmLdy, _lmLdx) / (Math.PI / 4)) + 10) % 8;
+                            this._lmLineDir = d;
+                        } else if (this._lmLineDir !== undefined) {
+                            d = this._lmLineDir;
+                        }
                     }
                     switch (d) {
                         case 7:

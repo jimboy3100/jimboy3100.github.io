@@ -116,6 +116,17 @@
                 keyUp: null,
                 type: 'normal'
             },
+			'hk-dance': {
+				get label() { return lmT('settings.hk-dance'); },
+				defaultKey: 'ALT+R',
+				keyDown() {
+				application && application.dance(true);
+				},
+				keyUp() {
+				application && application.dance(false);
+				},
+				type: 'normal'
+			},	
 			/* opens the practice arena window (ogario/modules/practice.js); no default key */
 			'hk-practice': {
 				get label() {

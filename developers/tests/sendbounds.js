@@ -99,7 +99,7 @@ function lmEnv() {
     };
     const ctx = { window: win, console: { log() { }, warn() { }, error() { } }, DataView, ArrayBuffer, Uint8Array, TextEncoder, Date, Math, Number, Array, String, JSON,
         defaultmapsettings: {}, setInterval: () => 1, clearInterval() { }, ReqPing() { }, master: { protocolVersion: 22 } };
-    ctx.LM = { ws: 'wss://example.test', integrity: true };
+    ctx.LM = { dance: false, ws: 'wss://example.test', integrity: true };
     ctx.legendmod = ctx.LM;
     vm.createContext(ctx);
     const lm = vm.runInContext('({' + lmParts.join(',\n') + '})', ctx);
@@ -109,7 +109,7 @@ function lmEnv() {
         translateX: (x) => x, translateY: (y) => y, garixTabID1: 0x0102,
     });
     win.legendmod = lm;
-    ctx.LM = Object.assign(lm, { ws: 'wss://example.test', integrity: true });
+    ctx.LM = Object.assign(lm, { dance: false, ws: 'wss://example.test', integrity: true });
     ctx.legendmod = lm;
     return { lm, ctx, win };
 }
@@ -354,23 +354,23 @@ function lmEnv() {
     }
 }
 
-/* ---- Dance (Alt+R) removed: no spinning aim. Limit position with the cursor on the cell and no
- * direction yet sends the cursor (it took the dance clock's direction), and an old dance flag
- * does nothing ---- */
+/* ---- Dance (Alt+R): while held the cursor goes far out in one of the 8 directions; a running
+ * line split keeps its locked cursor ---- */
 {
     const { lm, win } = lmEnv();
     lm.connectionIntegrity = false; lm.connectionOpened = true; lm.integrity = false;
-    const sent = () => { const b = Buffer.from(lm.socket.sent[lm.socket.sent.length - 1]); return b.readInt32LE(1) + ',' + b.readInt32LE(5); };
-    lm.playerX = 1000; lm.playerY = -2000;
-    win.followStraight = true;
-    lm.sendPosition();
-    check('Limit position, cursor on the cell, no direction yet: the cursor is sent', sent() === '1000,-2000', sent());
-    lm.playerX = 0; lm.playerY = 0;
-    lm.sendPosition();
-    check('Limit position: the nearest of the 8 directions (up-right)', sent() === '50000,-50000', sent());
+    const sent = () => { const b = Buffer.from(lm.socket.sent[lm.socket.sent.length - 1]); return [b.readInt32LE(1), b.readInt32LE(5)]; };
+    lm.playerX = 1000; lm.playerY = -2000; lm.cursorX = 1000; lm.cursorY = -2000;
     win.followStraight = false; lm.dance = true;
     lm.sendPosition();
-    check('an old dance flag does not steer: the cursor is sent', sent() === '1000,-2000', sent());
+    let s = sent();
+    check('dance: the cursor is sent 50000 out in one of the 8 directions', Math.max(Math.abs(s[0] - 1000), Math.abs(s[1] + 2000)) === 50000, s.join());
+    lm.lineSplitActive = true;
+    lm.sendPosition();
+    check('dance during a line split: the locked cursor is sent', sent().join() === '1000,-2000', sent().join());
+    lm.lineSplitActive = false; lm.dance = false;
+    lm.sendPosition();
+    check('dance released: the cursor is sent', sent().join() === '1000,-2000', sent().join());
 }
 
 console.log(failed ? failed + ' check(s) failed' : 'all send bounds checks passed');
