@@ -178,6 +178,7 @@ async function dyingLightLifecycle() {
     check('the script is loaded once, with the release version', scripts.length === 1 && /extras\/dyinglight\.js\?v=3\.7$/.test(scripts[0].src) && /aria-busy/.test(box.innerHTML));
     await runScript();
     check('refused at the question: off, nothing saved', (await p) === false && ctx.LMDyingLight.state === 'off' && snap() === before && pics.length === 0);
+    check('refused at the question: the banner offers it again (not left loading)', !/aria-busy/.test(box.innerHTML) && /dyinglightbanner2/.test(box.innerHTML));
 
     ctx.answer = true;
     p = vm.runInContext('opendyinglight()', ctx);
@@ -270,6 +271,7 @@ async function dyingLightLifecycle() {
         vm.runInContext('stopdyinglight()', c2);
         vm.runInContext(dl, c2); scripts.shift().onload(); await tick(); flushPics(true);
         check('turned off before the script came: stays off', (await q) === false && c2.LMDyingLight.state === 'off' && c2.defaultmapsettings.dyingLight === false);
+        check('...and its banner is not left loading', !/aria-busy/.test(box.innerHTML));
         /* the old flag of an earlier version: moved into the setting once, no question at that start */
         store.dyinglight1load = 'yes'; c2.dyinglight1load = 'yes';
         let asked = 0; c2.confirm = () => { asked++; return true; };

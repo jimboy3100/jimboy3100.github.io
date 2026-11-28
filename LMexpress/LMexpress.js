@@ -3940,16 +3940,16 @@ function opendyinglight(startup) {
     var want = ++_lmDlWant;
     var p = lmDyingLightScript();
     lmDyingLightBanner();
+    /* the banner was drawn as loading while the script came: a refused question or a turn-off
+     * meanwhile changes no state (no dyingLightChange), so it is drawn again here */
     return p.then(function (api) {
         /* turned off again while the script came */
-        if (want !== _lmDlWant) return false;
-        return api.enable({ confirm: startup !== true });
+        if (want !== _lmDlWant) { lmDyingLightBanner(); return false; }
+        return api.enable({ confirm: startup !== true }).then(function (on) { lmDyingLightBanner(); return on; });
     }, function (e) {
         try { console.warn("[Dying Light]", e); } catch (e2) { }
-        if (want === _lmDlWant) {
-            if (startup !== true && window.toastr) toastr.warning(_lmxE("pkg.dlv3life.failed"));
-            lmDyingLightBanner();
-        }
+        if (want === _lmDlWant && startup !== true && window.toastr) toastr.warning(_lmxE("pkg.dlv3life.failed"));
+        lmDyingLightBanner();
         return false;
     });
 }
