@@ -571,27 +571,37 @@ function addFullSpectator(index) {
 
 /* Full Map state per tile, for the console: lmFullMapHealth() counts the tiles per state
  * (Spect._lmTileStateNow) and lists them; perTile ages are ms (-1: none yet). crowd / reason:
- * the grid is held closed (LM._lmSpecReconcile) by the player limit (LM._lmFullMapCrowdCheck)
- * or by Teams / Battle Royale, so the planned tiles are not open. */
+ * the grid is held closed (LM._lmSpecReconcile) by the player limit (LM._lmFullMapCrowdCheck),
+ * by Teams / Battle Royale, by a replay or Practice (no game server) or until the main border
+ * is known, so the planned tiles are not open. What is really seen: covering = the tiles whose
+ * view counts as coverage now (Spect._lmCoverageOk, the test the ghost cells use; a moving tile
+ * covers where it is), missing = planned tiles with no spectator at all. A replay or Practice
+ * showed 15 planned with no tile and no reason. */
 window.lmFullMapHealth = function () {
     var plan = window.lmSpecMode === 'full' ? lmFullMapTilePlan() : null, now = Date.now();
     var h = { planned: plan ? plan.tiles.length : 0, live: 0, moving: 0, calibrating: 0, stalled: 0, connecting: 0, failed: 0, refused: 0, captcha: 0,
-        crowd: false, reason: '', perTile: [] };
+        covering: 0, missing: 0, crowd: false, reason: '', perTile: [] };
     var LM = window.legendmod;
-    if (plan && LM && typeof LM._lmFullMapModeOff === 'function' && LM._lmFullMapModeOff()) h.reason = 'Teams / Battle Royale';
+    if (plan && LM && typeof LM._lmSpecLocal === 'function' && LM._lmSpecLocal()) h.reason = 'replay or Practice (no game server)';
+    else if (plan && LM && typeof LM._lmFullMapModeOff === 'function' && LM._lmFullMapModeOff()) h.reason = 'Teams / Battle Royale';
     else if (plan && LM && LM.integrity && LM._lmFullMapCrowd !== false) {
         h.crowd = LM._lmFullMapCrowd === true;
         h.reason = h.crowd ? 'more than ' + LM_FULLMAP_MAX_PLAYERS + ' players (opens again at ' + LM_FULLMAP_REOPEN_PLAYERS + ' or fewer)' : 'waiting for the player count';
     }
-    var list = window.spects || [];
+    else if (plan && LM && !LM.mapOffsetFixed) h.reason = 'waiting for the map border';
+    var list = window.spects || [], seen = plan ? [] : null;
     for (var i = 0; i < list.length; i++) {
         var s = list[i];
         if (!s || s.player || s.tile == null || typeof s._lmTileStateNow !== 'function') continue;
         var st = s._lmTileStateNow(now), w = s._lmWorldStamp();
+        var covers = typeof s._lmCoverageOk === 'function' && s._lmCoverageOk(now);
         h[st]++;
-        h.perTile.push({ tile: s.tile, number: s.number, state: st, reason: s._lmTileReason || '',
+        if (covers) h.covering++;
+        if (seen && s.tile >= 0 && s.tile < h.planned) seen[s.tile] = true;
+        h.perTile.push({ tile: s.tile, number: s.number, state: st, reason: s._lmTileReason || '', covers: covers,
             camAge: s._lmCamAt > 0 ? now - s._lmCamAt : -1, worldAge: w > 0 ? now - w : -1 });
     }
+    for (var t = 0; t < h.planned; t++) if (!seen[t]) h.missing++;
     h.perTile.sort(function (a, b) { return a.tile - b.tile; });
     return h;
 };

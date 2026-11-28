@@ -46482,6 +46482,9 @@ function thelegendmodproject() {
                     }
                     /* when the whole list last arrived: the server list counts players from it */
                     this._lmLbAt = Date.now();
+                    /* and on which connection: a whole board with nobody in it is a count of 0 for
+                     * Full Map (_lmFullMapCrowdCheck), an empty list before any board is no count */
+                    this._lmLbSeq = this._connectSeq || 0;
                     this.handleLeaderboard();
                     break;
                 case 49: //leaderboard for specific private servers
@@ -54458,9 +54461,13 @@ function thelegendmodproject() {
          * the in-game spectator), never a multibox unit, and leaves the main connection's own
          * spectate state alone (it went through flushSpecsData when no unit was open). Full Map is
          * checked before anything closes: refused (a private server: the toast; a replay or
-         * Practice: quietly), the previous mode stays (the in-game spectator was closed first). */
+         * Practice: quietly), the previous mode stays (the in-game spectator was closed first).
+         * Without the spectator licence (_lmSpecEligible) no mode goes on, quietly: the hotkey set
+         * the mode with its buttons hidden and nothing opened, and the grid opened at the next
+         * border packet once the licence or clan tag was there, without a key press. */
         _lmSpecSetMode(mode) {
             if (mode !== 'ingame' && mode !== 'full') mode = 'off';
+            if (mode !== 'off' && !this._lmSpecEligible()) return;
             if (mode === 'full' && window.lmSpecMode !== 'full') {
                 if (this._lmSpecLocal()) return;
                 if (this._lmFullMapModeOff()) {
@@ -54497,10 +54504,13 @@ function thelegendmodproject() {
          * (opcode 53 lists every player; the bots panel counts the same). Once over, it opens again at
          * LM_FULLMAP_REOPEN_PLAYERS or fewer (no flapping at the limit). _lmFullMapCrowd: undefined
          * until the first leaderboard of a server, then true / false; the grid is re-checked only when
-         * it changes. */
+         * it changes. An empty list is a count only when a whole board of this connection came with
+         * nobody in it (opcode 53, _lmLbSeq): 0 players, the grid may open. Before the first board
+         * (the list connect() emptied) it is no count, as before; it was the same for both, so a
+         * server with nobody listed never opened the grid. */
         _lmFullMapCrowdCheck() {
             var n = this.leaderboard ? this.leaderboard.length : 0;
-            if (!n) return;
+            if (!n && this._lmLbSeq !== (this._connectSeq || 0)) return;
             var max = typeof LM_FULLMAP_MAX_PLAYERS === 'number' ? LM_FULLMAP_MAX_PLAYERS : 180;
             var reopen = typeof LM_FULLMAP_REOPEN_PLAYERS === 'number' ? LM_FULLMAP_REOPEN_PLAYERS : 170;
             var crowd = this._lmFullMapCrowd === true ? n > reopen : n > max;
@@ -54531,8 +54541,20 @@ function thelegendmodproject() {
             if (mode !== 'ingame' && mode !== 'full') return;
             /* a replay or Practice is no game server: open nothing and keep the mode quietly (the
              * "private server" toast turned Full Map off, so it stayed off back on agar.io; an
-             * in-game spectator threw on every Practice border or connected to the replay URL) */
-            if (this._lmSpecLocal()) return;
+             * in-game spectator threw on every Practice border or connected to the replay URL).
+             * A spectator of the live server still open here is closed: the connection flush of
+             * Practice and of the replay join closes them all, this keeps it so if a way in skips it
+             * (its cells would be drawn over the replay or the arena); multibox units stay */
+            if (this._lmSpecLocal()) {
+                var lk = [];
+                for (i = 0; i < sp.length; i++) {
+                    s = sp[i];
+                    if (s && !s.player) { if (typeof s.closeConnection === 'function') s.closeConnection(); }
+                    else if (s) lk.push(s);
+                }
+                if (lk.length !== sp.length) window.spects = lk;
+                return;
+            }
             if (mode === 'ingame') {
                 for (i = 0; i < sp.length; i++) if (sp[i] && !sp[i].player && sp[i].tile == null) return;
                 addSpectator();
@@ -54927,7 +54949,7 @@ function thelegendmodproject() {
                 var pb = pend[pi] && pend[pi]._lmPendingBorder;
                 if (pb && typeof pend[pi].setMapOffset === 'function') pend[pi].setMapOffset(pb[0], pb[1], pb[2], pb[3]);
             }
-            if (($("#nick").val().includes('?') && $("#clantag").val() === window.clanTagLc) || window.proLicenceUID) {
+            if (this._lmSpecEligible()) {
                 if (true) { // LW: always show spectator buttons
                     $('#set-fullSpectator').show();
                     $('#set-ingameSpectator').show();
@@ -54936,7 +54958,17 @@ function thelegendmodproject() {
             } else {
                 $('#set-fullSpectator').hide();
                 $('#set-ingameSpectator').hide();
+                /* the licence or the clan tag went away while a mode was on: its spectators closed
+                 * with the hidden buttons (they stayed open with no button to turn them off, and
+                 * the grid opened again once the licence came back); multibox units stay */
+                if (window.lmSpecMode === 'full' || window.lmSpecMode === 'ingame') this._lmSpecSetMode('off');
             }
+        },
+        /* The spectator modes (in-game spectator, Full Map) are for a licence or the clan tag with
+         * a '?' in the nick: the gate of the buttons (addSpect) and of the mode (_lmSpecSetMode) */
+        _lmSpecEligible() {
+            var nick = $("#nick").val();
+            return !!((typeof nick === 'string' && nick.includes('?') && $("#clantag").val() === window.clanTagLc) || window.proLicenceUID);
         },
         isInView(x, y, size) {
             var x2s = this.canvasWidth / 2 / this.scale;

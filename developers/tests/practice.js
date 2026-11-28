@@ -460,8 +460,20 @@ S.SPLIT_MODES.forEach(mode => {
     w.spects = [{ number: 2, active: false }];
     w.legendmod.play = false;
     let r2;
+    /* entering with Full Map tiles of the live server open: the live connection is closed and the
+     * world flushed as a connection change (flushCellsData() without an argument: it closes every
+     * spectator, flushSpecsData; fullmaplifecycle.js / ingamespect.js), before the session's
+     * stand-in URL is set; the session is then local (LM._lmSpecLocal: no spectator opens) */
+    const calls = [];
+    w.legendmod.closeConnection = function () { calls.push('close:' + this.ws); };
+    w.legendmod.flushCellsData = function () { calls.push('flush' + arguments.length + ':' + this.ws); };
     try { r2 = P.start({}); } catch (e) { r2 = 'threw'; }
     check('practice: nobody alive, no question', toasts.length === 0 && r2 !== false);
+    check('practice entry: the live connection closed, then the connection flush (no argument: every spectator closes), before the practice URL (' + calls.join() + ')',
+        calls[0] === 'close:wss://live.example:443' && calls[1] === 'flush0:wss://live.example:443' && /^lm-practice:/.test(w.legendmod.ws) && P.on === true);
+    calls.length = 0;
+    try { P.stop(); } catch (e) { calls.push('threw'); }
+    check('practice end: the connection flush again (' + calls.join() + ')', calls.some((c) => /^flush0:/.test(c)) && P.on === false);
 }
 
 console.log(fail ? fail + ' check(s) failed' : 'all practice checks passed');

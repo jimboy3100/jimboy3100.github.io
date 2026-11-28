@@ -34,6 +34,11 @@ check('truncated friend information', () => (h.handleMessage(pkt([5, 1, 2])), h.
 /* a whole board: flags 2|4, "a\0", id 7 */
 check('complete leaderboard', () => (h.handleMessage(pkt([53, 6, 97, 0, 7, 0, 0, 0])), h.leaderboard.length === 1 && h.leaderboard[0].nick === 'a' && h.handled === 1));
 check('truncated leaderboard keeps the previous board', () => (h.handleMessage(pkt([53, 6, 98, 0, 7, 0])), h.leaderboard.length === 1 && h.leaderboard[0].nick === 'a' && h.handled === 1));
+/* which connection the last whole board came from (_lmLbSeq): Full Map counts an empty board as 0
+ * players only when it is a whole board of this connection (LM._lmFullMapCrowdCheck) */
+check('a cut-short board marks no receipt for this connection', () => (h._connectSeq = 7, h.handleMessage(pkt([53, 6, 98, 0, 7, 0])), h._lmLbSeq !== 7 && h.leaderboard.length === 1));
+check('a whole board with nobody in it: empty list, received on this connection', () => (h.handleMessage(pkt([53])), h.leaderboard.length === 0 && h._lmLbSeq === 7 && h.handled === 2));
+check('a whole board: received on this connection', () => (h._connectSeq = 8, h.handleMessage(pkt([53, 6, 97, 0, 7, 0, 0, 0])), h.leaderboard.length === 1 && h._lmLbSeq === 8 && h.handled === 3));
 check('truncated leaderboard 54 header', () => (h.handleMessage(pkt([54, 1])), h.leaderboard.length === 1));
 check('truncated private leaderboard 49', () => (h.handleMessage(pkt([49, 1, 0])), h.leaderboard.length === 1));
 check('truncated viewport information', () => (h.handleMessage(pkt([17, 0, 0, 0, 0])), true));

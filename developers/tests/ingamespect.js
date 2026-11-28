@@ -32,7 +32,7 @@ function block(start, from) {
     return null;
 }
 const appMethods = ['        setShowIngameSpectator() {', '        setShowFullSpectator() {', '        setIngameSpectator() {', '        setFullSpectator() {'].map((m) => [m, block(m)]);
-const lmMethods = ['        addSpect() {', '        _lmSpecSetMode(mode) {', '        _lmFullMapModeOff() {', '        _lmFullMapCrowdCheck() {', '        _lmSpecLocal() {', '        _lmSpecReconcile() {', '        flushSpecsData() {', '        _lmSpawnEndsSpectate() {', '        _lmMbStop() {'].map((m) => [m, block(m)]);
+const lmMethods = ['        addSpect() {', '        _lmSpecEligible() {', '        _lmSpecSetMode(mode) {', '        _lmFullMapModeOff() {', '        _lmFullMapCrowdCheck() {', '        _lmSpecLocal() {', '        _lmSpecReconcile() {', '        flushSpecsData() {', '        _lmSpawnEndsSpectate() {', '        _lmMbStop() {'].map((m) => [m, block(m)]);
 /* sendNick up to the first server-specific join (everything after it only builds the spawn packet) */
 const nickStart = src.indexOf('        sendNick(nick) {'), nickEnd = src.indexOf('            // ===== Garix join', nickStart);
 /* the helpers are new: an older file without them still runs (and shows the old failures) */
@@ -350,7 +350,10 @@ function realEnv() {
         setTimeout: (fn, ms) => { timers.set(++timerId, { fn, ms }); return timerId; },
         clearInterval: (id) => { timers.delete(id); }, clearTimeout: (id) => { timers.delete(id); },
         toastr: { error() { ctx.toasts = (ctx.toasts || 0) + 1; }, warning(t) { (ctx.warnings = ctx.warnings || []).push(t); } }, lmT: (k) => k, Premadeletter123: 'LM',
-        $: (sel) => ({ val: () => (sel === '#nick' ? 'player' : ''), show() { return this; }, hide() { return this; } }),
+        /* the nick and clan tag fields (ctx.nick / ctx.clantag) and the buttons' visibility (ctx.vis) */
+        $: (sel) => ({ val: () => (sel === '#nick' ? ctx.nick : sel === '#clantag' ? ctx.clantag : ''),
+            show() { ctx.vis[sel] = true; return this; }, hide() { ctx.vis[sel] = false; return this; } }),
+        nick: 'player', clantag: '', vis: {},
         lmSetMbUnit: (u) => { ctx.multiboxPlayerEnabled = +u || null; },
         WebSocket: { CONNECTING: 0, OPEN: 1 },
         defaultmapsettings: {}, profiles: [], master: { clientVersion: 1, protocolVersion: 1 },
@@ -780,6 +783,121 @@ for (const withUnit of [false, true]) {
         const ig = g.ingame()[0];
         g.LM.leaderboard.push({ nick: 'y' }); g.LM._lmFullMapCrowdCheck(); g.LM.addSpect();
         check('    ... 200 players: the in-game spectator opens and stays' + tag, !!ig && !ig.closedByUser && g.ingame().length === 1 && g.unitOk());
+    }
+    /* (22b) leaderboard received vs leaderboard length: an empty list is a count of 0 only when a whole
+     * board of this connection (opcode 53, _lmLbSeq = _connectSeq) listed nobody; before the first
+     * board, or after one of an earlier connection, it decides nothing. It was the same for both: a
+     * server with nobody listed never opened the grid, and one emptied after 181 stayed closed */
+    {
+        const e = mk();
+        const lb = (n, seq) => { e.LM.leaderboard = Array.from({ length: n }, (_, i) => ({ nick: 'p' + i })); if (seq != null) e.LM._lmLbSeq = seq; e.LM._lmFullMapCrowdCheck(); };
+        Object.assign(e.LM, { _lmFullMapCrowd: undefined, _connectSeq: 4, _lmLbSeq: 3 });
+        e.app.setShowFullSpectator(); e.LM.addSpect();
+        lb(0);
+        check('(22b) an empty list, last whole board from an earlier connection: no count, nothing opened' + tag, e.LM._lmFullMapCrowd === undefined && e.tiles().length === 0);
+        lb(0, 4);
+        check('    ... a whole board of this connection with nobody in it: 0 players, the 15 tiles open' + tag, e.LM._lmFullMapCrowd === false && e.tiles().length === 15 && e.unitOk());
+        lb(181, 4);
+        check('    ... 181 players: closed again' + tag, e.LM._lmFullMapCrowd === true && e.tiles().length === 0 && e.unitOk());
+        lb(175, 4);
+        check('    ... 175: still closed (opens at 170)' + tag, e.tiles().length === 0);
+        lb(0, 4);
+        check('    ... everyone gone (a whole empty board): open again' + tag, e.LM._lmFullMapCrowd === false && e.tiles().length === 15 && e.ctx.lmSpecMode === 'full');
+        const t = mk();
+        Object.assign(t.LM, { _lmFullMapCrowd: undefined, _connectSeq: 2, gameMode: ':teams' });
+        t.app.setShowIngameSpectator();
+        t.app.setShowFullSpectator(); lb.call(null, 0); t.LM.leaderboard = []; t.LM._lmLbSeq = 2; t.LM._lmFullMapCrowdCheck(); t.LM.addSpect();
+        check('    ... Teams: an empty board opens no grid either' + tag, t.tiles().length === 0 && t.ctx.lmSpecMode === 'ingame' && t.unitOk());
+    }
+    /* (25) the licence (or clan tag with '?' in the nick) changes: the buttons and the open spectators
+     * follow it. Lost while a mode is on: the next border packet hides the buttons and turns the mode
+     * off with its spectators (they stayed open behind hidden buttons); without it the keys turn
+     * nothing on (they set the mode with nothing open, and the grid opened at a later border packet
+     * once the licence was there); back: buttons shown, nothing opens without a key press */
+    for (const mode of ['full', 'ingame']) {
+        const e = mk();
+        const press = () => (mode === 'full' ? e.app.setShowFullSpectator() : e.app.setShowIngameSpectator());
+        const mine = () => (mode === 'full' ? e.tiles() : e.ingame());
+        press(); e.LM.addSpect();
+        const open0 = mine();
+        check('(25) ' + mode + ' with the licence: on, buttons shown' + tag, open0.length === (mode === 'full' ? 15 : 1) && e.ctx.vis['#set-fullSpectator'] === true && e.ctx.vis['#set-ingameSpectator'] === true);
+        e.ctx.proLicenceUID = null;
+        e.LM.addSpect();
+        check('    ... licence gone: the next border packet hides the buttons, the mode off, its spectators closed, the unit kept' + tag,
+            e.ctx.vis['#set-fullSpectator'] === false && e.ctx.vis['#set-ingameSpectator'] === false && e.ctx.lmSpecMode === 'off' && !e.ctx.fullSpectator && !e.ctx.ingameSpectator &&
+            open0.every((s) => s.closedByUser && !s.socket) && mine().length === 0 && e.unitOk());
+        const n0 = e.sockets.length;
+        e.app.setShowFullSpectator(); e.app.setShowIngameSpectator(); e.LM.addSpect(); e.LM.addSpect();
+        check('    ... no licence: the keys turn nothing on (no mode, no socket)' + tag, e.ctx.lmSpecMode === 'off' && !e.ctx.fullSpectator && !e.ctx.ingameSpectator && e.sockets.length === n0 && !e.ctx.toasts);
+        e.ctx.nick = 'me?'; e.ctx.clantag = 'ZZX';
+        e.LM.addSpect();
+        check('    ... the clan tag with \'?\' in the nick: buttons shown, nothing opened without a key' + tag, e.ctx.vis['#set-fullSpectator'] === true && e.ctx.lmSpecMode === 'off' && e.sockets.length === n0);
+        press();
+        check('    ... the key: on again' + tag, e.ctx.lmSpecMode === mode && mine().length === (mode === 'full' ? 15 : 1) && e.unitOk());
+        e.ctx.clantag = 'OTHER';
+        e.LM.addSpect();
+        check('    ... another clan tag: off again, spectators closed' + tag, e.ctx.lmSpecMode === 'off' && mine().length === 0 && e.ctx.vis['#set-fullSpectator'] === false && e.unitOk());
+    }
+    /* (26) a server change while the tiles connect (LM.connect: flushSpecsData, then the new server's
+     * border): the old sockets' events that still come (open, message, error, close) and their timers
+     * (reconnect, 114 refusal wait) change nothing: no socket, timer or spectator comes back for the old
+     * server; the new grid opens only with the new border, on the new server */
+    {
+        const e = mk();
+        e.app.setShowFullSpectator();
+        const old = e.tiles(), socks = old.map((s) => s.socket);
+        const hs = socks.map((s) => [s.onopen, s.onmessage, s.onerror, s.onclose]);
+        old[0].socket.readyState = 1; old[0].socket.onopen();
+        old[1].socket.readyState = 1; old[1].socket.onopen(); old[1]._lmRefusePending();
+        e.drop(old[2]); /* its reconnect is pending */
+        const pending = e.timers.size;
+        e.LM.flushSpecsData();
+        Object.assign(e.LM, { ws: 'wss://next', mapOffsetFixed: false });
+        const n0 = e.sockets.length, t0 = e.timers.size;
+        const key = new Uint8Array([241, 1, 0, 0, 0]).buffer;
+        socks.forEach((s, i) => { s.readyState = 1; const h = hs[i]; if (h[0]) h[0](); if (h[1]) h[1]({ data: key }); if (h[2]) h[2](); s.readyState = 3; if (h[3]) h[3](); });
+        [...e.timers.values()].forEach((t) => t.fn());
+        check('(26) server change while the tiles connect: the old sockets\' late events and timers open nothing, arm nothing, bring no spectator back' + tag,
+            pending >= 2 && t0 === 0 && e.timers.size === 0 && e.sockets.length === n0 && e.ctx.spects.filter((s) => !s.player).length === 0 &&
+            old.every((s) => s.closedByUser && !s.socket && !s.protocolKey && s._lmTileState !== 'refused'), [pending, t0, e.timers.size, e.sockets.length - n0].join('/'));
+        e.LM.addSpect();
+        check('    ... nothing opens before the new server\'s border, the mode stays full' + tag, e.tiles().length === 0 && e.ctx.lmSpecMode === 'full' && e.sockets.length === n0);
+        e.LM.mapOffsetFixed = true; e.LM.addSpect();
+        check('    ... the new border: 15 new tiles, on the new server only' + tag, e.tiles().length === 15 && e.tiles().every((s) => old.indexOf(s) < 0) &&
+            e.sockets.slice(n0).length === 15 && e.sockets.slice(n0).every((s) => s.url === 'wss://next'));
+    }
+    /* (27) the grid partly available: lmFullMapHealth counts what is really there: live, moving,
+     * calibrating, refused (114), captcha (85), failed; covering = the views the ghost cells count as
+     * coverage (live and moving), missing = planned tiles with no spectator; a replay / Practice and
+     * the wait for the main border say why nothing is open (15 planned with no tile and no reason) */
+    {
+        const e = mk();
+        e.app.setShowFullSpectator();
+        const t = e.tiles().slice().sort((a, b) => a.tile - b.tile), now = Date.now();
+        t.forEach((s) => { s.socket.readyState = 1; s.socket.onopen(); s.mapOffsetFixed = true; s._lmOffsetFixedAt = now - 6000; });
+        t.slice(0, 10).forEach((s) => e.live(s, now));
+        t[9].viewX += 500;
+        t[10]._lmSpectStop('refused', 'spectate mode is full (opcode 114)', 'pkg.fmg4w.spRefused');
+        t[11]._lmSpectStop('refused', 'spectate mode is full (opcode 114)', 'pkg.fmg4w.spRefused');
+        t[12]._lmSpectStop('captcha', 'captcha requested (opcode 85)', 'pkg.fmg4w.spCaptcha');
+        t[13]._reconnectAttempts = 8; e.drop(t[13]);
+        Object.assign(t[14], { viewX: 0, viewY: 0, scale: 0.4, _lmCamAt: now, time: now, _lmWorldAt: now }); /* fresh, orientation not verified */
+        let h = e.ctx.lmFullMapHealth();
+        check('(27) partial grid: 9 live, 1 moving, 1 calibrating, 2 refused, 1 captcha, 1 failed; 10 covering, none missing' + tag,
+            h.planned === 15 && h.live === 9 && h.moving === 1 && h.calibrating === 1 && h.refused === 2 && h.captcha === 1 && h.failed === 1 && h.covering === 10 && h.missing === 0 &&
+            h.perTile.length === 15 && h.perTile.filter((p) => p.covers).length === 10 && h.reason === '', JSON.stringify(h, (k, v) => (k === 'perTile' ? undefined : v)));
+        e.ctx.spects = e.ctx.spects.filter((s) => s !== t[3]); /* (its socket stays open, outside spects: closed at the end) */
+        h = e.ctx.lmFullMapHealth();
+        check('    ... a tile with no spectator at all: missing 1, covering 9' + tag, h.missing === 1 && h.live === 8 && h.covering === 9 && h.perTile.length === 14);
+        e.LM.mapOffsetFixed = false;
+        check('    ... main border not known: the reason says so' + tag, /border/.test(e.ctx.lmFullMapHealth().reason));
+        e.LM.mapOffsetFixed = true;
+        Object.assign(e.LM, { ws: 'lm-practice://local', integrity: false });
+        e.LM.addSpect();
+        h = e.ctx.lmFullMapHealth();
+        check('    ... Practice: every tile closed (no spectator of the live server kept), 15 missing, the reason says why, the unit kept' + tag,
+            e.tiles().length === 0 && t.every((s) => s === t[3] || !s.socket) && h.missing === 15 && h.covering === 0 && /Practice/.test(h.reason) && e.ctx.lmSpecMode === 'full' && e.unitOk(), JSON.stringify([h.missing, h.reason]));
+        t[3].closeConnection();
     }
 }
 

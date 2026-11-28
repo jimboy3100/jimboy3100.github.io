@@ -737,7 +737,8 @@ for (const [d, vnr] of [[0, 0], [3, 2]]) {
         /* the main border arrives: LM.setMapOffset ends with addSpect, which applies the pending border */
         Object.assign(LM, real);
         ctx.$ = () => ({ val: () => '', show() { return this; }, hide() { return this; } });
-        const m = vm.runInContext('({' + cut(core, '        addSpect() {') + '})', ctx);
+        const m = vm.runInContext('({' + cut(core, '        addSpect() {') + ', ' + cut(core, '        _lmSpecEligible() {') + '})', ctx);
+        LM._lmSpecEligible = m._lmSpecEligible;
         m.addSpect.call(LM);
         check('main border fixed: the pending unit border is applied', sp.mapOffsetFixed && !sp._lmPendingBorder);
         check('  ... the pellet and the cell that came before it are where the unit frame puts them', !!food && !!body && near(food.targetX, sp.getX(1000), 1e-6) && near(food.targetY, sp.getY(2000), 1e-6) &&

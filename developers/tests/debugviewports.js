@@ -440,6 +440,19 @@ const covers = (plan, vw, vh, half) => {
         check('live: no two drawn boxes overlap (the seams were drawn as two parallel lines)' + tag, drawn.length === 15 && !crossing.length, drawn.length + ' ' + crossing.length + ' ' + crossing.slice(0, 4).join(' '));
         check('live: every drawn box is a real view and inside it' + tag, !notInView.length, notInView.join(' '));
         check('live: neighbouring drawn boxes meet (gap or overlap at most 1 unit)' + tag, meetX <= 1 && meetY <= 1, [meetX.toFixed(2), meetY.toFixed(2)]);
+        /* the trim is drawing only: what the coverage readers get (_lmServerViewDisplay: the ghost
+         * cells, the draw-only units, the camera box) is the whole estimated server view, the same
+         * before and after a frame drew the trimmed boxes, and wider than the drawn box at the seams */
+        {
+            const before = sps.map((sp) => sp._lmServerViewDisplay().slice());
+            const again = e.frame().filter((b) => b.label !== 'map');
+            const after = sps.map((sp) => sp._lmServerViewDisplay(e.dr._lmGhostCovR || [0, 0, 0, 0]).slice());
+            const changed = sps.filter((sp, i) => before[i].some((v, k) => v !== after[i][k]));
+            const cut = again.filter((b) => { const sp = sps.find((p) => 'Viewport# ' + p.number === b.label), r = real(sp); return b.minX > r.minX + 50 || b.maxX < r.maxX - 50 || b.minY > r.minY + 50 || b.maxY < r.maxY - 50; });
+            const grid = (e.dr._lmViewGrid || []).slice(0, 15);
+            const gridReal = grid.every((g) => { const sp = sps.find((p) => 'Viewport# ' + p.number === g.name), r = sp && sp._lmServerViewDisplay(); return !!r && r.every((v, k) => Math.abs(v - g.r[k]) < 1e-9); });
+            check('live: drawn boxes cut at the seams (' + cut.length + '), the coverage views stay the whole server view (their grid entries too)' + tag, cut.length >= 12 && !changed.length && grid.length === 15 && gridReal, changed.length);
+        }
         /* the full grid is drawn as before (each overlapping pair cut in the middle of its overlap,
          * one pass over the real views): borders that meet, the look the owner asked for */
         const oldTrim = drawn.map((b) => [b.label, [b.minX, b.minY, b.maxX, b.maxY]]);
@@ -585,6 +598,20 @@ const covers = (plan, vw, vh, half) => {
     cam(9000, 6000);
     check('culling box: a dead unit\'s view is not added', near(box(), [7400, 5100, 10600, 6900]), box());
     NOW = null;
+}
+
+/* 13. no code takes the trimmed boxes for coverage: the drawn boxes (drawRender._lmViewGrid and its
+ *     d entries, cut by _lmViewTrim) are used only inside drawViewPorts / _lmViewTrim; every reader
+ *     of a spectator's coverage (the ghost cells, the draw-only units, the camera box) asks the
+ *     spectator for its estimated server view (_lmServerViewDisplay) */
+{
+    const dvp = methods[0][1], trim = methods[1][1];
+    const at = (word) => { const r = []; for (let i = src.indexOf(word); i >= 0; i = src.indexOf(word, i + 1)) r.push(i); return r; };
+    const inside = (i, body) => { const b = src.indexOf(body); return i >= b && i < b + body.length; };
+    const gridUse = at('_lmViewGrid').concat(at('_lmViewTrim(')).filter((i) => !inside(i, dvp) && !inside(i, trim) && !/^\s*\*/.test(src.slice(src.lastIndexOf('\n', i) + 1, i)));
+    const covUse = at('._lmServerViewDisplay(').filter((i) => !inside(i, dvp));
+    check('the trimmed boxes are read nowhere but drawViewPorts / _lmViewTrim; the other coverage readers (' + covUse.length + ') use the server view',
+        gridUse.length === 0 && covUse.length >= 3, gridUse.map((i) => src.slice(src.lastIndexOf('\n', i) + 1, src.indexOf('\n', i)).trim()).join(' | '));
 }
 
 console.log(failed ?'FAILED ' + failed : 'all debugviewports checks passed');

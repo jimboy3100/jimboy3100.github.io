@@ -4,7 +4,9 @@
  * 1. spectators (ogario/spect.js with LM._lmSpecSetMode / _lmSpecReconcile / addSpect /
  *    flushSpecsData of ogario.v4.js): Full Map on (15 tiles, handshake, intervals running), a few
  *    tiles dropped by the server and reconnected, in-game spectator, a multibox unit that dies,
- *    a server switch, Full Map off: back to no socket, timer, interval or spectator each round;
+ *    a server switch, Full Map off: back to no socket, timer, interval or spectator each round,
+ *    and no observation (the cells each tile saw, in the per-connection index lmObsTrack /
+ *    lmObsOfSource of ogario.v4.js) left in the index or the world;
  *    the death-menu listeners of a unit are added once only;
  * 1b. Multibox 2.0 (the real lmMbPlayers, application.mbEnable / mbAddPlayer / mbRemovePlayer /
  *    mbDisable, spect.js addBox and the units' own cells, LM.flushCellsData of a server change):
@@ -92,6 +94,8 @@ const S = (() => {
     };
     ctx.window = ctx;
     vm.createContext(ctx);
+    /* the per-connection observation index of the core (a spectator's flushCellsData empties it) */
+    vm.runInContext(cut(src, 'var _lmSrcObs = new Map();', '/* Speed of a cell'), ctx);
     vm.runInContext(spectSrc + '\n;window.Spect = Spect;', ctx);
     /* the core's "a player of ours alive" test, which spect.js calls on a death */
     vm.runInContext(cut(src, 'function lmMbAlive(p) {', 'window.lmMbAlive = lmMbAlive;'), ctx);
@@ -113,22 +117,34 @@ const S = (() => {
         sp.handleMessage(t);
         sp.setMapOffset(-h, -h, h, h);
     }
+    /* cells a tile sees (in the world and its connection's index; removeCell takes them out of both) */
+    function observe(sp, k) {
+        for (let i = 0; i < k; i++) {
+            const c = { id: sp.number * 1e6 + i, spectator: sp.number, removed: false,
+                removeCell() { if (this.removed) return; this.removed = true; ctx.lmObsUntrack(this); const j = LM.cells.indexOf(this); if (j >= 0) LM.cells.splice(j, 1); } };
+            LM.cells.push(c);
+            ctx.lmObsTrack(c, sp.number);
+        }
+    }
+    const obsLeft = () => { let n = 0; ctx._lmSrcObs.forEach((set) => { n += set.size; }); return n + LM.cells.filter((c) => c.spectator > 0).length; };
     const drop = (sp) => { const s = sp.socket; if (!s) return; s.readyState = 3; sockets.delete(s); s.onclose({ code: 1006 }); };
     const live = () => [...sockets].filter((s) => s.onmessage).length;
-    function state() { const c = C.count(); return { sockets: live(), timeouts: c.to, intervals: c.iv, spects: ctx.window.spects.length, doc: docL.size() }; }
-    let peakSockets = 0, peakIntervals = 0, roundsOk = 0, maxTiles = 0, sentOk = true;
+    function state() { const c = C.count(); return { sockets: live(), timeouts: c.to, intervals: c.iv, spects: ctx.window.spects.length, doc: docL.size(), obs: obsLeft() }; }
+    let peakSockets = 0, peakIntervals = 0, roundsOk = 0, maxTiles = 0, sentOk = true, peakObs = 0;
     const after = [];
     function round(r) {
         LM._lmSpecSetMode('full');
         const tiles = ctx.window.spects.filter((s) => s.tile != null);
         maxTiles = Math.max(maxTiles, tiles.length);
         tiles.forEach(handshake);
+        tiles.forEach((s) => observe(s, 20));
         C.advance(1500);
         if (!tiles.every((s) => s.socket && s.socket.sent > 2)) sentOk = false;
         /* three tiles dropped by the server: each reconnects once after its backoff */
         tiles.slice(0, 3).forEach(drop);
         C.advance(1100);
         tiles.slice(0, 3).forEach(handshake);
+        tiles.slice(0, 3).forEach((s) => observe(s, 20));
         LM.addSpect(); /* the next main border packet: nothing new opens */
         /* a multibox unit that dies with the main player dead: the menu and its listeners */
         ctx.addBox();
@@ -137,9 +153,10 @@ const S = (() => {
         unit.terminate();
         LM.play = true;
         const st = state();
-        peakSockets = Math.max(peakSockets, st.sockets); peakIntervals = Math.max(peakIntervals, st.intervals);
+        peakSockets = Math.max(peakSockets, st.sockets); peakIntervals = Math.max(peakIntervals, st.intervals); peakObs = Math.max(peakObs, st.obs);
         if (r % 4 === 1) {
-            /* server switch while Full Map is on (LM.connect flushes the spectators) */
+            /* server switch or lost main connection while Full Map is on (LM.connect / onClose:
+             * flushCellsData() flushes the spectators, flushSpecsData) */
             LM.flushSpecsData();
             LM._lmSpecSetMode('ingame');
             ctx.window.spects.forEach(handshake);
@@ -156,10 +173,10 @@ const S = (() => {
         C.advance(60000); /* any late retry would show up as a socket now */
         const end = state();
         after.push(end);
-        if (!end.sockets && !end.timeouts && !end.intervals && !end.spects) roundsOk++;
+        if (!end.sockets && !end.timeouts && !end.intervals && !end.spects && !end.obs) roundsOk++;
     }
     return { round, after, get peakSockets() { return peakSockets; }, get peakIntervals() { return peakIntervals; }, get roundsOk() { return roundsOk; },
-        get maxTiles() { return maxTiles; }, get sentOk() { return sentOk; }, menus: () => ctx.application.menuShown };
+        get maxTiles() { return maxTiles; }, get sentOk() { return sentOk; }, get peakObs() { return peakObs; }, menus: () => ctx.application.menuShown };
 })();
 
 /* ============ 1b. Multibox 2.0: up to six players through the player calls, then a server change ============ */
@@ -385,7 +402,7 @@ gc(); const heap1 = heapMB();
 const a = S.after;
 check('Full Map on opens the planned tiles (' + S.maxTiles + '), each sends its camera after the handshake', S.maxTiles === 15 && S.sentOk);
 check('while on: at most the 15 tiles + 1 unit open (peak ' + S.peakSockets + ' sockets, ' + S.peakIntervals + ' intervals)', S.peakSockets <= 16 && S.peakSockets >= 15 && S.peakIntervals >= 15 && S.peakIntervals <= 33);
-check('every round ends with no socket, timeout, interval or spectator left (' + S.roundsOk + '/' + a.length + ' of ' + (N + 1) + ')', S.roundsOk === a.length, JSON.stringify(a.find((x) => x.sockets || x.timeouts || x.intervals || x.spects)));
+check('every round ends with no socket, timeout, interval, spectator or observation left (' + S.roundsOk + '/' + a.length + ' of ' + (N + 1) + ', ' + S.peakObs + ' observations while on, index + world)', S.roundsOk === a.length && S.peakObs === 2 * 15 * 20, JSON.stringify(a.find((x) => x.sockets || x.timeouts || x.intervals || x.spects || x.obs)));
 check('a dying unit adds the death-menu listeners once (5), not once per death', a.every((x) => x.doc === 5) && S.menus() === a.length, a.map((x) => x.doc).join(','));
 check('multibox: ' + M.roundsOk + '/' + M.rounds.length + ' rounds of six players (enable, add, a seventh refused, remove P4, add again, off, a server change) end with no socket, timer, listener, slot, reservation, source, spect, playerCellsMulti or own cell left',
     M.roundsOk === M.rounds.length && M.rounds.length === N + 1, M.bad.slice(0, 3).join(' / '));
