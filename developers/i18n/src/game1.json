@@ -323,24 +323,6 @@
     "ja": "ウイルス",
     "it": "Virus"
   },
-  "game1.ps.noFacebook": {
-    "en": "Facebook login is NOT allowed on this private server!",
-    "el": "Η σύνδεση μέσω Facebook ΔΕΝ επιτρέπεται σε αυτόν τον ιδιωτικό server!",
-    "es": "¡El inicio de sesión con Facebook NO está permitido en este servidor privado!",
-    "bg": "Входът с Facebook НЕ е разрешен на този частен сървър!",
-    "fr": "La connexion Facebook n'est PAS autorisée sur ce serveur privé !",
-    "ar": "تسجيل الدخول عبر Facebook غير مسموح على هذا الخادم الخاص!",
-    "zh": "此私人伺服器「不允許」Facebook 登入！",
-    "ru": "Вход через Facebook на этом частном сервере ЗАПРЕЩЁН!",
-    "de": "Facebook-Anmeldung ist auf diesem privaten Server NICHT erlaubt!",
-    "tr": "Bu özel sunucuda Facebook girişine izin VERİLMEZ!",
-    "pl": "Logowanie przez Facebook NIE jest dozwolone na tym prywatnym serwerze!",
-    "nl": "Inloggen met Facebook is NIET toegestaan op deze privéserver!",
-    "pt": "Login com Facebook NÃO é permitido neste servidor privado!",
-    "id": "Login Facebook TIDAK diizinkan di server privat ini!",
-    "ja": "このプライベートサーバーでは Facebook ログインは使えません！",
-    "it": "L'accesso con Facebook NON è consentito su questo server privato!"
-  },
   "game1.boost.noPurchaseId": {
     "en": "This boost has no configured purchase ID.",
     "el": "Αυτό το boost δεν έχει ορισμένο αναγνωριστικό αγοράς.",

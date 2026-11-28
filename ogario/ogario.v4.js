@@ -5258,42 +5258,6 @@ function deleteGamemode(temp, restoreLast) {
         }, {
             text: 'Exp Rookery',
             value: 10
-        /* not working: { text: 'Agar2 EU FFA', value: 8001 } */
-        /* not working: { text: 'Agar2 EU Experimental', value: 8002 } */
-        /* not working: { text: 'Agar2 EU Teams', value: 8003 } */
-        /* not working: { text: 'Agar2 EU Party', value: 8004 } */
-        /* not working: { text: 'Agar2 NA FFA', value: 8005 } */
-        /* not working: { text: 'Agar2 NA Experimental', value: 8006 } */
-        /* not working: { text: 'Agar2 NA Teams', value: 8007 } */
-        /* not working: { text: 'Agar2 NA Party', value: 8008 } */
-        /* Garix servers (commented out)
-        }, {
-            text: 'Garix Teams',
-            value: 9001
-        }, {
-            text: 'Garix Mega',
-            value: 9002
-        }, {
-            text: 'Garix Dual',
-            value: 9003
-        }, {
-            text: 'Garix FFA',
-            value: 9004
-        }, {
-            text: 'Garix Selffeed',
-            value: 9005
-        */
-        /* not working: { text: 'Sigmally US-1', value: 10001 } */
-        /* not working: { text: 'Sigmally US-2', value: 10002 } */
-        /* not working: { text: 'Sigmally US-3', value: 10003 } */
-        /* not working: { text: 'Sigmally Europe-1', value: 10004 } */
-        /* not working: { text: 'Sigmally Tournaments', value: 10005 } */
-        /* not working: { text: 'Senpa EU FFA', value: 10010 } */
-        /* not working: { text: 'Senpa EU Macro', value: 10011 } */
-        /* not working: { text: 'Senpa EU Multibox', value: 10012 } */
-        /* not working: { text: 'Senpa NA FFA', value: 10013 } */
-        /* not working: { text: 'Senpa NA Instant', value: 10014 } */
-        /* not working: { text: 'Senpa AS FFA', value: 10015 } */
         }, {
             text: 'Delta EU Party 1',
             value: 10020
@@ -5322,99 +5286,10 @@ function deleteGamemode(temp, restoreLast) {
             text: 'Delta Arctida',
             value: 10028
         }
-        /* Other private servers (commented out)
-        , {
-            text: 'Delta FFA',
-            value: 4001
-        }, {
-            text: 'FeelForeverAlone',
-            value: 34
-        }, {
-            text: 'Zimbabwe',
-            value: 31
-        }, {
-            text: 'Antarctic',
-            value: 35
-        }, {
-            text: 'Party MegaSplit',
-            value: 19
-        }, {
-            text: 'Party Mode',
-            value: 20
-        }, {
-            text: 'EatCells FFA 1',
-            value: 21
-        }, {
-            text: 'EatCells FFA 2',
-            value: 22
-        }, {
-            text: '1vs1 FFA #1',
-            value: 23
-        }, {
-            text: '1vs1 FFA #2',
-            value: 24
-        }, {
-            text: '1vs1 FFA #3',
-            value: 25
-        }, {
-            text: '1vs1 EXP #1',
-            value: 26
-        }, {
-            text: '1vs1 EXP #2',
-            value: 27
-        }, {
-            text: '1vs1 EXP #3',
-            value: 28
-        }, {
-            text: '2vs2',
-            value: 29
-        }, {
-            text: '2vs2vs2',
-            value: 30
-        }, {
-            text: 'Beta Party v2 #1',
-            value: 17
-        }, {
-            text: 'Bots',
-            value: 33
-        }, {
-            text: 'MK Oceania',
-            value: 37
-        }, {
-            text: 'MK Teams',
-            value: 38
-        }, {
-            text: 'MK Bots WIP',
-            value: 39
-        }, {
-            text: 'FPS Test',
-            value: 12
-        }, {
-            text: 'Delta Party',
-            value: 4002
-        }
-        */
     ];
-    /* Commented out - non-SSL servers disabled
-    if (location.protocol !== 'https:') {
-        privateModOptions.unshift({
-            text: 'agarios.org NA',
-            value: 103
-        })
-        privateModOptions.unshift({
-            text: 'M16 Korea',
-            value: 102
-        })
-    }
-    */
     if (!window.gamemodeBackup) {
         window.gamemodeBackup = $("#gamemode").html();
     }
-    /* Agar2, Sigmally and Senpa servers do not work: hidden from the list (their code and
-     * ?sip= links stay, so they can be re-enabled by removing this filter). */
-    privateModOptions = privateModOptions.filter(function (el) {
-        return !/^(Agar2|Sigmally|Senpa|Garix)\b/i.test(String(el && el.text || ''));
-    });
     $('#gamemode').empty();
     $.each(privateModOptions, function (i, el) {
         var opt = new Option(el.text, el.value);
@@ -5468,7 +5343,7 @@ function deleteGamemode(temp, restoreLast) {
             }
             */
         } else { }
-        // Reset gameMode to FFA (default) — Agar2 servers override below with the correct mode
+        // Reset gameMode to FFA (default); the delt.io servers set their own below
         legendmod.gameMode = ':ffa';
         // Expanding Land FFA - only active private server
         if ($('#gamemode').val() == 5001) {
@@ -5478,8 +5353,7 @@ function deleteGamemode(temp, restoreLast) {
         else if ($('#gamemode').val() == 5002) {
             core.connect(_lmPrivateListUrls[5002]);
         }
-        // Imsolo & Agar2 private server connections (multi-protocol support)
-        // Arctida & Dagestan: use ImSolo load balancer API with fallback to hardcoded URLs
+        // Imsolo servers (Arctida, Dagestan, Rookery, Maxisplit, Exp Rookery): use ImSolo load balancer API with fallback to hardcoded URLs
         else if ($('#gamemode').val() == 6 || $('#gamemode').val() == 7 || $('#gamemode').val() == 8 || $('#gamemode').val() == 9 || $('#gamemode').val() == 10) {
             (function connectImsolo(val) {
                 var imsoloLbMap = {
@@ -5506,124 +5380,6 @@ function deleteGamemode(temp, restoreLast) {
                     core.connect(cfg.fallback);
                 });
             })(parseInt($('#gamemode').val()));
-        } else if ($('#gamemode').val() == 12) {
-            core.connect('wss://d-srv.glitch.me');
-        } else if ($('#gamemode').val() == 21) {
-            core.connect('wss://eatcells.com/api/~');
-        } else if ($('#gamemode').val() == 22) {
-            core.connect('wss://ogar.eatcells.com/api/~');
-        } else if ($('#gamemode').val() == 31) {
-            core.connect('wss://delta-selffeed.glitch.me');
-        } else if ($('#gamemode').val() == 33) {
-            core.connect('wss://lm-bots-ps.glitch.me');
-        } else if ($('#gamemode').val() == 35) {
-            core.connect('wss://delta-server.glitch.me');
-        } else if ($('#gamemode').val() == 36) {
-            core.connect('wss://mkserv5.herokuapp.com/');
-        } else if ($('#gamemode').val() == 37) {
-            core.connect('wss://agar.mkchat.net/');
-        } else if ($('#gamemode').val() == 38) {
-            core.connect('wss://teamworkmk.herokuapp.com/');
-        } else if ($('#gamemode').val() == 39) {
-            core.connect('wss://mkserv-bots.herokuapp.com/');
-        } else if ($('#gamemode').val() == 4001) {
-            core.connect('wss://delta-ffa.glitch.me');
-        } else if ($('#gamemode').val() == 4002) {
-            core.connect('wss://delta-server.fly.dev');
-        }
-        // Agar2 servers: use matchmaker API to get dynamic server URL + token
-        else if (parseInt($('#gamemode').val()) >= 8001 && parseInt($('#gamemode').val()) <= 8008) {
-            (function connectAgar2(val) {
-                // Agar2 matchmaker API config (ONLY for Agar2 servers, never touches agar.io)
-                var agar2ApiMap = {
-                    8001: { url: 'https://manage-eu.agar2.com/getserver/FFA', fallback: 'wss://live-arena-f9sn3a-eu.agar2.com', gm: ':ffa' },
-                    8002: { url: 'https://manage-eu.agar2.com/getserver/Experimental', fallback: 'wss://live-arena-ex9pm4-eu.agar2.com', gm: ':experimental' },
-                    8003: { url: 'https://manage-eu.agar2.com/getserver/Teams', fallback: 'wss://live-arena-t13msx-eu.agar2.com', gm: ':teams' },
-                    8004: { url: 'https://manage-eu.agar2.com/getserver/Party', fallback: 'wss://live-arena-p4r1ym-eu.agar2.com', gm: ':party' },
-                    8005: { url: 'https://agar2.com/getserver/FFA', fallback: 'wss://live-arena-fmpv2x-na.agar2.com', gm: ':ffa' },
-                    8006: { url: 'https://agar2.com/getserver/Experimental', fallback: 'wss://live-arena-ex9ml2-na.agar2.com', gm: ':experimental' },
-                    8007: { url: 'https://agar2.com/getserver/Teams', fallback: 'wss://live-arena-te4m2v-na.agar2.com', gm: ':teams' },
-                    8008: { url: 'https://agar2.com/getserver/Party', fallback: 'wss://live-arena-ml3s4z-na.agar2.com', gm: ':party' }
-                };
-                var cfg = agar2ApiMap[val];
-                if (!cfg) return;
-                fetch(cfg.url).then(function (r) { return r.json(); }).then(function (data) {
-                    if (_lmGmStale(val)) return;
-                    if (data && data.gameurl) {
-                        // Extract token from URL: wss://live-arena-{token}-{region}.agar2.com
-                        var tokenMatch = data.gameurl.match(/live-arena-([a-z0-9]+)-/i);
-                        var token = tokenMatch ? tokenMatch[1] : '???';
-                        window.agar2Token = token;
-                        window.agar2GameUrl = data.gameurl;
-                        console.log('%c[Agar2]%c Token: ' + token + ' | ' + data.gameurl, 'color:#3af', 'color:inherit');
-                        legendmod.gameMode = cfg.gm;
-                        core.connect(data.gameurl);
-                    } else {
-                        console.log('%c[Agar2]%c No gameurl in response, using fallback', 'color:#f93', 'color:inherit');
-                        legendmod.gameMode = cfg.gm;
-                        core.connect(cfg.fallback);
-                    }
-                }).catch(function (err) {
-                    if (_lmGmStale(val)) return;
-                    console.log('%c[Agar2]%c API failed (' + err.message + '), using fallback', 'color:#f33', 'color:inherit');
-                    legendmod.gameMode = cfg.gm;
-                    core.connect(cfg.fallback);
-                });
-            })(parseInt($('#gamemode').val()));
-        }
-        // Garix servers (9001-9005)
-        else if ($('#gamemode').val() == 9001) {
-            legendmod.gameMode = ':teams';
-            core.connect('wss://garix.io:8084');
-        } else if ($('#gamemode').val() == 9002) {
-            legendmod.gameMode = ':ffa';
-            core.connect('wss://garix.io:8087');
-        } else if ($('#gamemode').val() == 9003) {
-            legendmod.gameMode = ':ffa';
-            core.connect('wss://garix.io:8088');
-        } else if ($('#gamemode').val() == 9004) {
-            legendmod.gameMode = ':ffa';
-            core.connect('wss://garix.io:8089');
-        } else if ($('#gamemode').val() == 9005) {
-            legendmod.gameMode = ':ffa';
-            core.connect('wss://garix.io:8090');
-        }
-        // Sigmally servers (10001-10005)
-        else if ($('#gamemode').val() == 10001) {
-            legendmod.gameMode = ':ffa';
-            core.connect('wss://ca0.sigmally.com/ws/');
-        } else if ($('#gamemode').val() == 10002) {
-            legendmod.gameMode = ':ffa';
-            core.connect('wss://ca1.sigmally.com/ws/');
-        } else if ($('#gamemode').val() == 10003) {
-            legendmod.gameMode = ':ffa';
-            core.connect('wss://ca2.sigmally.com/ws/');
-        } else if ($('#gamemode').val() == 10004) {
-            legendmod.gameMode = ':ffa';
-            core.connect('wss://eu0.sigmally.com/ws/');
-        } else if ($('#gamemode').val() == 10005) {
-            legendmod.gameMode = ':ffa';
-            core.connect('wss://tourney.sigmally.com/ws/');
-        }
-        // Senpa servers (10010-10015)
-        else if ($('#gamemode').val() == 10010) {
-            legendmod.gameMode = ':ffa';
-            core.connect('wss://eu.mi.com:2001');
-        } else if ($('#gamemode').val() == 10011) {
-            legendmod.gameMode = ':ffa';
-            core.connect('wss://eu.mi.com:6001');
-        } else if ($('#gamemode').val() == 10012) {
-            legendmod.gameMode = ':ffa';
-            core.connect('wss://eu.mi.com:1200');
-        } else if ($('#gamemode').val() == 10013) {
-            legendmod.gameMode = ':ffa';
-            core.connect('wss://us.mi.com:2001');
-        } else if ($('#gamemode').val() == 10014) {
-            legendmod.gameMode = ':ffa';
-            core.connect('wss://us.mi.com:3001');
-        } else if ($('#gamemode').val() == 10015) {
-            legendmod.gameMode = ':ffa';
-            core.connect('wss://asia.senpa.io:2001');
         }
         // delt.io servers (10020-10028), list from Delta's client (servers/feeds.ts)
         else if (parseInt($('#gamemode').val()) >= 10020 && parseInt($('#gamemode').val()) <= 10028) {
@@ -5633,102 +5389,11 @@ function deleteGamemode(temp, restoreLast) {
         } else {
             if (typeof LM !== 'undefined' && LM) LM.isLegendWorld = false;
             if (typeof ogario !== 'undefined' && ogario) ogario.isLegendWorld = false;
-            var rawVal = $('#gamemode').val();
-            var agar2ModeMap = {
-                '8001': ':ffa', '8002': ':experimental', '8003': ':teams',
-                '8004': ':party', '8005': ':ffa', '8006': ':experimental',
-                '8007': ':teams', '8008': ':party'
-            };
-            var modeVal = agar2ModeMap[rawVal] || rawVal;
             if (window.master && typeof window.master.setGameMode === 'function') {
-                window.master.setGameMode(modeVal);
+                window.master.setGameMode($('#gamemode').val());
             }
         }
 
-        //wss://eatcells.com/api/~ EatCells FFA 1
-        //wss://ogar.eatcells.com/api/~ wss://ogar.eatcells.com/api/~
-
-        /*
-        else if ($('#gamemode').val() == 42) {
-            core.connect('ws://dummyserver.glitch.me/');
-        }			
-        else if ($('#gamemode').val() == 43) {
-            core.connect('wss://dummyserver-rainbow.glitch.me/');
-        }	
-        else if ($('#gamemode').val() == 44) {
-            core.connect('wss://dummyserver-instant.glitch.me/');
-        }	
-        else if ($('#gamemode').val() == 45) {
-            core.connect('wss://dummyserver-instant.glitch.me/');
-        }
-sxparty.glitch.me Party
-sxinstantmerge.glitch.me Crazy
-ws://sxultrasplit.glitch.me/ Ultrasplit
-ws://speedybots.glitch.me/ SpeedyBots
-ws://ahmetcantest.glitch.me/ Ahmetcan
-wss://myagar.pro:1443/ minions
-wss://myagar.pro:1444/ instant
-wss://myagar.pro:1445/ crazy		
-        */
-        //ac-clan.glitch.me
-        /*		
-                else if ($('#gamemode').val() == 34) {
-                    core.connect('wss://proxy.cellz.io/4600');
-                }		
-                else if ($('#gamemode').val() == 35) {
-                    core.connect('wss://proxy.cellz.io/4400');
-                }	
-                else if ($('#gamemode').val() == 36) {
-                    core.connect('wss://proxy.cellz.io/4801');
-                }	
-                else if ($('#gamemode').val() == 37) {
-                    core.connect('wss://proxy.cellz.io/5203');
-                }	
-                else if ($('#gamemode').val() == 38) {
-                    core.connect('wss://proxy.cellz.io/4201');
-                }	
-                else if ($('#gamemode').val() == 39) {
-                    core.connect('wss://proxy.cellz.io/6003');
-                }		
-                else if ($('#gamemode').val() == 40) {
-                    core.connect('wss://reverse.krunt.io/7301');
-                }	
-                */
-
-        /*		
-        else if ($('#gamemode').val() == 18) {
-            core.connect('wss://imsolo.pro:2111/');
-            legendmod.gameMode = ":ffa";
-        }			
-        else if ($('#gamemode').val() == 8) {
-            logoutPSArenas();
-            core.connect(agarTesterArena + ':1500/'); //ffa
-            legendmod.gameMode = ":ffa";
-            //application.connect('wss://private1:443')
-        } else if ($('#gamemode').val() == 9) {
-            logoutPSArenas();
-            core.connect(agarTesterArena + ':1504/'); //battle royal			
-            legendmod.gameMode = ":battleroyale";
-            //application.connect('wss://private1:443')
-        } else if ($('#gamemode').val() == 10) {
-            logoutPSArenas();
-            core.connect(agarTesterArena + ':1501/'); //teams
-            setTimeout(function() {
-                legendmod.gameMode = ":teams";
-            }, 500);
-            //application.connect('wss://private1:443')
-        } else if ($('#gamemode').val() == 11) {
-            logoutPSArenas();
-            core.connect(agarTesterArena + ':1503/'); //experimental
-            legendmod.gameMode = ":experimental";
-            //application.connect('wss://private1:443')
-        } else if ($('#gamemode').val() == 13) {
-            logoutPSArenas();
-            core.connect(agarTesterArena + ':1502/'); //party
-            legendmod.gameMode = ":party";
-            //application.connect('wss://private1:443')
-        }
-        */
     });
     if (temp === true) {
         $('#gamemode option[value="' + _lmStartPs + '"]').prop('selected', 'selected').change();
@@ -5737,13 +5402,6 @@ wss://myagar.pro:1445/ crazy
 
 
 
-
-function logoutPSArenas() {
-    if (master.context === "facebook") {
-        logout();
-        toastr.warning("<b>[" + Premadeletter123 + "]:</b> " + lmT('game1.ps.noFacebook')).css("width", "250px");
-    }
-}
 
 //var MassBigFFAAnnouncement = localStorage.getItem("MassBigFFAAnnouncement");
 var PremiumLimitedDateStart = localStorage.getItem("PremiumLimitedDateStart");
@@ -27260,12 +26918,7 @@ function thelegendmodproject() {
                 if (":party" !== dummy) {
                     app.leaveParty();
                 }
-                var agar2ModeMap = {
-                    '8001': ':ffa', '8002': ':experimental', '8003': ':teams',
-                    '8004': ':party', '8005': ':ffa', '8006': ':experimental',
-                    '8007': ':teams', '8008': ':party'
-                };
-                var modeVal = agar2ModeMap[dummy] || dummy;
+                var modeVal = dummy;
                 app.gameMode = ogario.gameMode = modeVal;
                 /* the Battle Royale button and HUD follow the mode */
                 app.syncQuickPanels();
@@ -30755,14 +30408,8 @@ function thelegendmodproject() {
         setParty() {
             let value = $('#party-token').val();
             var gmVal = $('#gamemode').val();
-            var gmNum = parseInt(gmVal, 10);
-            // Agar2 servers (8001-8008): gameMode already set by async handler, don't overwrite
-            if (gmNum >= 8001 && gmNum <= 8008) {
-                // Keep existing gameMode set by Agar2 connection handler
-            } else {
-                this.gameMode = ogario.gameMode = gmVal;
-                if (_lmElTeamsActive(ogario)) this.gameMode = ogario.gameMode = ':teams';
-            }
+            this.gameMode = ogario.gameMode = gmVal;
+            if (_lmElTeamsActive(ogario)) this.gameMode = ogario.gameMode = ':teams';
             /* the Battle Royale button and HUD follow the mode */
             this.syncQuickPanels();
             if (this.gameMode !== ':party' || !value) {
