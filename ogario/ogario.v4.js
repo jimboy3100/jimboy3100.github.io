@@ -64402,6 +64402,8 @@ function pickPlayerCellBySize(players, selectBiggest) {
                 if (b[k + 3] > this._lmFxMaxY) this._lmFxMaxY = b[k + 3];
                 if (!on) on = b[k] < this.camX + hw && b[k + 2] > this.camX - hw && b[k + 1] < this.camY + hh && b[k + 3] > this.camY - hh;
             }
+            /* boxes n0.. grew: the grid (_lmFxGridSync) takes them again from there */
+            if (this._lmFxIdxN > n0) this._lmFxIdxN = n0;
             if (!on) {
                 cell._lmFgLab = was;
                 return n0;
@@ -64480,6 +64482,7 @@ function pickPlayerCellBySize(players, selectBiggest) {
                 this._lmFxBoxes = b = nb;
                 this._lmFxKinds = nk;
             }
+            if (this._lmFxIdxN > n) this._lmFxIdxN = n;
             /* a few world units of slack */
             b[n] = x0 - 4;
             b[n + 1] = y0 - 4;
@@ -64513,6 +64516,30 @@ function pickPlayerCellBySize(players, selectBiggest) {
             var ex = Math.max(Math.abs(rb), lw, 0), ey = Math.max(Math.abs(rb), lh, 0);
             if (n && (x + ex < this._lmFxMinX || x - ex > this._lmFxMaxX ||
                 y + ey < this._lmFxMinY || y - ey > this._lmFxMaxY)) return 0;
+            /* many boxes: only those in the grid squares the cell reaches, the same first hit */
+            if (n >= 4 * this._lmFxGridMin) {
+                var g = this._lmFxGridSync(n), cs = g.cs;
+                var bx0 = Math.floor((x - ex) / cs), bx1 = Math.floor((x + ex) / cs);
+                var by0 = Math.floor((y - ey) / cs), by1 = Math.floor((y + ey) / cs);
+                if ((bx1 - bx0 + 1) * (by1 - by0 + 1) <= 64) {
+                    var best = n, e, q, gx, gy;
+                    for (q = 0; q < g.bigN; q++) {
+                        e = g.big[q];
+                        if (e < best && this._lmFxBoxHit(e, x, y, rb, lw, lh)) best = e;
+                    }
+                    for (gx = bx0; gx <= bx1; gx++) {
+                        for (gy = by0; gy <= by1; gy++) {
+                            q = ((gx * 73856093) ^ (gy * 19349663)) & g.mask;
+                            if (g.stamp[q] !== g.gen) continue;
+                            for (e = g.head[q]; e >= 0; e = g.next[e]) {
+                                var kb = g.val[e];
+                                if (kb < best && this._lmFxBoxHit(kb, x, y, rb, lw, lh)) best = kb;
+                            }
+                        }
+                    }
+                    return best < n ? this._lmFxKinds[best >> 2] || this.GLW.COVERED : 0;
+                }
+            }
             for (var k = 0; k < n; k += 4) {
                 var x0 = b[k], y0 = b[k + 1], x1 = b[k + 2], y1 = b[k + 3];
                 var hit = lw > 0 && x - lw < x1 && x + lw > x0 && y - lh < y1 && y + lh > y0;
@@ -64524,6 +64551,72 @@ function pickPlayerCellBySize(players, selectBiggest) {
                 if (hit) return this._lmFxKinds[k >> 2] || this.GLW.COVERED;
             }
             return 0;
+        },
+        /* the test of the scan above for box k (boxes[k..k+3]) */
+        _lmFxBoxHit(k, x, y, rb, lw, lh) {
+            var b = this._lmFxBoxes, x0 = b[k], y0 = b[k + 1], x1 = b[k + 2], y1 = b[k + 3];
+            if (lw > 0 && x - lw < x1 && x + lw > x0 && y - lh < y1 && y + lh > y0) return true;
+            var ddx = x < x0 ? x0 - x : x > x1 ? x - x1 : 0;
+            var ddy = y < y0 ? y0 - y : y > y1 ? y - y1 : 0;
+            return ddx * ddx + ddy * ddy < rb * rb;
+        },
+        /* From this many mark boxes on, _lmFxCovered looks only at the boxes in the grid squares
+         * a cell reaches instead of at every box (measured: 50 boxes spread over the view and
+         * 2000 later cells took 1.8 ms a frame, 200 boxes 6 ms). The grid (512 world units a
+         * square, hashed into 1024 lists) holds box numbers; it is brought up to n when asked
+         * (_lmFxIdxN: the boxes it holds). A push at a lower number (a new frame, a rollback
+         * of _lmOutCellFx) and boxes that grow in place (_lmCellGlow) lower _lmFxIdxN, and
+         * those boxes go in again; an entry left from before is only tested once more (the test
+         * reads the box as it is now) and one past n is skipped. A box over more than 16
+         * squares is tested for every cell. Arrays grow by doubling and are kept. */
+        _lmFxGridMin: 32,
+        _lmFxIdxN: 0,
+        _lmFxGridSync(n) {
+            var g = this._lmFxGrid;
+            if (!g) {
+                g = this._lmFxGrid = { cs: 512, mask: 1023, head: new Int32Array(1024), stamp: new Uint32Array(1024), gen: 1,
+                    next: new Int32Array(256), val: new Int32Array(256), used: 0, big: new Int32Array(64), bigN: 0 };
+            }
+            var k = this._lmFxIdxN;
+            if (!k) {
+                /* everything again (stale lists end at the next generation) */
+                g.gen = (g.gen + 1) >>> 0 || 1;
+                g.used = 0;
+                g.bigN = 0;
+            }
+            if (k >= n) return g;
+            var b = this._lmFxBoxes, cs = g.cs;
+            for (; k < n; k += 4) {
+                var bx0 = Math.floor(b[k] / cs), bx1 = Math.floor(b[k + 2] / cs);
+                var by0 = Math.floor(b[k + 1] / cs), by1 = Math.floor(b[k + 3] / cs);
+                if (!((bx1 - bx0 + 1) * (by1 - by0 + 1) <= 16)) {
+                    if (g.bigN >= g.big.length) {
+                        var nb = new Int32Array(g.big.length * 2);
+                        nb.set(g.big);
+                        g.big = nb;
+                    }
+                    g.big[g.bigN++] = k;
+                    continue;
+                }
+                for (var gx = bx0; gx <= bx1; gx++) {
+                    for (var gy = by0; gy <= by1; gy++) {
+                        if (g.used >= g.val.length) {
+                            var nv = new Int32Array(g.val.length * 2), nn = new Int32Array(g.val.length * 2);
+                            nv.set(g.val);
+                            nn.set(g.next);
+                            g.val = nv;
+                            g.next = nn;
+                        }
+                        var q = ((gx * 73856093) ^ (gy * 19349663)) & g.mask, e = g.used++;
+                        g.val[e] = k;
+                        g.next[e] = g.stamp[q] === g.gen ? g.head[q] : -1;
+                        g.head[q] = e;
+                        g.stamp[q] = g.gen;
+                    }
+                }
+            }
+            this._lmFxIdxN = n;
+            return g;
         },
         /* Half width/height (world units, around the cell centre) the WebGL nick and mass of
          * a cell can take, as drawWebGLCellText sizes and places them (nick centred, 1.4 em

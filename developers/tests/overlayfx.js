@@ -1687,6 +1687,49 @@ reset(); setSettings();
         }
     }
     check('mark boxes: a later cell gets the same first covering box as the full scan (8000 cells, hits and misses)', same && hits > 100 && misses > 100, info || hits + ' hits ' + misses + ' misses');
+    /* many boxes (from _lmFxGridMin on _lmFxCovered looks in a grid): pushes, glowing own
+     * cells (boxes grown in place, or dropped again off screen: _lmCellGlow), dropped boxes
+     * (as _lmOutCellFx returns a lower count) and later cells asked in between, as in a frame;
+     * spread over the view (no union reject) and clustered */
+    {
+        const realSync = R._lmFxGridSync;
+        let grid = 0, same2 = true, hits2 = 0, misses2 = 0, info2 = '', glows = 0, drops = 0;
+        R._lmFxGridSync = function (m) { grid++; return realSync.call(this, m); };
+        const keepScale = R.scale;
+        R.scale = 0.3;
+        for (let round = 0; round < 30 && same2; round++) {
+            let m = 0;
+            const boxes = 40 + (rnd() * 400 | 0), spread = round % 2 ? 9000 : 2500, cx = (rnd() - 0.5) * 4000, cy = (rnd() - 0.5) * 4000;
+            R.camX = cx; R.camY = cy;
+            for (let k = 0; k < boxes && same2; k++) {
+                const x0 = cx + (rnd() - 0.5) * spread, y0 = cy + (rnd() - 0.5) * spread, r = rnd();
+                if (r < 0.08) {
+                    const gc = makeCell({ x: x0, y: y0, size: 20 + rnd() * 300, targetNick: rnd() < 0.5 ? 'g' + k : '', isPlayerCell: true });
+                    m = R._lmCellGlow(gc, m, null, null, null, null, false);
+                    glows++;
+                } else if (r < 0.13 && m >= 12) {
+                    m -= 4 * (1 + (rnd() * 3 | 0));
+                    drops++;
+                } else {
+                    /* now and then one box over many grid squares */
+                    const w = rnd() < 0.03 ? 6000 : rnd() * 300, h = rnd() < 0.03 ? 6000 : rnd() * 200;
+                    m = R._lmFxPush(m, x0, y0, x0 + w, y0 + h, kinds[rnd() * kinds.length | 0]);
+                }
+                if (k % 7) continue;
+                for (let t = 0; t < 12; t++) {
+                    const cell = makeCell({ x: cx + (rnd() - 0.5) * spread * 1.2, y: cy + (rnd() - 0.5) * spread * 1.2,
+                        size: 10 + rnd() * (rnd() < 0.1 ? 1500 : 200), targetNick: rnd() < 0.6 ? 'cell' + t : '' });
+                    const want = fullScan(cell, m), got = R._lmFxCovered(cell, m);
+                    if (want) hits2++; else misses2++;
+                    if (want !== got) { same2 = false; info2 = 'round ' + round + ' box ' + k + ' (' + m / 4 + ' boxes) want ' + want + ' got ' + got; break; }
+                }
+            }
+        }
+        R._lmFxGridSync = realSync;
+        R.scale = keepScale; R.camX = 0; R.camY = 0;
+        check('  many boxes (grid): the same first covering box as the full scan, with glowing cells, dropped boxes and boxes over many squares',
+            same2 && grid > 100 && hits2 > 500 && misses2 > 500 && glows > 50 && drops > 50, info2 || hits2 + ' hits ' + misses2 + ' misses, ' + grid + ' grid asks, ' + glows + ' glows, ' + drops + ' drops');
+    }
     /* a cell far from every mark reads none of the boxes */
     let n = 0;
     for (let k = 0; k < 200; k++) n = R._lmFxPush(n, k * 3, 0, k * 3 + 20, 20, R.GLW.COVER_TEAM);
