@@ -6633,7 +6633,7 @@ function BannedUIDS() {
                 '<div class="modal-backdrop fade in"></div>' +
                 '<div class="modal-dialog" style="top: calc(50vh - 241.5px); width: 500px;">' +
                 '<div class="modal-content">' +
-                '<div id="CloseBannedUIDS2" class="modal-header"><button id="CloseBannedUIDS" type="button" class="close" data-dismiss="modal"><span aria-hidden="true">&#10005;</span><span class="sr-only">' + Premadeletter113 + '</span></button> <button id="FAQBannedUIDS" type="button" class="close" data-dismiss="modal"><span aria-hidden="true">?</span><span class="sr-only">' + Premadeletter113 + '</span></button>' +
+                '<div id="CloseBannedUIDS2" class="modal-header"><button id="CloseBannedUIDS" type="button" class="close" data-dismiss="modal"><span aria-hidden="true">&#10005;</span><span class="sr-only">' + Premadeletter113 + '</span></button>' +
                 '<h4 class="modal-title" style="font-family: var(--lm-hud-font, Roboto Condensed, sans-serif)">' + _lmxE('lmx.ex.bannedIds') + '</h4>' +
                 '</div>' +
                 '<div class="modal-body"><input type="text" class="form-control" id="Bannedagario_uid_input" placeholder="*' + _lmxE('lmx.ex.uidToBan') + '" style="width: 85%; display: inline-block">' +
@@ -6653,9 +6653,6 @@ function BannedUIDS() {
 
             $("#CloseBannedUIDS").click(function () {
                 $("#BannedUIDSModal").remove();
-            });
-            $("#FAQBannedUIDS").click(function () {
-                window.open(lmThemeUrl('https://www.legendmod.ml/LMexpress/olddeals.html'), '_blank');
             });
             $("#AddBannedUID").click(function () {
                 var temp = $("#Bannedagario_uid_input").val()
@@ -7089,10 +7086,6 @@ function LMLegendFFAPromo() {
         '<span aria-hidden="true">&#10005;</span>' +
         '</button>' +
 
-        '<button id="FAQLegendFFAPromo" type="button" class="close">' +
-        '<span aria-hidden="true">?</span>' +
-        '</button>' +
-
         '<h4 class="modal-title" style="font-family: var(--lm-hud-font, Roboto Condensed, sans-serif)">' +
         '\ud83d\udc51 ' + _lmxE('lmx.ex.ffaServerTitle') + '' +
         '</h4>' +
@@ -7114,10 +7107,6 @@ function LMLegendFFAPromo() {
 
     $("#CloseLMPromoLegendFFA").on("click", function () {
         $("#LMPromoLegendFFA").remove();
-    });
-
-    $("#FAQLegendFFAPromo").on("click", function () {
-        window.open(lmThemeUrl('https://www.legendmod.ml/'), '_blank');
     });
 }
 
