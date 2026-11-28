@@ -5317,6 +5317,7 @@ function deleteGamemode(temp, restoreLast) {
 
 
 
+var dyinglight1load = localStorage.getItem("dyinglight1load");
 
 var _RE_EMOJI = /(?:[\u2700-\u27bf]|(?:\ud83c[\udde6-\uddff]){2}|[\ud800-\udbff][\udc00-\udfff]|[\u0023-\u0039]\ufe0f?\u20e3|\u3299|\u3297|\u303d|\u3030|\u24c2|\ud83c[\udd70-\udd71]|\ud83c[\udd7e-\udd7f]|\ud83c\udd8e|\ud83c[\udd91-\udd9a]|\ud83c[\udde6-\uddff]|\ud83c[\ude01-\ude02]|\ud83c\ude1a|\ud83c\ude2f|\ud83c[\ude32-\ude3a]|\ud83c[\ude50-\ude51]|\u203c|\u2049|[\u25aa-\u25ab]|\u25b6|\u25c0|[\u25fb-\u25fe]|\u00a9|\u00ae|\u2122|\u2139|\ud83c\udc04|[\u2600-\u26FF]|\u2b05|\u2b06|\u2b07|\u2b1b|\u2b1c|\u2b50|\u2b55|\u231a|\u231b|\u2328|\u23cf|[\u23e9-\u23f3]|[\u23f8-\u23fa]|\ud83c\udccf|\u2934|\u2935|[\u2190-\u21ff])/g;
 /* Hoisted clan-tag strip regex — compiled once instead of per-cell per-frame */
@@ -19399,6 +19400,8 @@ var defaultSettings = {
     commanderImage4: "https://www.legendmod.ml/banners/drawCommander4.png",
     commanderImage5: "https://www.legendmod.ml/banners/drawCommander5.png",
     commanderImage6: "https://www.legendmod.ml/banners/iconJustWatchPro.png",
+    commanderImageDyingLight: "https://www.legendmod.ml/banners/icondyinglightzombie.png",
+    commanderImageDyingLightvirus: "https://www.legendmod.ml/banners/icondyinglightvirus.png",
 
     ////
     miniMapFont: 'ubuntu-bold',
@@ -19645,7 +19648,26 @@ iconSpecialSkinEffectsTiger.src = 'https://www.legendmod.ml/banners/iconSpecialS
 iconSpecialSkinEffectsPanicAtDisco = new Image;
 iconSpecialSkinEffectsPanicAtDisco.src = 'https://www.legendmod.ml/banners/iconSpecialSkinEffectsPanicAtDisco.png';
 */
-
+if (dyinglight1load === "yes") {
+    cimgDyingLight = new Image;
+    cimgDyingLight.src = defaultSettings.commanderImageDyingLight;
+    //cimgDyingLightvirus = new Image;
+    //cimgDyingLightvirus.src = defaultSettings.commanderImageDyingLightvirus;
+}
+/*
+                cimgDyingLight1 = new Image;
+                cimgDyingLight1.src = 'https://www.legendmod.ml/banners/icondyinglightzombie2.png';
+                cimgDyingLight2 = new Image;
+                cimgDyingLight2.src = 'https://www.legendmod.ml/banners/icondyinglightzombie3.png';
+                cimgDyingLight3 = new Image;
+                cimgDyingLight3.src = 'https://www.legendmod.ml/banners/icondyinglightzombie4.png';
+                cimgDyingLight4 = new Image;
+                cimgDyingLight4.src = 'https://www.legendmod.ml/banners/icondyinglightzombie5.png';
+                cimgDyingLight5 = new Image;
+                cimgDyingLight5.src = 'https://www.legendmod.ml/banners/icondyinglightzombiebig.png';
+                cimgDyingLight6 = new Image;
+                cimgDyingLight6.src = 'https://www.legendmod.ml/banners/icondyinglightvolaltile.png';
+                */
 
 
 /* ═══════════════════════════════════════════════════════════════════════
@@ -37808,7 +37830,7 @@ function thelegendmodproject() {
                     this.drawImageSpecialSkin("iconSpecialSkinEffectsPanicAtDisco", this.x - 1 * y, this.y - 1 * y, y / 1, y / 4, style);
                     //style.drawImage(iconSpecialSkinEffectsPanicAtDisco, this.x - 1 * y, this.y - 1 * y, y/1, y/4);	
                     this.drawSpecialSkinDancer(style, y);
-                } else if (this.SpecialEffect === "RedArrow" || this.SpecialEffect2 === "RedArrow") {
+                } else if (this.targetNick.includes("The Dying Light") || this.SpecialEffect === "RedArrow" || this.SpecialEffect2 === "RedArrow") {
                     if (cimg5 && cimg5.complete && cimg5.naturalWidth > 0) { try { style.drawImage(cimg5, this.x - 2 * y, this.y - 2 * y, 2 * 2 * y, 2 * 2 * y); } catch (e) { } }
                 } else if (this.SpecialEffect === "HappyNewYear" || this.SpecialEffect2 === "HappyNewYear") {
                     this.drawImageSpecialSkin("iconSpecialSkinEffectsHappyNewYear", this.x + 0.2 * y, this.y + 0.3 * y, y / 1.5, y / 1, style);
@@ -38636,6 +38658,10 @@ function thelegendmodproject() {
                             style.shadowOffsetY = 0;
                         }
 
+                        /*if (dyinglight1load != "yes"){
+                                        style.globalAlpha = 1;
+                                        s = false;
+                                    }*/
                         //var node = null;
 
 
@@ -39020,6 +39046,11 @@ function thelegendmodproject() {
                                             style.restore();
                                         }
                                     }
+                                }
+                                if (dyinglight1load === "yes" && node == null && this.targetNick.includes(LM.playerNick) === false && !this.isFood && this.mass > 12) {
+                                    try {
+                                        style.drawImage(cimgDyingLight, this.x - y, this.y - y, 2 * y, 2 * y);
+                                    } catch (e) { }
                                 }
                             }
                             this.drawSpecialSkin(style, y)
@@ -60507,6 +60538,19 @@ function pickPlayerCellBySize(players, selectBiggest) {
             }
 
 
+            /*
+             * These features contain Canvas-only body-attached effects whose
+             * DOM ordering cannot be reproduced atomically against a separate
+             * WebGL canvas.
+             */
+            if (
+                dyinglight1load ===
+                    'yes'
+            ) {
+                return this._lmNoGL(this.GLW.BODY_FX);
+            }
+
+
             /* Teammate indicators (GL text pass or overlay) and the Facebook friend
              * marker (overlay): checked per visible cell below, not per frame just
              * because the option is on. */
@@ -79836,6 +79880,50 @@ function pickPlayerCellBySize(players, selectBiggest) {
                 alpha;
 
             /*
+             * Dying-light background image.
+             */
+            if (
+                dyinglight1load ===
+                    'yes' &&
+                typeof cimg5 !==
+                    'undefined' &&
+                cimg5 &&
+                !cimg5._failed &&
+                (
+                    cimg5.width > 0 ||
+                    cimg5.naturalWidth > 0
+                )
+            ) {
+                try {
+                    ctx.drawImage(
+                        cimg5,
+
+                        legendmod.mapMinX -
+                            LM.mapSize -
+                            1,
+
+                        legendmod.mapMinY -
+                            LM.mapSize -
+                            1,
+
+                        (
+                            legendmod.mapMaxX -
+                            legendmod.mapMinX
+                        ) *
+                            3,
+
+                        (
+                            legendmod.mapMaxY -
+                            legendmod.mapMinY
+                        ) *
+                            3
+                    );
+                }
+                catch (error) {
+                }
+            }
+
+            /*
              * Normal custom map background.
              */
             if (
@@ -87006,8 +87094,6 @@ Object.defineProperty(Array.prototype, 'stDev', {
     /* The stream companion, Discover features, the Analytics objectives and the profile badges are removed:
      * what they kept is deleted from this browser */
     try { ['lmCompanionPrivacy', 'lmDiscover', 'lmAnalyticsGoals', 'lmBadges'].forEach(function (k) { localStorage.removeItem(k); }); } catch (e) { }
-    /* The Dying Light theme is removed: its saved on/off state is deleted from this browser */
-    try { localStorage.removeItem('dyinglight1load'); } catch (e) { }
     /* The Mega FFA giveaway (mass counted on imsolo.pro:2102) is removed: its counter and start date are deleted */
     try { ['totalPlayerMassBigFFA', 'PremiumLimitedDateStart'].forEach(function (k) { localStorage.removeItem(k); }); } catch (e) { }
     /* The ?ref= invite links are removed: the inviter name they stored (never read) is deleted */

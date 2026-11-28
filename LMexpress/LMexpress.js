@@ -229,6 +229,7 @@ function _lmCssColor(c) { return String(c == null ? '' : c).replace(/[^#a-zA-Z0-
 var legbgcolor = $("#menuPanelColor").val();
 var legbgpic = $("#menuBg").val();
 var legmaincolor = $("#hudMainColor ").val();
+var dyinglight1load = localStorage.getItem("dyinglight1load");
 var url2;
 var semiurl2;
 var PostedThings;
@@ -1659,6 +1660,7 @@ function parseLegendJSONAPI(LegendJSON) {
     /* Rounded / Square HUD is a theme setting now (hudRoundedCorners); the stopwatch is removed */
     LegendJSON.legendSettings.timesopened = localStorage.getItem("timesopened");
 
+    LegendJSON.legendSettings.dyinglight1load = localStorage.getItem("dyinglight1load");
     LegendJSON.legendSettings.languagemod = localStorage.getItem("languagemod");
 
     LegendJSON.legendSettings.lastIP = localStorage.getItem("lastIP");
@@ -1915,7 +1917,7 @@ function saveLegendJSONAPI() {
         _lmImportSet("MAINBTBtn", LegendJSON.legendSettings.MAINBTBtn);
         _lmImportSet("timesopened", LegendJSON.legendSettings.timesopened);
 
-        /* dyinglight1load (the removed Dying Light theme) in an old settings file is skipped */
+        _lmImportSet("dyinglight1load", LegendJSON.legendSettings.dyinglight1load);
         _lmImportSet("languagemod", LegendJSON.legendSettings.languagemod);
 
         /* initialMusicUrl of an older export (the removed YouTube player) is ignored */
@@ -3360,6 +3362,20 @@ function triggerLMbtns() {
     if (!window.proLicenceUID && !document.getElementById("nick").value.includes("℄")){
         $("#LEGENDAds5").load("https://www.legendmod.ml/banners/agario2");
     }*/
+    if (dyinglight1load == null || dyinglight1load == "null") {
+        $("#LEGENDAds2").load("https://www.legendmod.ml/banners/bannerDyingLight");
+    } else if (dyinglight1load == "yes") {
+        opendyinglight();
+        $("#LEGENDAds2").load("https://www.legendmod.ml/banners/bannerStopDyingLight");
+    }
+}
+
+function opendyinglight() {
+    var s = document.createElement("script");
+    s.type = "text/javascript";
+    s.src = "https://www.legendmod.ml/extras/dyinglight.js";
+    $("body").append(s);
+
 }
 
 function bluebtns() {
@@ -4899,6 +4915,8 @@ function initializeLM(modVersion) {
         '<div class="input-box" style="text-align: center; font-size: 12px; margin-top: 4px; padding: 0px 0 0px 0;"><span id="legenddiscordwebh" class="title" style="">' + _lmxE('pack.discordWebhookUrlFor') + '  </span>' +
         '<input id="discwebhook1" class="form-control" placeholder="' + _lmxE('pack.discordWebhookUrl') + ' 1" value="" data-toggle="tooltip" data-placement="right" data-original-title="' + _lmxE('pack.mustBeFilledFor') + '. https://discord.com/api/webhooks/.../..." style="margin-top: 2px; width: 49.5%; border-color: darkslategrey; margin-left: 0.5%; display: inline-block; " onblur="setdiscwebhook1();">' +
         '<input id="discwebhook2" class="form-control" placeholder="' + _lmxE('pack.discordWebhookUrl') + ' 2" value="" data-toggle="tooltip" data-placement="right" data-original-title="' + _lmxE('pack.secondaryWebhookOptional') + '. https://discord.com/api/webhooks/.../..." style="margin-top: 2px; width: 49.5%; border-color: darkslategrey; margin-right: 0.5%; display: inline-block;" onblur="setdiscwebhook2();">' +
+        '<div class="input-box" style="text-align: center; font-size: 12px; margin-top: 4px; padding: 0px 0 0px 0;"><span id="legendotherscripts" class="title" style="">' + _lmxE('pack.expansions') + ': </span>' +
+        '</div><div id="LEGENDAds2"></div><div id="LEGENDAds3"></div>' +
         '</div></div>');
     /* The images and titles of the minimap, leaderboard and teamboard and the screen background image
      * are appearance settings: they are in the Theme tab next to the other settings of the same part
