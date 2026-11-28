@@ -224,5 +224,68 @@ tplIds.forEach(id => {
   }
 }
 
+/* multibox slots (application.mbSlots, index slot - 1) with the real ensureMbSlots / syncFromMbSlots /
+ * selectProfile / setProfileCount and the player registry (lmMbPlayers, lmMbCapacity, lmMbProfileIdx) */
+{
+  const src = main.replace(/\r\n/g, '\n');
+  const blk = (start) => { const i = src.indexOf(start); if (i < 0) throw new Error('not found: ' + start); for (let k = src.indexOf('{', i), d = 0; k < src.length; k++) { if (src[k] === '{') d++; else if (src[k] === '}' && !--d) return src.slice(i, k + 1); } };
+  const evA = src.indexOf('/* LMEvents: hooks'), ev = src.slice(evA, src.indexOf('window.OgVer', evA));
+  const meth = ['        ensureMbSlots() {', '        syncFromMbSlots() {', '        selectProfile(value) {', '        setProfileCount() {'].map(blk).join(',\n');
+  const mk = (cap, n) => {
+    const c = { console, Math, Date, JSON, Object, Array, Number, Map, Set };
+    c.window = c;
+    vm.createContext(c);
+    vm.runInContext(ev, c);
+    vm.runInContext('var defaultmapsettings = window.defaultmapsettings = { multiboxAmount: ' + cap + ', profileNumber: ' + n + ', multiBoxShadow: false };\n' +
+      'var profiles = []; for (var i = 0; i < ' + n + '; i++) profiles.push({ nick: "p" + i, skinURL: "s" + i });\n' +
+      'function $() { return { length: 0 }; }\n' +
+      'var application = window.application = { selectedProfile: 0, selectedOldProfile: 1, mbSlots: [], setPlayerSettings() { }, setProfile() { this.ensureMbSlots(); },\n' +
+      ' setProfileboxShadow() { }, eraseProfileboxShadow() { }, saveSettings() { }, profiling() { }, _lmFitProfiles(k) { profiles.length = k; },\n' + meth + ' };', c);
+    return c;
+  };
+  {
+    const c = mk(3, 12), a = c.application;
+    a.ensureMbSlots();
+    check('multibox slots: Settings "Multibox slots" 3 (the shipped default) gives P1, P2 and P3 a profile (' + J(a.mbSlots) + ')', J(a.mbSlots) === '[0,1,2]');
+    c.defaultmapsettings.multiboxAmount = 6; a.ensureMbSlots();
+    check('multibox slots: six, each its own profile (' + J(a.mbSlots) + ')', J(a.mbSlots) === '[0,1,2,3,4,5]');
+    c.defaultmapsettings.multiboxAmount = 4; a.ensureMbSlots();
+    check('multibox slots: an old saved 4 is four slots (it opens nothing)', J(a.mbSlots) === '[0,1,2,3]' && c.lmMbPlayers.count() === 1);
+    /* only P1 and P2 play: the swap / cascade of two players, as always */
+    a.selectProfile(1);
+    check('two players: the second profile clicked swaps P1 and P2 (' + J(a.mbSlots) + ')', J(a.mbSlots.slice(0, 2)) === '[1,0]' && a.selectedProfile === 1 && a.selectedOldProfile === 0);
+    a.selectProfile(7);
+    check('two players: a new profile becomes P1, the old P1 is P2 (' + J(a.mbSlots) + ')', J(a.mbSlots.slice(0, 2)) === '[7,1]' && a.selectedOldProfile === 1);
+    a.selectProfile(2);
+    check('two players: the profile P3 had becomes P1; P3 gets another one, P4 keeps its own (' + J(a.mbSlots) + ')', J(a.mbSlots.slice(0, 2)) === '[2,7]' &&
+      a.mbSlots[2] !== 2 && a.mbSlots[2] !== 7 && a.mbSlots[3] === 3 && a.mbSlots.length === 4);
+  }
+  {
+    const c = mk(4, 12), a = c.application, reg = c.lmMbPlayers;
+    a.ensureMbSlots();
+    const mkUnit = (n) => { const r = reg.reserve(); const u = { number: n, player: true, slotId: r.slotId, slotEpoch: r.slotEpoch }; reg.attach(u); c.spects.push(u); return u; };
+    const u2 = mkUnit(1), u3 = mkUnit(16);
+    c.lmSetMbUnit(16);
+    a.selectProfile(9);
+    check('an optional player (P3) open and controlled: the click gives P3 that profile only (' + J(a.mbSlots) + ')', J(a.mbSlots.slice(0, 3)) === '[0,1,9]' &&
+      a.selectedProfile === 0 && a.selectedOldProfile === 1 && c.lmMbProfileIdx(u3) === 9 && c.lmMbProfileIdx(u2) === 1);
+    c.lmSetMbUnit(0);
+    a.selectProfile(8);
+    check('    ... P1 controlled: P1 gets it, no cascade into the living P2 (' + J(a.mbSlots) + ')', J(a.mbSlots.slice(0, 3)) === '[8,1,9]' && a.selectedProfile === 8 && a.selectedOldProfile === 1);
+    /* the profile count cut from 12 to 10 while a skin of P3's profile still loads: P3's profile is gone, it
+     * gets another one; P4 keeps its own; a unit's skin is loaded by its link, so the picture
+     * that arrives later belongs to no slot */
+    a.mbSlots[3] = 4;
+    a.selectedProfile = 0;
+    c.defaultmapsettings.profileNumber = 10;
+    a.setProfileCount();
+    check('the profile count cut (12 -> 10, two profiles gone): P1 / P2 from the selection, P3 (profile 9 gone) gets a free one, P4 keeps 4 (' + J(a.mbSlots) + ')',
+      a.mbSlots[0] === 0 && a.mbSlots[1] === 1 && a.mbSlots[2] < 10 && [0, 1, 4].indexOf(a.mbSlots[2]) === -1 && a.mbSlots[3] === 4 && c.lmMbProfileIdx(u3) === a.mbSlots[2]);
+  }
+  check('settings load / import open no connection: only enable and Add Player call addBox',
+    (src.match(/\badd\(\)/g) || []).length === 2 && /add \? add\(\) : null/.test(blk('        _lmMbStart() {')) && /add \? add\(\) : null/.test(blk('        mbAddPlayer() {')) &&
+    !/\baddBox\(\)/.test(src));
+}
+
 console.log(fail ? fail + ' failed' : 'all profiles checks passed');
 process.exit(fail ? 1 : 0);

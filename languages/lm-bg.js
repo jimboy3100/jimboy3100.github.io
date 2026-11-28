@@ -2904,7 +2904,7 @@
 "settings.multiBoxShadow": "Сияние на играч 1 и 2 (цветове на профила)",
 "settings.multiKeepMoving": "Неактивната единица не спира",
 "settings.middleMultiViewWhenClose": "Камера по средата между двамата (когато са близо)",
-"settings.multiboxAmount": "Слотове за мултибокс (2-4)",
+"settings.multiboxAmount": "Слотове за мултибокс (2-6)",
 "settings.mbSwitchAfterDeath": "Автоматична смяна на фокуса след смърт",
 "settings.mbFreeze": "Замрази неактивната мултибокс единица",
 "settings.mbAutoRespawn": "Автоматично съживяване във фонов режим",

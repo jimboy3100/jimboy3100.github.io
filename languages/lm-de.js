@@ -2904,7 +2904,7 @@
 "settings.multiBoxShadow": "Leuchten von Spieler 1 & 2 (Profilfarben)",
 "settings.multiKeepMoving": "Inaktive Einheit bewegt sich weiter",
 "settings.middleMultiViewWhenClose": "Kamera mittig zwischen beiden (wenn nah)",
-"settings.multiboxAmount": "Multibox-Slots (2-4)",
+"settings.multiboxAmount": "Multibox-Slots (2-6)",
 "settings.mbSwitchAfterDeath": "Fokus nach dem Tod automatisch wechseln",
 "settings.mbFreeze": "Inaktive Multibox-Einheit einfrieren",
 "settings.mbAutoRespawn": "Auto-Respawn im Hintergrund",

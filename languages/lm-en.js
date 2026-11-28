@@ -2926,7 +2926,7 @@
 "settings.multiKeepMoving": "Inactive unit keeps moving",
 "settings.middleMultiView": "View on middle of both (always, also when far apart)",
 "settings.middleMultiViewWhenClose": "View on middle of both (when close)",
-"settings.multiboxAmount": "Multibox slots (2-4)",
+"settings.multiboxAmount": "Multibox slots (2-6)",
 "settings.mbSwitchAfterDeath": "Auto-switch focus after death",
 "settings.mbFreeze": "Freeze inactive multibox unit",
 "settings.mbAutoRespawn": "Background auto-respawn",

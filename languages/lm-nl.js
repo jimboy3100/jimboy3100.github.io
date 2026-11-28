@@ -2904,7 +2904,7 @@
 "settings.multiBoxShadow": "Gloed speler 1 & 2 (profielkleuren)",
 "settings.multiKeepMoving": "Inactieve eenheid blijft bewegen",
 "settings.middleMultiViewWhenClose": "Beeld midden tussen beide (als dichtbij)",
-"settings.multiboxAmount": "Multibox-slots (2-4)",
+"settings.multiboxAmount": "Multibox-slots (2-6)",
 "settings.mbSwitchAfterDeath": "Focus automatisch wisselen na dood",
 "settings.mbFreeze": "Inactieve multibox-eenheid bevriezen",
 "settings.mbAutoRespawn": "Automatische respawn op de achtergrond",

@@ -2904,7 +2904,7 @@
 "settings.multiBoxShadow": "Poświata gracza 1 i 2 (kolory profili)",
 "settings.multiKeepMoving": "Nieaktywna jednostka dalej się porusza",
 "settings.middleMultiViewWhenClose": "Widok na środek obu (gdy blisko)",
-"settings.multiboxAmount": "Sloty multiboxa (2-4)",
+"settings.multiboxAmount": "Sloty multiboxa (2-6)",
 "settings.mbSwitchAfterDeath": "Automatycznie przełącz po śmierci",
 "settings.mbFreeze": "Zamroź nieaktywną jednostkę multiboxa",
 "settings.mbAutoRespawn": "Automatyczne odrodzenie w tle",

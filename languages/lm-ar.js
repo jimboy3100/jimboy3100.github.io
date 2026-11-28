@@ -2904,7 +2904,7 @@
 "settings.multiBoxShadow": "توهج اللاعب 1 و 2 (ألوان الملف)",
 "settings.multiKeepMoving": "الوحدة غير النشطة تواصل الحركة",
 "settings.middleMultiViewWhenClose": "العرض في منتصف الاثنين (عند الاقتراب)",
-"settings.multiboxAmount": "خانات Multibox (2-4)",
+"settings.multiboxAmount": "خانات Multibox (2-6)",
 "settings.mbSwitchAfterDeath": "تبديل التركيز تلقائيًا بعد الموت",
 "settings.mbFreeze": "تجميد وحدة Multibox غير النشطة",
 "settings.mbAutoRespawn": "إعادة ظهور تلقائية في الخلفية",

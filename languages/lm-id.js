@@ -2904,7 +2904,7 @@
 "settings.multiBoxShadow": "Cahaya pemain 1 & 2 (warna profil)",
 "settings.multiKeepMoving": "Unit tidak aktif tetap bergerak",
 "settings.middleMultiViewWhenClose": "Tampilan di tengah keduanya (saat dekat)",
-"settings.multiboxAmount": "Slot multibox (2-4)",
+"settings.multiboxAmount": "Slot multibox (2-6)",
 "settings.mbSwitchAfterDeath": "Pindah fokus otomatis setelah mati",
 "settings.mbFreeze": "Bekukan unit multibox yang tidak aktif",
 "settings.mbAutoRespawn": "Respawn otomatis di latar belakang",

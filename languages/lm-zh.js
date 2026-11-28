@@ -2904,7 +2904,7 @@
 "settings.multiBoxShadow": "玩家 1 和 2 發光（設定檔顏色）",
 "settings.multiKeepMoving": "未操作的分身繼續移動",
 "settings.middleMultiViewWhenClose": "視角在兩者中間（靠近時）",
-"settings.multiboxAmount": "Multibox 欄位（2-4）",
+"settings.multiboxAmount": "Multibox 欄位（2-6）",
 "settings.mbSwitchAfterDeath": "死亡後自動切換焦點",
 "settings.mbFreeze": "凍結未操作的 Multibox 分身",
 "settings.mbAutoRespawn": "背景自動重生",

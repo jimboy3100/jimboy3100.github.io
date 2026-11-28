@@ -2904,7 +2904,7 @@
 "settings.multiBoxShadow": "Λάμψη παίκτη 1 & 2 (χρώματα προφίλ)",
 "settings.multiKeepMoving": "Η ανενεργή μονάδα δεν σταματά",
 "settings.middleMultiViewWhenClose": "Κάμερα στη μέση των δύο (όταν είναι κοντά)",
-"settings.multiboxAmount": "Θέσεις multibox (2-4)",
+"settings.multiboxAmount": "Θέσεις multibox (2-6)",
 "settings.mbSwitchAfterDeath": "Αυτόματη αλλαγή εστίασης μετά τον θάνατο",
 "settings.mbFreeze": "Πάγωμα της ανενεργής μονάδας multibox",
 "settings.mbAutoRespawn": "Αυτόματο respawn στο παρασκήνιο",

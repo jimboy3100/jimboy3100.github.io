@@ -2904,7 +2904,7 @@
 "settings.multiBoxShadow": "Oyuncu 1 ve 2 parlaması (profil renkleri)",
 "settings.multiKeepMoving": "Pasif birim hareket etmeye devam eder",
 "settings.middleMultiViewWhenClose": "İkisinin ortasından görünüm (yakınken)",
-"settings.multiboxAmount": "Multibox yuvaları (2-4)",
+"settings.multiboxAmount": "Multibox yuvaları (2-6)",
 "settings.mbSwitchAfterDeath": "Ölümden sonra odağı otomatik değiştir",
 "settings.mbFreeze": "Etkin olmayan multibox birimini dondur",
 "settings.mbAutoRespawn": "Arka planda otomatik yeniden doğma",

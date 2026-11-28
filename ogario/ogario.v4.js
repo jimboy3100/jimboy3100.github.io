@@ -22875,8 +22875,9 @@ var LM_SETTINGS_DEFAULTS = Object.freeze(Object.assign({}, defaultmapsettings));
  * those of the menu sliders (the gamepad ones: ogario/modules/gamepad-ui.js). */
 var LM_SETTINGS_SCHEMA = Object.freeze({
     fpsLimit: [0, 240, 10],
-    /* its slider is gone; 3-4 from older versions are read as 2 (ensureMbSlots) */
-    multiboxAmount: [2, 4, 1],
+    /* how many players Add Player may open, the main one included (lmMbCapacity); it opens no
+     * connection itself, so a saved or imported value never does either */
+    multiboxAmount: [2, 6, 1],
     /* a single split is just the split key: a saved 1 is read as 2 */
     lineSplitCount: [2, 4, 1],
     lineSplitHold: [0, 3000, 100],
@@ -27350,7 +27351,9 @@ function thelegendmodproject() {
                 this._lmHiddenSel.fp = this.selectedProfile;
                 this._lmHiddenSel.fo = this.selectedOldProfile;
             }
-            this.mbSlots = [];
+            /* the multibox slots follow: P1 / P2 from the selection again (ensureMbSlots), P3 on
+             * keep their profile while it is still in the list */
+            this.mbSlots = (Array.isArray(this.mbSlots) ? this.mbSlots : []).map(function (v, i) { return i >= 2 && v >= 0 && v < n ? v : null; });
             var list = $('#skins');
             if (list.length) {
                 for (var i = n; i < old; i++) $('#profile-' + i).closest('.skin-box').remove();
@@ -27529,31 +27532,30 @@ function thelegendmodproject() {
             /* the multibox slots follow the selected profiles */
             this.ensureMbSlots();
         },
-        /* ─── mbSlots: multibox slot → profile index mapping ─── */
+        /* ─── mbSlots: player slot → profile index (index slot - 1: P1 0, P2 1 ... P6 5) ─── */
         ensureMbSlots() {
-            /* Only one multibox unit is created (addBox runs only while spects holds no unit and the
-             * multiboxAmount slider is disabled), so a value 3-4 saved by an older version means 2. */
-            var maxMb = Math.min((defaultmapsettings && defaultmapsettings.multiboxAmount) ? defaultmapsettings.multiboxAmount : 2, 2);
-            if (!this.mbSlots || !Array.isArray(this.mbSlots)) {
-                this.mbSlots = [];
-            }
-            // Ensure slot 0 has selectedProfile
-            if (this.mbSlots.length === 0 || this.mbSlots[0] !== this.selectedProfile) {
-                this.mbSlots = [this.selectedProfile];
+            /* one entry per player Add Player may open (lmMbCapacity: Settings "Multibox slots",
+             * 2 to 6). P1 and P2 are the two selected profiles (the saved pair); P3 on keep the
+             * profile they were given in this session while it still exists, else the first one no
+             * slot has. */
+            var maxMb = typeof lmMbCapacity === 'function' ? lmMbCapacity() : 2;
+            var n = typeof profiles !== 'undefined' && profiles ? profiles.length : 0;
+            var prev = Array.isArray(this.mbSlots) ? this.mbSlots : [], out = [this.selectedProfile], i, p, k;
+            // slot 0 has selectedProfile; a new P1: P2 is the second selected profile again
+            if (prev.length === 0 || prev[0] !== this.selectedProfile) {
                 if (this.selectedOldProfile != null && this.selectedOldProfile !== this.selectedProfile && profiles[this.selectedOldProfile]) {
-                    this.mbSlots.push(this.selectedOldProfile);
+                    out.push(this.selectedOldProfile);
                 }
+            } else if (prev.length > 1) out.push(prev[1]);
+            // Fill remaining slots: P3 on what they had, else distinct available profiles
+            for (i = out.length; i < maxMb; i++) {
+                k = i >= 2 ? prev[i] : null;
+                if (k != null && k >= 0 && k < n) { out.push(k); continue; }
+                for (p = 0; p < n && out.indexOf(p) !== -1; p++);
+                if (p >= n) break;
+                out.push(p);
             }
-            // Fill remaining slots with distinct available profiles
-            if (typeof profiles !== 'undefined' && profiles.length) {
-                for (var p = 0; p < profiles.length && this.mbSlots.length < maxMb; p++) {
-                    if (this.mbSlots.indexOf(p) === -1) {
-                        this.mbSlots.push(p);
-                    }
-                }
-            }
-            // Trim to maxMb
-            while (this.mbSlots.length > maxMb) this.mbSlots.pop();
+            this.mbSlots = out;
         },
         syncFromMbSlots() {
             if (this.mbSlots && this.mbSlots.length > 0) {
@@ -27586,6 +27588,20 @@ function thelegendmodproject() {
         selectProfile(value) {
             var idx = parseInt(value, 10);
             this.ensureMbSlots();
+            /* an optional player (P3 on) is open: the profile goes to the player you control only,
+             * the others keep theirs (the swap and cascade below gave living players other profiles) */
+            var optSlot = typeof lmMbPlayers !== 'undefined' && lmMbPlayers.ordered.some(function (u) { return u.slotId >= 3; }) ? (lmMbPlayers.activeSlot || 1) : 0;
+            if (optSlot) {
+                if (!(idx >= 0 && idx < profiles.length) || this.mbSlots[optSlot - 1] === idx) return;
+                this._lmHiddenSel = null;
+                this.setPlayerSettings();
+                this.mbSlots[optSlot - 1] = idx;
+                this.syncFromMbSlots();
+                this.setProfile();
+                if (defaultmapsettings.multiBoxShadow) this.setProfileboxShadow();
+                else this.eraseProfileboxShadow();
+                return;
+            }
 
             // Case 1: already slot 1 → do nothing
             if (idx === this.mbSlots[0]) return;
@@ -27595,23 +27611,20 @@ function thelegendmodproject() {
             // Save current profile's form data BEFORE switching
             this.setPlayerSettings();
 
-            // Check if idx is already in a slot
-            var existingSlot = this.mbSlots.indexOf(idx);
-            /* Only one multibox unit is created (addBox runs only while spects holds no unit and the
-             * multiboxAmount slider is disabled), so a value 3-4 saved by an older version means 2. */
-            var maxMb = Math.min((defaultmapsettings && defaultmapsettings.multiboxAmount) ? defaultmapsettings.multiboxAmount : 2, 2);
-
-            if (existingSlot > 0) {
-                // Case 2: already in slot K (K > 0) → swap with slot 0
+            /* Only P1 and P2 play (no optional player open): the swap / cascade works on them, as
+             * always; the later slots only lose a profile P1 or P2 takes now (ensureMbSlots gives
+             * them another one) */
+            var rest = this.mbSlots.slice(2);
+            if (this.mbSlots[1] === idx) {
+                // Case 2: already in slot 2 → swap with slot 1
                 var oldSlot0 = this.mbSlots[0];
                 this.mbSlots[0] = idx;
-                this.mbSlots[existingSlot] = oldSlot0;
+                this.mbSlots[1] = oldSlot0;
             } else {
-                // Case 3: not in any slot → insert at 0, cascade others down
-                this.mbSlots.unshift(idx);
-                // Trim to maxMb (kicks out last one)
-                while (this.mbSlots.length > maxMb) this.mbSlots.pop();
+                // Case 3: not in slot 1 or 2 → insert at 0, cascade the old P1 down to P2
+                this.mbSlots = [idx, this.mbSlots[0]];
             }
+            for (var r = 0; r < rest.length; r++) this.mbSlots.push(rest[r] === this.mbSlots[0] || rest[r] === this.mbSlots[1] ? null : rest[r]);
 
             // Sync selectedProfile/selectedOldProfile from mbSlots
             this.syncFromMbSlots();
@@ -28465,7 +28478,8 @@ function thelegendmodproject() {
                 app._lmDepRefresh = refresh;
                 refresh();
             })(this);
-            // this.addSliderBox(".multiBox", "multiboxAmount", 2, 4, 1);
+            /* how many players Add Player may open (it opens nothing itself) */
+            this.addSliderBox(".multiBox", "multiboxAmount", 2, 6, 1);
             //this.addSliderBox(".massGroup", "hideSizes", 0, 37, 1);
             $("#og-settings").append('<button class="btn btn-block btn-success btn-export">' + textLanguage.exportImport + "</button>");
             $("#og-settings").append('<div class="restore-settings"><a href="#" id="lm-restore-settings">' + textLanguage.restoreSettings + "</a></div>");

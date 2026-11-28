@@ -2904,7 +2904,7 @@
 "settings.multiBoxShadow": "Свечение игроков 1 и 2 (цвета профиля)",
 "settings.multiKeepMoving": "Неактивный юнит продолжает двигаться",
 "settings.middleMultiViewWhenClose": "Камера между обоими (когда рядом)",
-"settings.multiboxAmount": "Слоты мультибокса (2-4)",
+"settings.multiboxAmount": "Слоты мультибокса (2-6)",
 "settings.mbSwitchAfterDeath": "Автопереключение фокуса после смерти",
 "settings.mbFreeze": "Замораживать неактивный юнит мультибокса",
 "settings.mbAutoRespawn": "Фоновый автореспавн",

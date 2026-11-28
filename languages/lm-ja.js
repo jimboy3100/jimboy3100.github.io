@@ -2904,7 +2904,7 @@
 "settings.multiBoxShadow": "プレイヤー1・2の発光（プロフィールの色）",
 "settings.multiKeepMoving": "非アクティブ側も移動を続ける",
 "settings.middleMultiViewWhenClose": "両方の中間を表示（近いとき）",
-"settings.multiboxAmount": "マルチボックスの枠数（2-4）",
+"settings.multiboxAmount": "マルチボックスの枠数（2-6）",
 "settings.mbSwitchAfterDeath": "死亡後に操作対象を自動切り替え",
 "settings.mbFreeze": "非アクティブなマルチボックスを停止",
 "settings.mbAutoRespawn": "バックグラウンドで自動リスポーン",

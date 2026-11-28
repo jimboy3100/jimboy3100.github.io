@@ -370,8 +370,6 @@ function death(o) {
 {
     const MB = require('./lib/mbplayers');
     const opt = { v4: process.argv[2], sp: process.argv[3], app: true };
-    const PROFILES = 'KNOWN N>2: the third and later units play the second profile: ensureMbSlots and selectProfile keep 2 slots ' +
-        '(Math.min(multiboxAmount, 2))';
     const t0 = Date.now();
     for (let K = 1; K <= 6; K++) for (const fm of [false, true]) {
         const tag = 'K=' + K + ' (Full Map ' + (fm ? 'on' : 'off') + ')';
@@ -427,8 +425,8 @@ function death(o) {
                 fwd.join() === units.concat([0]).join() && back.join() === units.slice().reverse().concat([0]).join(), fwd + ' / ' + back);
             /* the unit's skin is loaded by its link only, never stored under its nick (that replaced the
              * main player's skin when both have the nick) */
-            MB.verdict(check, tag + ': each unit plays its own profile (its slot\'s), its skin loaded by its link only', skins.length === K - 1 && new Set(skins).size === skins.length &&
-                !skins.includes('skin0') && skins.every((u, i) => u === 'skin' + (i + 1)) && !app.skins.length, skins.join(',') + ' / nick ' + app.skins.join(','), K > 2 ? PROFILES : undefined);
+            check(tag + ': each unit plays its own profile (its slot\'s), its skin loaded by its link only', skins.length === K - 1 && new Set(skins).size === skins.length &&
+                !skins.includes('skin0') && skins.every((u, i) => u === 'skin' + (i + 1)) && !app.skins.length, skins.join(',') + ' / nick ' + app.skins.join(','));
         }
         {
             const s = MB.scene(Object.assign({ players: 1, fullMap: fm }, opt));

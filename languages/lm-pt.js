@@ -2904,7 +2904,7 @@
 "settings.multiBoxShadow": "Brilho do jogador 1 e 2 (cores do perfil)",
 "settings.multiKeepMoving": "A unidade inativa continua se movendo",
 "settings.middleMultiViewWhenClose": "Visão no meio dos dois (quando perto)",
-"settings.multiboxAmount": "Slots de multibox (2-4)",
+"settings.multiboxAmount": "Slots de multibox (2-6)",
 "settings.mbSwitchAfterDeath": "Trocar o foco automaticamente após morrer",
 "settings.mbFreeze": "Congelar a unidade inativa do multibox",
 "settings.mbAutoRespawn": "Respawn automático em segundo plano",

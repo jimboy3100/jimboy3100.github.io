@@ -2904,7 +2904,7 @@
 "settings.multiBoxShadow": "Bagliore giocatore 1 e 2 (colori del profilo)",
 "settings.multiKeepMoving": "L'unità inattiva continua a muoversi",
 "settings.middleMultiViewWhenClose": "Visuale al centro di entrambe (da vicino)",
-"settings.multiboxAmount": "Slot multibox (2-4)",
+"settings.multiboxAmount": "Slot multibox (2-6)",
 "settings.mbSwitchAfterDeath": "Cambia focus automaticamente dopo la morte",
 "settings.mbFreeze": "Blocca l'unità multibox inattiva",
 "settings.mbAutoRespawn": "Respawn automatico in background",

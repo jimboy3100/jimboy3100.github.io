@@ -2904,7 +2904,7 @@
 "settings.multiBoxShadow": "Brillo del jugador 1 y 2 (colores del perfil)",
 "settings.multiKeepMoving": "La unidad inactiva sigue moviéndose",
 "settings.middleMultiViewWhenClose": "Vista centrada entre ambos (al estar cerca)",
-"settings.multiboxAmount": "Ranuras de multibox (2-4)",
+"settings.multiboxAmount": "Ranuras de multibox (2-6)",
 "settings.mbSwitchAfterDeath": "Cambiar el foco automáticamente al morir",
 "settings.mbFreeze": "Congelar la unidad de multibox inactiva",
 "settings.mbAutoRespawn": "Reaparición automática en segundo plano",

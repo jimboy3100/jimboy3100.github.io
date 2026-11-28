@@ -2904,7 +2904,7 @@
 "settings.multiBoxShadow": "Halo des joueurs 1 et 2 (couleurs du profil)",
 "settings.multiKeepMoving": "L'unité inactive continue de bouger",
 "settings.middleMultiViewWhenClose": "Vue au milieu des deux (quand proches)",
-"settings.multiboxAmount": "Emplacements multibox (2-4)",
+"settings.multiboxAmount": "Emplacements multibox (2-6)",
 "settings.mbSwitchAfterDeath": "Changer le focus automatiquement après la mort",
 "settings.mbFreeze": "Geler l'unité multibox inactive",
 "settings.mbAutoRespawn": "Réapparition auto en arrière-plan",

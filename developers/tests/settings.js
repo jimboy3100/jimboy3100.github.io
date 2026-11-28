@@ -79,7 +79,7 @@ check('the old toast position (positionClass, no menu row) is no setting: the HU
 check('settings without a slider have a range too (domination rate)', V('dominationRate', 4 / 3) === 4 / 3 && V('dominationRate', 0) === 1 && V('dominationRate', 9) === 4 && V('dominatedRate', 0.6) === 0.6);
 check('booleans: "true"/"false" converted, other values refused', V('showMass', 'false') === false && V('showMass', 1) === undefined && V('showMass', true) === true);
 check('free text kept, unknown keys refused', V('messageSound', 'a,b') === 'a,b' && V('messageSound', 5) === undefined && V('noSuchSetting', 1) === undefined && V('__proto__', 1) === undefined);
-check('the old multibox count 3-4 is still read (ensureMbSlots maps it to 2)', V('multiboxAmount', 4) === 4 && V('multiboxAmount', 9) === 4);
+check('multibox slots 2-6 (the players Add Player may open): an old 3 or 4 stays as it was, 6 is valid, 9 is 6, 1 is 2', V('multiboxAmount', 3) === 3 && V('multiboxAmount', 4) === 4 && V('multiboxAmount', 6) === 6 && V('multiboxAmount', 9) === 6 && V('multiboxAmount', 1) === 2);
 
 // ── S1 the import path of the settings file (the real loop of importSettings)
 const impLoop = cut("                    var _impS = importValue.ogarioSettings;", "                if (Object.prototype.hasOwnProperty.call(importValue, 'ogarioThemeSettings')");
