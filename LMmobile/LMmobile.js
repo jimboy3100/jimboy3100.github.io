@@ -1090,8 +1090,6 @@
                 } else {
                     hc.style.display = 'none';
                 }
-            } else {
-                emitKey(27); // fallback: ESC
             }
         }, { passive: false });
 
@@ -1123,7 +1121,6 @@
              * imported desktop settings may have changed */
             debounced(function () {
                 if (typeof application !== 'undefined' && application.split) application.split();
-                else emitKey(32);
             }, 'split', 40);
         }, { passive: false });
 
@@ -1217,22 +1214,16 @@
         /* ═══════════════════════════════════════════════════════
          *  FEED — W (keyCode 87), hold to repeat
          * ═══════════════════════════════════════════════════════ */
-        var feedIv = null;
         var feedMacroOn = false;
-        /* Use the game's own macro feed: it follows the player's feed-speed setting (this fed a
-         * fixed 20/s), pauses in a hidden tab, and is the real feed command even if W was
-         * rebound. The old 50 ms key loop stays as a fallback. */
+        /* The game's own macro feed: it follows the player's feed-speed setting, pauses in a
+         * hidden tab, and is the real feed command even if W was rebound. No simulated W key
+         * loop: play.html loads this file with the core's own ?v=, so macroFeed is always there. */
         function feedStart() {
             feedWatch(true);
             if (typeof application !== 'undefined' && application.macroFeed) {
                 feedMacroOn = true;
                 application.macroFeed(true);
-                return;
             }
-            emitKey(87);
-            /* A second finger on the button must not orphan the running interval. */
-            clearInterval(feedIv);
-            feedIv = setInterval(function () { emitKey(87); }, 50);
         }
         function feedStop() {
             feedWatch(false);
@@ -1241,7 +1232,6 @@
             var was = feedMacroOn;
             feedMacroOn = false;
             if (was && typeof application !== 'undefined' && application.macroFeed) application.macroFeed(false);
-            clearInterval(feedIv); feedIv = null;
         }
         window._lmMobileFeedStop = feedStop;
         /* a death (with auto respawn it fed the new life) or another server ends a held Feed; the
@@ -1342,7 +1332,7 @@
             var gen = ++_chatGen;
             /* a dismissed message is still in the open box: only the focus comes back */
             if (!chatShown()) {
-                if (hasGameChat()) application.enterChatMessage(); else emitKey(13);
+                if (hasGameChat()) application.enterChatMessage();
                 var inp0 = document.getElementById('message');
                 if (inp0 && _chatDraft && !inp0.value) inp0.value = _chatDraft;
             }
@@ -1385,42 +1375,19 @@
             /* clear the stale focus timer so it does not refocus after dismiss */
             if (_chatFocusTimer) { clearTimeout(_chatFocusTimer); _chatFocusTimer = null; }
             var inp = document.getElementById('message');
-            /* first, before the synthetic Enter below: it must not reach a leftover listener */
+            /* first: a leftover listener must not see the send below */
             if (chatEnterFn && inp) inp.removeEventListener('keydown', chatEnterFn);
             chatEnterFn = null;
             /* send: the game's chat command sends the text and closes its box (an empty box just
              * closes); when the Enter key already did that, the box is gone and nothing is sent twice.
              * Dismiss keeps the box and its text. */
-            var gameChat = hasGameChat();
-            if (send && gameChat && chatShown()) application.enterChatMessage();
+            if (send && hasGameChat() && chatShown()) application.enterChatMessage();
             if (!send && inp) _chatDraft = inp.value;
-            if (send && !gameChat && inp && inp.value.length > 0) {
-                // Send the message by dispatching Enter on the input
-                var ev = new KeyboardEvent('keydown', { bubbles: true, cancelable: true, key: 'Enter', keyCode: 13, which: 13 });
-                /* Firefox ignores keyCode/which in the constructor (0): the chat listeners check keyCode 13 */
-                if (ev.keyCode !== 13) { try { Object.defineProperty(ev, 'keyCode', { get: function () { return 13; } }); Object.defineProperty(ev, 'which', { get: function () { return 13; } }); } catch (e) { } }
-                inp.dispatchEvent(ev);
-            }
             if (inp) inp.blur();
             chatOn = false;
             /* B4: increment generation on close too — a delayed chatClose(true) from the
              * same open-generation that fires after dismissal is now stale */
             ++_chatGen;
-
-            /* Only send the cleanup Enter when we actually sent a message.
-             * Dismiss (send=false) should NOT dispatch Enter — it was closing the
-             * game's chat UI even when the user just tapped away to dismiss.
-             * Guard with generation to prevent stale callback from closing a reopened chat. */
-            if (send && !gameChat) {
-                var closeGen = _chatGen;
-                setTimeout(function () {
-                    if (closeGen !== _chatGen) return; /* chat reopened — do not send Enter */
-                    var msgBox = document.getElementById('message');
-                    if (msgBox && (msgBox.offsetParent !== null || msgBox.offsetHeight > 0)) {
-                        emitKey(13);
-                    }
-                }, 50);
-            }
         }
 
         /* Tap canvas while chatting → dismiss without sending (keeps draft).
@@ -1476,7 +1443,7 @@
                 if (dx > SW_THRESH && Math.abs(dy) < dx) {
                     swFiredAt = Date.now();
                     /* like the Split button: Space can be remapped by imported hotkeys */
-                    if (typeof application !== 'undefined' && application && typeof application.split === 'function') application.split(); else emitKey(32);
+                    if (typeof application !== 'undefined' && application && typeof application.split === 'function') application.split();
                 }
                 // swipe up → double split
                 else if (-dy > SW_THRESH && Math.abs(dx) < -dy) {
@@ -1868,38 +1835,6 @@
             b.className = 'lm-b lm-s';
             b.textContent = icon;
             return b;
-        }
-
-        /**
-         * Emit keydown + keyup on document.
-         * Uses Object.defineProperty to FORCE keyCode / which values,
-         * because some browsers ignore them from the KeyboardEvent constructor.
-         * ogario's getPressedKey() reads event.keyCode via a switch statement.
-         */
-        function emitKey(kc) {
-            fire('keydown', kc);
-            fire('keyup', kc);
-        }
-
-        function fire(type, kc) {
-            var ev;
-            try {
-                ev = new KeyboardEvent(type, {
-                    bubbles: true, cancelable: true, view: window
-                });
-            } catch (e) {
-                ev = document.createEvent('KeyboardEvent');
-                ev.initEvent(type, true, true);
-            }
-            // Force keyCode and which — this is the critical fix
-            Object.defineProperty(ev, 'keyCode', { get: function () { return kc; } });
-            Object.defineProperty(ev, 'which', { get: function () { return kc; } });
-            Object.defineProperty(ev, 'key', { get: function () { return kn(kc); } });
-            document.dispatchEvent(ev);
-        }
-
-        function kn(c) {
-            return c === 13 ? 'Enter' : c === 27 ? 'Escape' : c === 32 ? ' ' : String.fromCharCode(c);
         }
 
         function mouseAt(x, y) {

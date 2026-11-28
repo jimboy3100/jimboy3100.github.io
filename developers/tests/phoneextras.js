@@ -164,6 +164,15 @@ check('no multibox: a death stops it as before', stops === 4, stops);
     fctx.multiboxPlayerEnabled = 2; frame(900);
     check('held E (no phone button) across the same switch: the unit is not fed', n('main') >= 5 && n('unit') === 0 && !fctx.application.macroFeedActive, n('main') + '/' + n('unit'));
   }
+  /* no simulated W key loop any more: without the game's macroFeed the button starts nothing */
+  if (fs2.every(Boolean)) {
+    const nctx = { timers: 0, keys: 0 };
+    nctx.setInterval = () => { nctx.timers++; return 1; }; nctx.clearInterval = () => { };
+    nctx.document = { dispatchEvent() { nctx.keys++; } };
+    vm.createContext(nctx);
+    vm.runInContext('var application = {}, feedMacroOn = false;\nfunction feedWatch() { }\nfunction emitKey() { document.dispatchEvent(); }\n' + fs2.join('\n') + '\nfeedStart(); feedStop();', nctx);
+    check('phone Feed without macroFeed: no 50 ms key loop, no key events', nctx.timers === 0 && nctx.keys === 0, nctx.timers + '/' + nctx.keys);
+  }
 }
 
 // ── multibox indicator: the number of the player you control, not "P2" for every unit
