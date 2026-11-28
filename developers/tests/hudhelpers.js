@@ -197,6 +197,17 @@ check('the merge countdown in seconds is gone', !('countdownText' in P) && !('me
     LM.playerCellsMulti = [];
     H.frame({ scale: 1, camX: 0, camY: 0, canvasWidth: 100, canvasHeight: 100 }, null, LM);
     check('A15: focused unit without cells -> main player', H.massText(200, {}) === '0.20x');
+    /* units are numbered by connection: a unit numbered 12 (past 8) is still an owner and the reference */
+    ctx.multiboxPlayerEnabled = 12;
+    LM.playerCellsMulti = [{ x: 50, y: 0, size: 100, spectator: 12, isPlayerCellMulti: true }];
+    H.frame({ scale: 1, camX: 0, camY: 0, canvasWidth: 100, canvasHeight: 100 }, null, LM);
+    check('unit numbered 12 focused: the reference (200 vs 100 = 2.00x; was dropped)', H.massText(200, {}) === '2.00x' && H.refUnit() === 12);
+    /* main dead: the biggest unit, whatever its number */
+    ctx.multiboxPlayerEnabled = null;
+    LM.playerCells = [];
+    LM.playerCellsMulti = [{ x: 50, y: 0, size: 100, spectator: 2, isPlayerCellMulti: true }, { x: 90, y: 0, size: 200, spectator: 17, isPlayerCellMulti: true }];
+    H.frame({ scale: 1, camX: 0, camY: 0, canvasWidth: 100, canvasHeight: 100 }, null, LM);
+    check('main dead: the biggest unit (number 17) is the reference', H.massText(800, {}) === '2.00x' && H.refUnit() === 17);
     ctx.multiboxPlayerEnabled = null;
     delete ctx.getActiveSpect;
     s.hudRelativeMass = false;

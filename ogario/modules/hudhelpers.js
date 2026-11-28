@@ -152,7 +152,8 @@
     var owners = [];
     for (var _oi = 0; _oi < MAX_OWNERS; _oi++) {
         owners.push({
-            cells: [], dir: { has: false, x: 0, y: 0, t: 0, n: 0, vx: 0, vy: 0 },
+            /* num: whose cells (0 the main player, else the unit number), -1 a free entry */
+            num: _oi ? -1 : 0, cells: [], dir: { has: false, x: 0, y: 0, t: 0, n: 0, vx: 0, vy: 0 },
             prevCount: 0, beep: false, beepAfter: 0, maxSize: 0, sx: 0, sy: 0, sw: 0, n: 0
         });
     }
@@ -164,6 +165,22 @@
 
     function S() { return window.legendmod5 || {}; }
     function isOwn(c) { return !!(c && (c.isPlayerCell || c.isPlayerCellMulti)); }
+
+    /* The entry of a multibox unit: units are numbered by connection (with Full Map spectators a
+     * unit can be 18), so the number is no index; the entry it has, else a free one (its movement
+     * and merge state start again). 0: none free (more than 8 units). */
+    function ownerOf(num) {
+        var i, free = 0, o;
+        for (i = 1; i < MAX_OWNERS; i++) {
+            if (owners[i].num === num) return i;
+            if (!free && owners[i].num < 0) free = i;
+        }
+        if (free) {
+            o = owners[free];
+            o.num = num; o.dir.has = false; o.prevCount = 0; o.beep = false; o.beepAfter = 0;
+        }
+        return free;
+    }
 
     /* Own cells of every owner into owners[k].cells (arrays reused), with their centre and size. */
     function gatherOwners(LM) {
@@ -177,7 +194,7 @@
                 c = mc[i];
                 if (!c || c.removed) continue;
                 var k = c.spectator | 0;
-                if (k > 0 && k < MAX_OWNERS) owners[k].cells.push(c);
+                if (k > 0 && (k = ownerOf(k))) owners[k].cells.push(c);
             }
         }
         for (i = 0; i < MAX_OWNERS; i++) {
@@ -193,15 +210,17 @@
             o.sw = sw;
             o.maxSize = ms;
             if (sw > 0) { o.sx = sx / sw; o.sy = sy / sw; }
+            /* a unit without cells gives its entry back */
+            if (i && !o.n) o.num = -1;
         }
         /* reference for the relative mass and the threat arrows: the unit you
          * control, as the opponent colours (compareCells) use it: the focused multibox unit, else
          * the main player; when that one has no cells, the main player or the biggest unit */
         var act = window.multiboxPlayerEnabled | 0, ro = 0;
-        if (act > 0 && act < MAX_OWNERS && owners[act].n) ro = act;
-        else if (!owners[0].n) for (i = 1; i < MAX_OWNERS; i++) if (owners[i].maxSize > owners[ro].maxSize) ro = i;
+        for (i = 1; act > 0 && i < MAX_OWNERS; i++) if (owners[i].num === act && owners[i].n) { ro = i; break; }
+        if (!ro && !owners[0].n) for (i = 1; i < MAX_OWNERS; i++) if (owners[i].maxSize > owners[ro].maxSize) ro = i;
         var ref = owners[ro].maxSize;
-        refOwner = ref > 0 ? ro : 0;
+        refOwner = ref > 0 ? owners[ro].num : 0;
         refMass = ref > 0 ? ref * ref / 100 : 0;
     }
 
