@@ -2303,8 +2303,9 @@ function lmMultiboxPositionTwin(cell) {
  * entry per pellet, the main socket's copy first, then the lowest connection
  * number. Copies of one pellet are found in a spatial hash of 16-unit buckets
  * (the bucket and its 8 neighbours are searched; a bucket is an index, not an
- * identity): same size (within 1), at most LM_FOOD_TOL apart, at most one copy
- * per connection, the nearest first. Raw ids are never compared (each connection
+ * identity): same size (within 1), at most LM_FOOD_TOL from the drawn copy, at
+ * most one copy per connection, the nearest first, the same whatever order the
+ * copies came in (_lmFoodRegroup). Raw ids are never compared (each connection
  * has its own ids) and neither is the colour (not the same on every connection).
  * Live captures: copies of one pellet on two calibrated connections are 0.4-1.4
  * apart (median), at most about 4 (integer rounding); pellets of one size closer
@@ -2364,8 +2365,7 @@ var _lmFood = {
     /* whether each connection fed the list last frame (spect.js _lmFeedOk) */
     feed: new Map(),
     /* every pellet to be placed again at the next frame (lmFoodReplaceAll) */
-    replaceAll: false,
-    seq: 0
+    replaceAll: false
 };
 function _lmFoodSrcOf(c) {
     return c._lmSrc > 0 ? c._lmSrc : (c.spectator > 0 ? c.spectator : 0);
@@ -2392,32 +2392,65 @@ function _lmFoodSrcSet(e, src, on) {
         (e.maskX || (e.maskX = new Set())).add(src);
     } else if (e.maskX) e.maskX.delete(src);
 }
-/* main socket first, then the lowest number; a copy that is drawn before a hidden one. The entry
- * moves to where its drawn copy is: it kept the place of the copy that made it after that copy
- * left or was placed again, and copies further than LM_FOOD_TOL from that old place became a
- * second pellet next to the drawn one. */
-function _lmFoodPickRep(ent) {
-    var best = null, bestSrc = Infinity, bestHidden = true;
-    for (var i = 0; i < ent.obs.length; i++) {
-        var c = ent.obs[i], src = _lmFoodSrcOf(c), hidden = !!c.invisible;
-        if (!best || (bestHidden && !hidden) || (hidden === bestHidden && src < bestSrc)) {
-            best = c;
-            bestSrc = src;
-            bestHidden = hidden;
-        }
-    }
-    ent.rep = best;
-    if (ent.slot >= 0) {
-        _lmFood.list[ent.slot] = best;
-        if (best) _lmFoodMoveEnt(ent, _lmFoodPosX(best), _lmFoodPosY(best));
-    }
+/* The grouping does not depend on the order the copies came in. Each copy keeps the place it was
+ * put with (_lmFoodX/_lmFoodY/_lmFoodS/_lmFoodInv). A change groups again only the copies
+ * connected to it (within LM_FOOD_TOL of each other, size +-1, any connection), in a fixed order:
+ * drawn before hidden, main socket first, then the lowest connection number, then the place and
+ * the raw id. A group's first copy is drawn and is the entry's place; a copy joins a group only
+ * within LM_FOOD_TOL of that drawn copy and only if the group has no copy of its connection, the
+ * nearest pairs first. Before, the first copy to come made the entry and kept it: copies of one
+ * pellet were grouped by arrival, a hidden copy could be up to 2 x LM_FOOD_TOL from the drawn one
+ * and the entry stayed at a place its drawn copy had left.
+ * An entry is "lone" when it was grouped with no other entry around (no copy of another entry
+ * within LM_FOOD_TOL of its copies): nearly every pellet. A copy that leaves a lone entry, or comes
+ * next to one, needs no search around it (a disconnect takes out thousands of copies at once). */
+var LM_FOOD_COMP_MAX = 64;
+/* reused work state (nothing made per packet): the search's mark, whether it stopped at
+ * LM_FOOD_COMP_MAX (its groups are then not known to be lone), the copies around a change, the
+ * places still to look around, the buckets around one place, the groups made, the candidate
+ * pairs (distance, copy, group) and their order */
+var _lmFoodW = { stamp: 0, capped: false, comp: [], front: [], bks: [], groups: [], pairs: [], ord: [] };
+function _lmFoodCmp(a, b) {
+    if (a._lmFoodInv !== b._lmFoodInv) return a._lmFoodInv ? 1 : -1;
+    var d = _lmFoodSrcOf(a) - _lmFoodSrcOf(b);
+    if (d) return d;
+    d = a._lmFoodX - b._lmFoodX;
+    if (d) return d;
+    d = a._lmFoodY - b._lmFoodY;
+    if (d) return d;
+    return (a._lmRawId || a.id || 0) - (b._lmRawId || b.id || 0);
 }
-/* an entry to another place: to the other bucket in O(1) as _lmFoodDetach takes one out */
-function _lmFoodMoveEnt(ent, x, y) {
-    if (!Number.isFinite(x) || !Number.isFinite(y) || (x === ent.x && y === ent.y)) return;
-    var F = _lmFood;
+/* a new entry drawn with (and placed at) the copy `anchor`; Rainbow food draws it in the colour it
+ * had first, also when another connection's copy (its own colour) is drawn later */
+function _lmFoodEntNew(anchor) {
+    var F = _lmFood, x = anchor._lmFoodX, y = anchor._lmFoodY;
+    var e = { x: x, y: y, size: anchor._lmFoodS, obs: [anchor], mask: 0, maskX: null, rep: anchor, slot: F.list.length, key: _lmFoodKey(Math.floor(x / LM_FOOD_BUCKET), Math.floor(y / LM_FOOD_BUCKET)), bslot: -1, st: 0, lone: false, color: anchor.color };
+    _lmFoodSrcSet(e, _lmFoodSrcOf(anchor), true);
+    anchor._lmFoodEnt = e;
+    var b = F.grid.get(e.key);
+    if (!b) {
+        b = F.pool.length ? F.pool.pop() : [];
+        F.grid.set(e.key, b);
+    }
+    e.bslot = b.length;
+    b.push(e);
+    F.list.push(anchor);
+    F.ents.push(e);
+    return e;
+}
+function _lmFoodEntAdd(e, c) {
+    e.obs.push(c);
+    _lmFoodSrcSet(e, _lmFoodSrcOf(c), true);
+    c._lmFoodEnt = e;
+}
+/* an entry drawn with another of its copies: to that copy's place (and bucket, O(1)) */
+function _lmFoodEntMove(ent, rep) {
+    var F = _lmFood, x = rep._lmFoodX, y = rep._lmFoodY;
+    ent.rep = rep;
+    F.list[ent.slot] = rep;
     ent.x = x;
     ent.y = y;
+    ent.size = rep._lmFoodS;
     var key = _lmFoodKey(Math.floor(x / LM_FOOD_BUCKET), Math.floor(y / LM_FOOD_BUCKET));
     if (key === ent.key) return;
     var b = F.grid.get(ent.key);
@@ -2441,70 +2474,10 @@ function _lmFoodMoveEnt(ent, x, y) {
     ent.bslot = nb.length;
     nb.push(ent);
 }
-function _lmFoodAttach(cell) {
-    var F = _lmFood, src = _lmFoodSrcOf(cell);
-    var x = _lmFoodPosX(cell), y = _lmFoodPosY(cell), size = cell.size;
-    if (!Number.isFinite(x) || !Number.isFinite(y)) return;
-    var bx = Math.floor(x / LM_FOOD_BUCKET), by = Math.floor(y / LM_FOOD_BUCKET);
-    var best = null, bestD = LM_FOOD_TOL * LM_FOOD_TOL;
-    for (var ox = -1; ox <= 1; ox++) {
-        for (var oy = -1; oy <= 1; oy++) {
-            var bucket = F.grid.get(_lmFoodKey(bx + ox, by + oy));
-            if (!bucket) continue;
-            for (var i = 0; i < bucket.length; i++) {
-                var e = bucket[i];
-                if (_lmFoodHasSrc(e, src)) continue; /* one copy per connection */
-                if (!(Math.abs(e.size - size) <= 1)) continue;
-                var dx = e.x - x, dy = e.y - y, d = dx * dx + dy * dy;
-                if (d < bestD || (d === bestD && best && e.seq < best.seq) || (d === bestD && !best)) {
-                    best = e;
-                    bestD = d;
-                }
-            }
-        }
-    }
-    if (!best) {
-        best = { x: x, y: y, size: size, obs: [], mask: 0, maskX: null, rep: null, slot: -1, key: 0, bslot: -1, seq: ++F.seq };
-        best.key = _lmFoodKey(bx, by);
-        var b = F.grid.get(best.key);
-        if (!b) {
-            b = F.pool.length ? F.pool.pop() : [];
-            F.grid.set(best.key, b);
-        }
-        best.bslot = b.length;
-        b.push(best);
-        best.slot = F.list.length;
-        F.list.push(cell);
-        F.ents.push(best);
-    }
-    best.obs.push(cell);
-    _lmFoodSrcSet(best, src, true);
-    cell._lmFoodEnt = best;
-    cell._lmFoodInv = !!cell.invisible;
-    if (src > 0) {
-        F.spectObs++;
-        /* the transform it was placed with (lmFoodFrame) */
-        if (!F.sig.has(src)) F.sig.set(src, _lmFoodSigOf(_lmFoodSpect(src), []));
-    }
-    _lmFoodPickRep(best);
-}
-function _lmFoodDetach(cell) {
-    var F = _lmFood, ent = cell._lmFoodEnt;
-    if (!ent) return;
-    cell._lmFoodEnt = null;
-    var src = _lmFoodSrcOf(cell);
-    var k = ent.obs.indexOf(cell);
-    if (k < 0) return;
-    ent.obs[k] = ent.obs[ent.obs.length - 1];
-    ent.obs.pop();
-    _lmFoodSrcSet(ent, src, false);
-    if (src > 0) F.spectObs--;
-    if (ent.obs.length) {
-        /* the pellet is still seen by another connection: that copy is drawn from now on */
-        if (ent.rep === cell) _lmFoodPickRep(ent);
-        return;
-    }
-    /* last copy gone: the pellet leaves the bucket and the list (O(1), slots kept right) */
+/* an entry out of its bucket and of the list (O(1), slots kept right); its copies stay in obs */
+function _lmFoodEntDrop(ent) {
+    var F = _lmFood;
+    if (ent.slot < 0) return;
     var bucket = F.grid.get(ent.key);
     if (bucket) {
         var last = bucket.pop();
@@ -2526,8 +2499,246 @@ function _lmFoodDetach(cell) {
     ent.slot = -1;
     ent.rep = null;
 }
-/* the list off: every pellet back to LM.food alone */
-function _lmFoodOff() {
+/* Adds to `out` the whole entries of every copy within LM_FOOD_TOL (size +-1) of a place in
+ * `front` (copies: a new one, or a departed one's old place), and of the copies so reached, at
+ * most LM_FOOD_COMP_MAX copies. The 3x3 buckets of a place are looked up once for all places in
+ * one bucket (the copies of one pellet nearly always are); around a lone entry's copies there is
+ * nothing more to find. Empties `front`. */
+function _lmFoodGather(out, front) {
+    var W = _lmFoodW, grid = _lmFood.grid, stamp = ++W.stamp, bks = W.bks, capped = false;
+    var tol = LM_FOOD_TOL, tol2 = tol * tol, far = 2 * tol, max = LM_FOOD_COMP_MAX, bsz = LM_FOOD_BUCKET;
+    var lbx = NaN, lby = NaN, nb = 0;
+    for (var q = 0; q < front.length; q++) {
+        var p = front[q], px = p._lmFoodX, py = p._lmFoodY, ps = p._lmFoodS;
+        var bx = Math.floor(px / bsz), by = Math.floor(py / bsz);
+        if (bx !== lbx || by !== lby) {
+            lbx = bx;
+            lby = by;
+            nb = 0;
+            /* _lmFoodKey(bx + ox, by + oy) for ox, oy in -1..1 */
+            for (var kx = (bx + 32767) * 65536, ox = 0; ox < 3; ox++, kx += 65536) {
+                for (var k = kx + by + 32767, oy = 0; oy < 3; oy++, k++) {
+                    var b = grid.get(k);
+                    if (b) bks[nb++] = b;
+                }
+            }
+        }
+        for (var t = 0; t < nb; t++) {
+            var bucket = bks[t];
+            for (var i = 0; i < bucket.length; i++) {
+                var e = bucket[i];
+                /* its copies are within LM_FOOD_TOL of its place */
+                if (e.st === stamp || e.x - px > far || px - e.x > far || e.y - py > far || py - e.y > far) continue;
+                var near = false, j;
+                for (j = 0; j < e.obs.length && !near; j++) {
+                    var m = e.obs[j], dx = m._lmFoodX - px, dy = m._lmFoodY - py;
+                    near = dx * dx + dy * dy <= tol2 && Math.abs(m._lmFoodS - ps) <= 1;
+                }
+                if (!near) continue;
+                if (out.length + e.obs.length > max) {
+                    /* left out: no longer known to be alone either */
+                    capped = true;
+                    e.lone = false;
+                    continue;
+                }
+                e.st = stamp;
+                for (j = 0; j < e.obs.length; j++) {
+                    out.push(e.obs[j]);
+                    if (!e.lone) front.push(e.obs[j]);
+                }
+            }
+        }
+    }
+    for (t = 0; t < nb; t++) bks[t] = null;
+    front.length = 0;
+    W.capped = capped;
+    return out;
+}
+/* candidate pairs by distance; equal distances keep the order they were listed in (the copies,
+ * then the groups, in the fixed order) */
+function _lmFoodPairCmp(p, q) {
+    var pairs = _lmFoodW.pairs;
+    return pairs[p] - pairs[q] || p - q;
+}
+/* the copies `cells` (their entries dropped first) grouped again, as described above */
+function _lmFoodRegroup(cells) {
+    var i, j, k, n = cells.length, tol2 = LM_FOOD_TOL * LM_FOOD_TOL;
+    for (i = 0; i < n; i++) {
+        var old = cells[i]._lmFoodEnt;
+        /* the colour of the pellet it was a copy of (that entry may be dropped already) */
+        cells[i]._lmFoodCol = old ? old.color : null;
+        if (old) _lmFoodEntDrop(old);
+        cells[i]._lmFoodEnt = null;
+    }
+    /* insertion sort: a component is a few copies */
+    for (i = 1; i < n; i++) {
+        var c = cells[i];
+        for (j = i - 1; j >= 0 && _lmFoodCmp(cells[j], c) > 0; j--) cells[j + 1] = cells[j];
+        cells[j + 1] = c;
+    }
+    var W = _lmFoodW, groups = W.groups, pairs = W.pairs, ord = W.ord;
+    groups.length = 0;
+    for (i = 0; i < n; i = j) {
+        var a = cells[i], src = _lmFoodSrcOf(a);
+        for (j = i + 1; j < n && _lmFoodSrcOf(cells[j]) === src && cells[j]._lmFoodInv === a._lmFoodInv; j++);
+        pairs.length = 0;
+        ord.length = 0;
+        for (k = i; k < j; k++) {
+            c = cells[k];
+            for (var g = 0; g < groups.length; g++) {
+                var e = groups[g], r = e.rep;
+                if (_lmFoodHasSrc(e, src) || !(Math.abs(r._lmFoodS - c._lmFoodS) <= 1)) continue;
+                var dx = r._lmFoodX - c._lmFoodX, dy = r._lmFoodY - c._lmFoodY, d = dx * dx + dy * dy;
+                if (d <= tol2) {
+                    ord.push(pairs.length);
+                    pairs.push(d, k, g);
+                }
+            }
+        }
+        /* nearest pairs first (stable: equal distances in the listed order) */
+        if (ord.length > 16) ord.sort(_lmFoodPairCmp);
+        else {
+            for (k = 1; k < ord.length; k++) {
+                var o = ord[k], od = pairs[o], m = k - 1;
+                for (; m >= 0 && pairs[ord[m]] > od; m--) ord[m + 1] = ord[m];
+                ord[m + 1] = o;
+            }
+        }
+        for (k = 0; k < ord.length; k++) {
+            var ci = pairs[ord[k] + 1], ge = groups[pairs[ord[k] + 2]];
+            if (cells[ci]._lmFoodEnt || _lmFoodHasSrc(ge, src)) continue;
+            _lmFoodEntAdd(ge, cells[ci]);
+        }
+        for (k = i; k < j; k++) if (!cells[k]._lmFoodEnt) groups.push(_lmFoodEntNew(cells[k]));
+    }
+    /* one group made of the whole search: no other entry around it */
+    if (groups.length === 1 && !W.capped) groups[0].lone = true;
+    /* each pellet keeps the colour of the first of its copies that had one */
+    for (g = 0; g < groups.length; g++) {
+        var go = groups[g].obs;
+        for (k = 0; k < go.length && !go[k]._lmFoodCol; k++);
+        if (k < go.length) groups[g].color = go[k]._lmFoodCol;
+    }
+    groups.length = 0;
+    pairs.length = 0;
+    ord.length = 0;
+}
+function _lmFoodAttach(cell) {
+    var F = _lmFood, src = _lmFoodSrcOf(cell), x = _lmFoodPosX(cell), y = _lmFoodPosY(cell);
+    if (!Number.isFinite(x) || !Number.isFinite(y)) return;
+    cell._lmFoodX = x;
+    cell._lmFoodY = y;
+    cell._lmFoodS = Number.isFinite(cell.targetSize) ? cell.targetSize : cell.size;
+    cell._lmFoodInv = !!cell.invisible;
+    cell._lmFoodEnt = null;
+    if (src > 0) {
+        F.spectObs++;
+        /* the transform it was placed with (lmFoodFrame) */
+        if (!F.sig.has(src)) F.sig.set(src, _lmFoodSigOf(_lmFoodSpect(src), []));
+    }
+    var W = _lmFoodW, comp = W.comp;
+    comp.push(cell);
+    W.front.push(cell);
+    _lmFoodGather(comp, W.front);
+    if (comp.length === 1) {
+        /* nothing near: a pellet of its own */
+        comp.length = 0;
+        _lmFoodEntNew(cell).lone = !W.capped;
+        return;
+    }
+    /* the usual case: one more connection's copy of one pellet, after its drawn copy in the order */
+    var e = comp[1]._lmFoodEnt, r = e.rep;
+    if (comp.length === e.obs.length + 1 && !_lmFoodHasSrc(e, src) && _lmFoodCmp(r, cell) < 0 && Math.abs(r._lmFoodS - cell._lmFoodS) <= 1) {
+        var dx = r._lmFoodX - cell._lmFoodX, dy = r._lmFoodY - cell._lmFoodY;
+        if (dx * dx + dy * dy <= LM_FOOD_TOL * LM_FOOD_TOL) {
+            comp.length = 0;
+            _lmFoodEntAdd(e, cell);
+            e.lone = !W.capped;
+            return;
+        }
+    }
+    _lmFoodRegroup(comp);
+    comp.length = 0;
+}
+/* A hidden copy of connection src left ent: may a copy of src now join it (or a group it
+ * blocked)? Only a copy of src near the drawn copy could change. */
+function _lmFoodFreedSlot(ent, src) {
+    var F = _lmFood, r = ent.rep, tol2 = 4 * LM_FOOD_TOL * LM_FOOD_TOL;
+    var bx = Math.floor(r._lmFoodX / LM_FOOD_BUCKET), by = Math.floor(r._lmFoodY / LM_FOOD_BUCKET);
+    for (var ox = -1; ox <= 1; ox++) {
+        for (var oy = -1; oy <= 1; oy++) {
+            var bucket = F.grid.get(_lmFoodKey(bx + ox, by + oy));
+            if (!bucket) continue;
+            for (var i = 0; i < bucket.length; i++) {
+                var e = bucket[i];
+                if (e === ent || !_lmFoodHasSrc(e, src)) continue;
+                for (var j = 0; j < e.obs.length; j++) {
+                    var m = e.obs[j];
+                    if (_lmFoodSrcOf(m) !== src) continue;
+                    var dx = m._lmFoodX - r._lmFoodX, dy = m._lmFoodY - r._lmFoodY;
+                    if (dx * dx + dy * dy <= tol2) return true;
+                }
+            }
+        }
+    }
+    return false;
+}
+/* A copy leaves its group (removed, or about to be placed again): a hidden copy whose slot no
+ * other copy can take leaves the group as it is; otherwise the copies around it are grouped again
+ * (the drawn copy left: the next one in the order is drawn, copies too far from it split off). */
+function _lmFoodDetach(cell) {
+    var F = _lmFood, ent = cell._lmFoodEnt;
+    if (!ent) return;
+    cell._lmFoodEnt = null;
+    var obs = ent.obs, k = obs.indexOf(cell);
+    if (k < 0) return;
+    obs[k] = obs[obs.length - 1];
+    obs.pop();
+    var src = _lmFoodSrcOf(cell);
+    _lmFoodSrcSet(ent, src, false);
+    if (src > 0) F.spectObs--;
+    var W = _lmFoodW, comp = W.comp, i;
+    if (ent.lone) {
+        /* nothing around: only its own copies can change */
+        if (!obs.length) {
+            _lmFoodEntDrop(ent);
+            return;
+        }
+        if (cell !== ent.rep) return;
+        var r = obs[0];
+        for (i = 1; i < obs.length; i++) if (_lmFoodCmp(obs[i], r) < 0) r = obs[i];
+        var keep = true;
+        for (i = 0; i < obs.length && keep; i++) {
+            var m = obs[i], dx = m._lmFoodX - r._lmFoodX, dy = m._lmFoodY - r._lmFoodY;
+            keep = dx * dx + dy * dy <= LM_FOOD_TOL * LM_FOOD_TOL && Math.abs(m._lmFoodS - r._lmFoodS) <= 1;
+        }
+        if (keep) {
+            /* the next copy in the order is drawn; all others still within LM_FOOD_TOL of it */
+            _lmFoodEntMove(ent, r);
+            return;
+        }
+        /* they split: grouped again (still pointing at the dropped entry, for its colour) */
+        _lmFoodEntDrop(ent);
+        for (i = 0; i < obs.length; i++) comp.push(obs[i]);
+        W.capped = false;
+        _lmFoodRegroup(comp);
+        comp.length = 0;
+        return;
+    }
+    if (cell !== ent.rep && obs.length && !_lmFoodFreedSlot(ent, src)) return;
+    _lmFoodEntDrop(ent);
+    var front = W.front;
+    front.push(cell);
+    for (i = 0; i < obs.length; i++) {
+        comp.push(obs[i]);
+        front.push(obs[i]);
+    }
+    _lmFoodGather(comp, front);
+    if (comp.length) _lmFoodRegroup(comp);
+    comp.length = 0;
+}
+/* the list off: every pellet back to LM.food alone (keepFeed: lmFoodRebuild) */
+function _lmFoodOff(keepFeed) {
     var F = _lmFood;
     for (var i = 0; i < F.ents.length; i++) {
         var obs = F.ents[i].obs;
@@ -2539,6 +2750,8 @@ function _lmFoodOff() {
     F.ents.length = 0;
     F.spectObs = 0;
     F.sig.clear();
+    /* each connection's feed state too: the next frame looks at every connection again */
+    if (!keepFeed) F.feed.clear();
     F.on = false;
 }
 /* A pellet arrived (main socket: from indexedPush into LM.food; spect.js: its packets). */
@@ -2560,22 +2773,14 @@ function lmFoodRemove(cell) {
     _lmFoodDetach(cell);
     if (_lmFood.on && _lmFood.spectObs <= 0) _lmFoodOff();
 }
-/* A known pellet got a packet: placed again if it moved or its size changed, or the
- * drawn copy is chosen again if it was hidden or shown. */
+/* A known pellet got a packet: grouped again if its place, size or hidden state changed. */
 function lmFoodTouch(cell) {
     var ent = cell && cell._lmFoodEnt;
     if (!ent) return;
-    var dx = _lmFoodPosX(cell) - ent.x, dy = _lmFoodPosY(cell) - ent.y;
-    if (!(dx * dx + dy * dy <= LM_FOOD_TOL * LM_FOOD_TOL) || !(Math.abs(cell.size - ent.size) <= 1)) {
-        _lmFoodDetach(cell);
-        _lmFoodAttach(cell);
-        return;
-    }
-    var inv = !!cell.invisible;
-    if (inv !== cell._lmFoodInv) {
-        cell._lmFoodInv = inv;
-        _lmFoodPickRep(ent);
-    }
+    var s = Number.isFinite(cell.targetSize) ? cell.targetSize : cell.size;
+    if (_lmFoodPosX(cell) === cell._lmFoodX && _lmFoodPosY(cell) === cell._lmFoodY && s === cell._lmFoodS && !!cell.invisible === cell._lmFoodInv) return;
+    _lmFoodDetach(cell);
+    _lmFoodAttach(cell);
 }
 /* Every pellet moved at once, outside its packets (Rotate Map / orientation flip,
  * _retranslateAllOnFlip): each is placed again where it is now, once, at the next frame
@@ -2617,7 +2822,9 @@ function lmFoodRebuild() {
         if (!lmSrcFeeds(_lmFoodSpect(src))) return;
         set.forEach(function (c) { if (c.isFood && !c.removed) keep.push(c); });
     });
-    _lmFoodOff();
+    /* the feed states stay right (only the feeding connections' pellets are kept): no pass over
+     * every connection's cells at the next frame after each spawn */
+    _lmFoodOff(true);
     if (!keep.length) return;
     lmFoodAdd(keep[0]);
     for (var i = 1; i < keep.length; i++) if (!keep[i]._lmFoodEnt) _lmFoodAttach(keep[i]);
@@ -69756,6 +69963,7 @@ function pickPlayerCellBySize(players, selectBiggest) {
                 var colorString =
                     rainbowFood
                         ? (
+                            (_fEnts && _fe && _fe.color) ||
                             food.color ||
                             defaultFoodColor
                         )
@@ -82499,7 +82707,8 @@ function pickPlayerCellBySize(players, selectBiggest) {
                     if (!f || f.invisible) continue;
                     if (f.x < minX || f.x > maxX || f.y < minY || f.y > maxY) continue;
 
-                    var color = f.color || defaultFoodColor;
+                    /* the Full Map list: the pellet's colour, the same whichever copy is drawn */
+                    var color = (_fEnts && _fe && _fe.color) || f.color || defaultFoodColor;
                     if (!batches[color]) {
                         batches[color] = [];
                         this._rainbowBatchCount = (this._rainbowBatchCount || 0) + 1;

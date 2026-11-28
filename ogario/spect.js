@@ -3125,6 +3125,9 @@ class Spect {
                 /* only while this connection's transform is verified (lmFoodFrame adds its
                  * pellets when it becomes so) */
                 else if (this._lmFeedOk()) lmFoodAdd(cell);
+                /* it feeds otherwise than the last frame saw and may change back before the next
+                 * one (hidden tab, food hidden): the next frame looks at its pellets again */
+                if (typeof _lmFood !== 'undefined' && _lmFood.feed.has(this.number) && _lmFood.feed.get(this.number) !== this._lmFeedOk()) _lmFood.feed.delete(this.number);
             }
 
             // In multibox mode or for player cells, cells must NEVER be hidden

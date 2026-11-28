@@ -12,7 +12,11 @@
  * connections' cells and pellets (their servers cleared nothing); a rebuild of the list takes no
  * unverified connection's pellets; a pellet whose drawn copy leaves moves to the copy drawn next
  * (live capture with a small residual); Canvas2D and Expanding Land WebGL get the same list; a
- * connection number used again starts without the old connection's food state or shared colours. Prints the food
+ * connection number used again starts without the old connection's food state or shared colours;
+ * the grouping is the same in any arrival order (each hidden copy within LM_FOOD_TOL of its drawn
+ * copy) and equal to the groups made from scratch; a drawn copy placed again moves its entry; a
+ * feed state that changes and changes back between two frames is followed; Rainbow food keeps a
+ * pellet's colour when another connection's copy is drawn. Prints the food
  * observations against the pellets drawn and the cost of the list.
  * node developers/tests/fullmapfood.js */
 'use strict';
@@ -886,6 +890,141 @@ reset();
         console.log('     whole-update check, 600 records (' + D.length + ' bytes): ' + us.toFixed(2) + ' us per update');
         check('the check reads the dense update to its end', s / N === D.length);
     }
+}
+/* 9. the grouping does not depend on the arrival order: every hidden copy is within LM_FOOD_TOL of
+ *    the copy drawn for it, and the same copies give the same pellets in any order */
+{
+    const TOL = vm.runInContext('LM_FOOD_TOL', g);
+    const perms = (a) => a.length <= 1 ? [a] : a.flatMap((x, i) => perms(a.slice(0, i).concat(a.slice(i + 1))).map((p) => [x].concat(p)));
+    const shape = () => vm.runInContext('_lmFood.ents', g).map((e) => e.rep.spectator + '@' + e.rep.x + ':' + e.obs.map((c) => c.spectator).sort().join('')).sort().join(' ');
+    const far = () => { let m = 0; for (const e of vm.runInContext('_lmFood.ents', g)) for (const c of e.obs) m = Math.max(m, Math.hypot(c.x - e.rep.x, c.y - e.rep.y)); return m; };
+    const load = (xs, order) => {
+        reset();
+        const sps = xs.map((x, k) => spect(k + 1));
+        for (const k of order) sps[k].updateCells(packet([], [{ id: 50 + k, x: xs[k], y: 0, size: 10 }], []), 0);
+        drawList();
+        return { shape: shape(), far: far(), n: stats().pellets };
+    };
+    for (const xs of [[0, 4, 8], [0, 4, 8, 12, 16, 20]]) {
+        const orders = xs.length === 3 ? perms([0, 1, 2]) : [[0, 1, 2, 3, 4, 5], [5, 4, 3, 2, 1, 0], [2, 5, 0, 4, 1, 3], [3, 0, 5, 1, 4, 2]];
+        const res = orders.map((o) => load(xs, o));
+        check('food order: ' + xs.length + ' copies ' + (xs[1] - xs[0]) + ' apart, ' + orders.length + ' arrival orders: the same pellets each time', res.every((r) => r.shape === res[0].shape), res.map((r) => r.n).join(','));
+        check('food order: ' + xs.length + ' copies: every hidden copy within ' + TOL + ' of its drawn copy', res.every((r) => r.far <= TOL), res.map((r) => r.far).join(','));
+    }
+    /* live capture with the residual of 6e (+2 / -2): the same number of pellets in every order */
+    const L = JSON.parse(read(path.join(__dirname, 'lib', 'fullmap-food-live.json')));
+    const M = L.main, counts = [];
+    for (const o of perms([2, 3, 4])) {
+        reset();
+        for (const n of o) {
+            const c = L.conns.find((k) => k.n === n), w = c.maxX - c.minX, h = c.maxY - c.minY, r = n === 2 ? 2 : n === 4 ? -2 : 0, sp = spect(n);
+            sp.getX = (x) => r + M.minX + (c.o[0] > 0 ? (x - c.minX) / w : (c.maxX - x) / w) * M.w;
+            sp.getY = (y) => M.minY + (c.o[1] > 0 ? (y - c.minY) / h : (c.maxY - y) / h) * M.h;
+            sp.updateCells(packet([], c.food.map((p, i) => ({ id: 10 + i, x: p[0], y: p[1], size: p[2] })), []), 0);
+        }
+        counts.push(stats().pellets + '/' + far().toFixed(1));
+    }
+    check('food order: live capture, residual 2, all 6 connection orders give the same pellets, none hidden past ' + TOL, new Set(counts).size === 1 && counts.every((c) => +c.split('/')[1] <= TOL), counts.join(' '));
+}
+/* 10. a drawn copy placed again within LM_FOOD_TOL: its entry and bucket follow it (before: the
+ *     entry kept the old place; a copy near the new place made a second pellet, one 8 away joined) */
+reset();
+{
+    const s1 = spect(1), s2 = spect(2), s3 = spect(3), s4 = spect(4);
+    s1.updateCells(packet([], [{ id: 1, x: 0, y: 0, size: 10 }], []), 0);
+    s2.updateCells(packet([], [{ id: 2, x: 4, y: 0, size: 10 }], []), 0);
+    s1.updateCells(packet([], [{ id: 1, x: 4, y: 0, size: 10 }], []), 0);
+    const e = vm.runInContext('_lmFood.ents', g);
+    check('touch within tolerance: the entry is where its drawn copy is', e.length === 1 && e[0].rep.spectator === 1 && e[0].x === 4 && e[0].x === e[0].rep.x, e.map((x) => x.x + '/' + x.rep.x).join(' '));
+    s3.updateCells(packet([], [{ id: 3, x: 9, y: 0, size: 10 }], []), 0);
+    s4.updateCells(packet([], [{ id: 4, x: -4, y: 0, size: 10 }], []), 0);
+    const ents = vm.runInContext('_lmFood.ents', g), of = (n) => ents.find((x) => x.obs.some((c) => c.spectator === n));
+    check('touch within tolerance: a copy 5 from the new place joins, one 8 away does not', of(3) === of(1) && of(4) !== of(1), ents.length);
+    s1.updateCells(packet([], [{ id: 1, x: 4, y: 0, size: 11 }], []), 0);
+    check('touch within tolerance: the entry takes its drawn copy\'s size', of(1) && vm.runInContext('_lmFood.ents', g).every((x) => x.size === x.rep.size));
+}
+/* 11. the groups kept up copy by copy equal the groups made again from scratch (lmFoodReplaceAll) */
+reset();
+{
+    let s = 5;
+    const rnd = () => (s = (s * 1103515245 + 12345) % 2147483648) / 2147483648;
+    const sps = [1, 2, 3, 4].map(spect), ids = [[], [], [], []];
+    for (let step = 0; step < 3000; step++) {
+        const k = Math.floor(rnd() * 4), sp = sps[k];
+        if (ids[k].length && rnd() < 0.35) {
+            const id = ids[k].splice(Math.floor(rnd() * ids[k].length), 1)[0];
+            sp.updateCells(packet([], [], [id]), 0);
+        } else {
+            /* pellets on a coarse lattice, each connection off by up to 2: many near copies */
+            const id = 1000 + step, x = Math.floor(rnd() * 40) * 6 + Math.round((rnd() - 0.5) * 4), y = Math.floor(rnd() * 8) * 6 + Math.round((rnd() - 0.5) * 4);
+            ids[k].push(id);
+            sp.updateCells(packet([], [{ id, x, y, size: 10 }], []), 0);
+        }
+    }
+    const sig = () => vm.runInContext('_lmFood.ents', g).map((e) => e.rep.spectator + ':' + e.rep._lmRawId + '<' + e.obs.map((c) => c.spectator + ':' + c._lmRawId).sort().join(',')).sort().join(' ');
+    drawList();
+    const inc = sig(), n = stats().pellets;
+    vm.runInContext('lmFoodReplaceAll()', g);
+    drawList();
+    check('incremental groups = groups made again from scratch (' + n + ' pellets)', sig() === inc, n + '/' + stats().pellets);
+    /* and the groups of one pass over all copies at once */
+    vm.runInContext('(function () { var F = _lmFood, cells = []; F.ents.forEach(function (e) { e.obs.forEach(function (c) { cells.push(c); }); }); F.ents.slice().forEach(_lmFoodEntDrop); _lmFoodW.capped = false; _lmFoodRegroup(cells); })()', g);
+    check('incremental groups = the groups of one pass over all copies', sig() === inc, stats().pellets);
+}
+/* 12. a connection's feed state changing twice between two frames (hidden tab, food hidden):
+ *     the pellets follow the state it has at the frame */
+reset();
+{
+    const sp = spect(1);
+    sp.updateCells(packet([], [{ id: 1, x: 100, y: 100 }], []), 0);
+    drawList();
+    sp._testFeed = false;
+    sp.updateCells(packet([], [{ id: 2, x: 900, y: 900 }], []), 0);
+    sp._testFeed = true;
+    check('feed off and on between frames: the pellet that came meanwhile is drawn', drawList().length === 2, drawList().length);
+    reset();
+    const s2 = spect(1);
+    s2.updateCells(packet([], [{ id: 1, x: 100, y: 100 }], []), 0);
+    drawList();
+    s2._testFeed = false;
+    s2.updateCells(packet([], [{ id: 2, x: 900, y: 900 }], []), 0);
+    s2.updateCells(packet([], [], [1]), 0); /* the last listed pellet leaves: the list goes off */
+    s2._testFeed = true;
+    const l = drawList();
+    check('feed off, list off, feed on between frames: the pellet that came meanwhile is drawn', l !== LM.food && l.length === 1, l === LM.food ? 'list off' : l.length);
+    reset();
+    const s3 = spect(1);
+    s3._testFeed = false;
+    s3.updateCells(packet([], [{ id: 1, x: 100, y: 100 }], []), 0);
+    drawList();
+    s3._testFeed = true;
+    s3.updateCells(packet([], [{ id: 2, x: 900, y: 900 }], []), 0);
+    s3._testFeed = false;
+    const l3 = drawList();
+    check('feed on and off between frames: none of its pellets drawn', l3 === LM.food || l3.length === 0, l3.length);
+}
+/* 13. Rainbow food: a pellet keeps the colour it was drawn in when another connection's copy (each
+ *     connection has its own colours) is drawn from then on (before: its colour changed) */
+reset();
+{
+    const fr = vm.runInContext('({ canvasWidth: 1600, canvasHeight: 900, camX: 0, camY: 0, scale: 1, isLegendWorldMapDeformationVisible: function () { return false; },\n' +
+        src.slice(src.indexOf('        drawCachedFood(ctx, food, scale, reset) {'), src.indexOf('        drawCircle(ctx, x, y, radius, color) {')).trim().replace(/,$/, '') + '})', g);
+    const fills = () => {
+        const got = [];
+        const ctx = { fillStyle: '', save() { }, restore() { }, beginPath() { }, stroke() { }, lineTo() { }, arc() { }, moveTo() { }, fill() { got.push(this.fillStyle); } };
+        fr.drawCachedFood(ctx, drawList(), 1);
+        return got.join(' ');
+    };
+    const m = mainFood(10, 100, 100, hex(0x40a0f0)), s1 = spect(1), s2 = spect(2);
+    s1.updateCells(packet([], [{ id: 1, x: 101, y: 100, color: 0xf04040 }], []), 0);
+    s2.updateCells(packet([], [{ id: 2, x: 102, y: 100, color: 0x40f040 }], []), 0);
+    const want = hex(0x40a0f0), first = fills();
+    m.removeCell();
+    const after = fills(), l = drawList();
+    check('Rainbow food: the drawn copy goes, another connection\'s copy is drawn in the pellet\'s colour', first === want && after === want && l.length === 1 && l[0].spectator === 1 && l[0].color !== want, first + ' / ' + after);
+    /* the copy drawn now is placed again: the pellet is grouped again, its colour stays */
+    s1.updateCells(packet([], [{ id: 1, x: 100, y: 100, color: 0xf04040 }], []), 0);
+    check('Rainbow food: a pellet grouped again keeps its colour', fills() === want && drawList().length === 1, fills());
 }
 
 console.log(fail ? fail + ' check(s) failed' : 'all fullmapfood checks passed');
