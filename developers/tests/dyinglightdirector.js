@@ -360,6 +360,153 @@ check('the new settings: off by default with Dying Light, immersive, full sound,
     await L.disable();
     check('off again: nothing left', timers.size === 0 && docCount() === lsBefore && info().listeners === 0);
 
+    /* ═══ made sounds (Web Audio): ambience by phase, heartbeat, live volume, rests, teardown ═══ */
+    {
+        const acs = [];
+        const prm = v => ({ value: v, ev: [], setValueAtTime(x, t) { this.ev.push(['set', x, t]); this.value = x; }, linearRampToValueAtTime(x, t) { this.ev.push(['lin', x, t]); },
+            exponentialRampToValueAtTime(x, t) { this.ev.push(['exp', x, t]); }, setTargetAtTime(x, t, c) { this.ev.push(['tgt', x, t, c]); this.target = x; }, cancelScheduledValues(t) { this.ev.push(['cancel', t]); } });
+        class FakeAC {
+            constructor() { this.state = 'running'; this.sampleRate = 8000; this._acc = 0; this._t0 = T; this.nodes = []; this.destination = this.node('dest'); acs.push(this); }
+            get currentTime() { return (this._acc + (this.state === 'running' ? T - this._t0 : 0)) / 1000; }
+            node(kind, extra) {
+                const ac = this, n = Object.assign({ kind, to: [], connect(d) { this.to.push(d); return d; }, disconnect() { this.to = []; this.off = true; } }, extra || {});
+                ac.nodes.push(n);
+                return n;
+            }
+            src(kind, extra) {
+                const ac = this;
+                return this.node(kind, Object.assign({ start(t) { this.at = t; }, stop(t) { this.end = t; } }, extra));
+            }
+            createGain() { return this.node('gain', { gain: prm(1) }); }
+            createBiquadFilter() { return this.node('filter', { type: 'lowpass', frequency: prm(350), Q: prm(1) }); }
+            createOscillator() { return this.src('osc', { type: 'sine', frequency: prm(440) }); }
+            createBufferSource() { return this.src('buf', { buffer: null, loop: false }); }
+            createBuffer(ch, n) { const d = new Float32Array(n); return { getChannelData: () => d, length: n }; }
+            suspend() { if (this.state === 'running') { this._acc += T - this._t0; this.state = 'suspended'; } return Promise.resolve(); }
+            resume() { if (this.state === 'suspended') { this._t0 = T; this.state = 'running'; } return Promise.resolve(); }
+            close() { if (this.state === 'running') this._acc += T - this._t0; this.state = 'closed'; return Promise.resolve(); }
+        }
+        const A = () => info().audio, ac0 = () => acs[acs.length - 1];
+        const outOf = ac => ac.nodes.find(n => n.kind === 'gain' && n.to.includes(ac.destination));
+        /* the sources of the bed sounding now (started, not given an end) */
+        const bedSrcs = ac => ac.nodes.filter(n => (n.kind === 'buf' || (n.kind === 'osc' && n.type !== 'triangle')) && n.at != null && n.end == null);
+        ctx.AudioContext = FakeAC;
+        ctx.navigator = { userActivation: { hasBeenActive: false } };
+        p = L.enable(); flushPics(true); await p;
+        advance(3000);
+        check('made sounds: no context before the page was touched (the browser would keep it silent)', acs.length === 0 && A().ctx === null);
+        ctx.navigator.userActivation.hasBeenActive = true;
+        advance(1000);
+        const c = ac0(), out = outOf(c);
+        check('ambience: one context, the phase\'s bed fading in over 4 s through one output at the mixer\'s Gameplay volume x Dying Light level',
+            acs.length === 1 && A().ctx === 'running' && A().bed === 'day' && out && out.gain.target === 1 &&
+            c.nodes.some(n => n.kind === 'gain' && n.to.includes(out) && n.gain.ev.some(e => e[0] === 'lin' && Math.abs(e[1] - 0.12) < 1e-9 && Math.abs(e[2] - c.currentTime - 4) < 1.01)));
+        const daySrcs = bedSrcs(c).length;
+        {
+            const set = (k, v) => { D[k] = v; ctx.LMEvents.emit('settingsChange', { key: k, value: v }); };
+            set('volGameplay', 0.5);
+            const g1 = out.gain.target;
+            set('dyingLightVolume', 0.4);
+            const g2 = out.gain.target;
+            set('volMaster', 0.5);
+            const g3 = out.gain.target;
+            set('volMaster', 1); set('volGameplay', 1); set('dyingLightVolume', 1);
+            check('ambience: the output follows Gameplay, Dying Light level and master at once', g1 === 0.5 && Math.abs(g2 - 0.2) < 1e-9 && Math.abs(g3 - 0.1) < 1e-9 && out.gain.target === 1);
+            const nev = out.gain.ev.length;
+            advance(10000);
+            check('ambience: an unchanged volume is not handed to the audio clock every tick', out.gain.ev.length === nev);
+            set('volGameplay', 0);
+            advance(1000);
+            check('volume 0: the context rests, nothing sounds', c.state === 'suspended' && A().bed === null && bedSrcs(c).length === 0);
+            set('volGameplay', 1);
+            advance(1000);
+            check('volume back: the bed again', c.state === 'running' && A().bed === 'day');
+        }
+        /* the next phase: cross-faded, the old bed let go once silent */
+        advance(180000 - info().clock % 600000);
+        advance(1000);
+        const fadingAt = A().fading;
+        const old = c.nodes.filter(n => n.kind === 'buf' && n.at != null && n.end != null && n.end > c.currentTime);
+        check('ambience: dusk cross-fades from day (no cut: the old bed fades for 4 s)', A().bed === 'dusk' && fadingAt === 1 && old.length >= 1 &&
+            old.every(n => n.end - c.currentTime > 3 && n.end - c.currentTime < 5.2));
+        advance(6000);
+        check('ambience: the faded bed is let go', A().fading === 0);
+        advance(240000 - info().clock % 600000 + 1000);
+        check('ambience: the night has its own bed (a drone under the wind)', A().bed === 'night' && bedSrcs(c).length > daySrcs);
+
+        /* the heartbeat from the threat level */
+        let snap = null;
+        ctx.lmDlThreat = () => snap;
+        const run = (ms, level) => { const out = []; for (let e = 0; e < ms; e += 250) { snap = { t: T, unit: 0, level, valid: true }; advance(250); if (e % 1000 === 750) out.push(A().heart); } return out; };
+        run(5000, 0);
+        check('heartbeat: silent without a threat', A().heart.beats === 0 && A().heart.level === 0);
+        let tr = run(10000, 1);
+        const b1 = A().heart.beats;
+        run(20000, 1);
+        const rate1 = (A().heart.beats - b1) / 20 * 60;
+        check('heartbeat: a bigger player near: about 82 BPM, quiet', A().heart.level === 1 && A().heart.bpm >= 75 && A().heart.bpm <= 90 &&
+            rate1 >= 72 && rate1 <= 92 && A().heart.vol > 0.09 && A().heart.vol <= 0.3, rate1);
+        tr = run(10000, 2);
+        const steps = tr.slice(1).map((h, i) => Math.abs(h.bpm - tr[i].bpm));
+        const b2 = A().heart.beats;
+        run(20000, 2);
+        const rate2 = (A().heart.beats - b2) / 20 * 60;
+        check('heartbeat: one can split onto you: about 124 BPM, the tempo glides there (no jump, no restart)', A().heart.bpm >= 110 && A().heart.bpm <= 135 &&
+            rate2 >= 108 && rate2 <= 137 && steps.every(x => x <= 10) && tr[0].bpm < 100 && A().heart.vol > 0.16 && A().heart.vol <= 0.3, rate2 + ' ' + steps.join());
+        /* the threat look falls after 1.5 s, the heartbeat fades for 2.5 s more */
+        run(5000, 0);
+        const b3 = A().heart.beats;
+        run(8000, 0);
+        check('heartbeat: the danger gone: fades out, then nothing is scheduled', A().heart.level === 0 && A().heart.vol === 0 && A().heart.beats === b3);
+        run(3000, 2);
+        const lvlBefore = A().heart.level;
+        snap = null;
+        ctx.LMEvents.emit('death', { scope: 'all' });
+        const b4 = A().heart.beats;
+        advance(3000);
+        check('heartbeat: a death ends it at once', lvlBefore === 2 && A().heart.level === 0 && A().heart.beats === b4);
+        L.setEffect('threat', false);
+        run(4000, 2);
+        check('heartbeat: off with the threat look', A().heart.beats === b4 && A().heart.level === 0);
+        L.setEffect('threat', true);
+        run(3000, 0);
+
+        /* rests: hidden tab, replay, Competitive */
+        document.hidden = true; fireVis();
+        check('hidden: the context rests (no audio work), the bed ends', c.state === 'suspended' && A().bed === null);
+        T += 60000;
+        document.hidden = false; fireVis();
+        advance(1000);
+        check('back: the bed of the phase again, fading in', c.state === 'running' && /night/.test(A().bed));
+        ctx._lmEvReplayOn = true;
+        advance(1000);
+        check('replay: silent', c.state === 'suspended' && A().bed === null);
+        ctx._lmEvReplayOn = false;
+        advance(1000);
+        L.setIntensity('nightmare');
+        advance(1000);
+        check('Nightmare: a richer bed (whine and whispers on top)', /\+$/.test(A().bed) && bedSrcs(c).length > daySrcs + 4);
+        L.setIntensity('competitive');
+        advance(1000);
+        check('Competitive: no ambience or heartbeat (the context rests)', c.state === 'suspended' && A().bed === null);
+        L.setIntensity('immersive');
+        advance(1000);
+
+        await L.disable();
+        check('off: the context closed and let go', c.state === 'closed' && A().ctx === null && A().bed === null);
+        L.setIntensity('competitive');
+        p = L.enable(); flushPics(true); await p;
+        advance(5000);
+        check('Competitive from the start: no context made', acs.length === 1);
+        await L.disable();
+        L.setIntensity('immersive');
+        for (let i = 0; i < 3; i++) { p = L.enable(); flushPics(true); await p; advance(2000); await L.disable(); }
+        check('on / off: one context per activation, every one closed', acs.length === 4 && acs.every(a => a.state === 'closed'));
+        delete ctx.lmDlThreat;
+        delete ctx.AudioContext;
+        delete ctx.navigator;
+    }
+
     /* ═══ theme override (ogario.v4.js) ═══ */
     painted.length = 0;
     check('theme: only colours of the known keys, one owner at a time', ctx.lmThemeOverride('a', { menuMainColor: 'url(x)', menuBg: '#000' }) === false &&

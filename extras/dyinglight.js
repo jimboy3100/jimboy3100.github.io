@@ -501,6 +501,8 @@
  *     connection while playing;
  *   - its sounds through the Legend mixer (LMNotifications.play, Gameplay channel x master x gain),
  *     at most 2 at a time, never added to the page.
+ *   - Immersive / Nightmare: an ambience made for each phase (cross-faded at the change) and a
+ *     heartbeat that follows the threat look, synthesized (Web Audio) at the same mixer volume.
  * Intensity: competitive = the fixed scene, only the death / connection signals; immersive = the
  * cycle and rare events; nightmare = the same, more often. Nothing happens while the tab is hidden
  * (paused, no catch-up after), in a replay, in the menu or spectating, while typing or on the Game
@@ -533,9 +535,9 @@
     /* ... times the level of its kind (inside the Gameplay channel and master volume) */
     var LEVEL = { radio: 0.32, nightfall: 0.38, death: 0.42 };
     var PROFILES = {
-        competitive: { cycle: false, events: false, toasts: false, threat: false },
-        immersive: { cycle: true, events: true, toasts: true, threat: true, rollMs: 30000, chance: 0.35, gapMs: 150000 },
-        nightmare: { cycle: true, events: true, toasts: true, threat: true, rollMs: 20000, chance: 0.6, gapMs: 75000 }
+        competitive: { cycle: false, events: false, toasts: false, threat: false, amb: false, hb: false },
+        immersive: { cycle: true, events: true, toasts: true, threat: true, rollMs: 30000, chance: 0.35, gapMs: 150000, amb: true, hb: true },
+        nightmare: { cycle: true, events: true, toasts: true, threat: true, rollMs: 20000, chance: 0.6, gapMs: 75000, amb: true, hb: true, rich: true }
     };
     /* cooldown of each event and its weight in each phase (none = not then); visual = a scare */
     var EVENTS = {
@@ -600,6 +602,7 @@
         timer = 0;
         stopSounds();
         hideGhost();
+        acHold();
     }
     function resume(t) {
         if (!on || live) return;
@@ -625,6 +628,7 @@
         var dr = W.drawRender;
         var slow = !!(dr && setting('showStatsFPS') && dr.fps > 0 && dr.fps < 30);
         try { step(clock(t), busy || slow); } catch (e) { warn('director', e); }
+        try { sound(); } catch (e) { warn('audio', e); }
         if (on && live) arm();
     }
 
@@ -858,6 +862,7 @@
             var v = mixVolume(a._lmGain * u);
             try { if (v === v && a.volume !== v) a.volume = v; } catch (e) { }
         }
+        acLevel();
     }
     function stopSounds() {
         for (var i = 0; i < audios.length; i++) { try { audios[i].pause(); } catch (e) { } }
@@ -871,6 +876,245 @@
         audios.length = 0;
     }
 
+    /* -- made sounds (Web Audio): the ambience of each phase, the heartbeat and the event sounds
+     * are synthesized here (no files, no recordings of others). One AudioContext, made at the
+     * first need while on (Immersive / Nightmare) and closed by the turn-off; all of it goes
+     * through one output gain at the mixer's Gameplay volume (soundVolume('gameplay'), master
+     * included) x the Dying Light sound level, so those sliders and a channel at 0 apply, also
+     * while it plays. Suspended (no audio work) while the tab is hidden, in a replay, at volume 0
+     * or in Competitive. It is driven by the director's tick (no timer of its own): the beats of
+     * the next 1.3 s are handed to the audio clock each second. -- */
+    /* levels inside the output (the handoff's ranges: ambience 0.1-0.15, heartbeat 0.1-0.3) */
+    var AMB = 0.12, HB_GAIN = [0, 0.16, 0.26], HB_BPM = [72, 82, 124], HB_STEP = 10, HB_AHEAD = 1.3, AMB_FADE = 4;
+    /* each phase's bed: wind [band Hz, Q, level, gusts Hz], a low drone [Hz, level], high air */
+    var BEDS = {
+        day: { wind: [420, 0.8, 0.5, 0.05], drone: null, air: 0.05 },
+        dusk: { wind: [330, 0.9, 0.5, 0.07], drone: [49, 0.1], air: 0.04 },
+        night: { wind: [250, 1, 0.55, 0.09], drone: [41.2, 0.2], air: 0 },
+        deepNight: { wind: [180, 1.2, 0.6, 0.12], drone: [36.7, 0.32], air: 0 },
+        dawn: { wind: [480, 0.8, 0.45, 0.05], drone: [55, 0.07], air: 0.05 }
+    };
+    /* acVol: the output level set last (only a change is handed to the audio clock); held: resting */
+    var ac = null, acOut = null, acNoise = null, acVol = -1, held = false, bed = null, oldBeds = [];
+    var hb = { lvl: 0, bpm: HB_BPM[0], vol: 0, next: 0, offAt: 0, beats: 0, g: null };
+
+    function acMake() {
+        var C = W.AudioContext || W.webkitAudioContext;
+        if (typeof C !== 'function') return null;
+        /* the browser keeps a context silent until the page was touched: wait for that */
+        var ua = W.navigator && W.navigator.userActivation;
+        if (ua && ua.hasBeenActive === false) return null;
+        try {
+            ac = new C();
+            acOut = ac.createGain();
+            acOut.gain.value = 0;
+            acOut.connect(ac.destination);
+            /* one second of noise (wind, breath, steps, static), from its own small generator */
+            var sr = ac.sampleRate || 44100, n = Math.max(1, Math.floor(sr)), b = ac.createBuffer(1, n, sr), d = b.getChannelData(0), x = 0x9e3779b9;
+            for (var i = 0; i < n; i++) { x ^= x << 13; x ^= x >>> 17; x ^= x << 5; d[i] = (x >>> 0) / 2147483648 - 1; }
+            acNoise = b;
+        } catch (e) { warn('audio', e); acClose(); return null; }
+        return ac;
+    }
+    function acClose() {
+        var c = ac;
+        ac = acOut = acNoise = bed = null;
+        acVol = -1;
+        held = false;
+        oldBeds.length = 0;
+        hb.lvl = 0; hb.bpm = HB_BPM[0]; hb.vol = 0; hb.next = 0; hb.offAt = 0; hb.g = null;
+        if (c) { try { var pr = c.close(); if (pr && typeof pr.catch === 'function') pr.catch(function () { }); } catch (e) { } }
+    }
+    function glide(prm, v, tc) { try { prm.setTargetAtTime(v, ac.currentTime, tc); } catch (e) { try { prm.value = v; } catch (e2) { } } }
+    /* the output at the mixer's volume (a change while it plays: onVolume) */
+    function acLevel() {
+        if (!ac || !acOut) return;
+        var v = mixVolume(userGain());
+        if (!(v >= 0)) v = 0;
+        if (v === acVol) return;
+        acVol = v;
+        glide(acOut.gain, v, 0.08);
+    }
+    /* nothing to be heard: the beds and the heartbeat end, the context rests */
+    function acHold() {
+        if (!ac || held) return;
+        held = true;
+        bedCut();
+        hbQuiet(true);
+        if (ac.state === 'running') { try { var pr = ac.suspend(); if (pr && pr.catch) pr.catch(function () { }); } catch (e) { } }
+    }
+    function acRun() {
+        if (!ac && !acMake()) return null;
+        held = false;
+        if (ac.state === 'suspended') { try { var pr = ac.resume(); if (pr && pr.catch) pr.catch(function () { }); } catch (e) { } }
+        acLevel();
+        return ac.state === 'closed' ? null : ac;
+    }
+    function noiseSrc() {
+        var s = ac.createBufferSource();
+        s.buffer = acNoise;
+        s.loop = true;
+        return s;
+    }
+    function lfo(hz, depth, prm, srcs) {
+        var o = ac.createOscillator(), g = ac.createGain();
+        o.frequency.value = hz;
+        g.gain.value = depth;
+        o.connect(g);
+        g.connect(prm);
+        srcs.push(o);
+    }
+    /* a bed: a few nodes that run by themselves (no script per sample), faded in over AMB_FADE s.
+     * rich (Nightmare): a dissonant high whine and whispers on top */
+    function bedMake(id, rich) {
+        var c = BEDS[id];
+        if (!c) return null;
+        var t = ac.currentTime, g = ac.createGain(), srcs = [];
+        g.gain.setValueAtTime(0, t);
+        g.gain.linearRampToValueAtTime(AMB, t + AMB_FADE);
+        g.connect(acOut);
+        var n = noiseSrc(), f = ac.createBiquadFilter(), wg = ac.createGain();
+        f.type = 'bandpass'; f.frequency.value = c.wind[0]; f.Q.value = c.wind[1];
+        wg.gain.value = c.wind[2];
+        n.connect(f); f.connect(wg); wg.connect(g);
+        srcs.push(n);
+        /* gusts: the level and the band move slowly, at two rates that do not repeat */
+        lfo(c.wind[3], c.wind[2] * 0.6, wg.gain, srcs);
+        lfo(c.wind[3] * 0.37, c.wind[0] * 0.35, f.frequency, srcs);
+        if (c.drone) {
+            var lp = ac.createBiquadFilter(), dg = ac.createGain();
+            lp.type = 'lowpass'; lp.frequency.value = 160; lp.Q.value = 0.7;
+            dg.gain.value = c.drone[1];
+            for (var k = 0; k < 2; k++) {
+                var o = ac.createOscillator();
+                o.type = 'sawtooth';
+                o.frequency.value = c.drone[0] * (k ? 1.007 : 1);
+                o.connect(lp);
+                srcs.push(o);
+            }
+            lp.connect(dg); dg.connect(g);
+            lfo(0.031, 60, lp.frequency, srcs);
+        }
+        if (c.air) {
+            var an = noiseSrc(), hp = ac.createBiquadFilter(), ag = ac.createGain();
+            hp.type = 'highpass'; hp.frequency.value = 3200;
+            ag.gain.value = c.air;
+            an.connect(hp); hp.connect(ag); ag.connect(g);
+            srcs.push(an);
+            lfo(0.043, c.air * 0.8, ag.gain, srcs);
+        }
+        if (rich) {
+            var wh = ac.createGain();
+            wh.gain.value = 0.018;
+            [1480, 2093].forEach(function (hz) {
+                var o2 = ac.createOscillator();
+                o2.frequency.value = hz;
+                o2.connect(wh);
+                srcs.push(o2);
+            });
+            lfo(0.2, 0.014, wh.gain, srcs);
+            wh.connect(g);
+            var sn = noiseSrc(), bp = ac.createBiquadFilter(), sg = ac.createGain();
+            bp.type = 'bandpass'; bp.frequency.value = 2600; bp.Q.value = 3;
+            sg.gain.value = 0;
+            sn.connect(bp); bp.connect(sg); sg.connect(g);
+            srcs.push(sn);
+            /* whispers that come and go (noise: the sign of the swell does not matter) */
+            lfo(0.23, 0.22, sg.gain, srcs);
+            lfo(0.37, 0.16, sg.gain, srcs);
+        }
+        for (var i = 0; i < srcs.length; i++) srcs[i].start(t);
+        return { id: id, rich: rich, g: g, srcs: srcs, end: 0 };
+    }
+    function bedFade(b, s) {
+        var t = ac.currentTime;
+        try {
+            /* from the level it has now (also in the middle of its fade-in) */
+            var gp = b.g.gain;
+            if (typeof gp.cancelAndHoldAtTime === 'function') gp.cancelAndHoldAtTime(t);
+            else { var v = gp.value; gp.cancelScheduledValues(t); gp.setValueAtTime(v, t); }
+            gp.linearRampToValueAtTime(0, t + s);
+        } catch (e) { }
+        for (var i = 0; i < b.srcs.length; i++) { try { b.srcs[i].stop(t + s + 0.05); } catch (e) { } }
+        b.end = t + s + 0.1;
+        oldBeds.push(b);
+    }
+    /* the phase's bed, cross-faded from the one before (no cut) */
+    function bedTo(id, rich) {
+        if (bed && bed.id === id && bed.rich === rich) return;
+        if (bed) bedFade(bed, AMB_FADE);
+        bed = id ? bedMake(id, rich) : null;
+    }
+    function bedCut() {
+        if (bed) bedFade(bed, 0.05);
+        bed = null;
+        sweep(true);
+    }
+    /* faded beds let go once silent */
+    function sweep(all) {
+        for (var i = oldBeds.length - 1; i >= 0; i--) {
+            var b = oldBeds[i];
+            if (!all && ac && ac.currentTime < b.end) continue;
+            try { b.g.disconnect(); } catch (e) { }
+            oldBeds.splice(i, 1);
+        }
+    }
+
+    /* The heartbeat: the threat look's level (the snapshot compareCells keeps, with its rise and
+     * fall), 0 silent, 1 about 82 BPM, 2 about 124 BPM; the tempo glides at most HB_STEP BPM a
+     * second and the volume fades, so a change of level never restarts it. */
+    function hbQuiet(cut) {
+        hb.lvl = 0;
+        hb.vol = 0;
+        if (hb.g && ac) glide(hb.g.gain, 0, cut ? 0.05 : 0.7);
+        hb.offAt = cut || !ac ? 0 : ac.currentTime + 2.5;
+        if (cut) { hb.next = 0; hb.bpm = HB_BPM[0]; }
+    }
+    function heart(p) {
+        var want = p.hb && DL.effect('threat') ? (tLvl >= 2 ? 2 : tLvl === 1 ? 1 : 0) : 0, t = ac.currentTime;
+        if (want !== hb.lvl) {
+            if (!want) hbQuiet(false);
+            else {
+                if (!hb.g) { hb.g = ac.createGain(); hb.g.gain.value = 0; hb.g.connect(acOut); }
+                hb.lvl = want;
+                hb.vol = HB_GAIN[want];
+                glide(hb.g.gain, hb.vol, 0.5);
+            }
+        }
+        var d = HB_BPM[want] - hb.bpm;
+        hb.bpm += d > HB_STEP ? HB_STEP : d < -HB_STEP ? -HB_STEP : d;
+        if (!want && !(t < hb.offAt)) { hb.next = 0; return; }
+        var beat = 60 / hb.bpm, at = Math.max(hb.next, t + 0.05);
+        for (; at < t + HB_AHEAD; at += beat) {
+            /* lub - dub */
+            knock(at, 1, hb.g);
+            knock(at + Math.min(0.3, beat * 0.36), 0.6, hb.g);
+            hb.beats++;
+        }
+        hb.next = at;
+    }
+    /* one soft low knock (a triangle: its overtones are heard on small speakers too) */
+    function knock(t0, a, dest) {
+        var o = ac.createOscillator(), g = ac.createGain();
+        o.type = 'triangle';
+        o.frequency.setValueAtTime(64, t0);
+        o.frequency.exponentialRampToValueAtTime(38, t0 + 0.14);
+        g.gain.setValueAtTime(0.0001, t0);
+        g.gain.exponentialRampToValueAtTime(a, t0 + 0.012);
+        g.gain.exponentialRampToValueAtTime(0.0001, t0 + 0.2);
+        o.connect(g); g.connect(dest);
+        o.start(t0); o.stop(t0 + 0.22);
+    }
+    /* each tick: what is to be heard now */
+    function sound() {
+        var r = rec(), p = profile(r);
+        if (!on || !live || hidden() || r || replay() || !(p.amb || p.hb) || !(mixVolume(userGain()) > 0)) { acHold(); return; }
+        if (!acRun()) return;
+        sweep(false);
+        bedTo(p.amb && phase ? phase.id : null, !!p.rich);
+        heart(p);
+    }
+
     /* -- game events -- */
     function onDeath(d) {
         /* a multibox unit lost while another lives is no Game Over */
@@ -879,12 +1123,14 @@
         if (E - lastDeathAt < DEATH_GAP_MS) return;
         lastDeathAt = E;
         deathN = deathN % 3 + 1;
+        hbQuiet(true);
         play('death-' + deathN, LEVEL.death, true);
     }
     function onSpawn() {
         /* a quick respawn ends the last life's sound and figure; a short calm after */
         stopSounds();
         hideGhost();
+        hbQuiet(true);
         if (on) quietUntil = clock(now()) + SPAWN_QUIET_MS;
     }
     /* the replay's look changed (a seek, its clock, its end): shown at once, not at the next tick */
@@ -902,6 +1148,7 @@
     function onServer() {
         stopSounds();
         hideGhost();
+        hbQuiet(true);
     }
     function sub(name, fn) {
         var ev = W.LMEvents;
@@ -956,6 +1203,7 @@
         if (onVis && d && typeof d.removeEventListener === 'function') d.removeEventListener('visibilitychange', onVis);
         onVis = null;
         releaseSounds();
+        acClose();
         hideGhost();
         if (styleEl && styleEl.parentNode) styleEl.parentNode.removeChild(styleEl);
         styleEl = null;
@@ -1075,7 +1323,9 @@
                 running: on && live, on: on, clock: on ? clock(now()) : 0, phase: phase ? phase.id : null, replay: !!(on && rec()),
                 busy: busy, scene: shown ? shown.url : null, loading: pend ? pend.url : null,
                 sounds: audios.length, timer: !!timer, listeners: subs.length + (onVis ? 1 : 0), ghost: !!ghostEl,
-                threat: { on: tOn, level: tLvl, asked: tOn && tAsk(), timer: !!tTimer, listeners: tSubs.length + (tVis ? 1 : 0), shown: !!tEl }
+                threat: { on: tOn, level: tLvl, asked: tOn && tAsk(), timer: !!tTimer, listeners: tSubs.length + (tVis ? 1 : 0), shown: !!tEl },
+                audio: { ctx: ac ? ac.state : null, bed: bed ? bed.id + (bed.rich ? '+' : '') : null, fading: oldBeds.length,
+                    heart: { level: hb.lvl, bpm: Math.round(hb.bpm), vol: hb.vol, beats: hb.beats } }
             };
         }
     });
