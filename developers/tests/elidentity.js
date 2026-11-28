@@ -176,6 +176,8 @@ g.lmSetMbUnit = (n) => { g.multiboxPlayerEnabled = n; };
 g.getActiveSpect = (n) => (n && g.spects.find((x) => x && x.number === n && x.player !== false)) || null;
 /* the units in slot order (ogario.v4.js lmMbUnits; here the units of spects in their order) */
 g.lmMbUnits = () => g.spects.filter((x) => x && x.player === true);
+/* lmMbCanSteer (ogario.v4.js): these units have no orientation to verify, so a living one can be steered */
+g.lmMbCanSteer = (p) => g.lmMbAlive(p);
 g.spects = [{ number: 2, player: false, active: true }];
 g.multiboxPlayerEnabled = null; g.mainPlayerDeadMbActive = false;
 g.__death();
