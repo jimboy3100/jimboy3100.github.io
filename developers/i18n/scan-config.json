@@ -57,7 +57,6 @@
     "LMexpress/LMexpress.sniff3.js",
     "LMexpress/LMexpress.user.js",
     "LMexpress/bannedUID.js",
-    "LMexpress/fixVideoSkinsPreview.js",
     "LMexpress/legend.sniff2.js",
     "LMexpress/proto.decoder.js",
     "LMexpress/extension/content.js",
@@ -75,9 +74,7 @@
     "extras/legendhelper.js",
     "extras/dyinglight.js",
     "extras/legendformIframe.js",
-    "extras/legendrotateminimap.js",
     "extras/BleedingMod.js",
-    "extras/bannerbackgroundEARTH.js",
     "extras/buffer.js",
     "extras/foggy.js",
     "extras/key-event.js",
@@ -231,6 +228,9 @@
     "extras/website/index.html": "forwards to the home page (it was an old copy of it); other pages use the CSS files of this folder"
   },
   "deleted": {
+    "extras/banneranimated2.html": "only the 2017 loader pages (legendmod.html, legendmod.js)",
+    "extras/banneranimated10.html": "no link anywhere",
+    "extras/bannericonpromo4.html": "no link anywhere",
     "extras/5agario.html": "no link anywhere",
     "extras/banneranimated1.html": "only in a commented-out block of LMexpress.sniff.js",
     "extras/banneranimated1oldskins.html": "only the old v3.1 userscript agarscripts/goodoldlegendmod.user.js",

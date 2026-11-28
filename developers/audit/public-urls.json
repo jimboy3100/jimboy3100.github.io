@@ -54,7 +54,16 @@
         { "path": "banners/iconexpanding-land.png", "why": "old Expanding Land app icon: in the Expanding Land APK and in the git history of expandingland's manifest.json and of help.expanding.land's og:image" },
         { "path": "banners/iconexpanding-land275x157.png", "why": "old Expanding Land app icon (git history of expandingland's manifest.json)" },
         { "path": "banners/bannerDyingLight", "why": "old Dying Light banner addresses, kept and checked by developers/tests/legacyextras.js" },
-        { "path": "banners/bannerStopDyingLight", "why": "old Dying Light banner addresses, kept and checked by developers/tests/legacyextras.js" }
+        { "path": "banners/bannerStopDyingLight", "why": "old Dying Light banner addresses, kept and checked by developers/tests/legacyextras.js" },
+        { "path": "Lc/articles/aboutrandomsquote.html", "why": "Legend Clan article, linked from Lc/Lc.html 2018 to 2026-02-25 (and its Project X copy until 2026-11-25): an old public page people link to" },
+        { "path": "Lc/articles/article69closed.html", "why": "Legend Clan article, linked from Lc/Lc.html 2018 to 2026-02-25: an old public page" },
+        { "path": "Lc/articles/articleeuenemies.html", "why": "Legend Clan article, linked from Lc/Lc.html 2018 to 2026-02-25: an old public page" },
+        { "path": "Lc/articles/eatensions.html", "why": "Legend Clan article, linked from Lc/Lc.html 2018 to 2026-02-25: an old public page" },
+        { "path": "Lc/articles/enemyallies.html", "why": "Legend Clan article, linked from Lc/Lc.html 2018 to 2026-02-25: an old public page" },
+        { "path": "Lc/articles/lc-senpai.html", "why": "Legend Clan article, in sitemap.xml until 2026-11-24 and in Lc/sitemap.xml: indexed by search engines" },
+        { "path": "Lc/sitemap.xml", "why": "the Legend Clan sitemap (2026-04-08) for search engines; its pages are public" },
+        { "path": "extras/LcHistory/LcHistoryWebsite.html", "why": "the Legend Clan history page, linked from Lc/Lc.html 2018 to 2026-02-25 (and its Project X copy until 2026-11-25)" },
+        { "path": "ogario/protocols/botsAllowed.txt", "why": "read by the PowerShell bot installer of 2026-04 (ogario/protocols/install-bots.ps1, removed in 055ada78e) that people may still run" }
     ],
     "dataDrivenCollections": [
         { "glob": "vanillaskins/**", "why": "agar.io skin images by the names in agar.io's configuration (vanilla skins, shop, rotator)" },
