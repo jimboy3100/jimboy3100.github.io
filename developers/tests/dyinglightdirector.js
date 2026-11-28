@@ -764,6 +764,21 @@ check('the new settings: off by default with Dying Light, immersive, full sound,
         ctx.lmThemeOverride('a', { menuMainColor: '#123' });
         painted.length = 1;
     }
+    {
+        /* a Legend page opened from the mod (link token / message) gets the colours as shown, for
+         * that page only: the saved theme stays the player's, the player's colours once cleared */
+        const lmx = rd('LMexpress/LMexpress.js');
+        vm.runInContext(cutIn(lmx, '/* a colour as the page accepts it', '\n/* the theme as one bounded base64url value'), ctx);
+        ctx.$ = () => ({ val: () => '' });
+        const saved = JSON.stringify(ctx.defaultSettings);
+        const on = ctx.lmThemeData();
+        ctx.lmThemeOverride('a', null);
+        const off = ctx.lmThemeData();
+        ctx.lmThemeOverride('a', { menuMainColor: '#123' });
+        painted.length = 1;
+        check('theme: a Legend page opened while overridden gets those colours, the player\'s once cleared, the saved theme unchanged',
+            on.mc === '#123' && on.pc === '#00243e' && off.mc === '#01d9cc' && JSON.stringify(ctx.defaultSettings) === saved, on.mc + ',' + off.mc);
+    }
     ctx.defaultSettings.menuPanelColor = '#222';
     check('theme: a change to the player\'s theme while overridden shows when cleared', ctx.lmThemeEffective().menuPanelColor === '#222' &&
         ctx.lmThemeOverride('a', null) === true && ctx.lmThemeEffective() === ctx.defaultSettings && painted.length === 2);

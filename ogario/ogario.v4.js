@@ -21248,8 +21248,9 @@ function _lmCssUrl(u) {
     return s ? 'url("' + s + '")' : 'none';
 }
 /* Theme colours an expansion (Dying Light) shows for a while: resolved on top of the player's
- * theme (defaultSettings) by the menu, HUD and Game Over colours, never saved, exported, sent to
- * Legend pages or shown in the Theme pickers, so turning it off shows the CURRENT theme again.
+ * theme (defaultSettings) by the menu, HUD and Game Over colours and the Legend pages opened
+ * from the mod (lmThemeData in LMexpress.js, for that page only), never saved, exported or shown
+ * in the Theme pickers, so turning it off shows the CURRENT theme again.
  * lmThemeOverride(owner, { key: colour }) sets them (null clears that owner's) and repaints. */
 var LM_THEME_OV_KEYS = ['menuMainColor', 'menuPanelColor', 'menuPanelColor2', 'menuTextColor', 'menuTextColor2', 'hudMainColor', 'hudColor', 'hudTextColor'];
 var _lmThemeOv = null;

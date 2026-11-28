@@ -7624,7 +7624,12 @@ function lmThemeSafeImage(v) {
     return u.href.length <= 1024 && !/[\s"'()\\<>]/.test(u.href) ? u.href : '';
 }
 function lmThemeData() {
-    var ds = typeof defaultSettings !== 'undefined' && defaultSettings ? defaultSettings : {};
+    /* the colours as shown: while Dying Light (lmThemeOverride) is on, a Legend page opened from
+     * here gets its colours too, for that page only (the link or message carries them; the page
+     * keeps them for its own tab); the player's saved theme (defaultSettings) is never changed,
+     * and the turn-off repaints, which sends the player's theme again to the pages still open */
+    var ds = typeof lmThemeEffective === 'function' ? lmThemeEffective() : null;
+    if (!ds) ds = typeof defaultSettings !== 'undefined' && defaultSettings ? defaultSettings : {};
     var c = _lmThemeColor;
     var d = {
         pc: c(ds.menuPanelColor || $('#menuPanelColor').val(), '#00243e'),
