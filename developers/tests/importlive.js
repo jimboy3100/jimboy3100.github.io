@@ -39,7 +39,7 @@ check('import: a part read at the next load offers Reload (button), else a done 
 check('no settings profiles module to depend on', !og.includes('LMProfiles') && !fs.existsSync(path.join(repo, 'ogario', 'modules', 'profiles.js')));
 
 /* lmImportExtras */
-const extrasSrc = cut(og, 'var LM_EXPORT_KEYS = [', '/* the registered keys found in storage ls') + cut(og, 'function lmImportExtras(', '/* The move of the old Skin collections');
+const extrasSrc = cut(og, 'var LM_EXPORT_KEYS = [', '/* the registered keys found in storage ls') + cut(og, 'function lmImportExtras(', '\n}\n') + '\n}\n';
 check('lmImportExtras found', extrasSrc.length > 0);
 const ctx = {};
 vm.createContext(ctx);
