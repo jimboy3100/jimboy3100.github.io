@@ -53,11 +53,15 @@ async function theme() {
     const fx = { active: false, startTime: 0, x: 0, y: 0, color: '#00ccff', el: false };
     let T = 1000;
     const drawRender = { _spawnEffect: fx, startSpawnBurst(x, y, c) { fx.active = true; fx.startTime = ++T; fx.x = x; fx.y = y; fx.color = c; fx.el = false; } };
-    const pos = { x: 500, y: -300 };
+    /* the own cells (their own coordinates, the frame the burst is drawn in); getPlayerX() adds
+     * the border's offset (mapOffsetX), so it is not the point to draw at */
+    const pos = { x: 500, y: -300 }, own = [];
+    const setPos = (x, y) => { pos.x = x; pos.y = y; own.length = 0; if (x || y) own.push({ x: x - 40, y: y + 10 }, { x: x + 40, y: y - 10 }); };
+    setPos(500, -300);
     const ctx = { document, Image: Img, console: { warn() { } }, Promise, setTimeout, clearTimeout, Object, Map, Math, String, isFinite,
-        lmT: k => k, confirm: () => true, drawRender, legendmod: { serverType: 'agario', gameMode: ':ffa' },
+        lmT: k => k, confirm: () => true, drawRender, legendmod: { serverType: 'agario', gameMode: ':ffa', playerCells: own, mapOffsetX: -6000, mapOffsetY: 2500 },
         defaultmapsettings: { dyingLight: false, reducedMotion: false },
-        application: { saveSettings() { }, getPlayerX: () => pos.x, getPlayerY: () => pos.y }, localStorage: { removeItem() { } } };
+        application: { saveSettings() { }, getPlayerX: () => pos.x - 6000, getPlayerY: () => pos.y + 2500 }, localStorage: { removeItem() { } } };
     ctx.window = ctx;
     vm.createContext(ctx);
     vm.runInContext(cutIn(main, '(function () {\n    if (window.LMEvents && window.LMEvents._lm === 1) return;', '\nwindow.spects'), ctx);
@@ -108,12 +112,12 @@ async function theme() {
 
     /* spawn burst */
     E.emit('spawn', { time: 2 });
-    check('spawn: the existing burst at the player, theme colour', fx.active && fx.x === 500 && fx.y === -300 && fx.color === '#a12b30');
+    check('spawn: the existing burst at the own cells centre (not getPlayerX with the border offset), theme colour', fx.active && fx.x === 500 && fx.y === -300 && fx.color === '#a12b30');
     fx.active = false;
-    pos.x = pos.y = 0;
+    setPos(0, 0);
     E.emit('spawn', { time: 3 });
-    check('spawn at 0,0: nothing yet', !fx.active);
-    pos.x = 10; pos.y = 20;
+    check('spawn without an own cell yet: nothing yet', !fx.active);
+    setPos(10, 20);
     await wait(170);
     check('...one try later', fx.active && fx.x === 10 && fx.y === 20);
     fx.active = false;
@@ -134,11 +138,11 @@ async function theme() {
     /* off: nothing left */
     E.emit('spawn', { time: 5 });
     const ours = fx.active;
-    pos.x = pos.y = 0;
+    setPos(0, 0);
     E.emit('spawn', { time: 6 }); /* a later try pending */
     fx.active = true;
     await L.disable();
-    pos.x = 7; pos.y = 7;
+    setPos(7, 7);
     await wait(170);
     check('off: our burst ended, the pending try cancelled, no listener, no class, no palette, no design',
         ours && !fx.active && !E._has('spawn') && !cls.has('lm-dl-go') && L.particlePalette() === null && L.getFallbackSkinKey(cell('alpha')) === null);
@@ -150,7 +154,7 @@ async function theme() {
     const q = L.enable({ confirm: false });
     flush();
     await q;
-    fx.active = false; pos.x = 1; pos.y = 1;
+    fx.active = false; setPos(1, 1);
     let n = 0; const orig = drawRender.startSpawnBurst; drawRender.startSpawnBurst = function () { n++; return orig.apply(this, arguments); };
     E.emit('spawn', { time: 8 });
     check('on again: one burst per spawn (one listener), same design per name', n === 1 && L.getFallbackSkinKey(cell('alpha')) === a1);

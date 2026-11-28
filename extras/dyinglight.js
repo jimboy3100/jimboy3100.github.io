@@ -161,21 +161,23 @@
     }
     /* the existing spawn burst (drawRender.startSpawnBurst) in the theme's colour at the own
      * spawn. Expanding Land / Legend World start their own; nothing in a replay, the practice
-     * arena or with Reduced motion. The position can be 0 in the first frame: one try 150 ms later. */
+     * arena or with Reduced motion. The point is the own cells' centre in the frame the burst is
+     * drawn in (the cells' own coordinates; getPlayerX() adds mapOffsetX, which put the burst off
+     * the player on a server whose border is not centred). No own cell yet: one try 150 ms later. */
     function spawnBurst(g, again) {
         spawnTimer = 0;
         if (g !== generation || state !== 'on' || !FX.spawn) return;
-        var app = W.application, dr = W.drawRender, lm = W.legendmod, ms = W.defaultmapsettings;
-        if (!app || !dr || typeof dr.startSpawnBurst !== 'function' || typeof app.getPlayerX !== 'function') return;
-        if ((lm && (lm.isLegendWorld || lm.serverType === 'expandingland')) || (ms && ms.reducedMotion) ||
+        var dr = W.drawRender, lm = W.legendmod, ms = W.defaultmapsettings;
+        if (!lm || !dr || typeof dr.startSpawnBurst !== 'function') return;
+        if (lm.isLegendWorld || lm.serverType === 'expandingland' || (ms && ms.reducedMotion) ||
             (W.LMPractice && W.LMPractice.on) || W._lmEvReplayOn) return;
-        var x = +app.getPlayerX(), y = +app.getPlayerY();
-        if (!isFinite(x) || !isFinite(y)) return;
-        if (!x && !y) {
+        var pc = lm.playerCells, n = pc && pc.length > 0 ? pc.length : 0, x = 0, y = 0;
+        for (var i = 0; i < n; i++) { x += +pc[i].x; y += +pc[i].y; }
+        if (!n || !isFinite(x) || !isFinite(y)) {
             if (!again) spawnTimer = setTimeout(function () { spawnBurst(g, true); }, 150);
             return;
         }
-        dr.startSpawnBurst(x, y, SPAWN_COLOUR);
+        dr.startSpawnBurst(x / n, y / n, SPAWN_COLOUR);
         burstAt = dr._spawnEffect ? dr._spawnEffect.startTime : 0;
     }
     function startFx(g) {
