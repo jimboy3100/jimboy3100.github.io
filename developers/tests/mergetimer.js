@@ -90,13 +90,16 @@ check('first tick after reset arms no timer', !win.playerCellsId[80] || win.play
 
     /* two multibox units with one cell each, unit 1 selected: the split guide gets only unit 1's
      * cell, the merge rings get each unit's cells apart (the list of every unit's cells made two
-     * single cells look split) */
-    const u = core.indexOf('function lmUnitCellsInto('), ue = core.indexOf('\n}', u) + 2;
-    const LM2 = { play: false, playerCells: [], playerCellsMulti: [{ spectator: 1 }, { spectator: 2 }, { spectator: 2, removed: true }] };
+     * single cells look split). Each unit's cells come from its own index (getOwnPlayerCells), not
+     * from the list of every unit's cells; a Full Map tile (player false) gets no merge rings */
+    const fnSrc = (n) => { const i = core.indexOf('function ' + n + '('); return i < 0 ? '' : core.slice(i, core.indexOf('\n}', i) + 2); };
+    const own1 = [{ spectator: 1 }], own2 = [{ spectator: 2 }, { spectator: 2, removed: true }];
+    const LM2 = { play: false, playerCells: [], playerCellsMulti: own1.concat(own2, [{ spectator: 1, stray: true }]) };
     const d2 = { window: { ExternalScripts: true, multiboxPlayerEnabled: 1, legendmod: LM2 }, LM: LM2, defaultmapsettings: { cursorTracking: true, mergeRings: true, mergeTimer: false },
-        spects: [{ number: 1 }, { number: 2 }] };
+        spects: [{ number: 1, player: true, getOwnPlayerCells: () => own1 }, { number: 3, player: false, getOwnPlayerCells: () => [{ spectator: 3 }] }, { number: 2, player: true, getOwnPlayerCells: () => own2 }] };
     vm.createContext(d2);
-    vm.runInContext(u < 0 ? '' : core.slice(u, ue), d2);
+    d2.window.spects = d2.spects;
+    vm.runInContext(fnSrc('getActiveSpect') + '\n' + fnSrc('lmUnitCellsInto'), d2);
     const R2 = vm.runInContext('({' + body + '})', d2);
     const guide = [], ringLists = [];
     R2.markSplitPrediction = () => { };

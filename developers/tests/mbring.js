@@ -80,6 +80,35 @@ const data = new Float32Array(9 * 8), lists = [[main1, main2, enemy], [unit1, un
 check('WebGL, main player controlled: its two cells, pink', R.buildWebGLMultiboxRingData(lists, data, 8) === 2 && data[2] === 100 && data[11] === 50 && data[4] === 1 && data[5] === 0);
 ctx.window.multiboxPlayerEnabled = 1;
 check('WebGL, after the switch: the two unit cells, cyan', R.buildWebGLMultiboxRingData(lists, data, 8) === 2 && data[2] === 100 && data[11] === 40 && data[4] === 0 && data[5] === 1);
+/* three units (P2, P3, P4, their cells together in LM.playerCellsMulti as drawWebGLMultiboxRings
+ * passes it): the ring only on the controlled unit's cells; the main player's when it is controlled */
+{
+    const u2 = { number: 1, player: true, slotId: 2 }, u3 = { number: 18, player: true, slotId: 3 }, u4 = { number: 5, player: true, slotId: 4 };
+    ctx.spects.length = 0; ctx.spects.push(u2, u3, u4);
+    const mk = (u, size) => ({ spectator: u.number, isPlayerCellMulti: true, size, _lmOwner: u, _webglRendered: true });
+    const multi = [mk(u2, 80), mk(u3, 70), mk(u3, 65), mk(u4, 60)];
+    const L3 = [[main1, main2], multi], radii = (k) => Array.from({ length: k }, (_, i) => data[i * 9 + 2]).join();
+    let k;
+    ctx.window.multiboxPlayerEnabled = 18;
+    k = R.buildWebGLMultiboxRingData(L3, data, 8);
+    check('WebGL, three units, P3 controlled: only P3\'s two cells', k === 2 && radii(k) === '70,65');
+    ctx.window.multiboxPlayerEnabled = 5;
+    k = R.buildWebGLMultiboxRingData(L3, data, 8);
+    check('WebGL, three units, P4 controlled: only P4\'s cell', k === 1 && radii(k) === '60');
+    ctx.window.multiboxPlayerEnabled = 1;
+    k = R.buildWebGLMultiboxRingData(L3, data, 8);
+    check('WebGL, three units, P2 controlled: only P2\'s cell (not every unit cell)', k === 1 && radii(k) === '80');
+    ctx.window.multiboxPlayerEnabled = null;
+    k = R.buildWebGLMultiboxRingData(L3, data, 8);
+    check('WebGL, three units, the main player controlled: its two cells, no unit cell', k === 2 && radii(k) === '100,50');
+    check('Canvas and WebGL agree for three units', [18, 5, 1, null].every((n) => {
+        ctx.window.multiboxPlayerEnabled = n;
+        const cv = [main1, main2].concat(multi).filter((c) => ring(c)).map((c) => c.size).join();
+        return cv === radii(R.buildWebGLMultiboxRingData(L3, data, 8));
+    }));
+    ctx.window.multiboxPlayerEnabled = null;
+    ctx.spects.length = 0; ctx.spects.push({ number: 1 });
+}
 
 console.log(fail ? fail + ' multibox ring check(s) FAILED' : 'all multibox ring checks passed');
 process.exit(fail ? 1 : 0);

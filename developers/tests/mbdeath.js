@@ -633,6 +633,112 @@ function death(o) {
             lst.every((l) => l.capture) && /pointer-events:auto/.test(ctx.css || ''), calls.join());
         ctx.application._lmMbRosterHtml();
         check('    ... the listeners are added once', lst.filter((l) => l.type === 'click').length === 1);
+        /* the stats HUD's [MB n/m]: n the slot of the player you control (not its connection number + 1),
+         * m the players open, in that slot's colour */
+        const lbl = block(v4, 'if (window.multiboxPlayerEnabled || legendmod.multiBoxPlayerExists) {', v4.indexOf('/* [MB slot/players]'));
+        if (!lbl) check('[MB n/m] label code found', false);
+        else {
+            const label = () => vm.runInContext('(function () { var t = "";\n' + lbl + '\nreturn t; })()', ctx).replace(/<[^>]+>/g, '').replace(' | ', '');
+            const colour = () => /color:(#[0-9A-F]+)/i.exec(vm.runInContext('(function () { var t = "";\n' + lbl + '\nreturn t; })()', ctx))[1];
+            ctx.lmSetMbUnit(9);
+            const l4 = label(), c4 = colour();
+            ctx.lmSetMbUnit(3);
+            const l3 = label();
+            ctx.lmSetMbUnit(0);
+            const l1 = label(), c1 = colour();
+            check('[MB n/m]: the slot you control / the players open (unit 9 in slot 4: MB 4/4, unit 3: MB 3/4, P1: MB 1/4), in the slot colour',
+                l4 === '[MB 4/4]' && l3 === '[MB 3/4]' && l1 === '[MB 1/4]' && c4 === '#10B981' && c1 === '#FF2FD6', [l4, l3, l1, c4, c1].join());
+        }
+        /* the 'x' on P2 once it is the only other player: multibox off (mbDisable), not Remove */
+        ctx.application.mbDisable = () => calls.push('off');
+        calls.length = 0;
+        ctx.application.mbRemovePlayer = (s) => calls.push('rm' + s);
+        [...ctx.lmMbPlayers.ordered].filter((u) => u.slotId >= 3).forEach((u) => { ctx.lmMbPlayers.release(u.slotId, u.slotEpoch); ctx.spects.splice(ctx.spects.indexOf(u), 1); });
+        const h3 = ctx.application._lmMbRosterHtml();
+        check('roster, P2 the only other player: its x is multibox off (title from the packs), no Remove x', /data-lm-mb-slot="2"[^]*data-lm-mb-off="1"/.test(h3) &&
+            /game1\.hud\.mbOff/.test(h3) && !/data-lm-mb-rm/.test(h3) && (h3.match(/lm-mb-x/g) || []).length === 1, h3);
+        check('    ... with P3 open P2 has no x (as before)', !/data-lm-mb-off/.test(h) && !/data-lm-mb-off/.test(h2));
+        fire('click', { 'data-lm-mb-slot': '2', 'data-lm-mb-off': '1' });
+        check('    ... its click turns multibox off (nothing selected or removed)', calls.join() === 'off', calls.join());
+    }
+}
+/* 5d. multibox off from the hotkey command (hk-multiboxOff, no default key) on the real scene: the
+ * units close, the Full Map tiles stay as they are, the focus is back on P1, no menu while P1
+ * plays (the menu when P1 is not in a game, as after the last death) */
+{
+    const MB = require('./lib/mbplayers');
+    const hkSrc = read(path.join(root, 'ogario', 'hotkeysCommand.js'));
+    const hk = block(hkSrc, "'hk-multiboxOff': {");
+    if (!hk) check('hk-multiboxOff found', false);
+    else {
+        for (const p1Alive of [true, false]) {
+            const s = MB.scene({ players: 4, fullMap: true, app: true, v4: process.argv[2], sp: process.argv[3] });
+            MB.populate(s);
+            s.step(1);
+            const app = s.ctx.application, cmd = vm.runInContext('({' + hk + '})', s.ctx)['hk-multiboxOff'];
+            const tiles = s.ctx.spects.filter((x) => x && !x.player);
+            s.ctx.lmSetMbUnit(s.player(3).src);
+            if (!p1Alive) s.ctx.legendmod.play = false;
+            const menu = app.menuShown;
+            cmd.keyDown();
+            const after = s.ctx.spects;
+            check('hotkey Multibox off (P1 ' + (p1Alive ? 'playing' : 'not in a game') + '): the units close, the tiles stay (the same, open), focus on P1, ' + (p1Alive ? 'no menu' : 'the menu'),
+                cmd.defaultKey === '' && cmd.keyUp === null && after.filter((x) => x && x.player).length === 0 && tiles.length === 4 &&
+                tiles.every((t) => after.includes(t) && !t.closed) && after.length === 4 && s.focus() === 0 && s.ctx.lmMbPlayers.count() === 1 &&
+                s.LM.multiBoxPlayerExists === false && app.menuShown === menu + (p1Alive ? 0 : 1), 'focus ' + s.focus() + ', menu ' + (app.menuShown - menu) + ', spects ' + after.length);
+            cmd.keyDown();
+            check('    ... again: nothing more closes, no second menu', s.ctx.spects.length === 4 && app.menuShown === menu + (p1Alive ? 0 : 1));
+        }
+    }
+}
+/* 5e. same nick, different skins: P1, P2 and P3 play profiles with one nick and three skins. The
+ * switch keys and the roster's select (both ways, twice) write nothing under the nick (no
+ * cacheCustomSkin, no customSkinsMap entry, no core.registerSkin: the main player's skin stays its
+ * own), each unit's skin is only loaded by its link, and the real lookup (application.customSkinKey)
+ * gives each player's cells its own skin: the units' cells carry their profile's URL (spect.js
+ * cell.skin), the main player's cells get the nick's skin */
+{
+    const MB = require('./lib/mbplayers');
+    const ms = ['        customSkinKey(nick, color, skinKey, nameOnly, own) {', '        _lmSkinAt(key, custom, vanilla) {', '        _lmSkinKeys(nick, color, hexColor) {',
+        '        _lmSkinCacheKey(skinUrl) {'].map((m) => block(v4, m));
+    const clan = /\nvar _RE_CLAN_TAG = [^\n]*/.exec(v4);
+    if (ms.some((m) => !m) || !clan) check('skin lookup code found', false);
+    else {
+        const url = (i) => 'https://skins.test/same' + i + '.png';
+        const s = MB.scene({ players: 3, app: true, v4: process.argv[2], sp: process.argv[3] });
+        MB.populate(s);
+        s.step(1);
+        const ctx = s.ctx, app = ctx.application;
+        vm.runInContext('profiles = [0, 1, 2, 3, 4, 5].map(function (i) { return { nick: "Same", color: "#00000" + i, skinURL: "' + url('') + '".replace(".png", i + ".png") }; });' +
+            'ogarcopythelb = { nick: "Same", skinURL: profiles[0].skinURL };', ctx);
+        let writes = 0, registered = 0;
+        const map = { Same: url(0) };
+        app.customSkinsMap = new Proxy(map, { set(t, k, v) { writes++; t[k] = v; return true; } });
+        ctx.core = { registerSkin() { registered++; } };
+        app.ensureMbSlots();
+        ctx.lmSetMbUnit(0);
+        app.preloaded.length = 0;
+        for (let r = 0; r < 2; r++) {
+            for (let i = 0; i < 3; i++) app.multiboxchange();
+            for (let i = 0; i < 3; i++) app.multiboxback();
+            [2, 3, 1, 3, 2, 1].forEach((sl) => app.mbSelectPlayer(sl));
+        }
+        const units = [s.player(2).unit, s.player(3).unit], skinOf = (u) => ctx.profiles[ctx.lmMbProfileIdx(u)].skinURL;
+        check('same nick: switching writes nothing under the nick (main skin kept, no register, no nick cache)', writes === 0 && registered === 0 && !app.skins.length && map.Same === url(0),
+            'writes ' + writes + ', registered ' + registered + ', nick cache ' + app.skins.join());
+        check('    ... each unit plays its own skin (P2 ' + url(1).slice(-9) + ', P3 ' + url(2).slice(-9) + '), loaded by its link only', skinOf(units[0]) === url(1) && skinOf(units[1]) === url(2) &&
+            app.preloaded.length > 0 && app.preloaded.every((u) => u === url(1) || u === url(2)), app.preloaded.join());
+        /* the real lookup over the cells as the renderers ask it */
+        const lk = { console: { log: noop } };
+        vm.createContext(lk);
+        vm.runInContext(clan[0] + '\nvar defaultmapsettings = { customSkins: true, vanillaSkins: false };\nvar LM = { gameMode: ":ffa" };\n' +
+            'var app = ({' + ms.join(',\n') + ',\n customSkinsCache: {}, loaded: [], customSkinsMap: ' + JSON.stringify(map) + ',\n' +
+            ' teamSkinUrl() { return null; }, checkSkinURL(u) { return u; }, loadSkin(c, u) { this.loaded.push(u); } });', lk);
+        const key = (cell) => lk.app.customSkinKey(cell.targetNick, cell.color, cell.skin, false, true);
+        const mainCell = { targetNick: 'Same', color: '#000000', skin: '' };
+        const unitCells = units.map((u) => ({ targetNick: 'Same', color: '#000000', skin: skinOf(u) }));
+        const got = [mainCell].concat(unitCells).map(key);
+        check('    ... the lookup: P1 its nick\'s skin, P2 and P3 the skins their cells carry (one nick, three skins)', got.join() === [url(0), url(1), url(2)].join(), got.join());
     }
 }
 /* 6. a spectator (Full Map tile, in-game spectator) with its active flag set is never a living

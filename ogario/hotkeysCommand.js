@@ -449,7 +449,17 @@
                 },
                 keyUp: null,
                 type: 'normal'
-            },				
+            },
+            /* multibox off: the other players close, Full Map stays, back to P1 (application.mbDisable) */
+            'hk-multiboxOff': {
+                get label() { return lmT('settings.hk-multiboxOff'); },
+                defaultKey: '',
+                keyDown() {
+                    application && typeof application.mbDisable === 'function' && application.mbDisable();
+                },
+                keyUp: null,
+                type: 'normal'
+            },
             'hk-showTop5': {
                 get label() { return lmT('settings.hk-showTop5'); },
                 defaultKey: 'T',

@@ -267,6 +267,33 @@ check('reversed time test is gone', !/lastUpdatedTime\) - tempTime < 6000/.test(
     const full = ctx.lmActiveUnit();
     check('lmActiveUnit(true) copies no cells (unit and main player); the full form still does', litereads === 0 && lite.target === u && liteMain.target === ctx.legendmod &&
         !('cells' in lite) && full.cells.length === 1 && full.index === 1, litereads);
+    /* the full form: one result object and cells list per client, filled again on each call (min /
+     * max of this call's cells); no own cell left: every stat 0, not the last life's mass */
+    const own = [{ size: 100 }, { size: 50 }];
+    u.getOwnPlayerCells = () => own;
+    const f1 = ctx.lmActiveUnit(), f1cells = f1.cells, f1min = f1.minMass, f1max = f1.maxMass;
+    own[1].size = 30;
+    const f2 = ctx.lmActiveUnit();
+    check('lmActiveUnit(): the same result and cells list each call, its stats from this call', f2 === f1 && f2.cells === f1cells && f1min === 25 && f1max === 100 &&
+        f2.minMass === 9 && f2.maxMass === 100 && f2.mass === 50 && f2.playing === true);
+    own.length = 0;
+    const f3 = ctx.lmActiveUnit();
+    check('lmActiveUnit(): no own cell: not playing, mass / min / max / ref 0 (playerMass still says 50)', f3.playing === false && f3.mass === 0 && f3.minMass === 0 &&
+        f3.maxMass === 0 && f3.refMass === 0 && f3.cells.length === 0);
+    /* lmSessionType: 'live' from the lite resolver and the own list (the full form is not asked) */
+    vm.runInContext(fnOf('lmSessionType') + 'var __au = lmActiveUnit; lmActiveUnit = function (lite) { if (lite !== true) throw new Error("full form"); return __au(true); };', ctx);
+    own.push({ size: 80 });
+    const liveUnit = ctx.lmSessionType();
+    own.length = 0;
+    const deadUnit = ctx.lmSessionType();
+    ctx.multiboxPlayerEnabled = 0;
+    const mainNoCells = ctx.lmSessionType();
+    ctx.legendmod = { play: true, socket: {}, playerCells: [{ size: 60, removed: true }, { size: 60 }] };
+    const mainLive = ctx.lmSessionType();
+    ctx.legendmod.play = false;
+    const mainDead = ctx.lmSessionType();
+    check('lmSessionType: live while the player you control has an own cell (the lite resolver only), else menu',
+        liveUnit === 'live' && deadUnit === 'menu' && mainNoCells === 'menu' && mainLive === 'live' && mainDead === 'menu');
 }
 
 console.log(failed ? 'FAILED: ' + failed : 'all hotpaths checks passed');

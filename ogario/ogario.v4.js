@@ -3640,8 +3640,9 @@ function lmMultiboxControlledPlayer() {
  *   cells: its own cells, mass: its total mass, minMass / maxMass: its smallest / biggest cell,
  *   refMass: the one opponents are compared with (maxMass with "biggest cell" selected, else
  *   minMass, as compareCells) }. min / max are measured from the cells here (the cached
- *   playerMin/MaxMass are only kept up while a colouring option is on). null when there is no
- *   client, or no unit is selected and the main player is not in a game.
+ *   playerMin/MaxMass are only kept up while a colouring option is on); all 0 without own cells.
+ *   null when there is no client, or no unit is selected and the main player is not in a game.
+ *   The result is the same object each time (its cells list too): read it before the next call.
  * lite (actions, up to 100 per second from macro feed): no cells copy, only who gets the action,
  *   also for a dead main player: { target: the unit or legendmod (the object with the send*
  *   methods), transport: 'spect' | 'lm', slotId, sourceId: unit number (0 main), sock, gen:
@@ -3649,11 +3650,16 @@ function lmMultiboxControlledPlayer() {
 function lmActiveUnit(lite) {
     var LM = window.legendmod;
     if (!LM) return null;
-    var n = window.multiboxPlayerEnabled || 0, sp = n ? getActiveSpect(n) : null, src, cells = [], i;
+    var n = window.multiboxPlayerEnabled || 0, sp = n ? getActiveSpect(n) : null, src, i;
     if (lite === true) {
         if (sp) return { target: sp, transport: 'spect', slotId: sp.slotId >= 2 ? sp.slotId : 2, sourceId: n, sock: sp.socket, gen: sp.connectionGeneration, life: sp.playerCellIDs, alive: sp.player === true && sp.active === true };
         return { target: LM, transport: 'lm', slotId: LM.slotId || 1, sourceId: 0, sock: LM.socket, gen: LM._connectSeq || 0, life: window.application ? window.application._lmLifeStartAt : 0, alive: !!LM.play };
     }
+    /* one result and one cells list per client, filled again on each call (they were made new
+     * on every call) */
+    var r = LM._lmActUnit || (LM._lmActUnit = { index: 0, number: 0, slotId: 1, sourceId: 0, playing: false, cells: [], mass: 0, minMass: 0, maxMass: 0, refMass: 0 });
+    var cells = r.cells;
+    cells.length = 0;
     if (sp) src = typeof sp.getOwnPlayerCells === 'function' ? sp.getOwnPlayerCells() : [];
     else src = LM.playerCells || [];
     for (i = 0; i < src.length; i++) if (src[i] && !src[i].removed) cells.push(src[i]);
@@ -3665,24 +3671,30 @@ function lmActiveUnit(lite) {
         if (s > maxS) maxS = s;
     }
     var minMass = cells.length ? ~~(minS * minS / 100) : 0, maxMass = cells.length ? ~~(maxS * maxS / 100) : 0;
-    return {
-        index: sp ? 1 : 0, number: sp ? n : 0, slotId: sp ? (sp.slotId >= 2 ? sp.slotId : 2) : 1, sourceId: sp ? n : 0,
-        playing: cells.length > 0 && (sp ? true : !!LM.play),
-        cells: cells,
-        mass: (sp ? +sp.playerMass : +LM.playerMass) || 0,
-        minMass: minMass, maxMass: maxMass,
-        refMass: LM.selectBiggestCell ? maxMass : minMass
-    };
+    r.index = sp ? 1 : 0;
+    r.number = r.sourceId = sp ? n : 0;
+    r.slotId = sp ? (sp.slotId >= 2 ? sp.slotId : 2) : 1;
+    r.playing = cells.length > 0 && (sp ? true : !!LM.play);
+    /* no own cell: 0, not the mass the last life left */
+    r.mass = cells.length ? (sp ? +sp.playerMass : +LM.playerMass) || 0 : 0;
+    r.minMass = minMass;
+    r.maxMass = maxMass;
+    r.refMass = LM.selectBiggestCell ? maxMass : minMass;
+    return r;
 }
 window.lmActiveUnit = lmActiveUnit;
 /* The own cells of one multibox unit (its number) into out, a list the caller keeps (nothing
- * allocated per frame). LM.playerCellsMulti holds the cells of every unit together. */
+ * allocated per frame), from the unit's own index (spect.js getOwnPlayerCells): no scan of
+ * LM.playerCellsMulti, which holds the cells of every unit together. Not a unit (a Full Map
+ * tile, an in-game spectator, a number no one has): none. A unit of an older spect.js without
+ * its own index: its cells in LM.playerCellsMulti, as before. */
 function lmUnitCellsInto(n, out) {
-    var all = window.legendmod && window.legendmod.playerCellsMulti, i, c;
+    var sp = n && typeof getActiveSpect === 'function' ? getActiveSpect(n) : null, own, i, c;
     out.length = 0;
-    if (!n || !all) return out;
-    for (i = 0; i < all.length; i++) {
-        c = all[i];
+    if (!sp || sp.player === false) return out;
+    own = typeof sp.getOwnPlayerCells === 'function' ? sp.getOwnPlayerCells() : (window.legendmod && window.legendmod.playerCellsMulti);
+    for (i = 0; own && i < own.length; i++) {
+        c = own[i];
         if (c && !c.removed && c.spectator === n) out.push(c);
     }
     return out;
@@ -3720,8 +3732,11 @@ function lmSessionType() {
     } catch (e) { }
     if (LM && LM.playingReplayServer && typeof lmReplayActive === 'function' && lmReplayActive()) return 'replay';
     if (!LM) return 'menu';
-    var u = lmActiveUnit();
-    if (u && u.playing) return 'live';
+    /* the player you control has an own cell (lmActiveUnit's playing), without copying them */
+    var u = lmActiveUnit(true), own = null, i;
+    if (u && u.transport === 'spect') own = typeof u.target.getOwnPlayerCells === 'function' ? u.target.getOwnPlayerCells() : null;
+    else if (u && LM.play) own = LM.playerCells;
+    for (i = 0; own && i < own.length; i++) if (own[i] && !own[i].removed) return 'live';
     if (LM._isWorldSpectating) return 'worldSpectate';
     if (LM.isSpectateEnabled || LM.isFreeSpectate) return 'spectate';
     return 'menu';
@@ -25639,7 +25654,9 @@ function thelegendmodproject() {
         },
         /* The focus to a unit (sp) or to the main player (null); the one chosen spawns when dead.
          * A unit's profile skin is only loaded by its link (its own cells carry it): stored under
-         * the profile's nick it replaced the main player's skin when both have that nick. */
+         * the profile's nick it replaced the main player's skin when both have that nick. Nothing
+         * is written under a nick here, so the main player's skin is not registered again on a
+         * switch back (its spawn registers it). */
         _lmMbFocus(sp) {
             if (!sp) {
                 lmSetMbUnit(0);
@@ -25653,10 +25670,6 @@ function thelegendmodproject() {
                 }
                 var prof = profiles[lmMbProfileIdx(sp)];
                 if (prof && prof.skinURL && typeof lmPreloadUnitSkin === 'function') lmPreloadUnitSkin(prof.skinURL);
-            }
-            if (!window.multiboxPlayerEnabled && ogarcopythelb.nick && ogarcopythelb.skinURL && typeof core !== "undefined" && core && typeof core.registerSkin === "function") {
-                core.registerSkin(ogarcopythelb.nick, null, ogarcopythelb.skinURL, null);
-                if (this.customSkinsMap && ogarcopythelb.nick) this.customSkinsMap[ogarcopythelb.nick] = ogarcopythelb.skinURL;
             }
         },
         /* the switch keys: no unit yet (Full Map tiles do not count) starts multibox, else the
@@ -25680,8 +25693,10 @@ function thelegendmodproject() {
         /* The multibox roster in the stats HUD, only while multibox is on: one chip per open player
          * in slot order (its colour, a dot for alive / dead / connecting / offline, its mass; the
          * player you control outlined), '+' (Add Player) until Settings "Multibox slots" is reached
-         * and 'x' on P3 on (Remove Player; P2 goes with multibox off). A click (a tap on the phone)
-         * controls that player; nothing of it reaches the game below. */
+         * and 'x' on P3 on (Remove Player); P2 gets its 'x' once it is the only other player left,
+         * and that one is multibox off (mbDisable: the other players close, Full Map stays, P1 is
+         * controlled). A click (a tap on the phone) controls that player; nothing of it reaches the
+         * game below. */
         _lmMbRosterHtml() {
             this._lmMbRosterBind();
             var units = lmMbUnits(_lmMbList), cur = window.multiboxPlayerEnabled ? lmMultiboxControlledPlayer() : 1, h = '<div class="lm-mb-roster">', i, p, slot, st, mass;
@@ -25693,7 +25708,8 @@ function thelegendmodproject() {
                 var col = LM_MB_RING_DEFAULT_COLORS[slot] || '#fff', tip = 'P' + slot + ': ' + lmT(st === 'alive' ? 'game1.hud.mbAlive' : st === 'dead' ? 'game1.hud.mbDead' : st === 'connecting' ? 'game1.hud.mbConnecting' : 'game1.hud.mbOffline');
                 h += '<span class="lm-mb-chip lm-mb-' + st + (slot === cur ? ' lm-mb-sel' : '') + '" data-lm-mb-slot="' + slot + '" role="button" title="' + _lmG1e(tip) + '" aria-label="' + _lmG1e(tip) +
                     '" style="border-color:' + col + '"><i class="lm-mb-dot"></i><b style="color:' + col + '">P' + slot + '</b>' + (mass ? ' ' + mass : '') +
-                    (p.slotId >= 3 ? '<span class="lm-mb-x" data-lm-mb-rm="' + slot + '" role="button" title="' + _lmG1e(lmT('game1.hud.mbRemove')) + '">×</span>' : '') + '</span>';
+                    (p.slotId >= 3 ? '<span class="lm-mb-x" data-lm-mb-rm="' + slot + '" role="button" title="' + _lmG1e(lmT('game1.hud.mbRemove')) + '">×</span>' :
+                        i >= 0 && units.length === 1 ? '<span class="lm-mb-x" data-lm-mb-off="1" role="button" title="' + _lmG1e(lmT('game1.hud.mbOff')) + '">×</span>' : '') + '</span>';
             }
             if (lmMbPlayers.count() < lmMbCapacity()) h += '<span class="lm-mb-chip lm-mb-add" data-lm-mb-add="1" role="button" title="' + _lmG1e(lmT('game1.hud.mbAdd')) + '">+</span>';
             return h + '</div>';
@@ -25723,7 +25739,8 @@ function thelegendmodproject() {
                 if (!c) return;
                 e.stopPropagation();
                 var rm = e.target.closest('[data-lm-mb-rm]');
-                if (rm) app.mbRemovePlayer(+rm.getAttribute('data-lm-mb-rm'));
+                if (e.target.closest('[data-lm-mb-off]')) app.mbDisable();
+                else if (rm) app.mbRemovePlayer(+rm.getAttribute('data-lm-mb-rm'));
                 else if (c.hasAttribute('data-lm-mb-add')) app.mbAddPlayer();
                 else app.mbSelectPlayer(+c.getAttribute('data-lm-mb-slot'));
                 app._statsHUDLastHTML = null;
@@ -82346,7 +82363,7 @@ function pickPlayerCellBySize(players, selectBiggest) {
                         if (LM.playerCellsMulti && LM.playerCellsMulti.length && typeof spects !== 'undefined' && spects) {
                             var _own = this._lmOwnCells || (this._lmOwnCells = []);
                             for (var _mr = 0; _mr < spects.length; _mr++) {
-                                if (spects[_mr] && lmUnitCellsInto(spects[_mr].number, _own).length) this.drawMergeProgressRings(ctx, _own);
+                                if (spects[_mr] && spects[_mr].player === true && lmUnitCellsInto(spects[_mr].number, _own).length) this.drawMergeProgressRings(ctx, _own);
                             }
                         }
                     }
@@ -85044,8 +85061,10 @@ function pickPlayerCellBySize(players, selectBiggest) {
                      * Only his cells count: a cell of another player there, or one of a Full Map
                      * spectator whose orientation is not verified (not drawn, maybe mirrored: the
                      * frame's hide step test), hid the ghost while the player was not shown. The
-                     * name of an opcode-69 ghost is the leaderboard's (its label); names are
-                     * compared only when both are known, own and unit cells always count. Ejected
+                     * name of an opcode-69 ghost is the leaderboard's (its label); a ghost with a
+                     * name is hidden only by a cell with that server name (an unnamed cell is not
+                     * his: it hid the ghost of a named player nearby), a ghost without one by any
+                     * player cell; own and unit cells always count. Ejected
                      * mass never hides a ghost (a blob of 40+ is no player cell). An unverified
                      * unit's own cell may be drawn at a wrong place: it hides the ghost only with
                      * the ghost's name. */
@@ -85056,7 +85075,7 @@ function pickPlayerCellBySize(players, selectBiggest) {
                         if (!_rc || _rc.isFood || _rc.isVirus || _rc.size < 40) continue;
                         if (_rc.isEjected) continue;
                         if (_rc.spectator > 0 && !_lmMbFeeds(_rc) && (!_rc.isPlayerCellMulti || !_ghostName || _rc._lmSrvName !== _ghostName)) continue;
-                        if (_ghostName && _rc._lmSrvName && _rc._lmSrvName !== _ghostName && !_rc.isPlayerCell && !_rc.isPlayerCellMulti) continue;
+                        if (_ghostName && _rc._lmSrvName !== _ghostName && !_rc.isPlayerCell && !_rc.isPlayerCellMulti) continue;
                         var _gdx = _rc.x - x, _gdy = _rc.y - y;
                         if (_gdx * _gdx + _gdy * _gdy < sz * sz) { _ghostHasReal = true; break; }
                     }

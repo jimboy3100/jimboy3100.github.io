@@ -440,7 +440,13 @@ now = load(); G = groups();
     const cell = (x, y, size, extra) => Object.assign({ x, y, size, isFood: false, isVirus: false, invisible: false, spectator: 0 }, extra || {});
     check('ghost without any cell or coverage: drawn', drawn(top(), []) === 1);
     check('ghost: the player himself (same server name) hides it', drawn(top(), [cell(2100, 1050, 700, { spectator: 3, _lmSrvName: 'Top' })], () => { g._lmMbFeed[3] = true; }) === 0);
-    check('ghost: an unnamed cell there still hides it (names compared only when both are known)', drawn(top(), [cell(2100, 1050, 700)]) === 0);
+    /* a named ghost: only a cell with its name is his; an unnamed real cell (size 40 or more, of a
+     * verified connection) inside its radius is another player and hid it */
+    check('ghost with a name: an unnamed cell inside its radius does not hide it', drawn(top(), [cell(2100, 1050, 700)]) === 1);
+    check('ghost with a name: an unnamed cell of a verified spectator does not hide it either', drawn(top(), [cell(2100, 1050, 700, { spectator: 3 })], () => { g._lmMbFeed[3] = true; }) === 1);
+    check('ghost with a name: the unnamed cell beside his own named cell: hidden (his cell)', drawn(top(), [cell(2100, 1050, 700), cell(2050, 1000, 600, { _lmSrvName: 'Top' })]) === 0);
+    check('ghost without a name (an unnamed player\'s row): an unnamed cell there hides it', drawn(top(), [cell(2100, 1050, 700)], () => { LM.leaderboard = [{ nick: '' }]; }) === 0);
+    check('ghost of me: my own unnamed cell hides it', drawn(top(), [cell(2030, 1000, 700, { isPlayerCell: true })]) === 0);
     check('ghost: another named player inside its radius does not hide it', drawn(top(), [cell(2400, 1000, 300, { _lmSrvName: 'someone' })]) === 1);
     check('ghost: a cell of an unverified spectator does not hide it', drawn(top(), [cell(2050, 980, 700, { spectator: 3, _lmSrvName: 'Top' })], () => { g._lmMbFeed[3] = false; }) === 1);
     check('ghost: a verified spectator\'s copy hidden behind its twin still hides it', drawn(top(), [cell(2100, 1050, 700, { spectator: 4, invisible: true, _lmSrvName: 'Top' })], () => { g._lmMbFeed[4] = true; }) === 0);
