@@ -155,7 +155,7 @@ check('other servers: no identities kept', L._lmCellIdentity === undefined && !!
  * Its pellets and viruses went out of the index but stayed in LM.food / LM.viruses: the server's
  * remove records could not find them (ghosts for good) and a pellet sent again was there twice.
  * The players came back from plain updates without colour or name. */
-const deathSwitch = block("if (defaultmapsettings.mbSwitchAfterDeath && typeof spects !== 'undefined' && spects && spects.length > 0) {");
+const deathSwitch = block("if ((defaultmapsettings.mbSwitchAfterDeath || (typeof lmMbSteersLiving === 'function' && lmMbSteersLiving())) && typeof spects !== 'undefined' && spects && spects.length > 0) {");
 if (!deathSwitch) { console.log('FAIL onPlayerDeath multibox switch not found'); process.exit(1); }
 g.__death = null;
 vm.runInContext('with (__env) { __death = function () { ' + deathSwitch + ' }; }', g);

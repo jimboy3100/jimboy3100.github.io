@@ -17,7 +17,11 @@
  *   the Multibox 2.0 cases: six at most with the slot being made, remove / reuse a slot, stale epochs,
  *   the login slot, P1 dying while P4 plays, a reconnect while P5 plays, the last death's menu (5b);
  *   a player chosen while a unit's first spawn is held (spect.js _lmSpawnHold) keeps the focus when
- *   it goes through, with no choice the unit takes it (5b).
+ *   it goes through, with no choice the unit takes it (5b); a hold that ran out unverified gives
+ *   no focus until the place is known; an extra player of Add Player never takes it at its spawn.
+ * - "Auto-switch focus after death" on: the next living player after the dead one in slot order
+ *   (P1 included), off: the death moves no focus; a removed / disconnected one still hands it on;
+ *   the death menu only when nothing of ours lives, whatever the setting (sections 1 and 5b).
  *   lmMbPlayers.attach refuses a slot taken, a stale slotEpoch, a source registered; addBox's refusals
  *   (six players, a unit being made, attach refusing the unit made, a server change meanwhile) give
  *   null and leave the registry as it was; a Spect constructor that throws rolls the reservation back.
@@ -48,7 +52,7 @@ const noop = () => { };
 const a = v4.indexOf('/* LMEvents: hooks'), b = v4.indexOf('window.OgVer', a);
 const respawn = block(sp, '    respawn() {');
 const appMethods = ['        multiboxchange() {', '        multiboxswap() {'].map((m) => block(v4, m));
-const deathSwitch = block(v4, "if (defaultmapsettings.mbSwitchAfterDeath && typeof spects !== 'undefined' && spects && spects.length > 0) {");
+const deathSwitch = block(v4, "if ((defaultmapsettings.mbSwitchAfterDeath || (typeof lmMbSteersLiving === 'function' && lmMbSteersLiving())) && typeof spects !== 'undefined' && spects && spects.length > 0) {");
 const k = v4.indexOf('ALL OTHER SERVERS');
 const ucElse = k < 0 ? null : block(v4, 'else {', k);
 const idxFilter = block(v4, '    function lmIdxFilter(');
@@ -69,7 +73,9 @@ function death(o) {
         'window.mainDies = function () { legendmod.play = false; ' + ucElse.slice(4) + ' };', ctx);
     const u = new ctx.Unit(1); u.active = o.unitAlive;
     ctx.spects.length = 0; ctx.spects.push(u);
-    ctx.multiboxPlayerEnabled = null;
+    ctx.multiboxPlayerEnabled = o.focus || null;
+    /* o.switchOff: Settings "Auto-switch focus after death" off */
+    if (o.switchOff) ctx.defaultmapsettings.mbSwitchAfterDeath = false;
     if (o.removed) { o.removed.forEach((c, i) => { c._removedIdx = i; }); ctx.legendmod.removedCells = o.removed; }
     ctx.mainDies();
     return ctx;
@@ -82,6 +88,18 @@ function death(o) {
     const r = death({ unitAlive: true });
     check('main dies, the unit lives: the focus goes to it, no menu', r.menuShown === 0 && r.multiboxPlayerEnabled === 1 && r.respawns === 0,
         'menu ' + r.menuShown + ' focus=' + r.multiboxPlayerEnabled);
+    /* "Auto-switch focus after death" off: the death alone moves no focus, and the session goes on
+     * while the unit lives (the menu opened over it); with nothing alive the menu as before */
+    const off = death({ unitAlive: true, switchOff: true });
+    check('switch after death off, main dies while the unit lives: the focus stays on the dead main player, no menu (the unit plays on)',
+        off.menuShown === 0 && !off.multiboxPlayerEnabled && off.respawns === 0, 'menu ' + off.menuShown + ' focus=' + off.multiboxPlayerEnabled);
+    const offDead = death({ unitAlive: false, switchOff: true });
+    check('    ... the unit dead too: the death menu, no focus moved', offDead.menuShown === 1 && !offDead.multiboxPlayerEnabled && offDead.respawns === 0,
+        'menu ' + offDead.menuShown + ' focus=' + offDead.multiboxPlayerEnabled);
+    const offBg = death({ unitAlive: true, switchOff: true, focus: 1 });
+    check('    ... main dies in the background (the living unit in focus): the focus stays on the unit, no menu, the dead main view flushed as with the setting on',
+        offBg.menuShown === 0 && offBg.multiboxPlayerEnabled === 1 && offBg.mainPlayerDeadMbActive === true,
+        'menu ' + offBg.menuShown + ' focus=' + offBg.multiboxPlayerEnabled + ' flushed=' + offBg.mainPlayerDeadMbActive);
     /* fading removed cells: the main connection's go, the unit's stay with their new slots
      * (the frame drops a hidden one only when its slot is right) */
     const rm = [{ spectator: 0 }, { spectator: 1 }, { spectator: 0 }, { spectator: 1 }];
@@ -90,6 +108,18 @@ function death(o) {
     check('main dies, the unit lives: its fading cells stay listed with their slots, the main ones leave the list',
         kept.length === 2 && kept.every((c, i) => c.spectator === 1 && c._removedIdx === i) && rm[0]._removedIdx === -1 && rm[2]._removedIdx === -1,
         kept.map((c) => c._removedIdx).join(',') + ' / ' + rm.map((c) => c._removedIdx).join(','));
+    /* the other death checks (Senpa, Garix, Sigmally, Expanding Land): each death menu after
+     * onPlayerDeath is gated by lmMbDeathMenuDue (nothing of ours alive), none by the focus or the
+     * "Auto-switch focus after death" setting (Garix and Senpa always opened it with the setting off) */
+    const calls = [];
+    for (let i = v4.indexOf('onPlayerDeath();'); i >= 0; i = v4.indexOf('onPlayerDeath();', i + 1)) {
+        const m = v4.indexOf('showMenu(', i);
+        if (m > 0 && m - i < 1500 && v4.slice(i, m).indexOf('onPlayerDeath();', 1) < 0) calls.push(v4.slice(i, m));
+    }
+    const elA = v4.indexOf('Auto-respawn owns the screen when enabled.'), elB = v4.indexOf('SHOW THE LM DEATH SCREEN DIRECTLY', elA);
+    check('every death menu after onPlayerDeath (' + calls.length + ' callers + Expanding Land) waits for nothing of ours alive (lmMbDeathMenuDue)',
+        calls.length >= 3 && calls.every((c) => c.indexOf('lmMbDeathMenuDue()') >= 0 && c.indexOf('multiboxPlayerEnabled') < 0) &&
+        elA > 0 && elB > elA && v4.slice(elA, elB).indexOf('lmMbDeathMenuDue()') >= 0, calls.map((c) => c.indexOf('lmMbDeathMenuDue()') >= 0 ? 1 : 0).join(''));
 }
 
 /* 2. Pause: LM.sendPosition with the focus on the main player or on the unit */
@@ -478,7 +508,7 @@ function death(o) {
         p2.beforecalculation();
         check('    ... its first spawn: P2 controlled', s.focus() === p2.number, s.focus());
         const u3 = app.mbAddPlayer();
-        check('add one: P3 opens in slot 3 and the focus stays where it was (it takes it at its first spawn)', !!u3 && u3.slotId === 3 && units().length === 2 && s.focus() === units()[0].number);
+        check('add one: P3 opens in slot 3 and the focus stays where it was (also at its first spawn)', !!u3 && u3.slotId === 3 && units().length === 2 && s.focus() === units()[0].number);
         check('Settings "Maximum Multibox players" 3 (an old saved value): no fourth player', app.mbAddPlayer() === null && units().length === 2);
     }
     {
@@ -544,7 +574,40 @@ function death(o) {
             const p4 = (s.ctx.defaultmapsettings.multiboxAmount = 4, app.mbAddPlayer());
             p4._lmOwn = [{ x: 5, y: 5, size: 60, targetSize: 60, spectator: p4.number }]; p4.active = true;
             p4.beforecalculation();
-            check('    ... a unit added afterwards, no choice made before its first spawn: it takes the focus', s.focus() === p4.number, s.focus());
+            check('    ... an extra player added afterwards (Add Player): its first spawn does not take the focus from living P1', s.focus() === 0 && p4._lmSpawnedOnce === true, s.focus());
+            app.mbSelectPlayer(4);
+            check('    ... chosen by the player: P4 controlled', s.focus() === p4.number, s.focus());
+        }
+        /* decision 1: P2 of the switch key / mbEnable takes the focus at its first spawn, an optional P3
+         * of Add Player does not (the player you control keeps it); a hold that ran out unverified
+         * gives no focus until the place is known, and the latest choice wins over it */
+        {
+            const { s, app, units } = fresh(4);
+            app.mbEnable();
+            const p2 = units()[0];
+            p2._lmOwn = [{ x: 0, y: 0, size: 60, targetSize: 60, spectator: p2.number }]; p2.active = true;
+            p2.beforecalculation();
+            const p3 = app.mbAddPlayer();
+            p3._lmOwn = [{ x: 9, y: 9, size: 60, targetSize: 60, spectator: p3.number }]; p3.active = true;
+            p3.beforecalculation();
+            check('P2 controlled from its first spawn; P3 added (Add Player): its verified first spawn leaves P2 controlled', s.focus() === p2.number && p3._lmSpawnedOnce === true,
+                s.focus() + ' / ' + p2.number);
+            const p4 = app.mbAddPlayer();
+            app.mbSelectPlayer(4);
+            p4._lmOwn = [{ x: 7, y: 7, size: 60, targetSize: 60, spectator: p4.number }]; p4.active = true;
+            p4.beforecalculation();
+            check('    ... P4 added and chosen before its first spawn: controlled, and stays so when it spawns', s.focus() === p4.number, s.focus());
+            const q = fresh(4);
+            q.app.mbEnable();
+            const u = q.units()[0];
+            u.transformReady = function () { return !!this._lmPlaced; };
+            u._lmOwn = [{ x: 0, y: 0, size: 60, targetSize: 60, spectator: u.number }]; u.active = true;
+            u.beforecalculation();
+            check('P2\'s first spawn after a hold that ran out unverified: P1 stays controlled, the focus waits', q.s.focus() === 0 && u._lmFocusWait === 1, q.s.focus());
+            const u3 = q.app.mbAddPlayer();
+            q.app.mbSelectPlayer(3);
+            u._lmPlaced = true; u.beforecalculation();
+            check('    ... P3 chosen meanwhile (the latest choice): P2 verified later does not take the focus from it', q.s.focus() === u3.number && !u._lmFocusWait, q.s.focus());
         }
     }
     {
@@ -785,6 +848,81 @@ function death(o) {
         s.kill(2); s.step(1);
         s.player(2).unit.terminate();
         check('LMEvents playerDied: once per life, with the slot and how many still live', ev.join() === 'died2:2', ev.join());
+    }
+    /* decision 6: "Auto-switch focus after death" on: the next living player after the dead one in
+     * slot order (P1 included, wrapping round), not P1 first; two players unchanged */
+    {
+        const s = MB.scene(Object.assign({ players: 4 }, opt));
+        MB.populate(s); s.step(2);
+        const app = s.ctx.application;
+        app.mbSelectPlayer(2);
+        s.kill(2); s.step(1);
+        check('switch after death on, controlled P2 dies (P1, P3, P4 alive): the next living player in slot order, P3 (not P1)', s.focus() === s.player(3).src, s.focus());
+        app.mbSelectPlayer(4);
+        s.kill(4); s.step(1);
+        check('    ... controlled P4 dies: round to P1', s.focus() === 0 && app.menuShown === 0, s.focus());
+        app.mbSelectPlayer(3);
+        s.kill(1); s.step(1);
+        check('    ... P1 dies in the background: P3 keeps the focus', s.focus() === s.player(3).src, s.focus());
+        s.kill(3); s.step(1);
+        check('    ... controlled P3 dies, nobody else alive: no spectator, focus on P1\'s view', s.focus() === 0, s.focus());
+        const w = MB.scene(Object.assign({ players: 4 }, opt));
+        MB.populate(w); w.step(2);
+        w.ctx.application.mbSelectPlayer(3);
+        w.kill(4); w.step(1); w.kill(1); w.step(1);
+        w.kill(3); w.step(1);
+        check('    ... controlled P3 dies, P4 and P1 dead: round to living P2', w.focus() === w.player(2).src, w.focus());
+        const t = MB.scene(Object.assign({ players: 2 }, opt));
+        MB.populate(t); t.step(2);
+        t.ctx.application.mbSelectPlayer(2);
+        t.kill(2); t.step(1);
+        check('    ... two players: controlled P2 dies, P1 alive: P1 (unchanged)', t.focus() === 0, t.focus());
+    }
+    /* "Auto-switch focus after death" off: a death alone moves no focus; the session goes on while
+     * any player lives; a removed or disconnected player in focus still hands it on */
+    {
+        const off = (K) => {
+            const s = MB.scene(Object.assign({ players: K || 4 }, opt));
+            s.ctx.defaultmapsettings.mbSwitchAfterDeath = false;
+            MB.populate(s); s.step(2);
+            return { s, app: s.ctx.application };
+        };
+        let { s, app } = off();
+        app.mbSelectPlayer(2);
+        s.kill(2); s.step(3);
+        check('switch after death off, controlled P2 dies (others alive): the focus stays on dead P2, also over the next updates, no menu',
+            s.focus() === s.player(2).src && app.menuShown === 0, s.focus() + ' menu ' + app.menuShown);
+        s.kill(3); s.step(1);
+        check('    ... P3 dies in the background: nothing moves', s.focus() === s.player(2).src, s.focus());
+        app.mbSelectPlayer(4);
+        check('    ... the player chooses living P4: controlled', s.focus() === s.player(4).src, s.focus());
+        ({ s, app } = off());
+        s.ctx.lmSetMbUnit(0);
+        s.kill(2); s.step(1);
+        s.kill(1); s.step(1);
+        check('    ... controlled P1 dies (P3, P4 alive): the focus stays on P1', s.focus() === 0, s.focus());
+        s.respawn(2, undefined, { background: true }); s.step(1);
+        check('    ... P2 respawning in the background does not take it from dead P1', s.focus() === 0, s.focus());
+        app.mbSelectPlayer(1);
+        check('    ... P1 chosen (roster / its key): it spawns again (Play)', s.LM.play === true && s.focus() === 0);
+        ({ s, app } = off());
+        app.mbSelectPlayer(3);
+        app.mbRemovePlayer(3);
+        check('    ... controlled P3 removed: the focus goes to a living player (P1)', s.focus() === 0, s.focus());
+        s.LM.play = false;
+        app.mbSelectPlayer(2);
+        s.reconnect(2, { respawn: false }); s.step(1);
+        check('    ... controlled P2 loses its socket, P1 dead: the next living unit (P4)', s.focus() === s.player(4).src, s.focus());
+        ({ s, app } = off(3));
+        app.mbSelectPlayer(2);
+        s.kill(1); s.step(1); s.kill(3); s.step(1);
+        check('    ... P1 and P3 die in the background: no menu while controlled P2 lives, no respawn of P1 behind it, its dead view flushed',
+            app.menuShown === 0 && s.focus() === s.player(2).src && app.autoResps === 0 && s.ctx.mainPlayerDeadMbActive === true, app.menuShown + ' resp ' + app.autoResps);
+        s.kill(2); s.step(1);
+        check('    ... the last one (controlled P2) dies: the death menu once, the focus stays', app.menuShown === 1 && s.focus() === s.player(2).src, app.menuShown + ' focus ' + s.focus());
+        const hidden = app.menuHidden;
+        s.respawn(2); s.step(1);
+        check('    ... its respawn (the player asked: Tab / roster) hides it, P2 controlled', app.menuHidden - hidden === 1 && s.focus() === s.player(2).src, app.menuHidden - hidden);
     }
     /* the last death: the menu once; a unit's spawn hides it, unless the player used it or it is old */
     for (const how of ['spawn', 'used', 'old']) {
@@ -1123,7 +1261,12 @@ function death(o) {
             const live = run(paths[p], Object.assign({ unit: 'alive', focus: 2 }, o));
             check(p + ': P1 dead, the living P2 selected: no death menu over it', live === 0, live);
             const rest = [run(paths[p], Object.assign({ unit: 'dead', focus: 2 }, o)), run(paths[p], Object.assign({ unit: 'alive', focus: 0 }, o)), run(paths[p], o)];
-            check(p + ': P2 selected but dead, P1 selected (P2 alive), no unit: the menu as before', rest.join() === '1,1,1', rest.join());
+            /* decision 6: a death menu only when nothing of ours lives (lmMbDeathMenuDue), so not with
+             * P1 selected while P2 plays on; the captcha's "press Play again" menu is no death menu
+             * and still only spares the living unit you control */
+            const want = o.captcha ? '1,1,1' : '1,0,1';
+            check(p + ': P2 selected but dead, P1 selected (P2 alive), no unit: ' + (o.captcha ? 'the menu as before' : 'the menu, none while P2 lives, the menu'),
+                rest.join() === want, rest.join());
         }
     }
 }

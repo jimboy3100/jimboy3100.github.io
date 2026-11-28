@@ -301,14 +301,21 @@ function packet(cells) {
     const ok = unit(ctx, cx, cy, { number: 7, player: true });
     ok._lmWorldAt = 1; ok._lmOwnCellVote(0); ok._lmWorldAt = 2; ok._lmOwnCellVote(0);
     check('own cell where the main copy is: verified as not mirrored', ok._lmOri === 'VERIFIED' && ok.fixX === 1 && ok.fixY === 1);
-    /* never verified: the focus after 3 s all the same */
+    /* not verified within 3 s: the spawn goes on, but the timeout is no proof of the orientation,
+     * so the focus waits for it (_lmFocusWait) and is not lost for good */
     const late = unit(ctx, cx, cy, { number: 9, player: true });
     late._lmOwn = [cell];
     late.beforecalculation();
     check('provisional for 3 s: still no focus before', focus === 6);
     late._lmSpawnSeenAt -= 3000;
     late.beforecalculation();
-    check('    ... then its spawn takes the focus unverified (not lost for good)', focus === 9 && late._lmOri === 'PROVISIONAL', focus);
+    check('    ... then its spawn goes on unverified without the focus (it waits for the orientation)', focus === 6 && late.openSecond === true && late._lmOri === 'PROVISIONAL' &&
+        late._lmFocusWait === 1, focus);
+    late.beforecalculation();
+    check('    ... still provisional on the next update: no focus', focus === 6, focus);
+    late._lmWorldAt = 5001; late._lmOwnCellVote(0); late._lmWorldAt = 5002; late._lmOwnCellVote(0);
+    late.beforecalculation();
+    check('    ... verified later: the focus it was due goes to it then', late.transformReady() && focus === 9 && !late._lmFocusWait, focus + ' ' + late._lmOri);
 }
 
 /* 5. shared food: orientation and d, matched by place and size (not by id), with reprojection;

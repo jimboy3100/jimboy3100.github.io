@@ -1089,7 +1089,9 @@ for (const withUnit of [false, true]) {
     }
     /* 23b. the first spawn of a new unit waits for its place on the map (the real Spect._lmSpawnHold:
      * orientation not verified, up to LM_MB_SPAWN_HOLD_MS); a choice made by the switch keys
-     * meanwhile wins when it goes through (it took the focus back: P1 controlled, rings on the unit) */
+     * meanwhile wins when it goes through (it took the focus back: P1 controlled, rings on the unit).
+     * The hold running out is no proof of the orientation: the focus waits until it is verified
+     * (_lmFocusWait), unless the player chose the unit himself. */
     {
         const start = (o) => {
             const e = mk(o);
@@ -1100,11 +1102,23 @@ for (const withUnit of [false, true]) {
             const heldFocus = e.focus(), wasHeld = !unit._lmSpawnedOnce && !unit.transformReady();
             /* the hold runs out (3 s): it goes on unverified */
             const go = () => { unit._lmSpawnSeenAt -= 4000; unit.beforecalculation(); return e.focus(); };
-            return Object.assign(e, { unit, heldFocus, wasHeld, go });
+            /* later its orientation is verified (its place on the map known) */
+            const verify = () => { unit.mapOffsetFixed = true; unit._lmOri = 'VERIFIED'; unit.beforecalculation(); return e.focus(); };
+            return Object.assign(e, { unit, heldFocus, wasHeld, go, verify });
         };
         let e = start();
         check('23b. multibox start, the unit\'s first spawn held (no place on the map yet): P1 controlled meanwhile', !!e.unit && e.wasHeld && e.heldFocus === 0, e.heldFocus);
-        check('    ... no choice made: the unit takes the focus when the hold runs out', e.go() === e.unit.number && e.unit._lmSpawnedOnce === true, e.focus());
+        check('    ... no choice made: the hold runs out unverified, P1 stays controlled (a timeout is no verified place)', e.go() === 0 && e.unit._lmSpawnedOnce === true &&
+            e.unit._lmFocusWait === 1, e.focus());
+        check('    ... its orientation verified afterwards: the unit takes the focus then', e.verify() === e.unit.number && !e.unit._lmFocusWait, e.focus());
+        e = start();
+        e.go();
+        e.app.multiboxchange(); e.app.multiboxchange();
+        check('    ... P1 chosen again (switch key twice) after the hold ran out: P1 stays controlled when the unit is verified', e.verify() === 0, e.focus());
+        e = start();
+        e.go();
+        e.unit.terminate();
+        check('    ... the unit dies before it is verified: the waiting focus goes with its life', !e.unit._lmFocusWait && e.focus() === 0, e.focus());
         e = start();
         e.app.multiboxchange(); e.app.multiboxchange();
         check('    ... switch key to the unit and back to P1 during the hold: P1 stays controlled when it runs out', e.go() === 0 && e.unit._lmSpawnedOnce === true &&
@@ -1116,7 +1130,7 @@ for (const withUnit of [false, true]) {
         check('    ... switch key to the unit during the hold: it is controlled, and stays so when the hold runs out', e.focus() === e.unit.number && e.go() === e.unit.number, e.focus());
         e = start({ mainAlive: false });
         e.app.multiboxchange(); e.app.multiboxchange();
-        check('    ... P1 chosen during the hold but not alive (in the menu): the unit takes the focus', e.go() === e.unit.number, e.focus());
+        check('    ... P1 chosen during the hold but not alive (in the menu): the unit takes the focus once verified (not at the timeout)', e.go() === 0 && e.verify() === e.unit.number, e.focus());
     }
     /* the unit cannot be opened (the socket throws): nothing changes */
     {

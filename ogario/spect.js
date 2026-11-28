@@ -2806,6 +2806,7 @@ class Spect {
         var died = wasAlive && reason === 'death';
         this.active = false;
         this._lmFocusOnSpawn = false;
+        this._lmFocusWait = 0;
         /* the next life on this socket is a new spawn for beforecalculation: with the main player
          * dead it takes the focus (mouse and keys stayed on the dead main player) */
         this.openSecond = false;
@@ -2839,8 +2840,9 @@ class Spect {
         if (window.multiboxPlayerEnabled === this.number) {
             /* no other living unit: the focus stayed on this dead one and spectating then
              * followed nobody (the main camera ignores its view while a unit has focus).
-             * lmMbFallbackUnit: the main player while it plays, else the next living unit in
-             * slot order (never a spectator) */
+             * lmMbFallbackUnit: after a death with "Auto-switch focus after death" on the next
+             * living player after this one in slot order, with it off this one keeps the focus;
+             * a lost socket or a removal always moves it on (never to a spectator) */
             var nextUnit = 0;
             if (typeof lmMbFallbackUnit === 'function') nextUnit = lmMbFallbackUnit(this, reason);
             else if (!legendmod.play) {
@@ -3334,37 +3336,63 @@ class Spect {
         /* a life that ended while its spawn waited (_lmSpawnHold): the next one waits anew */
         if (!ownCells.length && !this.openSecond) this._lmSpawnSeenAt = 0;
         if (ownCells.length) {
+            /* 1: this spawn takes the focus; 2: it takes it because the player in focus is dead */
+            var _lmFocusNow = 0, _lmDeathMenu = false, _lmMenuSeen = false;
+            var _lmCur = typeof lmMbFocused === 'function' ? lmMbFocused() : (window.multiboxPlayerEnabled ? null : legendmod);
+            var _lmSwitchOn = typeof lmMbSwitchOnDeath !== 'function' || lmMbSwitchOnDeath();
             if (!this.openSecond && !(typeof this._lmSpawnHold === 'function' && this._lmSpawnHold(Date.now()))) {
                 this.openSecond = true;
-                /* only the first spawn after that death may hide its menu, a unit still in its
-                 * slot, and not long after (the player may have gone on with the menu) */
-                var _lmDeathMenu = window._lmMbDeathMenuAt && Date.now() - window._lmMbDeathMenuAt < LM_MB_DEATH_MENU_MS &&
-                    !(this.slotId && typeof lmMbPlayers !== 'undefined' && !lmMbPlayers.isCurrent(this));
-                window._lmMbDeathMenuAt = 0;
                 /* first spawn of this unit, a spawn the player asked for (Tab), or the player you
-                 * control is not alive (the main cell dead, or the unit you control): focus it. A
-                 * background reconnect + auto-respawn used to take the focus mid-fight and freeze
-                 * the main cell, or another living unit's. Not the first spawn either once the
-                 * player chose another player after this unit was made (_lmFocusClaimed,
-                 * application._lmMbFocus): that spawn may wait up to 3 s (_lmSpawnHold) and undid
-                 * the choice. */
-                var _lmCur = typeof lmMbFocused === 'function' ? lmMbFocused() : (window.multiboxPlayerEnabled ? null : legendmod);
-                if ((!this._lmSpawnedOnce && !this._lmFocusClaimed) || this._lmFocusOnSpawn || _lmCur === this || !lmMbAlive(_lmCur)) {
-                    lmSetMbUnit(this.number);
-                    /* the death menu (terminate: last player died) stayed up over the unit now played;
-                     * not a menu the player opened (Esc) or is using (typing a nick, server list) */
-                    var _lmAe = typeof document !== 'undefined' && document ? document.activeElement : null;
-                    if (!legendmod.play && _lmDeathMenu && !(_lmAe && _lmAe.closest && _lmAe.closest('#overlays, .ogario-menu, #helloContainer')) &&
-                        typeof application !== 'undefined' && application && typeof application.hideMenu === 'function') {
-                        /* and the auto-respawn's delayed showMenu must not bring it back over the unit */
-                        clearTimeout(application._lmAutoRespMenuT);
-                        application._lmAutoRespMenuT = null;
-                        application.hideMenu();
-                    }
-                }
+                 * control is not alive (the main cell dead, or the unit you control) with
+                 * "Auto-switch focus after death" on: focus it. A background reconnect +
+                 * auto-respawn used to take the focus mid-fight and freeze the main cell, or
+                 * another living unit's. Not the first spawn either once the player chose another
+                 * player after this unit was made (_lmFocusClaimed, application._lmMbFocus; set
+                 * from the start for an extra player of mbAddPlayer): that spawn may wait up to 3 s
+                 * (_lmSpawnHold) and undid the choice. With the setting off a dead player in focus
+                 * keeps it: the player chooses the next one himself. */
+                _lmFocusNow = (!this._lmSpawnedOnce && !this._lmFocusClaimed) || this._lmFocusOnSpawn || _lmCur === this ? 1 :
+                    !lmMbAlive(_lmCur) && _lmSwitchOn ? 2 : 0;
+                /* the hold ran out without a verified place on the map: that is no proof of the
+                 * orientation, so the focus does not move to it yet (the camera would show it at a
+                 * mirrored place); it waits for the place (_lmFocusWait), the player in control
+                 * stays so, and so does the death menu's latch. Already the player in focus:
+                 * nothing moves. */
+                this._lmFocusWait = 0;
+                if (_lmFocusNow && _lmCur !== this && typeof this.transformReady === 'function' && !this.transformReady()) {
+                    this._lmFocusWait = _lmFocusNow;
+                    _lmFocusNow = 0;
+                } else _lmMenuSeen = true;
                 this._lmSpawnedOnce = true;
                 this._lmFocusClaimed = false;
                 this._lmFocusOnSpawn = false;
+            } else if (this._lmFocusWait && this.openSecond && typeof this.transformReady === 'function' && this.transformReady()) {
+                /* its place is known now: the focus it was due, unless the player chose another
+                 * player meanwhile (application._lmMbFocus cleared the wait) or, due because the
+                 * player in focus was dead, that one lives again */
+                _lmFocusNow = this._lmFocusWait === 1 || (!lmMbAlive(_lmCur) && _lmSwitchOn) ? 1 : 0;
+                this._lmFocusWait = 0;
+                _lmMenuSeen = true;
+            }
+            if (_lmMenuSeen) {
+                /* only the first spawn after that death may hide its menu, a unit still in its
+                 * slot, and not long after (the player may have gone on with the menu) */
+                _lmDeathMenu = window._lmMbDeathMenuAt && Date.now() - window._lmMbDeathMenuAt < LM_MB_DEATH_MENU_MS &&
+                    !(this.slotId && typeof lmMbPlayers !== 'undefined' && !lmMbPlayers.isCurrent(this));
+                window._lmMbDeathMenuAt = 0;
+            }
+            if (_lmFocusNow) {
+                lmSetMbUnit(this.number);
+                /* the death menu (terminate: last player died) stayed up over the unit now played;
+                 * not a menu the player opened (Esc) or is using (typing a nick, server list) */
+                var _lmAe = typeof document !== 'undefined' && document ? document.activeElement : null;
+                if (!legendmod.play && _lmDeathMenu && !(_lmAe && _lmAe.closest && _lmAe.closest('#overlays, .ogario-menu, #helloContainer')) &&
+                    typeof application !== 'undefined' && application && typeof application.hideMenu === 'function') {
+                    /* and the auto-respawn's delayed showMenu must not bring it back over the unit */
+                    clearTimeout(application._lmAutoRespMenuT);
+                    application._lmAutoRespMenuT = null;
+                    application.hideMenu();
+                }
             }
         } else if (window.multiboxPlayerEnabled === this.number &&
             !(this._lmWantFocusAt && Date.now() - this._lmWantFocusAt < 25000)) {
@@ -3386,8 +3414,10 @@ class Spect {
 
     /* The first spawn of a life (its focus, the death menu it hides) waits while the unit has no
      * place on this map yet (transformReady: orientation not verified, the camera would show it
-     * at a mirrored place), at most LM_MB_SPAWN_HOLD_MS from its first own cell (then it takes
-     * the focus unverified: the camera stays on the placed players, the unit holds). */
+     * at a mirrored place), at most LM_MB_SPAWN_HOLD_MS from its first own cell. Then the spawn
+     * goes on unverified, but the focus it is due waits until its place is known (beforecalculation,
+     * _lmFocusWait): the player in control keeps it, the camera stays on the placed players and the
+     * unit holds. */
     _lmSpawnHold(now) {
         if (this.transformReady()) {
             this._lmSpawnSeenAt = 0;

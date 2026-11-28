@@ -406,22 +406,57 @@ function lmMbSteersLiving() {
     return !!n && lmMbAlive(getActiveSpect(n));
 }
 window.lmMbSteersLiving = lmMbSteersLiving;
-/* Where the focus goes when the unit sp loses it (it died, its socket closed, it was removed):
- * the main player while it plays (as before), else the next living unit after it in slot order
- * (wrapping round; never a spectator), else none: 0, the main player's view. With "Auto-switch
- * focus after death" off a death leaves it on the main player. A connection number. */
+/* Settings "Auto-switch focus after death" (on unless set to false) */
+function lmMbSwitchOnDeath() {
+    return !(typeof defaultmapsettings !== 'undefined' && defaultmapsettings && defaultmapsettings.mbSwitchAfterDeath === false);
+}
+window.lmMbSwitchOnDeath = lmMbSwitchOnDeath;
+/* Where the focus goes when the player sp loses it (sp: a unit or the main player). A connection
+ * number, 0 = the main player.
+ * - reason 'death' (its last cell went) or 'lost' (the unit in focus has no life, beforecalculation):
+ *   with "Auto-switch focus after death" on, the next living player after it in slot order, the
+ *   main player included and wrapping round (P2 dies: P3, P4 ... P1; with two players P2 -> P1 as
+ *   before), else 0. With it off the focus stays on the dead player (its own number) while it is
+ *   still there; the player chooses another one himself.
+ * - any other reason (its socket closed, it was removed or closed): the main player while it plays,
+ *   else the next living unit after it in slot order (wrapping round), else 0. Whatever the death
+ *   setting says: a player that is gone cannot keep the focus.
+ * Never a spectator (lmMbUnits lists playing units only). */
 function lmMbFallbackUnit(sp, reason) {
-    var lm = window.legendmod;
+    var lm = window.legendmod, main = !sp || sp === lm;
+    var u = lmMbUnits(_lmMbList), n = u.length, k = main ? -1 : u.indexOf(sp), i, s;
+    if ((reason === 'death' || reason === 'lost') && (main || k !== -1)) {
+        if (!lmMbSwitchOnDeath()) {
+            if (main) return 0;
+            if (!sp._lmRemoved && lmMbStatus(sp) !== 'offline') return +sp.number || 0;
+        } else {
+            for (i = k + 1; i < n; i++) if (u[i] !== sp && lmMbAlive(u[i])) return +u[i].number || 0;
+            if (!main && lmMbAlive(lm)) return 0;
+            for (i = 0; i < k; i++) if (lmMbAlive(u[i])) return +u[i].number || 0;
+            return 0;
+        }
+    }
     if (lm && lm.play) return 0;
-    if (reason === 'death' && typeof defaultmapsettings !== 'undefined' && defaultmapsettings && defaultmapsettings.mbSwitchAfterDeath === false) return 0;
-    var u = lmMbUnits(_lmMbList), k = u.indexOf(sp), n = u.length;
-    for (var i = 1; i <= n; i++) {
-        var s = u[(k + i + n) % n];
+    for (i = 1; i <= n; i++) {
+        s = u[(k + i + n) % n];
         if (s && s !== sp && lmMbAlive(s)) return +s.number || 0;
     }
     return 0;
 }
 window.lmMbFallbackUnit = lmMbFallbackUnit;
+/* After the main player's death: the death menu only when nothing of ours lives any more, not
+ * while another player still plays (also with "Auto-switch focus after death" off, the focus then
+ * staying on the dead main player: Play, the switch keys or the roster go on from there). When a
+ * dead unit in focus is spawning again at the player's request, its spawn hides that menu again
+ * (the latch of spect.js terminate). */
+function lmMbDeathMenuDue() {
+    /* lmMbSteersLiving (the living unit you control) is one case of lmMbLiving */
+    if (lmMbSteersLiving() || lmMbLiving()) return false;
+    var f = +window.multiboxPlayerEnabled ? getActiveSpect(+window.multiboxPlayerEnabled) : null;
+    if (f && f._lmFocusOnSpawn) window._lmMbDeathMenuAt = Date.now();
+    return true;
+}
+window.lmMbDeathMenuDue = lmMbDeathMenuDue;
 /* how many players Add Player may open (the main one included): Settings "Multibox slots",
  * 2 to 6. It opens nothing by itself. */
 function lmMbCapacity() {
@@ -26133,8 +26168,10 @@ function thelegendmodproject() {
             }
             if (!unit || !unit.number) return null;
             /* the focus goes to it at its first spawn (Spect.beforecalculation), once it has a place
-             * on this map (orientation verified, Spect._lmSpawnHold, 3 s at most): given here the
-             * camera sat on its mirrored place, or on the main player that was no longer steered */
+             * on this map (orientation verified; Spect._lmSpawnHold waits 3 s at most, and a hold
+             * that runs out leaves the focus waiting for the place, _lmFocusWait): given here the
+             * camera sat on its mirrored place, or on the main player that was no longer steered.
+             * Until then the main player stays controlled. */
             if (!legendmod.play) {
                 play();
             }
@@ -26146,7 +26183,8 @@ function thelegendmodproject() {
          *   mbDisable()           the units (P2..P6) close and the focus is back on P1; Full Map and
          *                         the in-game spectator stay (LM._lmMbStop)
          *   mbAddPlayer()         one more unit in the lowest free slot, up to Settings "Multibox
-         *                         slots" (lmMbCapacity, six at most); with multibox off it is mbEnable
+         *                         slots" (lmMbCapacity, six at most); with multibox off it is mbEnable.
+         *                         It is controlled once chosen, its spawn does not take the focus
          *   mbRemovePlayer(slot)  that unit closes; the others keep their slots and the slot is
          *                         free for the next Add (with a new slotEpoch)
          *   mbSelectPlayer(slot)  the focus to that player; a dead one spawns again
@@ -26169,6 +26207,10 @@ function thelegendmodproject() {
             } catch (e) {
                 console.error('[MULTIBOX] The multibox unit could not be opened:', e);
             }
+            /* an extra player (P3 on, or a slot added again while multibox runs) does not take the
+             * focus at its first spawn: the player you control keeps it until you choose the new
+             * one (Spect.beforecalculation, _lmFocusClaimed). P2 of mbEnable / the switch key does. */
+            if (unit) unit._lmFocusClaimed = true;
             return unit || null;
         },
         mbRemovePlayer(slot) {
@@ -26212,13 +26254,17 @@ function thelegendmodproject() {
          * switch back (its spawn registers it). The choice wins over the next spawn of the other
          * units (Spect.beforecalculation): the first spawn of one not spawned yet (_lmFocusClaimed;
          * that spawn waits up to 3 s for its place on the map, Spect._lmSpawnHold, and took the
-         * focus back from the player chosen meanwhile), and the spawn of one chosen before
-         * (_lmFocusOnSpawn: P1 -> dead P2 -> P1 gave the focus to P2 at its spawn). */
+         * focus back from the player chosen meanwhile), the spawn of one chosen before
+         * (_lmFocusOnSpawn: P1 -> dead P2 -> P1 gave the focus to P2 at its spawn), and a spawn
+         * that went on unverified and waits for its place on the map to take the focus
+         * (_lmFocusWait). */
         _lmMbFocus(sp) {
             var others = lmMbUnits();
+            if (sp) sp._lmFocusWait = 0;
             for (var i = 0; i < others.length; i++) {
                 if (others[i] === sp) continue;
                 others[i]._lmFocusOnSpawn = false;
+                others[i]._lmFocusWait = 0;
                 if (!others[i]._lmSpawnedOnce) others[i]._lmFocusClaimed = true;
             }
             if (sp) sp._lmFocusClaimed = false;
@@ -30767,7 +30813,10 @@ function thelegendmodproject() {
             if (window.MergeTimerController && typeof window.MergeTimerController.reset === 'function') window.MergeTimerController.reset();
 
             // Auto-switch to surviving multibox spect if any (only when "Auto-switch focus after death" is on)
-            if (defaultmapsettings.mbSwitchAfterDeath && typeof spects !== 'undefined' && spects && spects.length > 0) {
+            /* also with it off while you already steer a living unit (lmMbSteersLiving: a background
+             * death of the main player): that unit keeps the focus and the dead main viewport is
+             * flushed the same way, no respawn of the main player behind it (autoResp) */
+            if ((defaultmapsettings.mbSwitchAfterDeath || (typeof lmMbSteersLiving === 'function' && lmMbSteersLiving())) && typeof spects !== 'undefined' && spects && spects.length > 0) {
                 /* the living unit you control keeps the focus, else the first living unit in slot
                  * order (P2, P3 ...); never a spectator */
                 var _lmMbU = typeof lmMbUnits === 'function' ? lmMbUnits() : spects, _lmMbF = getActiveSpect(+window.multiboxPlayerEnabled || 0);
@@ -44634,9 +44683,8 @@ function thelegendmodproject() {
                         if (self.removePlayerCell && !self.playerCells.length) {
                             self.play = false;
                             application.onPlayerDeath();
-                            /* no death menu over the living multibox unit you control (it blocked
-                             * its mouse buttons, pad and phone buttons) */
-                            if (!lmMbSteersLiving()) application.showMenu(300);
+                            /* the menu only when nothing of ours lives (lmMbDeathMenuDue) */
+                            if (typeof lmMbDeathMenuDue !== 'function' || lmMbDeathMenuDue()) application.showMenu(300);
                             window.userBots.isAlive = false;
                             if (window.userBots.startedBots) window.connectionBots.send(new Uint8Array([5, Number(window.userBots.isAlive)]).buffer);
                         }
@@ -47197,8 +47245,9 @@ function thelegendmodproject() {
                         if (this._playerCellIDSet) this._playerCellIDSet.clear();
                         window.userBots.isAlive = false;
                         if (window.userBots.startedBots) window.connectionBots.send(new Uint8Array([5, 0]).buffer);
-                        /* not over the living multibox unit you control */
-                        if (!lmMbSteersLiving()) application.showMenu();
+                        /* not while a player of ours still lives (the living multibox unit you
+                         * control, or one playing on in the background): lmMbDeathMenuDue */
+                        if (typeof lmMbDeathMenuDue !== 'function' || lmMbDeathMenuDue()) application.showMenu();
                         console.log('%c[MultiProto]%c Death notification received', 'color:#f3a', 'color:inherit');
                     }
                     break;
@@ -55852,28 +55901,16 @@ function thelegendmodproject() {
 
             // Death check (eat / remove records already applied may have ended the life)
             if (this.removePlayerCell && !this.playerCells.length) {
-                if (defaultmapsettings.mbSwitchAfterDeath && LM.playerCellsMulti && LM.playerCellsMulti.length) {
-                    /* application.switchToNextLivingUnit never existed, so this always
-                     * forced unit 1 and skipped the death handling. Like updateCells: end
-                     * the game and let onPlayerDeath() switch to the first living unit. */
-                    this.play = false;
-                    application.onPlayerDeath();
-                    this.removePlayerCell = false;
-                } else {
-                    this.play = false;
-
-                    application
-                        .onPlayerDeath();
-
-                    /* "Auto-switch focus after death" off (or no unit cell listed yet) while you
-                     * steer a living multibox unit: no death menu over it */
-                    if (!lmMbSteersLiving()) {
-                        application
-                            .showMenu(
-                                300
-                            );
-                    }
-                }
+                /* application.switchToNextLivingUnit never existed, so this always forced unit 1
+                 * and skipped the death handling. Like updateCells: end the game and let
+                 * onPlayerDeath() switch to the first living unit. The menu only when nothing of
+                 * ours lives (lmMbDeathMenuDue): with "Auto-switch focus after death" off it
+                 * opened while a unit still played. */
+                var _lmGxMb = defaultmapsettings.mbSwitchAfterDeath && LM.playerCellsMulti && LM.playerCellsMulti.length;
+                this.play = false;
+                application.onPlayerDeath();
+                if (_lmGxMb) this.removePlayerCell = false;
+                if (typeof lmMbDeathMenuDue !== 'function' || lmMbDeathMenuDue()) application.showMenu(300);
             }
             if (window.autoPlay && legendmod.play) calcTarget();
             return complete;
@@ -56148,9 +56185,8 @@ function thelegendmodproject() {
             if (this.removePlayerCell && !this.playerCells.length) {
                 this.play = false;
                 application.onPlayerDeath();
-                /* same gate as updateCells: no unit has the focus after onPlayerDeath (it gives it
-                 * to a living unit only), so this is a solo death: the menu */
-                if (!LM.multiBoxPlayerExists || !window.multiboxPlayerEnabled) {
+                /* same gate as updateCells: the menu only when nothing of ours lives */
+                if (typeof lmMbDeathMenuDue !== 'function' || lmMbDeathMenuDue()) {
                     application.showMenu(300);
                 }
                 window.userBots.isAlive = false;
@@ -57728,6 +57764,16 @@ function thelegendmodproject() {
 
 
                                 /*
+                                 * A multibox unit of ours still plays: no
+                                 * death screen (lmMbDeathMenuDue, as the
+                                 * other servers).
+                                 */
+                                if (typeof lmMbDeathMenuDue === 'function' && !lmMbDeathMenuDue()) {
+                                    return;
+                                }
+
+
+                                /*
                                  * =================================================
                                  * SHOW THE LM DEATH SCREEN DIRECTLY
                                  * =================================================
@@ -57820,16 +57866,12 @@ function thelegendmodproject() {
                         .onPlayerDeath();
 
 
-                    /* Solo death handling (menu) unless a unit has the focus: onPlayerDeath gives it
-                     * to a living unit ("Auto-switch focus after death"). With no living unit this
-                     * used to call multiboxswap, which hid the menu and spawned the dead unit, also
-                     * with "Background auto-respawn" off. */
-                    if (
-                        !LM
-                            .multiBoxPlayerExists ||
-                        !window
-                            .multiboxPlayerEnabled
-                    ) {
+                    /* The menu only when nothing of ours lives (lmMbDeathMenuDue): not while a unit
+                     * still plays, whether onPlayerDeath gave it the focus ("Auto-switch focus after
+                     * death" on) or the focus stayed on the dead main player (off; it opened the menu
+                     * then). With no living unit this used to call multiboxswap, which hid the menu
+                     * and spawned the dead unit, also with "Background auto-respawn" off. */
+                    if (typeof lmMbDeathMenuDue !== 'function' || lmMbDeathMenuDue()) {
                         application.showMenu(
                             300
                         );

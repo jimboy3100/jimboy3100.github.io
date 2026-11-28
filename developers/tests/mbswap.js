@@ -93,6 +93,29 @@ for (const how of ['terminate', 'beforecalculation']) {
     e.unit(1).terminate();
     check('unit without the focus dies: no event', e.got.length === 0 && e.ctx.multiboxPlayerEnabled === 2, e.got.join());
 }
+/* "Auto-switch focus after death" on, three players: the focused unit dies while the main player
+ * and the other unit live: the next living player after it in slot order (the other unit), in one
+ * event; it used to be the main player whenever that one played */
+{
+    const e = env({ focus: 1, mainAlive: true, units: 2, slots: true });
+    e.unit(1).terminate();
+    check('three players, focused P2 dies, P1 and P3 alive: one event to P3 (next in slot order, not P1 first)', e.got.join() === '2<1' && e.ctx.multiboxPlayerEnabled === 2,
+        e.got.join() + ' focus=' + e.ctx.multiboxPlayerEnabled);
+}
+/* "Auto-switch focus after death" off: the death alone moves nothing (no event), also over the
+ * next updates without own cells; a lost socket still hands the focus on */
+{
+    const e = env({ focus: 1, mainAlive: true, units: 2, slots: true });
+    e.ctx.defaultmapsettings = { mbSwitchAfterDeath: false };
+    e.unit(1).socket = {};
+    e.unit(1).terminate();
+    e.unit(1).cells = 0;
+    e.unit(1).beforecalculation(); e.unit(1).beforecalculation();
+    check('switch after death off: the focused unit dies, others alive: no event, it keeps the focus', e.got.length === 0 && e.ctx.multiboxPlayerEnabled === 1, e.got.join());
+    e.unit(1).active = true;
+    e.unit(1).terminate('disconnect');
+    check('    ... its socket drops then: the focus goes on to a living player (P1), one event', e.got.join() === '0<1' && !e.ctx.multiboxPlayerEnabled, e.got.join());
+}
 /* focused unit lost its cells (beforecalculation) while the main is dead: next living unit */
 {
     const e = env({ focus: 1, mainAlive: false });

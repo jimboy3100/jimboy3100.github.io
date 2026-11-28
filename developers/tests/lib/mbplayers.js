@@ -68,7 +68,7 @@ function load(o) {
     const compact = v4.slice(ca, cb).slice(0, v4.slice(ca, cb).lastIndexOf('/*'));
     const methods = ['getOwnPlayerCells() {', 'beforecalculation() {', 'terminate(reason) {', 'respawn() {',
         'calculatePlayerMassAndPosition(ownCells) {', 'recalculatePlayerMass(ownCells) {'].map((m) => need(block(sp, '    ' + m), 'spect.js ' + m));
-    const deathSwitch = need(block(v4, "if (defaultmapsettings.mbSwitchAfterDeath && typeof spects !== 'undefined' && spects && spects.length > 0) {"), 'onPlayerDeath switch');
+    const deathSwitch = need(block(v4, "if ((defaultmapsettings.mbSwitchAfterDeath || (typeof lmMbSteersLiving === 'function' && lmMbSteersLiving())) && typeof spects !== 'undefined' && spects && spects.length > 0) {"), 'onPlayerDeath switch');
     const idx = ['    function lmIdxFilter(', '    function lmIdxClear('].map((m) => need(block(v4, m), m.trim()));
     const app = ['        multiboxchange() {', '        multiboxback() {', '        _lmMbStart() {', '        mbEnable() {', '        mbDisable() {', '        mbAddPlayer() {',
         '        mbRemovePlayer(slot) {', '        mbSelectPlayer(slot) {', '        mbSelectAdjacent(dir) {', '        _lmMbFocus(sp) {',
