@@ -80,7 +80,7 @@ Legend Mod (entity: https://www.legendmod.ml/#app) is a SoftwareApplication and 
 Keys 1-9, 0, arrow keys (Left/Up/Right/Down), Ctrl+1-5, Ctrl+7-9, Ctrl+0, Ctrl+Z, Ctrl+X, Ctrl+Q, Ctrl+M, Ctrl+B, Ctrl+L, Ctrl+D, plus 20 additional unbound slots (comm31-50). Each slot holds a customizable message sent with one keypress.
 
 ### Hotkeys Without Default Keys (All Configurable)
-Triple split, crazy double split, line split, performance mode toggle, merge rings toggle, analytics window, practice arena, Replay Studio, replay pause/speed/seek, gamepad window, copy server link, net graph, performance diagnostics, chat sounds toggle, team pings (Help/Danger/Go here/Virus), spectate next top player, scan trick (hold), limit position (hold), multibox swap, middle multi-view, auto zoom toggle, HUD editor, user scripts/plugins, transparent skins, hide teammates names, private minimap, in-game spectator, zoom save/recall 1-3, bot controls (feed/split/macro/double/pop/16-split).
+Triple split, crazy double split, line split, performance mode toggle, merge rings toggle, practice arena, Replay Studio, replay pause/speed/seek, gamepad window, copy server link, net graph, performance diagnostics, chat sounds toggle, team pings (Help/Danger/Go here/Virus), spectate next top player, scan trick (hold), limit position (hold), multibox swap, middle multi-view, auto zoom toggle, HUD editor, user scripts/plugins, transparent skins, hide teammates names, private minimap, in-game spectator, zoom save/recall 1-3, bot controls (feed/split/macro/double/pop/16-split).
 
 ### Mouse
 | Button | Default Action |
@@ -153,8 +153,8 @@ Record and replay game sessions. Features:
 - **Replay library**: Stored in IndexedDB for persistent access
 - **Clip export**: Save replays as `.lm` files (JSON format)
 - **Backward seeking**: Re-reads from last world reset to target, in responsive slices
-- **Match history**: Last 50 lives stored in localStorage with mass, time alive, killer, server and mode
-- **Personal bests**: Best mass, longest life and game count tracked per browser (Game Over card; best mass and longest life also on the Analytics dashboard)
+- **Match history**: Last 50 lives stored in localStorage with mass, time alive, killer, server and mode, in the Replays window (recorded with Record replays)
+- **Personal bests**: Best mass, longest life and game count tracked per browser (Game Over card; best mass and longest life also on the Replays window's Dashboard)
 
 ### 7. Performance and Rendering
 - **WebGL2 acceleration**: Enabled by default with automatic Canvas2D fallback when unsupported or visually ambiguous
@@ -255,7 +255,7 @@ Drag and resize HUD elements with named layouts (the one place for HUD positions
 - **Mass graph**: Graph of mass over your life on the Game Over card
 - **Death recap**: Last 20 seconds as 3-6 summarised steps with mass sparkline, showing splits, virus pops, being eaten. Attributes killer from eat events. Expanding Land uses server-provided killer info.
 - **Killer display**: "Eaten by: nick (mass)" on the Game Over card
-- **Analytics window**: Statistics dashboard with heatmaps and the match history, up to 500 game summaries, 50 heatmap tracks (3600 position samples each). Split analysis: groups, mass lost per split, final 20s analysis.
+- **Game stats**: the Dashboard and Heatmaps views of the Replays window, next to the match history: up to 500 game summaries, 50 heatmap tracks (3600 position samples each). Split analysis: groups, mass lost per split, final 20s analysis. Recorded with Record replays.
 - **Session stats**: Games played, best mass, time played per tab session (sessionStorage)
 
 ### 16. Scan Trick and Line Split
@@ -319,7 +319,7 @@ Legend Mod organises its 300+ settings into the following categories accessible 
 - **Mouse**: Button bindings (left, right, middle, mouse4, mouse5), invert
 - **Gamepad**: dead zone, move range, curve, zoom sensitivity, trigger (always on when a pad is connected)
 - **Privacy/Extras**: Streamer mode, hide skin URL, hide name, hide country, block popups
-- **Stats**: Game Over card stats, mass graph, death recap, analytics, match history
+- **Stats**: Game Over card stats, mass graph, death recap
 - **Merge**: Sound, progress rings
 - **Indicators**: Opponent colours, rings, virus colours, split range (single/double/quad), virus range, cursor tracking (with split prediction), bubble indicators, teammates indicators
 - **Expanding Land**: Reduced motion (no Expanding Land death shake, death particles or entrance spin)
@@ -330,7 +330,7 @@ Legend Mod organises its 300+ settings into the following categories accessible 
 - **Respawn**: Quick respawn, auto respawn, spawn effects
 - **Names**: No names, optimized, auto-hide, hide mine, hide teammates, stroke
 - **Mass**: Show mass, optimized, auto-hide, hide mine, hide enemies, mass format (exact / 12.3k / auto), virus spikes, virus mass shots, stroke, relative mass
-- **Replay**: Record replays, match history, analytics
+- **Replay**: Record replays (replays, match history and game stats)
 - **Macro**: Feeding speed, split delay, pop-split delay
 - **Config**: Profile count (player profiles), presets, export / import, restore default settings
 
@@ -502,8 +502,8 @@ A full playback tool for game replays with timeline, automatic bookmarks, variab
 **What is the HUD Editor?**
 A tool to drag and resize 15 HUD components (leaderboard, minimap, stats, chat, etc.) into named layouts. Up to 20 layouts with grid snapping (8/16/32px), lock/unlock, and edge-relative positioning for responsiveness.
 
-**What is the Analytics Dashboard?**
-A statistics window with a dashboard (games, highest mass, survival, top-10 rate, weekly chart, best modes), heatmaps and the match history, from up to 500 game summaries. It tracks position history (3,600 samples per game, 50 games).
+**Where are my match history and game stats?**
+In the Replays window (Replay Studio), next to the Player and the Library: Match history (your last 50 games), Dashboard (games, highest mass, survival, top-10 rate, weekly chart, best modes, from up to 500 game summaries) and Heatmaps (position history, 3,600 samples per game, 50 games). They are recorded with Settings > Replays > Record replays, on by default.
 
 **How do presets work?**
 Legend Mod offers one-click presets: Competitive (enables rings, mass, split range), Battery Saver (caps FPS, disables effects), Streamer (hides personal info), Reduced Motion (no animations), and Clean HUD (minimal interface). Theme presets include 8 colour schemes.

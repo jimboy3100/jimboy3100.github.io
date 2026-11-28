@@ -1,13 +1,13 @@
 // Window stacking (ogario/modules/winstack.js): the window opened or touched last is in front.
-// Analytics (999992) open, then User Scripts (a menu page) from its hotkey path: User Scripts is
-// on top (it opened behind). The private room window (999990) opened over Analytics is on top; a touch on
-// Analytics brings it back. The toasts stay above, and
+// A stacking module window (999992, as the Analytics window was; it is part of the Replays window
+// now) open, then User Scripts (a menu page) from its hotkey path: User Scripts is on top (it opened
+// behind). The private room window (999990) opened over it is on top; a touch on it brings it back. The toasts stay above, and
 // with one window left every z-index is back to its own. Everything is closed again at the end.
 (async () => {
   var fail = [], info = {};
   var sleep = function (ms) { return new Promise(function (r) { setTimeout(r, ms); }); };
   if (!window.LMWinStack) fail.push('LMWinStack missing (ogario/modules/winstack.js not loaded)');
-  if (!window.LMAnalytics || !window.LMPlugins || typeof window._lmRoomOpen !== 'function') return { skip: 'windows missing' };
+  if (!window.LMPlugins || typeof window._lmRoomOpen !== 'function') return { skip: 'windows missing' };
   /* what is drawn at a point inside an element (its upper middle, clear of other windows' edges) */
   var onTop = function (el) {
     if (!el) return false;
@@ -18,14 +18,15 @@
   var pd = function (el) { el.dispatchEvent(new PointerEvent('pointerdown', { bubbles: true, cancelable: true, pointerId: 3, isPrimary: true, clientX: 5, clientY: 5 })); };
   var ov = document.getElementById('overlays'), ovZ = zOf(ov), menuWas = !!(ov && ov.offsetParent !== null && getComputedStyle(ov).display !== 'none');
   try {
-    window.LMAnalytics.open();
-    for (var i = 0; i < 30 && !document.getElementById('lm-analytics'); i++) await sleep(100);
-    /* the Analytics window is its own panel (the window tier 999992) */
-    var me = document.getElementById('lm-analytics'), mePanel = me;
-    if (!mePanel) return { fail: ['Analytics did not open'] };
+    /* a module window of the stacking tier, as the module windows build theirs */
+    var me = document.createElement('div'), mePanel = me, i;
+    me.id = 'lm-ws-probe';
+    me.className = 'lm-modal-container lm-w';
+    me.style.cssText = 'position:fixed;top:60px;left:60px;width:320px;height:220px;z-index:999992;background:#123;';
+    document.body.appendChild(me);
     await sleep(100);
     info.meAlone = zOf(me);
-    /* Analytics sets its own 999992 inline: alone, it keeps exactly that */
+    /* it sets its own 999992 inline: alone, it keeps exactly that */
     if (info.meAlone !== '999992') fail.push('one window open: its z-index was changed (' + info.meAlone + ')');
 
     window.LMPlugins.open('plugins');
@@ -34,7 +35,7 @@
     info.usOpen = window.LMPlugins.isOpen();
     /* the menu that holds User Scripts is drawn there (a promo dialog of the menu itself may lie over it) */
     var ur = us.getBoundingClientRect(), uh = document.elementFromPoint(ur.left + ur.width / 2, ur.top + Math.min(40, ur.height / 2));
-    if (!(uh && ov.contains(uh))) fail.push('User Scripts opened behind Analytics (' + zOf(ov) + ' vs ' + zOf(me) + ', on top: ' + (uh ? uh.id || uh.className : '-') + ')');
+    if (!(uh && ov.contains(uh))) fail.push('User Scripts opened behind the module window (' + zOf(ov) + ' vs ' + zOf(me) + ', on top: ' + (uh ? uh.id || uh.className : '-') + ')');
     /* the menu keeps its own value: the Hotkeys window, colour pickers and tooltips stay above it */
     if (zOf(ov) !== ovZ) fail.push('menu z-index changed (' + ovZ + ' -> ' + zOf(ov) + ')');
     var hk = document.getElementById('hotkeys');
@@ -49,10 +50,10 @@
     if (!spPanel) fail.push('the private room window did not open');
     else {
       info.z = [zOf(sp), zOf(me), zOf(ov)];
-      if (!onTop(spPanel)) fail.push('the private room window opened behind Analytics (' + info.z.join(' / ') + ')');
+      if (!onTop(spPanel)) fail.push('the private room window opened behind the module window (' + info.z.join(' / ') + ')');
       pd(mePanel);
       await sleep(50);
-      if (!onTop(mePanel)) fail.push('a touch on Analytics did not bring it to the front');
+      if (!onTop(mePanel)) fail.push('a touch on the module window did not bring it to the front');
       pd(spPanel);
       await sleep(50);
       if (!onTop(spPanel)) fail.push('a touch on the private room window did not bring it back to the front');
@@ -63,15 +64,15 @@
       await sleep(300);
       if (document.getElementById('lm-room-modal') && onTop(document.getElementById('lm-room-modal'))) info.roomLeft = true;
     }
-    /* Analytics (and the menu, if open) left: values back to their own once only one is open */
-    if (!onTop(mePanel) && !menuWas) fail.push('Analytics not in front after the private room window closed');
+    /* the module window (and the menu, if open) left: values back to their own once only one is open */
+    if (!onTop(mePanel) && !menuWas) fail.push('the module window not in front after the private room window closed');
   } finally {
     try { window.LMPlugins.close(); } catch (e) { }
-    try { window.LMAnalytics.close(); } catch (e) { }
+    try { me.remove(); } catch (e) { }
     try { var rm = document.getElementById('lm-room-modal'); if (rm && rm._lmClose) rm._lmClose(true); } catch (e) { }
     await sleep(300);
   }
-  ['lm-analytics', 'lm-room-modal', 'overlays'].forEach(function (id) {
+  ['lm-ws-probe', 'lm-room-modal', 'overlays'].forEach(function (id) {
     var el = document.getElementById(id);
     if (el && /99999/.test(el.style.zIndex)) fail.push(id + ' kept a raised z-index after closing (' + el.style.zIndex + ')');
   });

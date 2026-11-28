@@ -74,7 +74,7 @@
 "site.features.optionalMassGraphOf": "Optional mass graph of your life",
 "site.features.optionalAllTimePersonal": "All-time personal bests with a <i>New best!</i> badge",
 "site.features.optionalEatenByRow": "Optional <i>Eaten by</i> row with the nick and mass that ate you",
-"site.features.optionalMatchHistoryYour": "Optional match history: your last 50 games in the Analytics window (Match history tab), with a button under the menu",
+"site.features.matchHistoryReplaysWindow": "Match history: your last 50 games in the Replays window, next to the Dashboard and Heatmaps (recorded with Record replays)",
 "site.features.sessionSummaryUnderThe": "Session summary under the menu",
 "site.features.spectatingNew": "Spectating <span class=\"badge badge-new\">New</span>",
 "site.features.followTheActionIn": "Follow the action in free spectate.",

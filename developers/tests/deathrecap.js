@@ -260,14 +260,15 @@ check('off again: listeners removed, flag off', !(listeners.spawn || []).length 
   check('lmKillerWanted in the core', a >= 0);
   if (a >= 0) {
     const b = core.indexOf('\n}\n', a);
-    const kc = { defaultmapsettings: { gameOverStats: false, matchHistory: false } };
+    const kc = { defaultmapsettings: { gameOverStats: false, recordReplays: false } };
     vm.createContext(kc);
     vm.runInContext(core.slice(a, b + 3), kc);
-    const W = (o) => kc.lmKillerWanted(Object.assign({ gameOverStats: false, matchHistory: false }, o));
+    const W = (o) => kc.lmKillerWanted(Object.assign({ gameOverStats: false, recordReplays: false }, o));
     check('killer: not kept with both off', W({}) === false && kc.lmKillerWanted() === false);
-    check('killer: kept for each of the Game Over card, Match history alone', W({ gameOverStats: true }) && W({ matchHistory: true }));
-    /* the retired switches of old saved settings (part switches, the removed kill feed) no longer keep it */
-    check('killer: old showKiller / deathRecap / killFeed values alone do not keep it', W({ showKiller: true }) === false && W({ deathRecap: true }) === false && W({ killFeed: true }) === false);
+    /* the match history is recorded with Record replays (on by default; not set counts as on) */
+    check('killer: kept for each of the Game Over card, Record replays (match history) alone', W({ gameOverStats: true }) && W({ recordReplays: true }) && W({ recordReplays: undefined }));
+    /* the retired switches of old saved settings (part switches, the removed kill feed and match history) no longer keep it */
+    check('killer: old showKiller / deathRecap / killFeed / matchHistory values alone do not keep it', W({ showKiller: true }) === false && W({ deathRecap: true }) === false && W({ killFeed: true }) === false && W({ matchHistory: true }) === false);
     kc.defaultmapsettings.gameOverStats = true;
     check('killer: reads the live settings by default', kc.lmKillerWanted() === true);
     /* every place that keeps the killer or the multibox guard uses the one rule */

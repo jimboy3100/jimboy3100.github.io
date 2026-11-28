@@ -137,7 +137,7 @@ check('empty list', order([]).length === 0);
       vm.runInContext(src, W);
       vm.runInContext('function _lmMhT(k, en) { return en; }\n' + roomSrc, W);
 
-      /* a window that closes on Esc as the module windows do (analytics.js onKey) */
+      /* a window that closes on Esc as the module windows do (practice.js) */
       const macros = mkEl('div');
       macros.id = 'macros';
       macros.className = 'lm-modal-container';

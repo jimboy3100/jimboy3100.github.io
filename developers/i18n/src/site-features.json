@@ -1295,23 +1295,8 @@
     "ja": "あなたを食べた相手のニックネームと質量を示す<i>食べた相手</i>の行（任意）",
     "it": "Riga opzionale <i>Mangiato da</i> con il nick e la massa di chi ti ha mangiato"
   },
-  "site.features.optionalMatchHistoryYour": {
-    "en": "Optional match history: your last 50 games in the Analytics window (Match history tab), with a button under the menu",
-    "el": "Προαιρετικό ιστορικό αγώνων: τα τελευταία 50 παιχνίδια σας στο παράθυρο Αναλυτικά (καρτέλα Ιστορικό αγώνων), με κουμπί κάτω από το μενού",
-    "es": "Historial de partidas opcional: tus últimas 50 partidas en la ventana Analíticas (pestaña Historial de partidas), con un botón bajo el menú",
-    "bg": "Незадължителна история на мачовете: последните ви 50 игри в прозореца Анализи (раздел История на игрите), с бутон под менюто",
-    "fr": "Historique des parties optionnel : vos 50 dernières parties dans la fenêtre Statistiques (onglet Historique des parties), avec un bouton sous le menu",
-    "ar": "سجل مباريات اختياري: آخر 50 مباراة لك في نافذة التحليلات (تبويب سجل المباريات)، مع زر أسفل القائمة",
-    "zh": "可選的對局紀錄：在「分析」視窗（「對戰記錄」分頁）中顯示最近 50 場對局，選單下方有按鈕",
-    "ru": "История матчей по желанию: ваши последние 50 игр в окне «Аналитика» (вкладка «История матчей»), кнопка под меню",
-    "de": "Optionaler Match-Verlauf: deine letzten 50 Spiele im Fenster Analyse (Tab Spielverlauf), mit einem Button unter dem Menü",
-    "tr": "İsteğe bağlı maç geçmişi: son 50 oyununuz Analiz penceresinde (Maç geçmişi sekmesi), menünün altında bir düğmeyle",
-    "pl": "Opcjonalna historia meczów: twoje ostatnie 50 gier w oknie Analityka (karta Historia meczów), z przyciskiem pod menu",
-    "nl": "Optionele wedstrijdgeschiedenis: je laatste 50 games in het venster Analyse (tabblad Speelgeschiedenis), met een knop onder het menu",
-    "pt": "Histórico de partidas opcional: as suas últimas 50 partidas na janela Análises (aba Histórico de partidas), com um botão abaixo do menu",
-    "id": "Riwayat pertandingan opsional: 50 game terakhirmu di jendela Analitik (tab Riwayat pertandingan), dengan tombol di bawah menu",
-    "ja": "対戦履歴：直近50試合を「分析」ウィンドウ（「対戦履歴」タブ）に表示、メニューの下にボタン（任意）",
-    "it": "Cronologia partite opzionale: le tue ultime 50 partite nella finestra Statistiche (scheda Cronologia partite), con un pulsante sotto il menu"
+  "site.features.matchHistoryReplaysWindow": {
+    "en": "Match history: your last 50 games in the Replays window, next to the Dashboard and Heatmaps (recorded with Record replays)"
   },
   "site.features.sessionSummaryUnderThe": {
     "en": "Session summary under the menu",

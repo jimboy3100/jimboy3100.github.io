@@ -25,8 +25,8 @@
       "id": "analytics",
       "file": "ogario/modules/analytics.js",
       "lines": 1159,
-      "description": "Statistics dashboard with heatmaps and the match history, from game summaries. Tracks position samples, splits, kills.",
-      "feature": "Stats and Analytics"
+      "description": "Game stats for the Replays window: the Dashboard and Heatmaps views, from game summaries recorded with Record replays. Tracks position samples, splits, kills.",
+      "feature": "Replay tools and Replay Studio"
     },
     {
       "id": "deathrecap",

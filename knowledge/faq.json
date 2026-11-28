@@ -158,8 +158,8 @@
       "answer": "A tool to drag and resize 15 HUD components (leaderboard, minimap, stats, chat, etc.) into named layouts. Up to 20 layouts with grid snapping (8/16/32px), lock/unlock, and edge-relative positioning for responsiveness."
     },
     {
-      "question": "What is the Analytics Dashboard?",
-      "answer": "A statistics window with a dashboard (games, highest mass, survival, top-10 rate, weekly chart, best modes), heatmaps and the match history, from up to 500 game summaries. It tracks position history (3,600 samples per game, 50 games)."
+      "question": "Where are my match history and game stats?",
+      "answer": "In the Replays window (Replay Studio), next to the Player and the Library: Match history (your last 50 games), Dashboard (games, highest mass, survival, top-10 rate, weekly chart, best modes, from up to 500 game summaries) and Heatmaps (position history, 3,600 samples per game, 50 games). They are recorded with Settings > Replays > Record replays, on by default."
     },
     {
       "question": "How do presets work?",

@@ -1,7 +1,9 @@
 /* Replay Studio for Legend Mod: a timeline with automatic bookmarks, playback at the recorded
  * speed (0.25x-4x) forwards or backwards, pause and packet-by-packet stepping, colour filters,
- * a replay library in IndexedDB and clip export (.lm).
- * It plays every replay: the Replay button, a replay^ server token, Death recap links and
+ * a replay library in IndexedDB and clip export (.lm). Next to the Player and the Library it shows the
+ * recorded games: the Match history list (ogario.v4.js _lmMatchHistoryPaint) and their stats, the
+ * Dashboard and Heatmaps (ogario/modules/analytics.js LMAnalytics.paint); "Record replays" records
+ * all of them. It plays every replay: the Replay button, a replay^ server token, Death recap links and
  * ?replay= links (with ?replayStart= / ?replayEnd= packet numbers) all open it.
  *
  * Loaded the first time it is opened (window.lmReplayStudio in ogario.v4.js). The recording side
@@ -615,6 +617,8 @@
     function T(k, v) { return typeof window.lmT === 'function' ? window.lmT((TK3[k] ? 'pkg.n56.' : TK2[k] ? 'pkg.rp.' : TK) + k, v) : k; }
     /* K('play'): a label read again after a language change (see relabels) */
     function K(k) { return function () { return T(k); }; }
+    /* a text by its full key (the Match history, Dashboard and Heatmaps view names) */
+    function TF(k) { return typeof window.lmT === 'function' ? window.lmT(k) : k; }
     function dirNow() { return window.LMi18n && window.LMi18n.dir ? window.LMi18n.dir() : 'ltr'; }
     /* setters of the window's fixed labels, run again when the language changes */
     var relabels = [];
@@ -1687,11 +1691,16 @@
         var hb = el('b', 'margin-right:6px;color:' + cssMc() + ';white-space:nowrap;text-transform:uppercase;letter-spacing:1px;');
         L(function () { hb.textContent = T('title'); });
         head.appendChild(hb);
+        /* Player, Library and the recorded games' views; they scroll sideways on a narrow screen */
+        var tabs = el('div', 'display:flex;flex:1 1 auto;min-width:0;', null, { 'class': 'lm-rs-scroll lm-rs-full' });
         W.tabP = btn(K('player'), '', function () { setTab('player'); });
         W.tabL = btn(K('library'), '', function () { setTab('library'); });
-        W.tabP.classList.add('lm-rs-full'); W.tabL.classList.add('lm-rs-full');
-        head.appendChild(W.tabP); head.appendChild(W.tabL);
-        head.appendChild(el('span', 'flex:1 1 auto;'));
+        W.tabG = btn(function () { return TF('matchHistory'); }, '', function () { setTab('games'); });
+        W.tabD = btn(function () { return TF('modules.analytics.tabDash'); }, '', function () { setTab('dash'); });
+        W.tabH = btn(function () { return TF('modules.analytics.tabHeat'); }, '', function () { setTab('heat'); });
+        W.tabG.id = 'lm-rs-tab-games'; W.tabD.id = 'lm-rs-tab-dash'; W.tabH.id = 'lm-rs-tab-heat';
+        [W.tabP, W.tabL, W.tabG, W.tabD, W.tabH].forEach(function (b) { tabs.appendChild(b); });
+        head.appendChild(tabs);
         W.minB = btn('\u2581', K('minimize'), function () { W.classList.toggle('min'); });
         head.appendChild(W.minB);
         head.appendChild(btn('\u2715', K('close'), close, 'min-width:38px;font-size:15px;color:var(--lm-tc2,#eee);'));
@@ -1821,18 +1830,53 @@
         W.usage = el('div', 'padding:3px 8px 5px;', '', { 'class': 'lm-rs-dim' });
         lv.appendChild(W.usage);
         W.appendChild(lv);
+        /* the recorded games: Match history, Dashboard, Heatmaps (see drawView) */
+        W.av = el('div', 'display:none;min-height:0;flex:1 1 auto;overflow:auto;-webkit-overflow-scrolling:touch;padding:4px 8px 8px;', null, { 'class': 'lm-rs-full' });
+        W.av.id = 'lm-rs-games';
+        W.appendChild(W.av);
         document.body.appendChild(W);
         return W;
     }
+    var VIEWS = { games: 1, dash: 1, heat: 1 };
     function setTab(t) {
+        if (t !== 'player' && t !== 'library' && !VIEWS[t]) t = 'player';
         tab = t;
         if (!W) return;
         W.classList.remove('min');
         W.pv.style.display = t === 'player' ? 'flex' : 'none';
         W.lv.style.display = t === 'library' ? 'flex' : 'none';
+        W.av.style.display = VIEWS[t] ? 'block' : 'none';
         W.tabP.classList.toggle('on', t === 'player');
         W.tabL.classList.toggle('on', t === 'library');
+        W.tabG.classList.toggle('on', t === 'games');
+        W.tabD.classList.toggle('on', t === 'dash');
+        W.tabH.classList.toggle('on', t === 'heat');
         if (t === 'library') refreshLibrary();
+        if (VIEWS[t]) drawView();
+    }
+    /* the shown games view: the match history list (each life: mass, time alive, killer, server,
+     * mode) or the Dashboard / Heatmaps made from the same games. The stats file loads with the
+     * game; while it is not there yet the view says so, asks for it again after a failed download
+     * and draws itself once it is there. */
+    function drawView() {
+        if (!W || !VIEWS[tab]) return;
+        var host = W.av;
+        clearTimeout(drawView.t);
+        host._lmAnView = null;
+        while (host.firstChild) host.removeChild(host.firstChild);
+        if (tab === 'games') { if (typeof window._lmMatchHistoryPaint === 'function') window._lmMatchHistoryPaint(host); return; }
+        var A = window.LMAnalytics;
+        if (A && typeof A.paint === 'function') { A.paint(host, tab); return; }
+        if (window._lmAnalyticsLoadFailed && typeof window._lmAnalyticsLoad === 'function') window._lmAnalyticsLoad();
+        var msg = el('div', 'padding:16px;text-align:center;', TF('mhLoading'), { 'class': 'lm-rs-dim' });
+        host.appendChild(msg);
+        var start = Date.now();
+        (function wait() {
+            if (!isOpen() || (tab !== 'dash' && tab !== 'heat')) return;
+            if (window.LMAnalytics && typeof window.LMAnalytics.paint === 'function') { drawView(); return; }
+            if (window._lmAnalyticsLoadFailed || Date.now() - start > 15000) { msg.textContent = TF('pkg.rpm.loadFailed'); return; }
+            drawView.t = setTimeout(wait, 500);
+        })();
     }
     function select(key) {
         if (!recArr(key)) return;
@@ -2052,7 +2096,7 @@
         if (!W) return;
         relabels.forEach(function (f) { try { f(); } catch (e) { } });
         W.marksSig = '';
-        if (isOpen()) { ui(); if (tab === 'library') refreshLibrary(); }
+        if (isOpen()) { ui(); if (tab === 'library') refreshLibrary(); else if (VIEWS[tab]) drawView(); }
     });
 
     /* entry point used by ogario.v4.js (window.lmReplayStudio) */

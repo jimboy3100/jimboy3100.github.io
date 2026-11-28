@@ -47,7 +47,7 @@
     {
       "id": "replays",
       "name": "Replay tools and Replay Studio",
-      "description": "Record server packets for faithful replays. Replay Studio: full timeline with automatic bookmarks, variable speed (0.25x-4x), pause, packet-by-packet stepping, forward/backward seeking, timeline scrubbing. Clip export as .lm files. Match history stores last 50 lives. Personal bests tracked. Replay library in IndexedDB.",
+      "description": "Record server packets for faithful replays. Replay Studio: full timeline with automatic bookmarks, variable speed (0.25x-4x), pause, packet-by-packet stepping, forward/backward seeking, timeline scrubbing. Clip export as .lm files. Replay library in IndexedDB. The same window shows the recorded games: Match history (last 50 lives: mass, time alive, killer, server, mode), a Dashboard (500 game summaries) and Heatmaps. Record replays is the one switch for all of it. Personal bests tracked (Game Over card).",
       "url": "https://www.legendmod.ml/features.html"
     },
     {
@@ -77,7 +77,7 @@
     {
       "id": "stats",
       "name": "Stats and analytics",
-      "description": "Live stats HUD (mass, frame time, ping, PPS, server Hz, alive time, 16-cell count). Death recap (last 20s, 3-6 steps, mass sparkline, killer attribution). Mass graph on Game Over card. Analytics dashboard with heatmaps, 500 game summaries and the match history.",
+      "description": "Live stats HUD (mass, frame time, ping, PPS, server Hz, alive time, 16-cell count). Death recap (last 20s, 3-6 steps, mass sparkline, killer attribution). Mass graph on Game Over card. The game stats (Dashboard, Heatmaps, match history) are in the Replays window.",
       "url": "https://www.legendmod.ml/features.html"
     },
     {

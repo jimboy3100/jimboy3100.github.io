@@ -1,22 +1,4 @@
 {
-  "pkg.r14.mhOff": {
-    "en": "Match history is off: the games you play are not added to this list.",
-    "el": "Το ιστορικό αγώνων είναι απενεργοποιημένο: τα παιχνίδια που παίζεις δεν προστίθενται σε αυτή τη λίστα.",
-    "es": "El historial de partidas está desactivado: las partidas que juegas no se añaden a esta lista.",
-    "bg": "Историята на игрите е изключена: игрите, които играеш, не се добавят в този списък.",
-    "fr": "L’historique des parties est désactivé : les parties que vous jouez ne sont pas ajoutées à cette liste.",
-    "ar": "سجل المباريات متوقف: المباريات التي تلعبها لا تُضاف إلى هذه القائمة.",
-    "zh": "對局記錄已關閉：你玩的遊戲不會加入這個列表。",
-    "ru": "История матчей выключена: сыгранные игры не попадают в этот список.",
-    "de": "Der Spielverlauf ist aus: deine Spiele werden nicht in diese Liste aufgenommen.",
-    "tr": "Maç geçmişi kapalı: oynadığın oyunlar bu listeye eklenmiyor.",
-    "pl": "Historia meczów jest wyłączona: rozegrane gry nie trafiają na tę listę.",
-    "nl": "Spelgeschiedenis staat uit: de spellen die je speelt worden niet aan deze lijst toegevoegd.",
-    "pt": "O histórico de partidas está desligado: as partidas que você joga não entram nesta lista.",
-    "id": "Riwayat pertandingan mati: permainan yang kamu mainkan tidak ditambahkan ke daftar ini.",
-    "ja": "試合履歴はオフです：プレイした試合はこのリストに追加されません。",
-    "it": "La cronologia partite è disattivata: le partite che giochi non vengono aggiunte a questo elenco."
-  },
   "pkg.r14.mhTurnOn": {
     "en": "Turn on",
     "el": "Ενεργοποίηση",

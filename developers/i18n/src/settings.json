@@ -468,7 +468,7 @@
     "it": "Rendering High DPI (più nitido, più lento)"
   },
   "settings.recordReplays": {
-    "en": "Record replays (uses memory)",
+    "en": "Record replays and game stats (uses memory)",
     "el": "Καταγραφή replays (χρησιμοποιεί μνήμη)",
     "es": "Grabar repeticiones (usa memoria)",
     "bg": "Записвай повторения (използва памет)",
@@ -3295,42 +3295,6 @@
     "id": "Kartu Game Over (statistikmu, siapa yang memakanmu, grafik massa, 20 dtk terakhir)",
     "ja": "ゲームオーバー画面（統計、倒した相手、質量グラフ、直前20秒）",
     "it": "Scheda Game Over (le tue statistiche, chi ti ha mangiato, grafico della massa, gli ultimi 20 s)"
-  },
-  "settings.matchHistory": {
-    "en": "Match history (last 50 games, button under the menu)",
-    "el": "Ιστορικό αγώνων (τελευταία 50 παιχνίδια, κουμπί κάτω από το μενού)",
-    "es": "Historial de partidas (últimas 50, botón bajo el menú)",
-    "bg": "История на игрите (последните 50, бутон под менюто)",
-    "fr": "Historique des parties (50 dernières, bouton sous le menu)",
-    "ar": "سجل المباريات (آخر 50 لعبة، زر أسفل القائمة)",
-    "zh": "對戰紀錄（最近 50 場，選單下方的按鈕）",
-    "ru": "История матчей (последние 50 игр, кнопка под меню)",
-    "de": "Spielverlauf (letzte 50 Spiele, Button unter dem Menü)",
-    "tr": "Maç geçmişi (son 50 oyun, menünün altındaki düğme)",
-    "pl": "Historia meczów (ostatnie 50 gier, przycisk pod menu)",
-    "nl": "Spelgeschiedenis (laatste 50 spellen, knop onder het menu)",
-    "pt": "Histórico de partidas (últimas 50, botão abaixo do menu)",
-    "id": "Riwayat pertandingan (50 game terakhir, tombol di bawah menu)",
-    "ja": "対戦履歴（直近50試合、メニュー下のボタン）",
-    "it": "Cronologia partite (ultime 50, pulsante sotto il menu)"
-  },
-  "settings.analytics": {
-    "en": "Analytics: record your games (dashboard, heatmaps; kept in this browser)",
-    "el": "Αναλυτικά: καταγραφή των παιχνιδιών σου (πίνακας, θερμικοί χάρτες· μόνο σε αυτόν τον browser)",
-    "es": "Analíticas: graba tus partidas (panel, mapas de calor; guardado en este navegador)",
-    "bg": "Анализи: записвай игрите си (табло, топлинни карти; пазят се в този браузър)",
-    "fr": "Statistiques : enregistre tes parties (tableau de bord, cartes de chaleur ; stockées dans ce navigateur)",
-    "ar": "التحليلات: تسجيل ألعابك (لوحة، خرائط حرارية؛ محفوظة في هذا المتصفح)",
-    "zh": "分析：記錄你的對局（儀表板、熱圖；儲存在此瀏覽器）",
-    "ru": "Аналитика: записывать свои игры (панель, тепловые карты; хранится в этом браузере)",
-    "de": "Analyse: deine Spiele aufzeichnen (Dashboard, Heatmaps; in diesem Browser gespeichert)",
-    "tr": "Analiz: oyunlarını kaydet (panel, ısı haritaları; bu tarayıcıda saklanır)",
-    "pl": "Analityka: zapisuj swoje gry (statystyki, mapy cieplne; tylko w tej przeglądarce)",
-    "nl": "Analyse: je spellen opnemen (dashboard, heatmaps; bewaard in deze browser)",
-    "pt": "Análises: grava suas partidas (painel, mapas de calor; fica neste navegador)",
-    "id": "Analitik: rekam game kamu (dasbor, heatmap; disimpan di browser ini)",
-    "ja": "分析：試合を記録（ダッシュボード、ヒートマップ。このブラウザに保存）",
-    "it": "Statistiche avanzate: registra le tue partite (pannello, mappe di calore; salvate in questo browser)"
   },
   "settings.accessibilityGroup": {
     "en": "Accessibility",

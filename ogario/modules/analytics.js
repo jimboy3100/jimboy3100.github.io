@@ -1,13 +1,12 @@
-/* Legend Mod Analytics: statistics dashboard and heatmaps.
- * Opened from the Analytics button in the profile stats (click your profile picture), the
- * menu footer link while recording is on, or LMAnalytics.open().
- * Its History tab is the match history list (option "matchHistory", ogario.v4.js _lmMatchHistoryPaint;
- * the "Match history" footer link and _lmMatchHistoryOpen open it there).
- * Recording is off by default (option "analytics", Settings > Stats). While it is off this file only
- * checks the option once a second and adds no LMEvents listeners; the window still shows the old
- * match history (lmMatchHistory) and the all-time personal bests (highest mass, longest time alive).
+/* Legend Mod game stats: the Dashboard and Heatmaps views of the Replays window
+ * (ogario/modules/replaystudio.js draws them with LMAnalytics.paint; its Match history view is
+ * ogario.v4.js _lmMatchHistoryPaint).
+ * Games are recorded with "Record replays" (recordReplays, Settings > Replays, on by default), the one
+ * switch for the replay packets, the match history and these stats. While it is off this file adds no
+ * LMEvents listeners (checked again at every settings change); the views still show the games stored
+ * before, the old match history (lmMatchHistory) and the all-time personal bests (highest mass,
+ * longest time alive). Practice arena lives and replay playback are never recorded.
  * Everything stays in this browser (localStorage, capped and validated on every read). No network.
- * The window is built only when it is opened.
  */
 (function () {
     'use strict';
@@ -260,9 +259,8 @@
      * else English. vals fill {0} {1} {2}. */
     var TP = 'modules.analytics.';
     function T(key, vals) { return typeof window.lmT === 'function' ? window.lmT(TP + key, vals) : key; }
-    function closeText() { return typeof window.lmT === 'function' ? window.lmT('settings.close') : 'Close'; }
-    function langDir() { return window.LMi18n && window.LMi18n.dir ? window.LMi18n.dir() : 'ltr'; }
-    function esc(s) { return String(s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;').replace(/'/g, '&#39;'); }
+    /* texts that name the one recording switch (developers/i18n/src/pkg-rpm.json) */
+    function TF(key) { return typeof window.lmT === 'function' ? window.lmT(key) : key; }
 
     /* ------------------------------------------------------------------ storage */
     function lsGet(k) { try { return window.localStorage.getItem(k); } catch (e) { return null; } }
@@ -430,9 +428,9 @@
         }
         afterGame(g);
     }
-    /* an open window shows the game that just ended */
+    /* a shown view draws again with the game that just ended */
     function afterGame() {
-        if (md && md.parentNode) paint();
+        if (shown && shown.parentNode && (shown._lmAnView === 'dash' || shown._lmAnView === 'heat')) redraw();
     }
     function setListening(on) {
         var E = window.LMEvents;
@@ -456,10 +454,11 @@
         var host = typeof window._lmHostOnly === 'function' ? window._lmHostOnly(o.ws) : '';
         if (life.srv && host && host !== life.srv) life = null;
     }
-    function enabled() { var s = window.legendmod5; return !!(s && s.analytics); }
+    /* Record replays: an undefined setting counts as on, as for the replay packets */
+    function enabled() { var s = window.legendmod5; return !!(s && s.recordReplays !== false); }
 
-    /* ------------------------------------------------------------------ window */
-    var md = null, tab = 'dash', heat = { layer: 'move', n: 25, map: 0 };
+    /* ------------------------------------------------------------------ views */
+    var shown = null, heat = { layer: 'move', n: 25, map: 0 };
     /* theme() gives CSS (var(--lm-x, current) so an open window follows a theme change);
      * theme(true) gives the resolved colours for SVG attributes and canvas */
     function theme(raw) {
@@ -488,98 +487,22 @@
     function section(body, title) {
         body.appendChild(el('div', 'margin:10px 0 4px;font-size:11px;text-transform:uppercase;letter-spacing:1px;color:' + theme().tc2 + ';', title));
     }
-    function close() {
-        if (!md) return;
-        window.removeEventListener('keydown', onKey, true);
-        if (md.parentNode) md.parentNode.removeChild(md);
-        md = null;
-    }
-    function onKey(e) {
-        if (!(e.key === 'Escape' || e.keyCode === 27)) return;
-        /* with another window open that closes on Esc, only the one in front closes (winstack.js) */
-        if (md && window.LMWinStack && typeof window.LMWinStack.escFor === 'function' && !window.LMWinStack.escFor(md, e)) return;
-        e.preventDefault(); e.stopPropagation(); close();
-    }
-    function open(which) {
-        if (!document.body) return;
-        if (which && ['dash', 'history', 'heat'].indexOf(which) !== -1) tab = which;
-        if (md) { paint(); return; }
-        /* the shared window look (LMexpress.js) */
-        if (typeof window.lmUiKit === 'function') window.lmUiKit();
-        var t = theme();
-        md = el('div', 'position:fixed;top:50%;left:50%;transform:translate(-50%,-50%);width:720px;max-width:calc(100vw - 16px);max-height:calc(100vh - 16px);' +
-            'display:flex;flex-direction:column;z-index:999992;background:var(--lm-w-bg,' + t.pc + ');border:1px solid ' + t.pc2 + ';border-top:3px solid ' + t.mc + ';' +
-            'border-radius:var(--lm-radius,6px);box-shadow:0 8px 32px rgba(0,0,0,0.5);color:' + t.tc + ';font-family:inherit;font-size:var(--lm-w-fs,12px);overflow:hidden;box-sizing:border-box;');
-        md.id = 'lm-analytics';
-        md._lmEsc = true;
-        md.classList.add('lm-modal-container', 'lm-w');
-        md.setAttribute('role', 'dialog');
-        md.setAttribute('aria-label', T('title'));
-        md.dir = langDir();
-        var head = el('div', 'display:flex;align-items:center;gap:6px;padding:var(--lm-w-hpad,4px 6px 4px 10px);border-bottom:1px solid ' + t.pc2 + ';background:var(--lm-w-head,linear-gradient(180deg,' + t.pc2 + ' 0%,' + t.pc + ' 100%));flex:0 0 auto;');
-        var ttl = el('div', 'font-size:var(--lm-w-title,14px);font-weight:700;color:' + t.mc + ';letter-spacing:1px;text-transform:uppercase;white-space:nowrap;', T('title'));
-        ttl.id = 'lm-analytics-title';
-        head.appendChild(ttl);
-        var tabs = el('div', 'display:flex;gap:4px;flex:1 1 auto;overflow-x:auto;-webkit-overflow-scrolling:touch;');
-        tabs.id = 'lm-analytics-tabs';
-        TABS.forEach(function (x) {
-            var b = btn(tabText(x), 'white-space:nowrap;', function () { tab = x[0]; paint(); });
-            b.id = 'lm-analytics-tab-' + x[0];
-            b.setAttribute('data-tab', x[0]);
-            tabs.appendChild(b);
-        });
-        head.appendChild(tabs);
-        /* 36 px close target for touch */
-        var x = btn('✕', 'flex:0 0 auto;width:var(--lm-w-x,36px);height:var(--lm-w-x,36px);padding:0;font-size:18px;line-height:1;color:' + t.tc2 + ';background:var(--lm-w-btn,rgba(255,255,255,0.05));border:0;', close);
-        x.id = 'lm-analytics-close';
-        x.title = closeText();
-        x.setAttribute('aria-label', closeText());
-        head.appendChild(x);
-        md.appendChild(head);
-        var body = el('div', 'padding:var(--lm-w-pad,6px 10px 10px);overflow:auto;-webkit-overflow-scrolling:touch;flex:1 1 auto;min-height:0;');
-        body.id = 'lm-analytics-body';
-        md.appendChild(body);
-        window.addEventListener('keydown', onKey, true);
-        document.body.appendChild(md);
-        paint();
-    }
-    /* History: the match history list (ogario.v4.js _lmMatchHistoryPaint, its own texts), once a window of its own */
-    var TABS = [['dash', 'tabDash'], ['history', 'matchHistory'], ['heat', 'tabHeat']];
-    function tabText(x) {
-        if (x[0] !== 'history') return T(x[1]);
-        var s = typeof window.lmT === 'function' ? window.lmT(x[1]) : '';
-        return s && s !== x[1] ? s : 'Match history';
-    }
-    /* the header texts again after a language change (the body is drawn again by paint) */
-    function relabel() {
-        if (!md) return;
-        md.setAttribute('aria-label', T('title'));
-        md.dir = langDir();
-        var ttl = md.querySelector('#lm-analytics-title');
-        if (ttl) ttl.textContent = T('title');
-        TABS.forEach(function (x) { var b = md.querySelector('#lm-analytics-tab-' + x[0]); if (b) b.textContent = tabText(x); });
-        var c = md.querySelector('#lm-analytics-close');
-        if (c) { c.title = closeText(); c.setAttribute('aria-label', closeText()); }
-    }
-    function paint() {
-        if (!md) return;
-        var t = theme();
-        var tabs = md.querySelectorAll('[data-tab]');
-        for (var i = 0; i < tabs.length; i++) {
-            var on = tabs[i].getAttribute('data-tab') === tab;
-            tabs[i].style.background = on ? t.mc : 'rgba(255,255,255,0.06)';
-            tabs[i].style.color = on ? t.pc : t.tc;
-            tabs[i].style.fontWeight = on ? '700' : '400';
-            tabs[i].setAttribute('aria-pressed', on ? 'true' : 'false');
-        }
-        var body = md.querySelector('#lm-analytics-body');
-        while (body.firstChild) body.removeChild(body.firstChild);
+    /* draws the Dashboard ('dash') or Heatmaps ('heat') into host; paint() draws the last one again.
+     * The Replays window sets host._lmAnView to null when it shows something else there. */
+    function paint(host, which) {
+        if (host) shown = host;
+        host = shown;
+        if (!host) return;
+        if (which) host._lmAnView = which;
+        which = host._lmAnView;
+        if (which !== 'dash' && which !== 'heat') return;
+        while (host.firstChild) host.removeChild(host.firstChild);
         try {
-            if (tab === 'history') { if (typeof window._lmMatchHistoryPaint === 'function') window._lmMatchHistoryPaint(body); }
-            else if (tab === 'heat') paintHeat(body);
-            else paintDash(body);
-        } catch (e) { try { console.warn('[LM Analytics] could not draw the tab:', e); } catch (e2) { } }
+            if (which === 'heat') paintHeat(host);
+            else paintDash(host);
+        } catch (e) { try { console.warn('[LM stats] could not draw the view:', e); } catch (e2) { } }
     }
+    function redraw() { paint(null); }
     function note(body, text) {
         body.appendChild(el('div', 'padding:6px 8px;margin:4px 0;border-radius:var(--lm-radius-s,4px);background:rgba(255,255,255,0.05);color:' + theme().tc2 + ';', text));
     }
@@ -591,8 +514,8 @@
     }
     function paintDash(body) {
         var t = theme(), games = allGames(), pb = personalBests(), a = aggregate(games, Date.now(), pb.m, pb.t);
-        if (!enabled()) note(body, T('recOff'));
-        if (!games.length) { note(body, T('noGames')); return; }
+        if (!enabled()) note(body, TF('pkg.rpm.recOff'));
+        if (!games.length) { note(body, TF('pkg.rpm.noGames')); return; }
         var row = el('div', 'display:flex;flex-wrap:wrap;gap:6px;');
         row.id = 'lm-analytics-tiles';
         tile(row, T('games'), fmtNum(a.games));
@@ -684,8 +607,8 @@
     }
     function paintHeat(body) {
         var t = theme(), all = loadTracks();
-        if (!enabled()) note(body, T('recOffShort'));
-        if (!all.length) { note(body, T('noTracks')); return; }
+        if (!enabled()) note(body, TF('pkg.rpm.recOff'));
+        if (!all.length) { note(body, TF('pkg.rpm.noTracks')); return; }
         /* map sizes, newest first; the newest game's map is the default */
         var maps = [], count = {};
         for (var i = all.length - 1; i >= 0; i--) { var m = all[i].map; if (!count[m]) { count[m] = 0; maps.push(m); } count[m]++; }
@@ -697,7 +620,7 @@
         var lrow = el('div', 'display:flex;flex-wrap:wrap;gap:4px;align-items:center;');
         lrow.appendChild(el('span', 'color:' + t.tc2 + ';margin-right:2px;', T('layer')));
         ['move', 'death', 'spawn'].forEach(function (l) {
-            var b = btn(T(l), heat.layer === l ? 'background:' + t.mc + ';color:' + t.pc + ';font-weight:700;' : '', function () { heat.layer = l; paint(); });
+            var b = btn(T(l), heat.layer === l ? 'background:' + t.mc + ';color:' + t.pc + ';font-weight:700;' : '', function () { heat.layer = l; redraw(); });
             b.setAttribute('data-layer', l);
             lrow.appendChild(b);
         });
@@ -706,7 +629,7 @@
             var r = el('label', 'display:flex;gap:6px;align-items:center;'), s = el('select', 'font:inherit;font-size:var(--lm-w-fs,12px);min-height:var(--lm-w-ctl,28px);max-width:180px;color:var(--lm-tc,#000);background:var(--lm-w-field,var(--lm-pc2,#fff));border:1px solid var(--lm-pc2,rgba(255,255,255,0.2));border-radius:var(--lm-radius-s,4px);');
             r.appendChild(el('span', 'color:' + t.tc2 + ';', label));
             opts.forEach(function (o) { var op = el('option', null, o[1]); op.value = String(o[0]); if (o[0] === val) op.selected = true; s.appendChild(op); });
-            s.addEventListener('change', function () { on(+s.value); paint(); });
+            s.addEventListener('change', function () { on(+s.value); redraw(); });
             r.appendChild(s);
             side.appendChild(r);
             return s;
@@ -722,7 +645,7 @@
         leg.appendChild(el('span', null, T('more')));
         side.appendChild(leg);
         /* canvas fits the window: at most 320 px, less on a short phone screen */
-        var avail = Math.min(320, Math.max(140, (window.innerHeight || 412) - 120), Math.max(140, (md.clientWidth || 300) - 40));
+        var avail = Math.min(320, Math.max(140, (window.innerHeight || 412) - 120), Math.max(140, (body.clientWidth || 300) - 20));
         var cv = el('canvas', 'width:' + avail + 'px;height:' + avail + 'px;flex:0 0 auto;border-radius:var(--lm-radius-s,4px);background:rgba(0,0,0,0.25);');
         cv.id = 'lm-analytics-heat';
         var dpr = Math.min(2, window.devicePixelRatio || 1);
@@ -760,46 +683,18 @@
         ctx.globalAlpha = 1;
     }
 
-    /* ------------------------------------------------------------------ entry points */
-    /* "Analytics" button in the profile stats (#user-stats, shown by clicking the profile picture) */
-    var ICON = '\ud83d\udcca ';
-    function ensureButton() {
-        var host = document.getElementById('user-stats');
-        if (!host || document.getElementById('lm-analytics-btn')) return;
-        var b = btn(ICON + T('title'), 'display:block;clear:both;margin:6px 0 0;font-size:11px;min-height:26px;', function () { open('dash'); });
-        b.id = 'lm-analytics-btn';
-        host.appendChild(b);
-    }
-    /* while recording is on, also a link under the menu footer (easy to reach on a phone); not while
-     * the "Match history" link is there: that one opens this window too (History tab) */
-    function ensureFooterLink(on) {
-        var b = document.getElementById('lm-analytics-link');
-        if (!on || document.getElementById('lm-mh-btn')) { if (b && b.parentNode) b.parentNode.removeChild(b); return; }
-        if (b) return;
-        var foot = document.getElementById('menu-footer');
-        if (!foot || !foot.parentNode) return;
-        var ref = document.getElementById('lm-session-stats');
-        if (!ref || ref.parentNode !== foot.parentNode) ref = foot;
-        b = el('div', 'font-size:11px;text-align:center;margin-top:2px;cursor:pointer;text-decoration:underline;opacity:.85;', ICON + T('title'));
-        b.id = 'lm-analytics-link';
-        b.className = 'menu-main-color';
-        b.addEventListener('click', function (e) { e.preventDefault(); e.stopPropagation(); open('dash'); });
-        ref.parentNode.insertBefore(b, ref.nextSibling);
-    }
+    /* ------------------------------------------------------------------ recording switch */
     function tick() {
         var on = enabled();
         try { setListening(on); } catch (e) { }
         try { if (on) checkSession(); } catch (e) { }
-        try { if (typeof document !== 'undefined' && document.getElementById) { ensureButton(); ensureFooterLink(on); } } catch (e) { }
     }
 
     window.LMAnalytics = Object.freeze({
-        /* the option, the listeners and the entry points again (a settings change, the Match
-         * history link added or removed: ogario.v4.js _lmMatchHistoryButton) */
+        /* the option and the listeners again (a settings change) */
         sync: tick,
-        open: open,
-        close: close,
-        isOpen: function () { return !!(md && md.parentNode); },
+        /* the Dashboard or Heatmaps into an element (the Replays window) */
+        paint: paint,
         /* pure parts, for the tests */
         core: Object.freeze({
             SCHEMA: SCHEMA, GRID: GRID, encodeCell: encodeCell, decodeCells: decodeCells, trackFacts: trackFacts, binHeat: binHeat,
@@ -808,18 +703,14 @@
         })
     });
     tick();
-    /* a profile, preset or import (or the switch) that changes recording or Match history */
+    /* a preset or import (or the switch) that changes Record replays */
     if (window.LMEvents && typeof window.LMEvents.on === 'function') {
         window.LMEvents.on('settingsChange', function (d) {
-            if (d && (d.key === 'analytics' || d.key === 'matchHistory') && typeof setTimeout === 'function') setTimeout(tick, 0);
+            if (d && d.key === 'recordReplays' && typeof setTimeout === 'function') setTimeout(tick, 0);
         });
     }
-    /* language change: the open window, the profile button and the footer link follow it */
+    /* language change: a shown view follows it */
     if (window.LMi18n && typeof window.LMi18n.onChange === 'function') window.LMi18n.onChange(function () {
-        try {
-            if (md) { relabel(); paint(); }
-            if (typeof document === 'undefined' || !document.getElementById) return;
-            ['lm-analytics-btn', 'lm-analytics-link'].forEach(function (id) { var n = document.getElementById(id); if (n) n.textContent = ICON + T('title'); });
-        } catch (e) { }
+        try { if (shown && shown.parentNode) redraw(); } catch (e) { }
     });
 })();

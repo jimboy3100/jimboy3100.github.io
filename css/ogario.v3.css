@@ -1777,11 +1777,6 @@ input.hide-url::selection,input.stream-mode::selection{
 #profile #lm-extended-menu-btns {
    margin: 6px 0 !important;
 }
-/* Analytics and the Badges button side by side */
-#user-stats #lm-analytics-btn {
-   display: inline-block !important;
-   vertical-align: top;
-}
 .agario-profile-panel .vanilla-skin-preview {
    cursor: pointer;
    float: right;

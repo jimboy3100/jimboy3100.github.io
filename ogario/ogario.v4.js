@@ -456,8 +456,9 @@ function _lmPersonalBests(update) {
     return res;
 }
 window._lmPersonalBests = _lmPersonalBests;
-/* Match history (option "matchHistory"): the last 50 lives, kept in this browser only
- * (localStorage 'lmMatchHistory'). Corrupt data reads as an empty list. */
+/* Match history: the last 50 lives, recorded while "Record replays" is on (with the game's
+ * stats, see analytics.js), kept in this browser only (localStorage 'lmMatchHistory').
+ * Shown in the Replays window (Match history view). Corrupt data reads as an empty list. */
 function _lmMatchHistory(add) {
     var list = [];
     try { var raw = localStorage.getItem('lmMatchHistory'); if (raw) { var o = JSON.parse(raw); if (Array.isArray(o)) list = o.filter(function (r) { return r && typeof r === 'object' && !Array.isArray(r); }); } } catch (e) { list = []; }
@@ -479,58 +480,12 @@ function _lmHostOnly(u) {
 }
 window._lmHostOnly = _lmHostOnly;
 function _lmMhT(k, en) { var s = window.lmT && window.lmT(k); return s && s !== k ? s : en; }
-/* "Match history" link under the menu footer (only while the option is on); the Analytics
- * footer link is shown only while this one is not: it follows at once (analytics.js) */
-function _lmMatchHistoryButton() {
-    _lmMatchHistoryButtonNow();
-    if (window.LMAnalytics && typeof window.LMAnalytics.sync === 'function') { try { window.LMAnalytics.sync(); } catch (e) { } }
-}
-function _lmMatchHistoryButtonNow() {
-    var on = typeof defaultmapsettings !== 'undefined' && defaultmapsettings.matchHistory;
-    var b = document.getElementById('lm-mh-btn');
-    if (!on) { if (b && b.parentNode) b.parentNode.removeChild(b); return; }
-    if (!b) {
-        var foot = document.getElementById('menu-footer');
-        if (!foot || !foot.parentNode) return;
-        var ref = document.getElementById('lm-session-stats');
-        if (!ref || ref.parentNode !== foot.parentNode) ref = foot;
-        b = document.createElement('div');
-        b.id = 'lm-mh-btn';
-        b.className = 'menu-main-color';
-        b.style.cssText = 'font-size:11px;text-align:center;margin-top:2px;cursor:pointer;text-decoration:underline;opacity:.85;';
-        b.addEventListener('click', function (e) { e.preventDefault(); e.stopPropagation(); _lmMatchHistoryOpen(); });
-        ref.parentNode.insertBefore(b, ref.nextSibling);
-    }
-    b.textContent = '📜 ' + _lmMhT('matchHistory', 'Match history');
-}
-window._lmMatchHistoryButton = _lmMatchHistoryButton;
-/* another language: the session line, the "Match history" link and the private room link under
- * the menu footer are written again (they kept the language they were first written in) */
+/* another language: the session line and the private room link under the menu footer are
+ * written again (they kept the language they were first written in) */
 if (window.LMi18n && typeof window.LMi18n.onChange === 'function') window.LMi18n.onChange(function () {
     try { _lmSessionStats(); } catch (e) { }
-    try { _lmMatchHistoryButton(); } catch (e) { }
     try { _lmRoomButton(); } catch (e) { }
 });
-/* The match history list is the History tab of the Analytics window (ogario/modules/analytics.js),
- * next to the statistics made from the same games; it was a window of its own. */
-function _lmMatchHistoryOpen() {
-    if (window.LMAnalytics && typeof window.LMAnalytics.open === 'function') { window.LMAnalytics.open('history'); return; }
-    /* the window is not there yet (still loading, or its download failed): a message instead of
-     * nothing, the file is asked for again after a failure, and the list opens once it is there */
-    if (window._lmAnalyticsLoadFailed && typeof window._lmAnalyticsLoad === 'function') window._lmAnalyticsLoad();
-    if (window.toastr) toastr.info(_lmMhT('mhLoading', 'Loading…'));
-    var tries = 0, start = Date.now();
-    clearTimeout(_lmMatchHistoryOpen._t);
-    (function wait() {
-        if (window.LMAnalytics && typeof window.LMAnalytics.open === 'function') { window.LMAnalytics.open('history'); return; }
-        if (window._lmAnalyticsLoadFailed || Date.now() - start > 15000) {
-            if (window.toastr) toastr.error(lmT('pkg.hf.analyticsLoadFailed'));
-            return;
-        }
-        _lmMatchHistoryOpen._t = setTimeout(wait, ++tries < 8 ? 250 : 1000);
-    })();
-}
-window._lmMatchHistoryOpen = _lmMatchHistoryOpen;
 /* the chosen list ("This device" or "Account (server)"): kept while the window is drawn again
  * (opened again, another tab, a language change); the account list only while it can be shown */
 var _lmMhViewWanted = 'local';
@@ -625,20 +580,19 @@ function _lmMatchHistoryPaint(host) {
     var fill = function () {
         while (body.firstChild) body.removeChild(body.firstChild);
         var list = _lmMatchHistory().slice().reverse();
-        /* option off: say so (with Analytics on the Dashboard counts games this list never got;
-         * "No games recorded yet" read as if nothing was recorded at all) and offer to turn it on */
-        if (!(typeof defaultmapsettings !== 'undefined' && defaultmapsettings.matchHistory)) {
-            var off = el('div', 'padding:8px;margin:4px 0;text-align:center;border-radius:var(--lm-radius-s,4px);background:rgba(255,255,255,0.05);color:' + tc2 + ';', lmT('pkg.r14.mhOff') + ' ');
+        /* Record replays off: say so (the list keeps its old games) and offer to turn it on */
+        if (typeof defaultmapsettings !== 'undefined' && defaultmapsettings.recordReplays === false) {
+            var off = el('div', 'padding:8px;margin:4px 0;text-align:center;border-radius:var(--lm-radius-s,4px);background:rgba(255,255,255,0.05);color:' + tc2 + ';', lmT('pkg.rpm.recOff') + ' ');
             off.id = 'lm-mh-off';
             var on = el('button', 'cursor:pointer;font:inherit;font-weight:700;border:0;border-radius:var(--lm-radius-s,4px);padding:3px 10px;min-height:var(--lm-w-ctl,26px);background:' + mc + ';color:' + pc + ';', lmT('pkg.r14.mhTurnOn'));
             on.type = 'button';
             on.id = 'lm-mh-on';
             on.addEventListener('click', function (e) {
                 e.stopPropagation();
-                /* the Settings switch itself: its change handler saves and adds the footer link */
-                var cb = document.getElementById('matchHistory');
+                /* the Settings switch itself: its change handler saves it and starts recording */
+                var cb = document.getElementById('recordReplays');
                 if (cb && cb.type === 'checkbox' && !cb.checked) { cb.checked = true; try { cb.dispatchEvent(new Event('change', { bubbles: true })); } catch (er) { } }
-                if (!defaultmapsettings.matchHistory && window.application && typeof application.setSettings === 'function') { application.setSettings('matchHistory', true); }
+                if (defaultmapsettings.recordReplays === false && window.application && typeof application.setSettings === 'function') { application.setSettings('recordReplays', true); }
                 fill();
             });
             off.appendChild(on);
@@ -671,11 +625,10 @@ function _lmMatchHistoryPaint(host) {
     clr.addEventListener('click', function (e) {
         e.stopPropagation();
         /* says what goes and what stays: only this device's list, whose games also leave the
-         * Analytics Dashboard and statistics (they merge this list in) unless Analytics recorded
-         * them itself (lmAnalyticsGames, not touched); the account's server history stays */
-        var _lmMhAn = _lmMhT('modules.analytics.title', 'Analytics');
-        var _lmMhAsk = window.lmT ? window.lmT('pkg.ha8x.mhClearAsk', [_lmMhAn]) : '';
-        if (!_lmMhAsk || _lmMhAsk === 'pkg.ha8x.mhClearAsk') _lmMhAsk = _lmMhT('mhClearConfirm', 'Clear the match history?');
+         * Dashboard (it merges this list in) except the ones with their full stats (lmAnalyticsGames,
+         * not touched); the account's server history stays */
+        var _lmMhAsk = window.lmT ? window.lmT('pkg.rpm.mhClearAsk') : '';
+        if (!_lmMhAsk || _lmMhAsk === 'pkg.rpm.mhClearAsk') _lmMhAsk = _lmMhT('mhClearConfirm', 'Clear the match history?');
         if (!window.confirm(_lmMhAsk)) return;
         try { localStorage.removeItem('lmMatchHistory'); } catch (er) { }
         fill();
@@ -969,7 +922,7 @@ function _lmRoomButton() {
     if (!b) {
         var foot = document.getElementById('menu-footer');
         if (!foot || !foot.parentNode) return;
-        var ref = document.getElementById('lm-mh-btn') || document.getElementById('lm-session-stats');
+        var ref = document.getElementById('lm-session-stats');
         if (!ref || ref.parentNode !== foot.parentNode) ref = foot;
         b = document.createElement('div');
         b.id = 'lm-room-btn';
@@ -21006,7 +20959,7 @@ var defaultmapsettings = {
     autoZoom: false,
     unlockedFPS: false,
     highDPI: false,
-    recordReplays: true,          /* off = no packets kept for replays (saves memory) */
+    recordReplays: true,          /* off = no packets kept for replays (saves memory), and no match history or game stats */
     glAntialias: true,            /* WebGL anti-aliasing (MSAA); read when the GPU context is created */
     performanceMode: false,       /* one switch for weak PCs/phones: turns the costly effects off */
     fpsLimit: 0,                  /* frames per second cap (0 = off): less heat/battery on laptops and phones */
@@ -21168,8 +21121,8 @@ var defaultmapsettings = {
     gameOverStats: false,
     /* personalBests is gone: the all-time personal bests are always kept (localStorage) and shown on the
      * Game Over card, so a saved value of the old switch is skipped on load */
-    matchHistory: false,          /* last 50 lives (mass, time alive, killer, server, mode) kept in this browser (localStorage) */
-    analytics: false,             /* record games for the Analytics window (ogario/modules/analytics.js; localStorage, capped) */
+    /* matchHistory and analytics are gone: "Record replays" (recordReplays) records the game and its
+     * stats (match history, Dashboard and Heatmaps in the Replays window); saved values are skipped on load */
     streamMode: false,
     hideSkinUrl: false,
     showQuickMenu: true,
@@ -21461,12 +21414,12 @@ function lmRenameOldHotkeys(map) {
     return changed;
 }
 /* Who ate me: kept while anything shows it: the Game Over card ("Eaten by" and its death recap)
- * and the match history. One rule for the server's report (lmKiller)
+ * and the match history (recorded with Record replays). One rule for the server's report (lmKiller)
  * and the one seen in the remove packets, and for the guard against my own multibox unit being
  * named, so no switch combination gets the killer from one and not the other. */
 function lmKillerWanted(s) {
     s = s || defaultmapsettings;
-    return !!(s && (s.gameOverStats || s.matchHistory));
+    return !!(s && (s.gameOverStats || s.recordReplays !== false));
 }
 /* The killer shown by the Game Over card ("Eaten by") and kept in the match history: while the
  * death recap records eats (_lmDROn), its rule (deathrecap.js killerNow: the server's
@@ -25080,9 +25033,6 @@ function thelegendmodproject() {
                     case 'myCustomColor':
                         if (!checked && _lmSetWas && window.legendmod && legendmod._lmOwnColorsRestore) legendmod._lmOwnColorsRestore();
                         break;
-                    case 'matchHistory':
-                        _lmMatchHistoryButton();
-                        break;
                     case 'gameOverStats':
                         if (window.LMDeathRecap) LMDeathRecap.sync();
                         break;
@@ -26450,7 +26400,7 @@ function thelegendmodproject() {
                 });
                 /* Recently added options: a NEW badge for one build (until the settings were
                  * opened with the badges shown), and a toggle that lists only them. */
-                var NEW_KEYS = ['showStatsAlive', 'mergeRings', 'rainbowMapBorders', 'fpsLimit', 'x16Sound', 'non16Sound', 'showMiniMapTrail', 'lbHideBots', 'centerWeightCamera', 'rainbowBorderSpeed', 'chatHideWords', 'reducedMotion', 'matchHistory', 'gamepadDeadzone', 'performanceMode', 'recordReplays', 'glAntialias', 'macroSplitDelay', 'macroPopSplitDelay', 'splitPrediction', 'tripleSplitRange', 'chatShowId', 'hudMergeSound', 'hudRelativeMass', 'massFormat', 'volMaster', 'volChat', 'volCommands', 'volGameplay', 'adaptivePerf', 'analytics'];
+                var NEW_KEYS = ['showStatsAlive', 'mergeRings', 'rainbowMapBorders', 'fpsLimit', 'x16Sound', 'non16Sound', 'showMiniMapTrail', 'lbHideBots', 'centerWeightCamera', 'rainbowBorderSpeed', 'chatHideWords', 'reducedMotion', 'gamepadDeadzone', 'performanceMode', 'recordReplays', 'glAntialias', 'macroSplitDelay', 'macroPopSplitDelay', 'splitPrediction', 'tripleSplitRange', 'chatShowId', 'hudMergeSound', 'hudRelativeMass', 'massFormat', 'volMaster', 'volChat', 'volCommands', 'volGameplay', 'adaptivePerf'];
                 newBtn.on('click', function () {
                     newOnly = !newOnly;
                     newBtn.toggleClass('active', newOnly);
@@ -26556,9 +26506,9 @@ function thelegendmodproject() {
              * (buildHotkeysControls): all input bindings live there, none in Settings. */
             //this.addOptions(["showTop5", "showTargeting", "showLbData", "centeredLb", "normalLb", "fpsAtTop", "tweenMaxEffect"], "hudGroup"),
             this.addOptions(["showTop5", "showTargeting", "showLbData", "centeredLb", "tweenMaxEffect", "top5skins"], "hudGroup");
-            this.addOptions(["showStats", "showStatsMass", "showStatsESTE", "showStatsEMTE", "showStatsMTE", "showStatsSTE", "showStatsTTE", "showStatsPTE", "showStatsN16", "showStatsFPS", "showStatsPPS", "showStatsAlive", "gameOverStats", "showTime", "showStopwatch", "analytics"], "statsGroup");
+            this.addOptions(["showStats", "showStatsMass", "showStatsESTE", "showStatsEMTE", "showStatsMTE", "showStatsSTE", "showStatsTTE", "showStatsPTE", "showStatsN16", "showStatsFPS", "showStatsPPS", "showStatsAlive", "gameOverStats", "showTime", "showStopwatch"], "statsGroup");
             /* Replays and history */
-            this.addOptions(["recordReplays", "matchHistory"], "replayGroup");
+            this.addOptions(["recordReplays"], "replayGroup");
             /* turning recording off keeps the recordings in memory: freeing them is this explicit, confirmed action */
             $('#recordReplays').closest('label').after($('<button type="button" id="lm-rec-clear" class="btn btn-xs btn-danger" style="display:block;margin:2px 0 6px;"></button>')
                 .attr('data-i18n', 'lmRecClear').text(lmT('lmRecClear'))
@@ -28199,8 +28149,8 @@ function thelegendmodproject() {
                     if (window.legendmod && typeof legendmod._lmRefreshBestRow === 'function') legendmod._lmRefreshBestRow();
                 } catch (e) { }
             }
-            /* optional match history: one record per life (server host only, no tokens) */
-            if (defaultmapsettings.matchHistory && !_lmPracticeLife) {
+            /* match history (with Record replays): one record per life (server host only, no tokens) */
+            if (defaultmapsettings.recordReplays !== false && !_lmPracticeLife) {
                 try {
                     var _lmMhK = lmKillerShown(_lmNow);
                     _lmMatchHistory({
@@ -28212,7 +28162,7 @@ function thelegendmodproject() {
                         server: _lmHostOnly(window.legendmod && legendmod.ws),
                         mode: String(($('#gamemode option:selected').text() || '').trim() || $('#gamemode').val() || '').slice(0, 30)
                     });
-                    _lmMatchHistoryButton();
+                    _lmMatchHistoryRefreshOpen();
                 } catch (e) { }
             }
             if (window._lmRecLive) window._lmRecEv('d', +ogario.playerScore || 0);
@@ -84301,7 +84251,7 @@ function pickPlayerCellBySize(players, selectBiggest) {
         }, 1000);
     })();
     /* session summary after a reload in the same tab */
-    setTimeout(function () { try { _lmSessionStats(); } catch (e) { } try { _lmMatchHistoryButton(); } catch (e) { } }, 3000);
+    setTimeout(function () { try { _lmSessionStats(); } catch (e) { } }, 3000);
     /* Initialize WASM acceleration modules (async, non-blocking) */
     /* WasmCellParser is not used since its updateCells path was removed: its init only downloaded and
      * compiled cell_parser.wasm from jsDelivr on every load */
@@ -87318,13 +87268,13 @@ Object.defineProperty(Array.prototype, 'stDev', {
     } catch (e) {
         console.warn('[LM] Error loading death recap script:', e);
     }
-    /* Analytics window (stats, heatmaps, history); records only while its option is on */
+    /* Game stats for the Replays window's Dashboard and Heatmaps; records only while Record replays is on */
     try {
         var analyticsScript = document.createElement('script');
         analyticsScript.type = 'text/javascript';
         analyticsScript.src = 'https://www.legendmod.ml/ogario/modules/analytics.js?v=' + (window.OgVer || '');
         analyticsScript.charset = 'utf-8';
-        /* a failed download is noted: Match history asks for the file again (_lmMatchHistoryOpen) */
+        /* a failed download is noted: the Replays window asks for the file again (replaystudio.js) */
         window._lmAnalyticsLoad = function () {
             window._lmAnalyticsLoadFailed = false;
             var s = document.createElement('script');

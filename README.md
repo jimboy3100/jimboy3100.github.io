@@ -76,7 +76,7 @@
 ### Competitive Tools
 - 🔄 Replays with pause, speed & seek
 - ☠️ Death recap — what happened in your last 20 seconds
-- 📈 Analytics dashboard — mass/min, top-10 rate, heatmaps
+- 📈 Game stats in the Replays window — match history, mass/min, top-10 rate, heatmaps
 
 ### More
 - 🎮 Full gamepad/controller support (PS, Xbox, generic)
