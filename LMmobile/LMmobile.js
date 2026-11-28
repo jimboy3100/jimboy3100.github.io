@@ -1892,6 +1892,9 @@
                 var mbUnit = window.multiboxPlayerEnabled && typeof getActiveSpect === 'function' ? getActiveSpect(window.multiboxPlayerEnabled) : null;
                 if (mbUnit && mbUnit.ping != null) ping = +mbUnit.ping || 0;
                 else if (window.drawRender) ping = +window.drawRender.ping || 0;
+                /* no ping while a replay plays, like the desktop stats line: the replay
+                 * socket answers no ping of this page (the value left is the old live one) */
+                if (window.legendmod && String(window.legendmod.ws || '').indexOf('replay') !== -1) ping = 0;
 
                 var dotText = '';
                 if (ping > 0) {

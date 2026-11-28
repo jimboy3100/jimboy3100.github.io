@@ -24,5 +24,7 @@ ok(dot({ drawRender: {} }) === '', 'no ping measured yet: no dot');
 ok(dot({}) === '', 'no drawRender (core not loaded): no dot');
 ok(dot({ drawRender: { ping: 42 }, multiboxPlayerEnabled: 2, spects: [{ number: 2, ping: 77 }] }) === '🟢 77ms', 'controlled multibox unit: its own ping');
 ok(dot({ drawRender: { ping: 42 }, multiboxPlayerEnabled: 2, spects: [{ number: 2 }] }) === '🟢 42ms', 'unit without a ping yet: main ping');
+ok(dot({ drawRender: { ping: 42 }, legendmod: { ws: 'wss://imsolo.pro.replay:2000' } }) === '', 'replay playing: no ping dot (the old live ping is not shown)');
+ok(dot({ drawRender: { ping: 42 }, legendmod: { ws: 'wss://live-arena-1.agar.io:443' } }) === '🟢 42ms', 'live server: the ping dot is shown');
 console.log(failed ? failed + ' check(s) failed' : 'all phone ping checks passed');
 process.exit(failed ? 1 : 0);
