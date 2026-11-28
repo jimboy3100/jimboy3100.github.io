@@ -23063,7 +23063,9 @@ var defaultmapsettings = {
     multiKeepMoving: true,
     middleMultiView: false,
     middleMultiViewWhenClose: true,
-    multiboxAmount: 3,
+    /* the most Multibox players (P1 included) Add Player may open: 2, P1 + P2, as shipped; a
+     * saved value (an old 3 as well) is the player's own and is kept as it is */
+    multiboxAmount: 2,
     mbSwitchAfterDeath: true,
     mbFreeze: false,
     mbAutoRespawn: true,
@@ -23664,8 +23666,35 @@ var LM_EXPORT_KEYS = [
     { key: 'lmNotificationPrefs', type: 'o', only: ['muted'] },
     /* Settings > Voice (LMexpress/LMexpress.sniff3.js): the chat prefix and the speech language */
     { key: 'prefix', type: 's', max: 32 },
-    { key: 'lang', type: 's', max: 16, re: /^(?:default|[A-Za-z]{2,3}(?:-[A-Za-z]{2,4})?)$/ }
+    { key: 'lang', type: 's', max: 16, re: /^(?:default|[A-Za-z]{2,3}(?:-[A-Za-z]{2,4})?)$/ },
+    /* the Multibox players' profiles (P1..P6, lmMbSlotsPack): profile numbers only, never a
+     * connection, a login or a game; an older export has none and the device keeps its own */
+    { key: 'lmMbProfileSlots', type: 'o', only: ['v', 'slots'] }
 ];
+/* The profile of each Multibox player, kept as 'lmMbProfileSlots': { v: 1, slots: [P1, P2 ... P6] },
+ * a profile's place in the profile list or null (none chosen). The players have no other identity
+ * than their slot and the profiles none than their place (the list only grows or shrinks at its
+ * end: a lower profile count moves the last ones aside and a higher one brings them back there).
+ * Preferences only: no socket, life, mass or generation, and loading it opens nothing. P1 and P2
+ * are also the saved pair (ogarioSelectedProfile / ogarioSelectedOldProfile) older versions read. */
+function lmMbSlotsPack(slots) {
+    var max = typeof LM_MB_MAX_PLAYERS === 'number' ? LM_MB_MAX_PLAYERS : 6, out = [], last = 0, i, v;
+    for (i = 0; i < max; i++) {
+        v = Array.isArray(slots) ? slots[i] : null;
+        v = typeof v === 'number' && v >= 0 && v < 1000 && v === Math.floor(v) ? v : null;
+        out.push(v);
+        if (v !== null) last = i + 1;
+    }
+    return { v: 1, slots: out.slice(0, last) };
+}
+/* the stored value (any value) as the slots (P1 at 0), each a profile of the n there are or null;
+ * null when nothing usable is stored (none yet: the saved pair is P1 / P2) */
+function lmMbSlotsRead(raw, n) {
+    if (!raw || typeof raw !== 'object' || !Array.isArray(raw.slots)) return null;
+    var s = lmMbSlotsPack(raw.slots).slots;
+    for (var i = 0; i < s.length; i++) if (!(s[i] < n)) s[i] = null;
+    return s;
+}
 function lmExportFits(e, v) {
     if (e.type === 's') return typeof v === 'string' && v.length <= e.max && (!e.re || e.re.test(v));
     return e.type === 'a' ? Array.isArray(v) : !!v && typeof v === 'object' && !Array.isArray(v);
@@ -27344,6 +27373,16 @@ function thelegendmodproject() {
                     else need.push('lm-mobile-layouts');
                 }
                 ['lmGamepad', 'prefix', 'lang', 'lmHudLayouts'].forEach(function (k) { if (changed(k)) need.push(k); });
+                /* the Multibox players' profiles: P1 / P2 of the import become the selected pair,
+                 * the open players keep playing (nothing opens or closes) */
+                if (changed('lmMbProfileSlots')) {
+                    try {
+                        if (app._lmMbSlotsLoad(true)) {
+                            app.setProfile();
+                            if (defaultmapsettings.multiBoxShadow) app.setProfileboxShadow();
+                        }
+                    } catch (e) { fail('lmMbProfileSlots'); }
+                }
             }
             if (sel('ogarioThemeSettings') && v.ogarioThemeSettings && typeof v.ogarioThemeSettings === 'object') {
                 var tv = v.ogarioThemeSettings;
@@ -27417,7 +27456,7 @@ function thelegendmodproject() {
                     this.setSkinPreview(profiles[e].skinURL, 'profile-' + e);
                 }
             }
-            this.mbSlots = [];
+            /* (loadProfiles read the Multibox players' profiles again: the import's or this device's) */
             this.setProfile();
             if (defaultmapsettings.multiBoxShadow) this.setProfileboxShadow();
             this.profiling();
@@ -27782,6 +27821,8 @@ function thelegendmodproject() {
                 this.selectedOldProfile =
                     this.selectedProfile;
             }
+            /* the profiles of P3 on as they were saved (setProfile gives the free slots one) */
+            this._lmMbSlotsLoad();
             if (profiles[this.selectedProfile]) {
                 ogarcopythelb.nick = profiles[this.selectedProfile].nick;
                 //changed
@@ -27804,6 +27845,8 @@ function thelegendmodproject() {
             var extra = readLocalStorageJSON('ogarioPlayerProfilesExtra', []);
             if (!Array.isArray(extra)) extra = [];
             var keep = [readLocalStorageJSON('ogarioSelectedProfile', 0), readLocalStorageJSON('ogarioSelectedOldProfile', 0)].map(function (v) { return parseInt(v, 10); });
+            /* nor those of the other Multibox players */
+            keep = keep.concat(lmMbSlotsRead(readLocalStorageJSON('lmMbProfileSlots', null), profiles.length) || []);
             var res = lmMergeSkinCollections(col, profiles, extra, keep, defaultSettings.mainColor);
             try {
                 if (res.hidden) ls.setItem('ogarioPlayerProfilesExtra', JSON.stringify(extra));
@@ -28053,52 +28096,91 @@ function thelegendmodproject() {
 
             $('#skins a').removeClass('selected');
             $('#skins a[data-profile=\'' + this.selectedProfile + '\']').addClass('selected');
-            /* the multibox slots follow the selected profiles */
+            /* the multibox slots follow the selected profiles, and are kept for the next load */
             this.ensureMbSlots();
+            try { this.saveSettings(lmMbSlotsPack(this.mbSlots), 'lmMbProfileSlots'); } catch (e) { }
+        },
+        /* the saved profiles of the Multibox players (lmMbSlotsRead) into mbSlots, after the saved
+         * pair is read. P1 / P2 are the pair: a pair an older version changed since wins, and a
+         * later player that had one of its profiles gets another one (ensureMbSlots). adopt (an
+         * import that brought them): P1 / P2 of the import become the pair. Nothing saved yet: the
+         * pair alone (an older version's save), P3 on get theirs from ensureMbSlots. Opens nothing. */
+        _lmMbSlotsLoad(adopt) {
+            var n = Array.isArray(profiles) ? profiles.length : 0;
+            var st = lmMbSlotsRead(readLocalStorageJSON('lmMbProfileSlots', null), n), i;
+            if (!st) {
+                this.mbSlots = [];
+                return false;
+            }
+            if (adopt && st[0] != null) {
+                this.selectedProfile = st[0];
+                this.selectedOldProfile = st[1] != null ? st[1] : st[0];
+                this.saveSettings(this.selectedProfile, 'ogarioSelectedProfile');
+                this.saveSettings(this.selectedOldProfile, 'ogarioSelectedOldProfile');
+            } else if (st[0] !== this.selectedProfile || (st[1] != null ? st[1] : st[0]) !== this.selectedOldProfile) {
+                st[0] = this.selectedProfile;
+                st[1] = this.selectedOldProfile !== this.selectedProfile ? this.selectedOldProfile : null;
+                for (i = 2; i < st.length; i++) if (st[i] === st[0] || st[i] === st[1]) st[i] = null;
+            }
+            this.mbSlots = st;
+            return true;
         },
         /* ─── mbSlots: player slot → profile index (index slot - 1: P1 0, P2 1 ... P6 5) ─── */
         ensureMbSlots() {
-            /* one entry per player Add Player may open (lmMbCapacity: Settings "Multibox slots",
-             * 2 to 6). P1 and P2 are the two selected profiles (the saved pair); P3 on keep the
-             * profile they were given in this session while it still exists, else the first one no
-             * slot has. */
+            /* P1 and P2 are the two selected profiles (the saved pair); P3 on keep the profile they
+             * were given (saved, lmMbProfileSlots) while it still exists. Every slot Add Player may
+             * open (lmMbCapacity: Settings "Maximum Multibox players", 2 to 6) without one gets the
+             * first profile no slot has. A slot above the capacity keeps its profile (a lower
+             * capacity closes nobody and takes no player's profile; a higher one brings them back)
+             * but is given none. Only a slot without a profile changes: no other player's moves. */
             var maxMb = typeof lmMbCapacity === 'function' ? lmMbCapacity() : 2;
+            var max = typeof LM_MB_MAX_PLAYERS === 'number' ? LM_MB_MAX_PLAYERS : 6;
             var n = typeof profiles !== 'undefined' && profiles ? profiles.length : 0;
-            var prev = Array.isArray(this.mbSlots) ? this.mbSlots : [], out = [this.selectedProfile], i, p, k;
+            var prev = Array.isArray(this.mbSlots) ? this.mbSlots : [], out = [this.selectedProfile], i, p, last;
+            var ok = function (k) { return typeof k === 'number' && k >= 0 && k < n && k === Math.floor(k); };
             // slot 0 has selectedProfile; a new P1: P2 is the second selected profile again
-            if (prev.length === 0 || prev[0] !== this.selectedProfile) {
-                if (this.selectedOldProfile != null && this.selectedOldProfile !== this.selectedProfile && profiles[this.selectedOldProfile]) {
-                    out.push(this.selectedOldProfile);
-                }
-            } else if (prev.length > 1) out.push(prev[1]);
-            // Fill remaining slots: P3 on what they had, else distinct available profiles
-            for (i = out.length; i < maxMb; i++) {
-                k = i >= 2 ? prev[i] : null;
-                if (k != null && k >= 0 && k < n) { out.push(k); continue; }
+            var p2 = prev.length && prev[0] === this.selectedProfile && ok(prev[1]) ? prev[1] : this.selectedOldProfile;
+            out.push(ok(p2) && p2 !== this.selectedProfile ? p2 : null);
+            // P3 on: what they had (above the capacity as well)
+            var len = Math.min(max, Math.max(maxMb, prev.length));
+            for (i = 2; i < len; i++) out.push(ok(prev[i]) ? prev[i] : null);
+            // a slot within the capacity without a profile: the first one no slot has
+            for (i = 1; i < maxMb; i++) {
+                if (out[i] != null) continue;
                 for (p = 0; p < n && out.indexOf(p) !== -1; p++);
-                if (p >= n) break;
-                out.push(p);
+                if (p < n) out[i] = p;
             }
-            this.mbSlots = out;
+            for (last = out.length; last > 1 && out[last - 1] == null; last--);
+            this.mbSlots = out.slice(0, last);
         },
         syncFromMbSlots() {
             if (this.mbSlots && this.mbSlots.length > 0) {
                 this.selectedProfile = this.mbSlots[0];
-                this.selectedOldProfile = (this.mbSlots.length > 1) ? this.mbSlots[1] : this.mbSlots[0];
+                this.selectedOldProfile = (this.mbSlots.length > 1 && this.mbSlots[1] != null) ? this.mbSlots[1] : this.mbSlots[0];
             }
         },
         eraseProfileboxShadow() {
-            for (i = 0; i < profiles.length; i++) {
+            for (var i = 0; i < profiles.length; i++) {
                 $("#profile-" + i).css('box-shadow', '');
             }
         },
+        /* "Players glow": the profile of each Multibox player glows in the profile list. P1 and P2
+         * in their profile's colour, as always; P3 on (a slot Add Player may open, or one open now)
+         * in their slot's colour, the one of their ring and roster chip (LM_MB_RING_DEFAULT_COLORS).
+         * A profile two players have glows for the first of them. */
         setProfileboxShadow() {
+            var i, slot, idx, done = {}, col;
             for (i = 0; i < profiles.length; i++) {
                 $("#profile-" + i).css('box-shadow', '');
             }
-            $("#profile-" + this.selectedProfile).css('box-shadow', '0px 0px 20px' + profiles[this.selectedProfile].color);
-            if (this.selectedOldProfile !== this.selectedProfile) {
-                $("#profile-" + this.selectedOldProfile).css('box-shadow', '0px 0px 20px' + profiles[this.selectedOldProfile].color);
+            var cap = typeof lmMbCapacity === 'function' ? lmMbCapacity() : 2, s = Array.isArray(this.mbSlots) ? this.mbSlots : [];
+            var open = function (sl) { return typeof lmMbPlayers !== 'undefined' && lmMbPlayers && !!lmMbPlayers.get(sl); };
+            for (slot = 1; slot <= Math.max(2, s.length); slot++) {
+                idx = slot === 1 ? this.selectedProfile : slot === 2 ? this.selectedOldProfile : s[slot - 1];
+                if (idx == null || done[idx] || !profiles[idx] || (slot > 2 && slot > cap && !open(slot))) continue;
+                done[idx] = true;
+                col = slot <= 2 ? profiles[idx].color : (typeof LM_MB_RING_DEFAULT_COLORS !== 'undefined' && LM_MB_RING_DEFAULT_COLORS[slot]) || profiles[idx].color;
+                $("#profile-" + idx).css('box-shadow', slot <= 2 ? '0px 0px 20px' + col : '0px 0px 20px ' + col);
             }
         },
         prevProfile() {

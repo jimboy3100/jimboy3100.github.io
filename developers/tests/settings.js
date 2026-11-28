@@ -79,7 +79,9 @@ check('the old toast position (positionClass, no menu row) is no setting: the HU
 check('settings without a slider have a range too (domination rate)', V('dominationRate', 4 / 3) === 4 / 3 && V('dominationRate', 0) === 1 && V('dominationRate', 9) === 4 && V('dominatedRate', 0.6) === 0.6);
 check('booleans: "true"/"false" converted, other values refused', V('showMass', 'false') === false && V('showMass', 1) === undefined && V('showMass', true) === true);
 check('free text kept, unknown keys refused', V('messageSound', 'a,b') === 'a,b' && V('messageSound', 5) === undefined && V('noSuchSetting', 1) === undefined && V('__proto__', 1) === undefined);
-check('multibox slots 2-6 (the players Add Player may open): an old 3 or 4 stays as it was, 6 is valid, 9 is 6, 1 is 2', V('multiboxAmount', 3) === 3 && V('multiboxAmount', 4) === 4 && V('multiboxAmount', 6) === 6 && V('multiboxAmount', 9) === 6 && V('multiboxAmount', 1) === 2);
+check('maximum Multibox players 2-6 (the players Add Player may open): an old 3 or 4 stays as it was, 6 is valid, 9 is 6, 1 is 2', V('multiboxAmount', 3) === 3 && V('multiboxAmount', 4) === 4 && V('multiboxAmount', 6) === 6 && V('multiboxAmount', 9) === 6 && V('multiboxAmount', 1) === 2);
+check('maximum Multibox players: shipped 2 (P1 + P2), the slider range 2-6 step 1', D.multiboxAmount === 2 && J(SCH.multiboxAmount) === J([2, 6, 1]) &&
+  main.includes('this.addSliderBox(".multiBox", "multiboxAmount", 2, 6, 1);'));
 
 // ── S1 the import path of the settings file (the real loop of importSettings)
 const impLoop = cut("                    var _impS = importValue.ogarioSettings;", "                if (Object.prototype.hasOwnProperty.call(importValue, 'ogarioThemeSettings')");
@@ -131,6 +133,23 @@ const reSaved = JSON.parse(ctx.localStorage.getItem('ogarioSettings'));
 check('load: the old video volume folded into the level and the save rewritten without it', S.videoSkinSoundLevel === 0.3 && !('volVideo' in S) && reSaved.videoSkinSoundLevel === 0.3 && !('volVideo' in reSaved));
 app.loadSettings();
 check('load: folded only once (the next load keeps 0.3)', S.videoSkinSoundLevel === 0.3);
+/* the shipped maximum of Multibox players is 2 now: a saved value (the old default 3 as well) is
+ * the player's and is kept, the default applies only where none was saved (no migration rewrites it) */
+{
+  const keepMb = (v) => {
+    const o = Object.assign({}, saved);
+    if (v === undefined) delete o.multiboxAmount; else o.multiboxAmount = v;
+    ctx.localStorage.setItem('ogarioSettings', JSON.stringify(o));
+    S.multiboxAmount = D.multiboxAmount;
+    app.loadSettings();
+    return [S.multiboxAmount, JSON.parse(ctx.localStorage.getItem('ogarioSettings')).multiboxAmount];
+  };
+  const m3 = keepMb(3), m6 = keepMb(6), m0 = keepMb(undefined), mBad = keepMb('x');
+  check('load: a saved maximum of 3 or 6 Multibox players is kept (also in the save), none saved or an unusable one is the shipped 2',
+    J(m3) === J([3, 3]) && J(m6) === J([6, 6]) && m0[0] === 2 && m0[1] === undefined && mBad[0] === 2, J([m3, m6, m0, mBad]));
+  ctx.localStorage.setItem('ogarioSettings', JSON.stringify(saved));
+  app.loadSettings();
+}
 /* the old reverse trick (no switch since 2020): a saved or imported "on" took the left and right
  * button on the game with nothing to turn it off; it is no setting any more, so it is skipped */
 ctx.localStorage.setItem('ogarioSettings', JSON.stringify(Object.assign({}, saved, { reverseTrick: true })));
@@ -675,6 +694,8 @@ P.profiling = function () { };
 P.setProfileboxShadow = function () { };
 P.setProfile = function () { this.setProfileCalls = (this.setProfileCalls || 0) + 1; };
 P.saveProfileFields = function () { this.savedFields = (this.savedFields || 0) + 1; };
+/* the real load of the Multibox players' profiles (loadProfiles reads them after the saved pair) */
+P._lmMbSlotsLoad = vm.runInContext('({\n' + cut('        _lmMbSlotsLoad(adopt) {', '        /* ─── mbSlots: player slot') + '\n})', ctx)._lmMbSlotsLoad;
 const named = n => Array.from({ length: n }, (_, i) => ({ nick: 'P' + i, clanTag: 'T', skinURL: 'https://i.imgur.com/s' + i + '.png', color: '#00ff00' }));
 const nicks = () => vm.runInContext('profiles', ctx).map(p => p.nick);
 const extraNicks = () => (JSON.parse(ctx.localStorage.getItem('ogarioPlayerProfilesExtra') || '[]')).map(p => p.nick);
@@ -687,6 +708,16 @@ S.profileNumber = 15;
 P.loadProfiles();
 dom.skins = nicks().map((_, i) => 'profile-' + i);
 check('load: 15 profiles, profile 12 selected', nicks().length === 15 && P.selectedProfile === 12 && P.selectedOldProfile === 3);
+/* the profiles of the Multibox players saved last time (lmMbProfileSlots): loadProfiles reads them
+ * after the pair; none saved (an older version): none yet, the pair is P1 / P2 (ensureMbSlots) */
+check('load: no Multibox players\' profiles saved yet: P1 / P2 from the pair alone', J(P.mbSlots) === '[]');
+ctx.localStorage.setItem('lmMbProfileSlots', J({ v: 1, slots: [12, 3, 7, 14, null, 99] }));
+vm.runInContext('profiles = []', ctx);
+P.loadProfiles();
+check('load: the saved profiles of P1..P6 come back (P1 / P2 the pair), one not in the list is none', J(P.mbSlots) === '[12,3,7,14,null,null]' && P.selectedProfile === 12 && P.selectedOldProfile === 3);
+ctx.localStorage.removeItem('lmMbProfileSlots');
+vm.runInContext('profiles = []', ctx);
+P.loadProfiles();
 const setCount = n => { S.profileNumber = n; P.setProfileCount(); };
 setCount(30);
 check('15 -> 30: 15 new default profiles, the list shows 30, the selection stays', nicks().length === 30 && J(nicks().slice(0, 15)) === J(range(0, 15)) && nicks()[29] === 'Profile #30' && dom.skins.length === 30 && P.selectedProfile === 12);

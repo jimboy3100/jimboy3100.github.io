@@ -2925,7 +2925,7 @@
 "settings.multiKeepMoving": "Inactive unit keeps moving",
 "settings.middleMultiView": "View on middle of all players (always, also when far apart)",
 "settings.middleMultiViewWhenClose": "View on middle of the players (when close)",
-"settings.multiboxAmount": "Multibox slots (2-6)",
+"settings.multiboxAmount": "Maximum Multibox players (2-6)",
 "settings.mbSwitchAfterDeath": "Auto-switch focus after death",
 "settings.mbFreeze": "Freeze inactive multibox unit",
 "settings.mbAutoRespawn": "Background auto-respawn",

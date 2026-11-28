@@ -91,7 +91,7 @@ The same calls as the keys and the roster, on `application`:
 | --- | --- |
 | `mbEnable()` | multibox on with P2 only, as the switch key starts it: the new unit, the first unit when multibox is already on (nothing more is opened), `null` when it could not be opened |
 | `mbDisable()` | the units (P2 to P6) close and the main player is controlled again; Full Map and the in-game spectator stay. Returns how many units it closed |
-| `mbAddPlayer()` | one more unit in the lowest free slot, up to Settings "Multibox slots" (2 to 6); with multibox off it is `mbEnable()`. The new unit, or `null` (all slots in use, or it could not be opened) |
+| `mbAddPlayer()` | one more unit in the lowest free slot, up to Settings "Maximum Multibox players" (2 to 6, 2 as shipped; a lower value closes no open player, it only refuses until they are within it); with multibox off it is `mbEnable()`. The new unit, or `null` (all slots in use, or it could not be opened) |
 | `mbRemovePlayer(slot)` | closes the unit in that slot (`playerRemoved`, `reason` `'removed'`); the others keep their slots. `true`, or `false` for slot `1`, an empty slot or a unit already closed |
 | `mbSelectPlayer(slot)` | controls that player (a dead one spawns again). `true`, or `false` for an empty slot |
 | `mbSelectAdjacent(dir)` | controls the next (`1`) or previous (`-1`) player in slot order, as the switch keys (with more than two players dead and connecting ones are passed). `true`, or `false` while multibox is off |

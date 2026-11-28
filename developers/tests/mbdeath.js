@@ -479,7 +479,13 @@ function death(o) {
         check('    ... its first spawn: P2 controlled', s.focus() === p2.number, s.focus());
         const u3 = app.mbAddPlayer();
         check('add one: P3 opens in slot 3 and the focus stays where it was (it takes it at its first spawn)', !!u3 && u3.slotId === 3 && units().length === 2 && s.focus() === units()[0].number);
-        check('Settings "Multibox slots" 3 (the shipped default): no fourth player', app.mbAddPlayer() === null && units().length === 2);
+        check('Settings "Maximum Multibox players" 3 (an old saved value): no fourth player', app.mbAddPlayer() === null && units().length === 2);
+    }
+    {
+        /* the shipped maximum, 2: P1 + P2 only */
+        const { app, units } = fresh(2);
+        app.mbEnable();
+        check('the shipped maximum 2 (P1 + P2): enable opens P2, Add Player no third player', units().length === 1 && units()[0].slotId === 2 && app.mbAddPlayer() === null && units().length === 1);
     }
     /* a choice made while a unit's first spawn waits for its place on the map (spect.js _lmSpawnHold,
      * up to 3 s; here a stand-in that holds while `held`): the player chosen keeps the focus when that
@@ -553,6 +559,28 @@ function death(o) {
         s.ctx.spectHook = () => { s.ctx.inner = s.ctx.addBox(); };
         const u = s.ctx.addBox();
         check('    ... no unit is made while another one is (no reentrant creation)', !!u && u.slotId === 3 && s.ctx.inner === null && units().length === 5);
+    }
+    /* the maximum lowered while more players are open (Settings "Maximum Multibox players"): nobody
+     * is closed and nobody loses a profile; Add Player only refuses until the open players are within it */
+    {
+        const { s, app, reg, units } = fresh(4);
+        app.mbEnable();
+        const p3 = app.mbAddPlayer(), p4 = app.mbAddPlayer();
+        app.ensureMbSlots();
+        const before = units().map((u) => s.ctx.lmMbProfileIdx(u)).join();
+        s.ctx.defaultmapsettings.multiboxAmount = 2;
+        app.ensureMbSlots(); /* as setProfile runs it (a profile chosen, a load, an import) */
+        app.selectProfile(5); /* P1 controlled: P1 takes profile 5, the cascade of two players moves P2 only */
+        check('maximum 4 -> 2 with P2, P3, P4 open: none closed, P3 / P4 keep their profiles (' + before + ' -> ' + units().map((u) => s.ctx.lmMbProfileIdx(u)).join() + ')',
+            units().length === 3 && units().every((u) => !u.closed) && reg.count() === 4 && before === '1,2,3' && s.ctx.lmMbProfileIdx(p3) === 2 && s.ctx.lmMbProfileIdx(p4) === 3);
+        check('    ... Add Player refuses (no new socket)', app.mbAddPlayer() === null && units().length === 3 && reg.count() === 4);
+        s.ctx.defaultmapsettings.multiboxAmount = 3;
+        check('    ... raised to 3, four still open: it still refuses', app.mbAddPlayer() === null && units().length === 3);
+        app.mbRemovePlayer(4);
+        check('    ... P4 removed (three open, the maximum): still refuses; P3 keeps its profile', app.mbAddPlayer() === null && units().length === 2 && s.ctx.lmMbProfileIdx(p3) === 2);
+        app.mbRemovePlayer(3);
+        const n3 = app.mbAddPlayer();
+        check('    ... P3 removed too (within the maximum): Add Player opens P3 again, with the profile it had', !!n3 && n3.slotId === 3 && units().length === 2 && s.ctx.lmMbProfileIdx(n3) === 2);
     }
     {
         const { s, app, reg, units } = fresh(6);
@@ -892,6 +920,10 @@ function death(o) {
         mk(9, null);
         const h2 = ctx.application._lmMbRosterHtml();
         check('    ... a unit still connecting; at the capacity no +', /lm-mb-connecting" data-lm-mb-slot="4"/.test(h2) && !/data-lm-mb-add/.test(h2));
+        ctx.defaultmapsettings.multiboxAmount = 2;
+        const hLow = ctx.application._lmMbRosterHtml();
+        ctx.defaultmapsettings.multiboxAmount = 4;
+        check('    ... the maximum lowered below the players open: every player keeps its chip, no +', (hLow.match(/data-lm-mb-slot=/g) || []).length === 4 && !/data-lm-mb-add/.test(hLow));
         check('    ... texts from the packs (state and Remove / Add titles)', /game1\.hud\.mbAlive/.test(h) && /game1\.hud\.mbDead/.test(h) && /game1\.hud\.mbRemove/.test(h) && /game1\.hud\.mbAdd/.test(h));
         const at = (attrs) => ({ closest: (sel) => { const m = /^\[([\w-]+)\]$/.exec(sel); return sel === '.lm-mb-chip' || (m && m[1] in attrs) ? { getAttribute: (k) => attrs[k], hasAttribute: (k) => k in attrs } : null; } });
         const fire = (type, attrs) => { let stopped = false; lst.filter((l) => l.type === type).forEach((l) => l.fn({ target: at(attrs), stopPropagation() { stopped = true; } })); return stopped; };

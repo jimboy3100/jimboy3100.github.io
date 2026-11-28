@@ -154,7 +154,7 @@
     {
       "id": "multibox",
       "name": "Multibox",
-      "description": "Multibox players (2 to 6 from one tab). Multibox slots (2-6, default 3) is how many players Add Player may open, the main one included; it opens nothing by itself.",
+      "description": "Multibox players (2 to 6 from one tab). Maximum Multibox players (2-6, default 2) is how many players Add Player may open, the main one included; it opens nothing by itself.",
       "settings": [
         "multiboxAmount",
         "multiboxFreeze",

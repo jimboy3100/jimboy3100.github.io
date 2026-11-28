@@ -51,6 +51,22 @@ ctx.lmImportExtras(src, (k, v) => { wrote[k] = v; }, k => removed.push(k), null,
 check('extras: the registered keys of the export are written, a cleared one without a value removed', wrote['lm-mobile-prefs'] === '{"a":1}' && wrote.lmGamepad === '{"b":1}' &&
     wrote.prefix === '!' && removed.indexOf('lmPresetUndo') !== -1, { wrote: Object.keys(wrote), removed });
 check('extras: a Performance mode copy in an export is ignored (neither written nor removed)', !('lmPerfBackup' in wrote) && removed.indexOf('lmPerfBackup') === -1);
+/* the Multibox players' profiles: written when the export has them (profile numbers only), an older
+ * export without them leaves this device's (neither written nor removed) */
+check('extras: an older export without the Multibox players\' profiles leaves them', !('lmMbProfileSlots' in wrote) && removed.indexOf('lmMbProfileSlots') === -1);
+{
+    const w2 = {};
+    ctx.lmImportExtras({ lmMbProfileSlots: { v: 1, slots: [4, 2, 7], token: 'secret' } }, (k, v) => { w2[k] = v; }, () => { }, null, () => null);
+    check('extras: the Multibox players\' profiles of an export are written, without any other field', w2.lmMbProfileSlots === '{"v":1,"slots":[4,2,7]}', w2);
+}
+/* applied at once: the import's P1..P6 into the running game (the pair follows), nothing opened */
+{
+    const live = cut(og, '        _lmImportLive(v, sel, backup, touched, failed) {', '        _lmImportCommandsLive() {');
+    const prof = cut(og, '        _lmImportProfilesLive() {', '        _lmImportDone(need, failed) {');
+    check('live import: changed Multibox players\' profiles are applied (_lmMbSlotsLoad(true) + setProfile); a profiles import reads them again in loadProfiles',
+        /if \(changed\('lmMbProfileSlots'\)\) \{\s*try \{\s*if \(app\._lmMbSlotsLoad\(true\)\) \{\s*app\.setProfile\(\);/.test(live) &&
+        prof.includes('this.loadProfiles();') && !prof.includes('this.mbSlots = [];') && !/addBox|mbAddPlayer|mbEnable/.test(live + prof));
+}
 
 /* Legend Mod settings */
 const setSrc = cut(lmx, 'var _LM_IMPORT_LIVE_KEYS = ', '/* Imported user scripts (Userscript1-5 URLs');
