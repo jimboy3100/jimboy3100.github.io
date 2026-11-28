@@ -466,7 +466,7 @@ function death(o) {
         {
             const s = MB.scene(Object.assign({ players: 1, fullMap: fm }, opt));
             const app = s.ctx.application, units = () => s.ctx.spects.filter((u) => u && u.player);
-            s.ctx.defaultmapsettings.multiboxAmount = K; /* Settings "Multibox slots" */
+            s.ctx.defaultmapsettings.multiboxAmount = K; /* Settings "Maximum Multibox players" */
             app.multiboxchange();
             const u = units(), open = s.ctx.spects.filter((x) => x && !x.player && !x.closed).length;
             /* it takes the focus at its first spawn (spect.js beforecalculation, once it has a place on the map) */

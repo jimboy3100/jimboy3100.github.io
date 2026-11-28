@@ -283,7 +283,7 @@ const M = (() => {
          * opens nothing */
         const u2 = bring(app.mbEnable());
         need(r, 'enable: P2 in slot 2, the main player still controlled until its spawn', !!u2 && u2.slotId === 2 && !ctx.multiboxPlayerEnabled && app.mbEnable() === u2 && units().length === 1);
-        /* Add Player up to six players (Settings "Multibox slots" 6), then no more */
+        /* Add Player up to six players (Settings "Maximum Multibox players" 6), then no more */
         for (let i = 0; i < 4; i++) bring(app.mbAddPlayer());
         const epoch = reg._epoch, nums = units().map((u) => u.number).join();
         need(r, 'six players: slots 2..6, one socket each', slotsOf() === '2,3,4,5,6' && reg.count() === 6 && bySourceOk() && live() === tiles + 5 &&

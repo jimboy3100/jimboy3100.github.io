@@ -2591,24 +2591,6 @@
     "ja": "Mod 情報とテンプレートを読み込めませんでした。",
     "it": "Impossibile caricare Info sulla mod e template."
   },
-  "game2.rotationBeforeViewports": {
-    "en": "Rotation can work only before the creation of Multi-Viewports",
-    "el": "Η περιστροφή λειτουργεί μόνο πριν δημιουργηθούν πολλαπλές προβολές",
-    "es": "La rotación solo funciona antes de crear las vistas múltiples",
-    "bg": "Завъртането работи само преди създаването на няколко изгледа",
-    "fr": "La rotation ne fonctionne qu’avant la création des vues multiples",
-    "ar": "يعمل التدوير فقط قبل إنشاء العروض المتعددة",
-    "zh": "旋轉只能在建立多重視窗之前使用",
-    "ru": "Поворот работает только до создания нескольких окон обзора",
-    "de": "Drehen geht nur, bevor mehrere Ansichten erstellt werden",
-    "tr": "Döndürme yalnızca çoklu görünümler oluşturulmadan önce çalışır",
-    "pl": "Obrót działa tylko przed utworzeniem wielu widoków",
-    "nl": "Draaien werkt alleen vóór het maken van meerdere weergaven",
-    "pt": "A rotação só funciona antes de as multi-viewports serem criadas",
-    "id": "Rotasi hanya bisa sebelum Multi-Viewport dibuat",
-    "ja": "回転はマルチビューポートを作成する前にしか使えません",
-    "it": "La rotazione funziona solo prima che vengano create le multi-viewport"
-  },
   "game2.tag.servers": {
     "en": "Servers",
     "el": "Servers",

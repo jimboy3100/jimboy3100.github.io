@@ -354,7 +354,7 @@ Legend Mod organises its 300+ settings into the following categories accessible 
 - **Chat**: Enable/disable, images, videos, emoticons, translation, mentions, sounds, popups, coloured nicks, hide country, AgarTool team, player ID
 - **Sounds**: Volume per sound and master volume, sound switches and files
 - **Leaderboard**: Limit, top 5 skins, centred, hide bots, pass toast
-- **Multibox**: Multibox slots (2-6), freeze or keep moving, background auto-respawn, switch after death, middle view, players glow, smooth camera, lighter rendering
+- **Multibox**: Maximum Multibox players (2-6, default 2), freeze or keep moving, background auto-respawn, switch after death, middle view, players glow, smooth camera, lighter rendering
 - **Line Split**: Splits per press, aim lock time
 - **Mouse**: Button bindings (left, right, middle, mouse4, mouse5), invert
 - **Gamepad**: dead zone, move range, curve, zoom sensitivity, trigger, axis inversion, vibrate (always on when a pad is connected)

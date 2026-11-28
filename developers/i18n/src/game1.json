@@ -2609,24 +2609,6 @@
     "ja": "スキンを読み込めませんでした：リンク切れか、ホスト側がブロックしています (CORS)",
     "it": "Impossibile caricare la skin: il link non funziona o il suo host lo blocca (CORS)"
   },
-  "game1.mb.rotation": {
-    "en": "Rotation works only before the multi-viewports are created",
-    "el": "Η περιστροφή λειτουργεί μόνο πριν δημιουργηθούν τα πολλαπλά παράθυρα",
-    "es": "La rotación solo funciona antes de crear las vistas múltiples",
-    "bg": "Въртенето работи само преди да се създадат множествените изгледи",
-    "fr": "La rotation ne fonctionne qu'avant la création des multi-vues",
-    "ar": "يعمل التدوير فقط قبل إنشاء العروض المتعددة",
-    "zh": "旋轉只能在建立多重視窗之前使用",
-    "ru": "Вращение работает только до создания нескольких окон обзора",
-    "de": "Die Drehung funktioniert nur, bevor die Mehrfachansichten erstellt werden",
-    "tr": "Döndürme yalnızca çoklu görünümler oluşturulmadan önce çalışır",
-    "pl": "Obrót działa tylko przed utworzeniem wielu widoków",
-    "nl": "Draaien werkt alleen voordat de multi-viewports gemaakt zijn",
-    "pt": "A rotação só funciona antes de as multi-viewports serem criadas",
-    "id": "Rotasi hanya bisa sebelum multi-viewport dibuat",
-    "ja": "回転はマルチビューポートを作成する前にしか使えません",
-    "it": "La rotazione funziona solo prima che vengano create le multi-viewport"
-  },
   "game1.buy.login": {
     "en": "Log in and wait until you are connected before buying.",
     "el": "Συνδεθείτε και περιμένετε να συνδεθείτε πριν αγοράσετε.",

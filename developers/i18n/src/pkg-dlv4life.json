@@ -1,5 +1,20 @@
 {
   "pkg.dlv4life.notSaved": {
-    "en": "Dying Light is off for now, but the browser storage is full and could not keep that: it may be on again after a reload."
+    "en": "Dying Light is off for now, but the browser storage is full and could not keep that: it may be on again after a reload.",
+    "el": "Το Dying Light είναι προς το παρόν ανενεργό, αλλά ο χώρος αποθήκευσης του browser είναι γεμάτος και δεν μπόρεσε να το κρατήσει: μπορεί να είναι πάλι ενεργό μετά από επαναφόρτωση.",
+    "es": "Dying Light está desactivado por ahora, pero el almacenamiento del navegador está lleno y no pudo guardarlo: puede volver a activarse tras recargar.",
+    "bg": "Dying Light е изключен засега, но хранилището на браузъра е пълно и не можа да запази това: може да е включен отново след презареждане.",
+    "fr": "Dying Light est désactivé pour l'instant, mais le stockage du navigateur est plein et n'a pas pu l'enregistrer : il peut se réactiver après un rechargement.",
+    "ar": "Dying Light متوقف الآن، لكن مساحة تخزين المتصفح ممتلئة ولم تتمكن من حفظ ذلك: قد يعود للعمل بعد إعادة التحميل.",
+    "zh": "Dying Light 目前已關閉，但瀏覽器的儲存空間已滿，無法保存這項設定：重新載入後它可能會再次開啟。",
+    "ru": "Dying Light пока выключен, но хранилище браузера заполнено и не смогло это сохранить: после перезагрузки он может снова включиться.",
+    "de": "Dying Light ist vorerst aus, aber der Browserspeicher ist voll und konnte das nicht behalten: Nach einem Neuladen ist es vielleicht wieder an.",
+    "tr": "Dying Light şimdilik kapalı, ancak tarayıcı depolama alanı dolu olduğu için bu kaydedilemedi: yeniden yüklemeden sonra tekrar açık olabilir.",
+    "pl": "Dying Light jest na razie wyłączony, ale pamięć przeglądarki jest pełna i nie udało się tego zapisać: po przeładowaniu może znów być włączony.",
+    "nl": "Dying Light staat voorlopig uit, maar de opslag van de browser is vol en kon dat niet bewaren: na herladen kan het weer aan staan.",
+    "pt": "O Dying Light está desligado por enquanto, mas o armazenamento do navegador está cheio e não conseguiu guardar isso: ele pode voltar a ligar depois de recarregar.",
+    "id": "Dying Light mati untuk sekarang, tapi penyimpanan browser penuh dan tidak bisa menyimpannya: setelah muat ulang mungkin akan menyala lagi.",
+    "ja": "Dying Light は今はオフですが、ブラウザーのストレージがいっぱいでその状態を保存できませんでした。再読み込み後にまたオンになる場合があります。",
+    "it": "Dying Light è disattivato per ora, ma la memoria del browser è piena e non è riuscita a salvarlo: dopo un ricaricamento potrebbe essere di nuovo attivo."
   }
 }

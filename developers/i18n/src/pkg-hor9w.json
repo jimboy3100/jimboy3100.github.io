@@ -1,11 +1,56 @@
 {
   "pkg.hor9w.aaRefused": {
-    "en": "Anti-aliasing is on, but this browser or graphics card gave the game none. A reload does not change that."
+    "en": "Anti-aliasing is on, but this browser or graphics card gave the game none. A reload does not change that.",
+    "el": "Το anti-aliasing είναι ενεργό, αλλά αυτός ο browser ή η κάρτα γραφικών δεν το έδωσε στο παιχνίδι. Μια επαναφόρτωση δεν το αλλάζει αυτό.",
+    "es": "El antialiasing está activado, pero este navegador o tarjeta gráfica no se lo dio al juego. Recargar no cambia eso.",
+    "bg": "Изглаждането е включено, но този браузър или видеокарта не го дадоха на играта. Презареждане не променя това.",
+    "fr": "L'anticrénelage est activé, mais ce navigateur ou cette carte graphique ne l'a pas fourni au jeu. Un rechargement n'y change rien.",
+    "ar": "تنعيم الحواف مفعّل، لكن هذا المتصفح أو بطاقة الرسوميات لم يوفره للعبة. إعادة التحميل لا تغيّر ذلك.",
+    "zh": "抗鋸齒已開啟，但這個瀏覽器或顯示卡沒有提供給遊戲。重新載入也無法改變。",
+    "ru": "Сглаживание включено, но этот браузер или видеокарта не предоставили его игре. Перезагрузка этого не изменит.",
+    "de": "Kantenglättung ist an, aber dieser Browser oder diese Grafikkarte hat dem Spiel keine gegeben. Ein Neuladen ändert daran nichts.",
+    "tr": "Kenar yumuşatma açık, ancak bu tarayıcı veya ekran kartı oyuna bunu sağlamadı. Yeniden yükleme bunu değiştirmez.",
+    "pl": "Antyaliasing jest włączony, ale ta przeglądarka lub karta graficzna go nie udostępniła grze. Przeładowanie tego nie zmieni.",
+    "nl": "Anti-aliasing staat aan, maar deze browser of videokaart gaf het spel er geen. Herladen verandert dat niet.",
+    "pt": "O anti-aliasing está ligado, mas este navegador ou placa de vídeo não o forneceu ao jogo. Recarregar não muda isso.",
+    "id": "Anti-aliasing aktif, tapi browser atau kartu grafis ini tidak memberikannya ke game. Muat ulang tidak mengubah itu.",
+    "ja": "アンチエイリアスはオンですが、このブラウザーまたはグラフィックカードがゲームに提供しませんでした。再読み込みしても変わりません。",
+    "it": "L'anti-aliasing è attivo, ma questo browser o questa scheda grafica non l'ha fornito al gioco. Ricaricare non cambia la cosa."
   },
   "pkg.hor9w.importNotApplied": {
-    "en": "Imported, but these settings could not be applied: {0}."
+    "en": "Imported, but these settings could not be applied: {0}.",
+    "el": "Έγινε εισαγωγή, αλλά αυτές οι ρυθμίσεις δεν μπόρεσαν να εφαρμοστούν: {0}.",
+    "es": "Importado, pero estos ajustes no se pudieron aplicar: {0}.",
+    "bg": "Импортирано, но тези настройки не можаха да се приложат: {0}.",
+    "fr": "Importé, mais ces paramètres n'ont pas pu être appliqués : {0}.",
+    "ar": "تم الاستيراد، لكن تعذّر تطبيق هذه الإعدادات: {0}.",
+    "zh": "已匯入，但以下設定無法套用：{0}。",
+    "ru": "Импортировано, но эти настройки не удалось применить: {0}.",
+    "de": "Importiert, aber diese Einstellungen konnten nicht angewendet werden: {0}.",
+    "tr": "İçe aktarıldı, ancak şu ayarlar uygulanamadı: {0}.",
+    "pl": "Zaimportowano, ale tych ustawień nie udało się zastosować: {0}.",
+    "nl": "Geïmporteerd, maar deze instellingen konden niet worden toegepast: {0}.",
+    "pt": "Importado, mas estas configurações não puderam ser aplicadas: {0}.",
+    "id": "Berhasil diimpor, tapi pengaturan ini tidak bisa diterapkan: {0}.",
+    "ja": "インポートしましたが、次の設定を適用できませんでした：{0}。",
+    "it": "Importato, ma non è stato possibile applicare queste impostazioni: {0}."
   },
   "pkg.hor9w.notApplied": {
-    "en": "These settings could not be applied: {0}."
+    "en": "These settings could not be applied: {0}.",
+    "el": "Αυτές οι ρυθμίσεις δεν μπόρεσαν να εφαρμοστούν: {0}.",
+    "es": "Estos ajustes no se pudieron aplicar: {0}.",
+    "bg": "Тези настройки не можаха да се приложат: {0}.",
+    "fr": "Ces paramètres n'ont pas pu être appliqués : {0}.",
+    "ar": "تعذّر تطبيق هذه الإعدادات: {0}.",
+    "zh": "以下設定無法套用：{0}。",
+    "ru": "Эти настройки не удалось применить: {0}.",
+    "de": "Diese Einstellungen konnten nicht angewendet werden: {0}.",
+    "tr": "Şu ayarlar uygulanamadı: {0}.",
+    "pl": "Tych ustawień nie udało się zastosować: {0}.",
+    "nl": "Deze instellingen konden niet worden toegepast: {0}.",
+    "pt": "Estas configurações não puderam ser aplicadas: {0}.",
+    "id": "Pengaturan ini tidak bisa diterapkan: {0}.",
+    "ja": "次の設定を適用できませんでした：{0}。",
+    "it": "Non è stato possibile applicare queste impostazioni: {0}."
   }
 }

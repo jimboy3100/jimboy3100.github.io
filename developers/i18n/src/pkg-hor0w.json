@@ -1,8 +1,38 @@
 {
   "pkg.hor0w.stickyMouse": {
-    "en": "<b>{0}</b> is set, but Sticky cells (Settings) use that button while they are on: its command runs only with Sticky cells off."
+    "en": "<b>{0}</b> is set, but Sticky cells (Settings) use that button while they are on: its command runs only with Sticky cells off.",
+    "el": "Το <b>{0}</b> έχει οριστεί, αλλά τα Κολλώδη κύτταρα (Ρυθμίσεις) χρησιμοποιούν αυτό το κουμπί όσο είναι ενεργά: η εντολή του εκτελείται μόνο με τα Κολλώδη κύτταρα ανενεργά.",
+    "es": "<b>{0}</b> está asignado, pero Células pegajosas (Ajustes) usa ese botón mientras está activado: su comando solo funciona con Células pegajosas desactivado.",
+    "bg": "<b>{0}</b> е зададен, но Лепкави клетки (Настройки) използват този бутон, докато са включени: командата му работи само с изключени Лепкави клетки.",
+    "fr": "<b>{0}</b> est attribué, mais Cellules collantes (Paramètres) utilise ce bouton tant qu'elles sont activées : sa commande ne fonctionne qu'avec Cellules collantes désactivé.",
+    "ar": "تم تعيين <b>{0}</b>، لكن الخلايا اللاصقة (الإعدادات) تستخدم هذا الزر أثناء تشغيلها: أمره يعمل فقط عند إيقاف الخلايا اللاصقة.",
+    "zh": "已設定 <b>{0}</b>，但黏性細胞（設定）開啟時會使用這個按鍵：只有在黏性細胞關閉時才會執行它的指令。",
+    "ru": "<b>{0}</b> назначена, но Липкие клетки (Настройки) используют эту кнопку, пока включены: её команда работает только с выключенными Липкими клетками.",
+    "de": "<b>{0}</b> ist belegt, aber Klebende Zellen (Einstellungen) nutzen diese Taste, solange sie an sind: Ihr Befehl läuft nur mit ausgeschalteten Klebenden Zellen.",
+    "tr": "<b>{0}</b> atandı, ancak Yapışkan hücreler (Ayarlar) açıkken bu düğmeyi kullanır: komutu yalnızca Yapışkan hücreler kapalıyken çalışır.",
+    "pl": "Przypisano <b>{0}</b>, ale Lepkie komórki (Ustawienia) używają tego przycisku, gdy są włączone: jego polecenie działa tylko przy wyłączonych Lepkich komórkach.",
+    "nl": "<b>{0}</b> is ingesteld, maar Plakkende cellen (Instellingen) gebruiken die knop zolang ze aan staan: de opdracht werkt alleen met Plakkende cellen uit.",
+    "pt": "<b>{0}</b> está definido, mas Células grudadas (Configurações) usam esse botão enquanto estão ligadas: o comando dele só funciona com Células grudadas desligadas.",
+    "id": "<b>{0}</b> sudah diatur, tapi Sel lengket (Pengaturan) memakai tombol itu selama aktif: perintahnya hanya berjalan saat Sel lengket mati.",
+    "ja": "<b>{0}</b> が設定されていますが、スティッキーセル（設定）がオンの間はそのボタンを使います。このコマンドはスティッキーセルがオフのときだけ動作します。",
+    "it": "<b>{0}</b> è assegnato, ma Cellule adesive (Impostazioni) usano quel pulsante finché sono attive: il suo comando funziona solo con Cellule adesive disattivate."
   },
   "pkg.hor0w.depOffWhile": {
-    "en": "No effect while {0} is on"
+    "en": "No effect while {0} is on",
+    "el": "Καμία επίδραση όσο το {0} είναι ενεργό",
+    "es": "Sin efecto mientras {0} está activado",
+    "bg": "Няма ефект, докато {0} е включено",
+    "fr": "Sans effet tant que {0} est activé",
+    "ar": "بلا تأثير أثناء تشغيل {0}",
+    "zh": "{0} 開啟時沒有作用",
+    "ru": "Не действует, пока включено {0}",
+    "de": "Keine Wirkung, solange {0} an ist",
+    "tr": "{0} açıkken etkisi yok",
+    "pl": "Bez efektu, gdy {0} jest włączone",
+    "nl": "Geen effect zolang {0} aan staat",
+    "pt": "Sem efeito enquanto {0} estiver ligado",
+    "id": "Tidak berpengaruh selama {0} aktif",
+    "ja": "{0} がオンの間は効果なし",
+    "it": "Nessun effetto finché {0} è attivo"
   }
 }

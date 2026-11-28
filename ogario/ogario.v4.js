@@ -457,7 +457,7 @@ function lmMbDeathMenuDue() {
     return true;
 }
 window.lmMbDeathMenuDue = lmMbDeathMenuDue;
-/* how many players Add Player may open (the main one included): Settings "Multibox slots",
+/* how many players Add Player may open (the main one included): Settings "Maximum Multibox players",
  * 2 to 6. It opens nothing by itself. */
 function lmMbCapacity() {
     var d = typeof defaultmapsettings !== 'undefined' && defaultmapsettings ? Math.floor(+defaultmapsettings.multiboxAmount) : 0;
@@ -26312,7 +26312,7 @@ function thelegendmodproject() {
         },
         /* The multibox roster in the stats HUD, only while multibox is on: one chip per open player
          * in slot order (its colour, a dot for alive / dead / connecting / offline, its mass; the
-         * player you control outlined), '+' (Add Player) until Settings "Multibox slots" is reached
+         * player you control outlined), '+' (Add Player) until Settings "Maximum Multibox players" is reached
          * and 'x' on P3 on (Remove Player); P2 gets its 'x' once it is the only other player left,
          * and that one is multibox off (mbDisable: the other players close, Full Map stays, P1 is
          * controlled). A click (a tap on the phone) controls that player; nothing of it reaches the
