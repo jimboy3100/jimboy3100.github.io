@@ -236,20 +236,31 @@ S.hudRelativeMass = D.hudRelativeMass;
 check('load: the HUD arrows are read again (off by default), the mass-loss alert is not', S.hudMoveDir === true && S.hudEdgeThreats === true &&
   D.hudMoveDir === false && D.hudEdgeTeammates === false && D.hudEdgeThreats === false && !('massLossAlert' in D) && !('massLossAlert' in S) && !('massLossPct' in S));
 ['hudMoveDir', 'hudEdgeThreats'].forEach(k => { S[k] = D[k]; });
-/* "Optimized mass (+/-2%) OR Merge timer (BETA)" is back (the original seconds merge timer, ogario/mergetimer.js):
- * on by default, and a saved off is read again; the agent-made Merge countdown stays removed */
-check('optimizedMass is a setting again, on by default', D.optimizedMass === true && V('optimizedMass', false) === false);
-check('fold: optimizedMass is kept as saved, Merge countdown is not turned on', J(lfold({ optimizedMass: false, mergeRings: false })) === J({ optimizedMass: false, mergeRings: false }));
+/* the seconds merge timer (ogario/mergetimer.js) is its own switch, Merge timer (mergeTimer, off by
+ * default); "Optimized mass (+/-2%)", the other half of the old switch, is gone. A saved
+ * optimizedMass off was the timer on; the agent-made Merge countdown stays removed */
+check('mergeTimer is a setting, off by default; optimizedMass is gone', D.mergeTimer === false && V('mergeTimer', true) === true && !('optimizedMass' in D));
+check('fold: a saved optimizedMass becomes mergeTimer (off = timer on), a saved mergeTimer wins',
+  J(lfold({ optimizedMass: false, mergeRings: false })) === J({ mergeRings: false, mergeTimer: true }) &&
+  J(lfold({ optimizedMass: true })) === J({ mergeTimer: false }) &&
+  J(lfold({ optimizedMass: 'false', mergeRings: false })) === J({ mergeRings: false, mergeTimer: true }) &&
+  J(lfold({ optimizedMass: false, mergeTimer: false })) === J({ mergeTimer: false }));
 /* an older set with the timer and the rings both on keeps the timer (one or the other) */
-check('fold: optimizedMass off with the merge rings on (or not saved) turns the rings off; timer off leaves them',
-  J(lfold({ optimizedMass: false, mergeRings: true })) === J({ optimizedMass: false, mergeRings: false }) &&
-  J(lfold({ optimizedMass: false })) === J({ optimizedMass: false, mergeRings: false }) &&
-  J(lfold({ optimizedMass: true, mergeRings: true })) === J({ optimizedMass: true, mergeRings: true }) &&
+check('fold: the timer on with the merge rings on (or not saved) turns the rings off; timer off leaves them',
+  J(lfold({ mergeTimer: true, mergeRings: true })) === J({ mergeTimer: true, mergeRings: false }) &&
+  J(lfold({ mergeTimer: true })) === J({ mergeTimer: true, mergeRings: false }) &&
+  J(lfold({ optimizedMass: false })) === J({ mergeTimer: true, mergeRings: false }) &&
+  J(lfold({ mergeTimer: false, mergeRings: true })) === J({ mergeTimer: false, mergeRings: true }) &&
   J(lfold({ mergeRings: true })) === J({ mergeRings: true }));
-ctx.localStorage.setItem('ogarioSettings', JSON.stringify(Object.assign({}, saved, { optimizedMass: false, mergeRings: true, hudMergeCountdown: true })));
+/* an older save: optimizedMass, no mergeTimer yet */
+const oldSave = Object.assign({}, saved, { optimizedMass: false, mergeRings: true, hudMergeCountdown: true });
+delete oldSave.mergeTimer;
+ctx.localStorage.setItem('ogarioSettings', JSON.stringify(oldSave));
 app.loadSettings();
-check('load: a saved optimizedMass off is read again (the rings saved on go off), hudMergeCountdown ignored', S.optimizedMass === false && S.mergeRings === false && !('hudMergeCountdown' in S));
-S.optimizedMass = D.optimizedMass; S.mergeRings = D.mergeRings;
+const reSavedMt = JSON.parse(ctx.localStorage.getItem('ogarioSettings'));
+check('load: a saved optimizedMass off turns the merge timer on (the rings saved on go off), saved as mergeTimer, hudMergeCountdown ignored',
+  S.mergeTimer === true && S.mergeRings === false && !('optimizedMass' in S) && !('hudMergeCountdown' in S) && reSavedMt.mergeTimer === true && !('optimizedMass' in reSavedMt));
+S.mergeTimer = D.mergeTimer; S.mergeRings = D.mergeRings;
 /* the loaded values of the checks below */
 ctx.localStorage.setItem('ogarioSettings', JSON.stringify(saved));
 app.loadSettings();
@@ -356,22 +367,22 @@ check('setSettings with the current value: no event', events.length === 0);
 app2.setSettings('showGrid', !before);
 app2.setSettings('showGrid', before);
 check('setSettings on and off: two events, the new value each time', J(events) === J([['settingsChange', 'showGrid', !before], ['settingsChange', 'showGrid', before]]));
-/* the seconds merge timer (optimizedMass off) and the merge rings are one or the other; a switch
+/* the seconds merge timer (mergeTimer) and the merge rings are one or the other; a switch
  * press first sends its old value, which changes nothing */
 {
-  const om = S.optimizedMass, mr = S.mergeRings;
-  S.optimizedMass = true; S.mergeRings = true;
-  app2.setSettings('optimizedMass', true);
-  app2.setSettings('optimizedMass', false);
-  const a = [S.optimizedMass, S.mergeRings];
+  const mt = S.mergeTimer, mr = S.mergeRings;
+  S.mergeTimer = false; S.mergeRings = true;
+  app2.setSettings('mergeTimer', false);
+  app2.setSettings('mergeTimer', true);
+  const a = [S.mergeTimer, S.mergeRings];
   app2.setSettings('mergeRings', false);
   app2.setSettings('mergeRings', true);
-  const b = [S.optimizedMass, S.mergeRings];
-  app2.setSettings('optimizedMass', true);
+  const b = [S.mergeTimer, S.mergeRings];
+  app2.setSettings('mergeTimer', false);
   app2.setSettings('mergeRings', false);
-  const c = [S.optimizedMass, S.mergeRings];
-  check('merge timer on turns the merge rings off, the rings on turn the timer off, off leaves the other', J(a) === J([false, false]) && J(b) === J([true, true]) && J(c) === J([true, false]));
-  S.optimizedMass = om; S.mergeRings = mr;
+  const c = [S.mergeTimer, S.mergeRings];
+  check('merge timer on turns the merge rings off, the rings on turn the timer off, off leaves the other', J(a) === J([true, false]) && J(b) === J([false, true]) && J(c) === J([false, false]));
+  S.mergeTimer = mt; S.mergeRings = mr;
 }
 
 /* the Notification centre switch: one way to the module, the settingsChange of the save */

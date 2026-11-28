@@ -21851,7 +21851,7 @@ var defaultmapsettings = {
     mbAutoRespawn: true,
     cameraSmoothLerp: true,
     centerWeightCamera: false,    /* camera target = mass-weighted centre of the own cells (like Delta) */
-    optimizedMass: true,
+    mergeTimer: false,            /* seconds until each own cell can merge, under the cell (ogario/mergetimer.js) */
     shortMass: true,              /* copy of massFormat === 2 for scripts and older versions (lmFoldLegacySettings) */
     cellContours: false,
     virMassShots: true,
@@ -22197,9 +22197,16 @@ function lmFoldLegacySettings(s) {
         changed = true;
     }
     if (lmFoldClickFollow(s)) changed = true;
-    /* the seconds merge timer (optimizedMass off) and the merge progress rings are one or the other:
-     * an older set with both on (they ran together before) keeps the timer, which is what is drawn */
-    if (has('optimizedMass') && lmSettingValue('optimizedMass', s.optimizedMass) === false
+    /* "Optimized mass (+/-2%) OR Merge timer" is now only the merge timer (mergeTimer): a saved
+     * optimizedMass off was the timer on */
+    if (has('optimizedMass')) {
+        if (!has('mergeTimer')) s.mergeTimer = s.optimizedMass === false || s.optimizedMass === 'false';
+        delete s.optimizedMass;
+        changed = true;
+    }
+    /* the seconds merge timer and the merge progress rings are one or the other: an older set
+     * with both on (they ran together before) keeps the timer, which is what is drawn */
+    if (has('mergeTimer') && lmSettingValue('mergeTimer', s.mergeTimer) === true
         && (!has('mergeRings') || lmSettingValue('mergeRings', s.mergeRings) !== false)) {
         s.mergeRings = false;
         changed = true;
@@ -26231,18 +26238,18 @@ function thelegendmodproject() {
                             this._lmOptionUi('cursorTracking');
                         }
                         break;
-                    /* one merge countdown or the other: the seconds merge timer (optimizedMass off,
-                     * ogario/mergetimer.js) and the merge progress rings are never on together */
-                    case 'optimizedMass':
-                        if (checked === false && defaultmapsettings.mergeRings !== false) {
+                    /* one merge countdown or the other: the seconds merge timer (ogario/mergetimer.js)
+                     * and the merge progress rings are never on together */
+                    case 'mergeTimer':
+                        if (checked === true && defaultmapsettings.mergeRings !== false) {
                             defaultmapsettings.mergeRings = false;
                             this._lmOptionUi('mergeRings');
                         }
                         break;
                     case 'mergeRings':
-                        if (checked && defaultmapsettings.optimizedMass === false) {
-                            defaultmapsettings.optimizedMass = true;
-                            this._lmOptionUi('optimizedMass');
+                        if (checked && defaultmapsettings.mergeTimer === true) {
+                            defaultmapsettings.mergeTimer = false;
+                            this._lmOptionUi('mergeTimer');
                         }
                         break;
                     case 'tweenMaxEffect':
@@ -27420,7 +27427,7 @@ function thelegendmodproject() {
             /* "Spawn special effects" is gone: its effect was taken out, and the switch only made every frame use the Canvas renderer */
             this.addOptions(["quickResp", "autoResp"], "respGroup");
             this.addOptions(["noNames", "optimizedNames", "autoHideNames", "hideMyName", "hideTeammatesNames", "namesStroke"], "namesGroup");
-            this.addOptions(["showMass", "optimizedMass", "autoHideMass", "hideMyMass", "hideEnemiesMass", "virusSpikes", "virMassShots", "massStroke", "potionsDrinker", "hudRelativeMass"], "massGroup");
+            this.addOptions(["showMass", "mergeTimer", "autoHideMass", "hideMyMass", "hideEnemiesMass", "virusSpikes", "virMassShots", "massStroke", "potionsDrinker", "hudRelativeMass"], "massGroup");
             this.addOptions(["noSkins", "customSkins", "vanillaSkins", "ownVanillaSkin", "videoSkins", "videoDestorted", "videoSkinsMusic2", "videoOthersSkinSoundLevelproportion"], "skinsGroup");
             //this.addOptions(["optimizedFood", "autoHideFood", "autoHideFoodOnZoom", "rainbowFood"], "foodGroup");
             this.addOptions(["autoHideFood", "autoHideFoodOnZoom", "rainbowFood"], "foodGroup");
@@ -37032,7 +37039,6 @@ function thelegendmodproject() {
         this.targetNick = '';
         this.nickCanvas = null;
         this.mass = 0;
-        this.lastMass = 0;
         //			this.historyMass = [];
         //			this.historyX = [];
         //			this.historyY = [];
@@ -37069,7 +37075,6 @@ function thelegendmodproject() {
         this.redrawChat = true;
 
         this.optimizedNames = false;
-        this.optimizedMass = false;
 
         this.strokeNick = false;
         this.strokeMass = false;
@@ -37150,7 +37155,6 @@ function thelegendmodproject() {
             this.targetNick = '';
 
             this.mass = 0;
-            this.lastMass = 0;
 
             this.removed = false;
             this.redrawed = false;
@@ -38124,7 +38128,7 @@ function thelegendmodproject() {
             if (!this.massCanvas) {
                 this.massCanvas = new irenderfromagario();
             }
-            if (!window.legendmod5.optimizedMass && window.ExternalScripts && !this.mergeCanvas) {
+            if (window.legendmod5.mergeTimer && window.ExternalScripts && !this.mergeCanvas) {
                 this.mergeCanvas = new irenderfromagario();
             }
             if (!this.chatCanvas) {
@@ -38145,8 +38149,8 @@ function thelegendmodproject() {
                 if (this.virMassShots && rawVirusMass < 200) {
                     this.mass = ~~((200 - rawVirusMass) / 14);
                 }
-                // Compare raw masses tracked here (lastMass is only written by drawMass,
-                // and this.mass may be "shots left"). setMass runs every frame with the
+                // Compare raw masses tracked here (this.mass may be "shots left").
+                // setMass runs every frame with the
                 // interpolated size, so play at most once per 300 ms per virus.
                 if (defaultmapsettings.virusSound && this._virusSoundMass && rawVirusMass < this._virusSoundMass) {
                     var virusSoundNow = Date.now();
@@ -38164,30 +38168,12 @@ function thelegendmodproject() {
              * the ratio changes with your own mass, so redraw whenever the text changes. Exact and
              * 12.3k (Mass format 1 / 2) are the cell's own text below: shortMass follows Mass format. */
             if (!this.isVirus && (defaultmapsettings.massFormat === 3 || defaultmapsettings.hudRelativeMass) && window.LMHudHelpers) {
-                var _lmHHTxt = window.LMHudHelpers.massText(this.mass, this);
-                if (this.optimizedMass) this.redrawMass = _lmHHTxt !== this._lmHHLastTxt || this.rescale;
-                this._lmHHLastTxt = _lmHHTxt;
-                this.massTxt = _lmHHTxt;
+                this.massTxt = window.LMHudHelpers.massText(this.mass, this);
                 return true;
-            }
-            if (this._lmHHLastTxt !== undefined) {
-                /* those options were just turned off: redraw the plain mass once */
-                this._lmHHLastTxt = undefined;
-                this.lastMass = 0;
             }
             if (this.shortMass && this.mass >= 1000) {
                 this.kMass = Math.round(this.mass / 100) / 10;
                 this.massTxt = this.kMass + 'k';
-                this._lmMassK = true;
-                return true;
-            }
-            if (this._lmMassK) {
-                /* Mass format went from 12.3k to exact: the exact text once, not after a 2% change */
-                this._lmMassK = false;
-                this.lastMass = 0;
-            }
-            if (this.optimizedMass) {
-                this.redrawMass = Math.abs((this.mass - this.lastMass) / this.mass) >= 0.02 || this.rescale;
             }
             return true;
         };
@@ -38337,14 +38323,12 @@ function thelegendmodproject() {
             var _ds = drawRender._drawSettings;
             if (_ds) {
                 this.optimizedNames = _ds.optimizedNames;
-                this.optimizedMass = _ds.optimizedMass;
                 this.shortMass = _ds.shortMass;
                 this.virMassShots = _ds.virMassShots;
                 this.strokeNick = _ds.namesStroke;
                 this.strokeMass = _ds.massStroke;
             } else {
                 this.optimizedNames = defaultmapsettings.optimizedNames;
-                this.optimizedMass = defaultmapsettings.optimizedMass;
                 this.shortMass = defaultmapsettings.shortMass;
                 this.virMassShots = defaultmapsettings.virMassShots;
                 this.strokeNick = defaultmapsettings.namesStroke;
@@ -38496,7 +38480,7 @@ function thelegendmodproject() {
                 mergeCanvas.setFontSize(this.massSize);
                 mergeCanvas.setScale(this.scale);
 
-                if (window.ExternalScripts && !defaultmapsettings.optimizedMass && window.playerCellsId && this.isPlayerCell && !this.isVirus) {
+                if (window.ExternalScripts && defaultmapsettings.mergeTimer && window.playerCellsId && this.isPlayerCell && !this.isVirus) {
                     CellTimerTrigger();
                     if (window.playerCellsId[this.id] === undefined) {
                         window.playerCellsId[this.id] = { historyMass: [this.mass] };
@@ -38559,9 +38543,6 @@ function thelegendmodproject() {
                 massCanvas.setTxt(
                     this.massTxt
                 );
-
-                this.lastMass =
-                    this.mass;
             }
 
             /*
@@ -40280,7 +40261,7 @@ function thelegendmodproject() {
                                     if (this.setMass(this.size)) {
 
                                         this.drawMass(_tc);
-                                        if (window.ExternalScripts && !window.legendmod5.optimizedMass) {
+                                        if (window.ExternalScripts && window.legendmod5.mergeTimer) {
                                             this.drawMerge(_tc);
                                         }
                                     }
@@ -40294,7 +40275,7 @@ function thelegendmodproject() {
                          * cells lmLabels gives a mass) and the chat bubble the Canvas2D branch
                          * draws after them go on the overlay canvas, at the same place
                          * (this.margin from the nick layout) and with the same alpha (textAlpha). */
-                        var _mergeOn = !!(window.ExternalScripts && !window.legendmod5.optimizedMass);
+                        var _mergeOn = !!(window.ExternalScripts && window.legendmod5.mergeTimer);
                         /* the GL text pass drew the bubble (_lmGlMarks) */
                         if (_glMk) _chatCe = null;
                         var _lab = _mergeOn && !cellMoved ? this.lmLabels(y,
@@ -62455,9 +62436,9 @@ function pickPlayerCellBySize(players, selectBiggest) {
                     .ExternalScripts &&
                 window
                     .legendmod5 &&
-                !window
+                window
                     .legendmod5
-                    .optimizedMass
+                    .mergeTimer
             ) {
                 return this._lmNoGL(this.GLW.MERGE);
             }
@@ -78905,7 +78886,6 @@ function pickPlayerCellBySize(players, selectBiggest) {
             /* Reuse the same object instead of allocating a new one every frame */
             var _ds = this._drawSettings || (this._drawSettings = {});
             _ds.optimizedNames = defaultmapsettings.optimizedNames;
-            _ds.optimizedMass = defaultmapsettings.optimizedMass;
             _ds.shortMass = defaultmapsettings.shortMass;
             _ds.virMassShots = defaultmapsettings.virMassShots;
             _ds.namesStroke = defaultmapsettings.namesStroke;
@@ -81285,8 +81265,8 @@ function pickPlayerCellBySize(players, selectBiggest) {
                     }
 
                     /* "Merge rings" setting (on by default, as before); not with the seconds merge
-                     * timer (optimizedMass off): one merge countdown or the other */
-                    if (defaultmapsettings.mergeRings !== false && !(window.ExternalScripts && defaultmapsettings.optimizedMass === false)) {
+                     * timer (mergeTimer): one merge countdown or the other */
+                    if (defaultmapsettings.mergeRings !== false && !(window.ExternalScripts && defaultmapsettings.mergeTimer === true)) {
                         if (LM.playerCells && LM.playerCells.length) this.drawMergeProgressRings(ctx, LM.playerCells);
                         /* each unit's own cells apart: two units with one cell each are no split */
                         if (LM.playerCellsMulti && LM.playerCellsMulti.length && typeof spects !== 'undefined' && spects) {

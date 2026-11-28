@@ -330,7 +330,7 @@
       "description": "Mass number display settings.",
       "settings": [
         "showMass",
-        "optimizedMass",
+        "mergeTimer",
         "autoHideMass",
         "hideMyMass",
         "hideEnemiesMass",

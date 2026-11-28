@@ -316,7 +316,7 @@
 "site.index.names": "名稱 (",
 "site.index.disableNamesOrUse": "停用名稱或使用「Auto hide name」選項",
 "site.index.someTipsToGet": "讓 FPS 更穩定的一些技巧:",
-"site.index.useOptimizedNamesAnd": "使用「最佳化名稱」與「最佳化質量」選項",
+"site.index.useOptimizedNamesAnd": "使用「最佳化名稱」選項",
 "site.index.useAutoHideMass": "使用「自動隱藏質量」選項",
 "site.index.useShortMassOption": "把「質量格式」設為「簡短 (12.3k)」",
 "site.index.disableAutoZoom": "停用自動縮放",

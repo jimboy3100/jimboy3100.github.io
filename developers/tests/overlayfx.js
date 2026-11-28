@@ -206,7 +206,7 @@ const ds = D.defaultSettings, ms = D.defaultmapsettings;
 function img(name, w, h) { return { _id: nextId++, name: name, width: w, height: h, naturalWidth: w, naturalHeight: h, complete: true, color: colorFor(nextId * 13) }; }
 const LM = { cells: [], playerCells: [], playerCellsMulti: [], play: false, showCustomSkins: true, gameMode: ':ffa', hideSmallBots: false, indexedCells: {}, selected: null, time: 100000, arrowFB: null, cursorX: 0, cursorY: 0 };
 const ogario = { viewScale: 1 };
-const window = { teammatenicks: [], _lmTeammateNickSet: new Set(), LM_DPR: 1, legendmod5: { optimizedMass: true }, innerWidth: 240, innerHeight: 160, legendmod: LM };
+const window = { teammatenicks: [], _lmTeammateNickSet: new Set(), LM_DPR: 1, legendmod5: {}, innerWidth: 240, innerHeight: 160, legendmod: LM };
 /* an Array, as SpecialEffectPlayers in ogario.v4.js */
 const SEP = [];
 const document = { createElement: () => new SoftCanvas(0, 0, 'txt') };
@@ -1194,19 +1194,17 @@ const noReset = (log) => log.filter((x, i) => !(x === 'globalAlpha=1' && log[i +
 }
 }
 
-/* Optimized mass on (the default): the cell mass text is drawn again only after a 2% change;
- * Mass format 12.3k -> exact shows the exact number at once (4f44055b) */
+/* the cell mass text always shows the current mass ("Optimized mass (+/-2%)", which drew it
+ * again only after a 2% change, is gone); Mass format 12.3k -> exact shows the exact number at once */
 if (haveMethods.includes('setMass')) {
     reset();
     ms.massFormat = 1; ms.hudRelativeMass = false;
-    const c = makeCell({ size: 400, shortMass: false, optimizedMass: true });
-    c.setMass(400); c.lastMass = c.mass;
-    c.setMass(402);
-    const small = c.redrawMass;
-    c.setMass(410);
-    check('mass text: a 1% change keeps the drawn text, a 5% change redraws it', !small && c.redrawMass === true && c.massTxt === '1681', small + ' ' + c.redrawMass + ' ' + c.massTxt);
-    const k = makeCell({ size: 400, shortMass: true, optimizedMass: true });
-    k.setMass(400); k.lastMass = k.mass;
+    const c = makeCell({ size: 400, shortMass: false });
+    c.setMass(400); c.drawMass(main.getContext());
+    c.setMass(402); c.drawMass(main.getContext());
+    check('mass text: a 1% change is drawn at once', c.redrawMass === true && c.massTxt === '1616' && c.massCanvas.txt === '1616', c.redrawMass + ' ' + c.massTxt + ' ' + (c.massCanvas && c.massCanvas.txt));
+    const k = makeCell({ size: 400, shortMass: true });
+    k.setMass(400);
     const kTxt = k.massTxt;
     k.shortMass = false;
     k.setMass(401);

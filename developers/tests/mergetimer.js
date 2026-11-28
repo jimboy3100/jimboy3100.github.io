@@ -8,7 +8,7 @@ const src = fs.readFileSync(path.join(root, 'ogario', 'mergetimer.js'), 'utf8');
 const core = fs.readFileSync(path.join(root, 'ogario', 'ogario.v4.js'), 'utf8');
 let tick = null, now = 0, fail = 0;
 const check = (n, c) => { console.log((c ? 'ok   ' : 'FAIL ') + n); if (!c) fail++; };
-const win = { playerCellsId: [], legendmod: { playerCells: [], indexedCells: {} }, legendmod5: { optimizedMass: false } };
+const win = { playerCellsId: [], legendmod: { playerCells: [], indexedCells: {} }, legendmod5: { mergeTimer: true } };
 const ctx = { window: win, performance: { now: () => now }, setInterval: f => { tick = f; return 1; }, clearInterval: () => {}, Number, Math, Object, console };
 vm.createContext(ctx);
 vm.runInContext(src, ctx);
@@ -57,7 +57,7 @@ delete LM.indexedCells[5];
  * did not exist); run those exact lines with merge timers off, where the timer does not tick */
 const lines = core.split(/\r?\n/).filter(l => /MergeTimerController\.reset/.test(l)).map(l => l.trim());
 check('death and close each reset the merge timer (' + lines.length + ' lines)', lines.length === 2);
-win.legendmod5.optimizedMass = true;
+win.legendmod5.mergeTimer = false;
 for (const line of lines) {
     win.playerCellsId[42] = { historyMass: [100], _mergeState: 'counting' };
     vm.runInContext(line, ctx);
@@ -65,7 +65,7 @@ for (const line of lines) {
 }
 
 /* reset forgets the last cell count: a respawn into 2 cells is not taken as a split of the old life */
-win.legendmod5.optimizedMass = false;
+win.legendmod5.mergeTimer = true;
 setOwn([{ id: 70, mass: 100 }, { id: 71, mass: 100 }]); step();
 setOwn([{ id: 70, mass: 100 }, { id: 71, mass: 100 }, { id: 72, mass: 100 }]);
 win.MergeTimerController.reset();
@@ -73,18 +73,18 @@ setOwn([{ id: 80, mass: 100 }, { id: 81, mass: 100 }, { id: 82, mass: 100 }, { i
 check('first tick after reset arms no timer', !win.playerCellsId[80] || win.playerCellsId[80]._mergeState !== 'counting');
 
 /* one merge countdown or the other: the core's drawPostCellOverlays (real code) draws no merge
- * rings while the seconds timer is on (optimizedMass off) */
+ * rings while the seconds timer (mergeTimer) is on */
 {
     const i = core.indexOf('        drawPostCellOverlays(fxCtx) {'), j = core.indexOf('        markSplitPrediction(owner) {', i);
     const body = core.slice(i, j).replace(/,\s*\/\*[^]*$/, '').replace(/\},\s*$/, '}');
     let rings = 0;
-    const dctx = { window: { ExternalScripts: true }, LM: { play: true, playerCells: [{}, {}], playerCellsMulti: [] }, defaultmapsettings: { cursorTracking: true, mergeRings: true, optimizedMass: true }, spects: null };
+    const dctx = { window: { ExternalScripts: true }, LM: { play: true, playerCells: [{}, {}], playerCellsMulti: [] }, defaultmapsettings: { cursorTracking: true, mergeRings: true, mergeTimer: false }, spects: null };
     vm.createContext(dctx);
     const R = vm.runInContext('({' + body + '})', dctx);
     R.drawSplitVectorGuide = () => { }; R.markSplitPrediction = () => { }; R.drawMergeProgressRings = () => { rings++; };
     R.drawPostCellOverlays({});
     const withRings = rings;
-    rings = 0; dctx.defaultmapsettings.optimizedMass = false;
+    rings = 0; dctx.defaultmapsettings.mergeTimer = true;
     R.drawPostCellOverlays({});
     check('merge rings drawn with the merge timer off, none with it on', withRings === 1 && rings === 0);
 
@@ -93,7 +93,7 @@ check('first tick after reset arms no timer', !win.playerCellsId[80] || win.play
      * single cells look split) */
     const u = core.indexOf('function lmUnitCellsInto('), ue = core.indexOf('\n}', u) + 2;
     const LM2 = { play: false, playerCells: [], playerCellsMulti: [{ spectator: 1 }, { spectator: 2 }, { spectator: 2, removed: true }] };
-    const d2 = { window: { ExternalScripts: true, multiboxPlayerEnabled: 1, legendmod: LM2 }, LM: LM2, defaultmapsettings: { cursorTracking: true, mergeRings: true, optimizedMass: true },
+    const d2 = { window: { ExternalScripts: true, multiboxPlayerEnabled: 1, legendmod: LM2 }, LM: LM2, defaultmapsettings: { cursorTracking: true, mergeRings: true, mergeTimer: false },
         spects: [{ number: 1 }, { number: 2 }] };
     vm.createContext(d2);
     vm.runInContext(u < 0 ? '' : core.slice(u, ue), d2);

@@ -14,7 +14,7 @@ var _antiPauseText = ''; /* the text we put in #pause-hud, in the chosen languag
 
 function CellTimerTrigger() {
     if (_antiTimerInterval) return; // already running
-    if (!window.legendmod5.optimizedMass) {
+    if (window.legendmod5.mergeTimer) {
         _antiTimerInterval = setInterval(celltimer, 1000);
     }
 }
@@ -28,7 +28,7 @@ function celltimerstop() {
 
 function celltimer() {
     // Stop polling if setting changed
-    if (window.legendmod5.optimizedMass) {
+    if (!window.legendmod5.mergeTimer) {
         celltimerstop();
         return;
     }

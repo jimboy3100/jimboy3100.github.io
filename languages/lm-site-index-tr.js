@@ -316,7 +316,7 @@
 "site.index.names": "İsimler (",
 "site.index.disableNamesOrUse": "isimleri kapatın veya “Auto hide name” seçeneğini kullanın",
 "site.index.someTipsToGet": "Daha kararlı FPS için bazı ipuçları:",
-"site.index.useOptimizedNamesAnd": "“Optimized names” ve “Optimized mass” seçeneklerini kullanın",
+"site.index.useOptimizedNamesAnd": "“Optimized names” seçeneğini kullanın",
 "site.index.useAutoHideMass": "“Auto hide mass” seçeneğini kullanın",
 "site.index.useShortMassOption": "“Kütle biçimi”ni “Kısa (12.3k)” yapın",
 "site.index.disableAutoZoom": "Otomatik yakınlaştırmayı kapatın",

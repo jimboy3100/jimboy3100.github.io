@@ -94,7 +94,7 @@ window.ExternalScripts = true;
         if (!window.ExternalScripts ||
             !window.legendmod ||
             !window.legendmod5 ||
-            window.legendmod5.optimizedMass ||
+            !window.legendmod5.mergeTimer ||
             !window.playerCellsId) {
             return;
         }
@@ -187,7 +187,7 @@ window.ExternalScripts = true;
             !!window.ExternalScripts &&
             !!window.legendmod &&
             !!window.legendmod5 &&
-            !window.legendmod5.optimizedMass &&
+            !!window.legendmod5.mergeTimer &&
             !!window.playerCellsId;
     }
 
