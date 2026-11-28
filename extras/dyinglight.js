@@ -12,7 +12,9 @@
  *   particlePalette(), effect(name), setEffect(name, on): the themed death particle colours,
  *     the spawn burst and the Game Over card, each can be suppressed on its own
  *   getBackground(): { url, img, alpha } of the map scene while on, else null
- *   hasForegroundFx(), needsThreatData(), addPart({ name, start(gen, api), stop(), fx, threat, background() })
+ *   hasForegroundFx(), needsThreatData(), addPart({ name, start(gen, api), stop(), fx, threat, background(), replay() })
+ *   replayLook({ i, cy, ck }) / replayLook(null), replay(), replayScoped(): the look of a replay
+ *     recorded with the theme on (ogario/modules/replaystudio.js): see replayLook below
  * LMEvents 'dyingLightChange' { state, enabled, generation } is sent on every state change. */
 (function () {
     'use strict';
@@ -70,6 +72,13 @@
     var styleEl = null, onSettings = null;
     var byNick = new Map();   /* nick -> design key, at most 512 names, emptied on disable */
     var onSpawn = null, spawnTimer = 0, burstAt = 0;
+    /* A replay recorded with the theme on (replayLook): rp is its recorded look { i, cy, ck } (the
+     * intensity, the Day and night setting, the director's clock at the replay position), read by
+     * the director instead of the player's. scoped: this activation was made only for the replay
+     * (the player's switch is off): it is never saved and ends with the replay. rpTried: the
+     * replay asked once already (a refused, failed or player-ended start is not tried again until
+     * the replay's look ends). */
+    var rp = null, scoped = false, rpTried = false;
 
     function tx(key) { return typeof W.lmT === 'function' ? W.lmT(key) : key; }
     function warn(what, e) { try { console.warn('[Dying Light] ' + what, e); } catch (e2) { } }
@@ -282,12 +291,23 @@
 
     /* opts.confirm: ask first (a new activation); a start with the switch saved on does not ask.
      * Resolves true when on, false when refused, cancelled or failed (then everything is as before). */
-    function enable(opts) {
-        if (state === 'on') return Promise.resolve(true);
-        if (state === 'loading' && job) return job;
+    function enable(opts) { return begin(opts, false); }
+    /* the player turns on the theme a replay shows: from now on it is the player's own (saved) */
+    function own(opts) {
+        if (opts && opts.confirm && !confirmed()) return false;
+        scoped = false;
+        if (state === 'on') persist(true);
+        emit();
+        return true;
+    }
+    /* forReplay: an activation for a replay only (replayLook), never saved */
+    function begin(opts, forReplay) {
+        if (state === 'on') return Promise.resolve(forReplay || !scoped || own(opts));
+        if (state === 'loading' && job) return !forReplay && scoped && !own(opts) ? Promise.resolve(false) : job;
         /* asked from a listener of the turn-off: that one finishes first */
         if (state === 'disabling') return Promise.resolve(false);
-        if (opts && opts.confirm && !confirmed()) return Promise.resolve(false);
+        if (!forReplay && opts && opts.confirm && !confirmed()) return Promise.resolve(false);
+        scoped = !!forReplay;
         /* a change of the setting while it was off (an import) */
         syncIntensity();
         var g = ++generation;
@@ -303,11 +323,13 @@
                 try { teardown(); } catch (e2) { }
                 generation++;
                 job = null;
+                scoped = false;
                 setState('off');
                 try { if (W.toastr) W.toastr.warning(tx('pkg.dlv3life.failed')); } catch (e3) { }
                 return false;
             }
-            persist(true);
+            /* a replay's activation keeps the player's switch as it is */
+            if (!scoped) persist(true);
             job = null;
             setState('on');
             return true;
@@ -315,8 +337,12 @@
         return p;
     }
 
-    /* Safe at any time, also while loading or after a failed start; the switch is saved off. */
+    /* Safe at any time, also while loading or after a failed start; the switch is saved off. A
+     * replay showing the theme shows the normal look from then on (rpTried: not turned on again). */
     function disable() {
+        if (rp) rpTried = true;
+        rp = null;
+        scoped = false;
         if (state === 'off') {
             persist(false);
             return Promise.resolve(true);
@@ -330,6 +356,53 @@
         persist(false);
         setState('off');
         return Promise.resolve(true);
+    }
+
+    /* The end of a replay's own activation: everything it put on the page goes, the switch is not
+     * saved (it stayed off the whole time). */
+    function endScoped() {
+        scoped = false;
+        if (state === 'off' || state === 'disabling') return;
+        generation++;
+        job = null;
+        setState('disabling');
+        try { teardown(); } catch (e) { warn('teardown', e); }
+        setState('off');
+    }
+    function replayNotify() {
+        for (var i = 0; i < running.length; i++) {
+            var f = running[i].replay;
+            if (typeof f === 'function') { try { f(); } catch (e) { warn('part ' + (running[i].name || '?'), e); } }
+        }
+    }
+    /* Replay Studio, while it plays a replay recorded with the theme on: o = { i: intensity, cy: the
+     * Day and night setting (0 = off), ck: the director's clock at the replay position (ms; null or
+     * absent: no clock, the fixed scene) }, given again as the position moves. With the theme off
+     * it is turned on for the replay only (never saved, no question); with it on, the player's
+     * activation shows the recorded look and goes back to the player's own (intensity, cycle,
+     * clock) at replayLook(null), the end of that replay. The player's settings are never changed.
+     * Sounds and scares stay silent in a replay (the director's replay check). Returns true when
+     * the look is (being) shown. */
+    function replayLook(o) {
+        if (o && typeof o === 'object') {
+            var i = INTENSITIES[o.i] === 1 ? o.i : intensityV, cy = o.cy === 0 || o.cy === false ? 0 : 1;
+            var ck = typeof o.ck === 'number' && isFinite(o.ck) && o.ck >= 0 ? o.ck : null;
+            if (state === 'off') {
+                if (rpTried) { rp = null; return false; }
+                rpTried = true;
+                rp = Object.freeze({ i: i, cy: cy, ck: ck });
+                begin(null, true);
+                return state !== 'off';
+            }
+            if (!rp || rp.i !== i || rp.cy !== cy || rp.ck !== ck) rp = Object.freeze({ i: i, cy: cy, ck: ck });
+            replayNotify();
+            return true;
+        }
+        rpTried = false;
+        if (!rp && !scoped) return false;
+        rp = null;
+        if (scoped) endScoped(); else replayNotify();
+        return true;
     }
 
     function getFallbackSkinKey(cell) {
@@ -367,6 +440,11 @@
             return true;
         },
         getFallbackSkinKey: getFallbackSkinKey,
+        replayLook: replayLook,
+        /* the recorded look of the replay shown (frozen { i, cy, ck }), else null */
+        replay: function () { return state === 'on' ? rp : null; },
+        /* on only for a replay (the player's switch is off) */
+        replayScoped: function () { return scoped && state !== 'off'; },
         getBackground: function () {
             if (state !== 'on') return null;
             /* a part's scene (the day / night director), else the fixed one; asked every frame */
@@ -489,9 +567,13 @@
         for (var i = PHASES.length - 1; i > 0; i--) if (t >= PHASES[i].at) return PHASES[i];
         return PHASES[0];
     }
-    function profile() {
+    /* a replay recorded with the theme on: its look (LMDyingLight.replayLook), else null */
+    function rec() {
+        try { return DL.replay(); } catch (e) { return null; }
+    }
+    function profile(r) {
         var p = null;
-        try { p = PROFILES[DL.intensity()]; } catch (e) { }
+        try { p = PROFILES[r ? r.i : DL.intensity()]; } catch (e) { }
         return p || PROFILES.immersive;
     }
 
@@ -499,7 +581,7 @@
     var on = false, live = false, gen = 0, timer = 0, acc = 0, runAt = 0, lastTick = 0, late = 0, okTicks = 0, busy = false;
     var phase = null, nextRollAt = 0, lastEventAt = -Infinity, lastAt = {}, lastMajorAt = -Infinity;
     var quietUntil = 0, lastDeathAt = -Infinity, lastSignalAt = -Infinity, deathN = 0, radioN = 0;
-    var shown = null, pend = null, failed = {};
+    var shown = null, pend = null, failed = {}, wasRec = false;
     var audios = [], subs = [], onVis = null, styleEl = null, ghostEl = null, ghostUntil = 0;
 
     function now() { return W.performance.now(); }
@@ -546,7 +628,19 @@
     }
 
     function step(E, constrained) {
-        var p = profile(), cyc = p.cycle && setting('dyingLightCycle') !== false;
+        var r = rec(), p = profile(r);
+        if (r) {
+            /* a replay: the scene of its recorded clock and Day and night, no events */
+            var rc = p.cycle && r.cy !== 0 && r.ck != null;
+            wasRec = true;
+            phase = rc ? phaseAt(r.ck) : NIGHT;
+            scenes(rc ? r.ck : E, rc, phase, constrained);
+            hideGhost();
+            return;
+        }
+        /* back from a replay: its phase is not a change of the player's (no nightfall) */
+        if (wasRec) { wasRec = false; phase = null; }
+        var cyc = p.cycle && setting('dyingLightCycle') !== false;
         var ph = cyc ? phaseAt(E) : NIGHT;
         if (ph !== phase) {
             var prev = phase;
@@ -758,6 +852,11 @@
         hideGhost();
         if (on) quietUntil = clock(now()) + SPAWN_QUIET_MS;
     }
+    /* the replay's look changed (a seek, its clock, its end): shown at once, not at the next tick */
+    function onReplay() {
+        if (!on || !live) return;
+        try { step(clock(now()), busy); } catch (e) { warn('director', e); }
+    }
     function onDisconnect(d) {
         if (!on || !live || !d || !d.playing || replay()) return;
         var E = clock(now());
@@ -779,7 +878,7 @@
     function reset() {
         clearTimeout(timer);
         timer = 0; acc = 0; runAt = 0; live = false; lastTick = 0; late = 0; okTicks = 0; busy = false;
-        phase = null; nextRollAt = 0; lastEventAt = -Infinity; lastAt = {}; lastMajorAt = -Infinity;
+        phase = null; wasRec = false; nextRollAt = 0; lastEventAt = -Infinity; lastAt = {}; lastMajorAt = -Infinity;
         quietUntil = 0; lastDeathAt = -Infinity; lastSignalAt = -Infinity; deathN = 0; radioN = 0;
         shown = null; dropPend(); failed = {};
     }
@@ -833,6 +932,7 @@
         name: 'director',
         start: function (g) { start(g); },
         stop: stop,
+        replay: onReplay,
         background: function () { return on ? shown : null; }
     });
     /* its colours over the menu / HUD theme, while on (any intensity) */
@@ -846,7 +946,7 @@
         phaseAt: function (ms) { return phaseAt(+ms || 0).id; },
         info: function () {
             return {
-                running: on && live, on: on, clock: on ? clock(now()) : 0, phase: phase ? phase.id : null,
+                running: on && live, on: on, clock: on ? clock(now()) : 0, phase: phase ? phase.id : null, replay: !!(on && rec()),
                 busy: busy, scene: shown ? shown.url : null, loading: pend ? pend.url : null,
                 sounds: audios.length, timer: !!timer, listeners: subs.length + (onVis ? 1 : 0), ghost: !!ghostEl
             };

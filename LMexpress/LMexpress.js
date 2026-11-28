@@ -3962,9 +3962,15 @@ function stopdyinglight() {
     lmDyingLightBanner();
     return p;
 }
+/* the player's switch as the banner shows it: a replay showing the theme for itself only
+ * (LMDyingLight.replayScoped, Replay Studio) leaves it off, and a press turns it on for good */
+function lmDyingLightOwnState(api) {
+    if (!(api && api._lm === 1)) return _lmDlFetching ? "loading" : "off";
+    return typeof api.replayScoped === "function" && api.replayScoped() ? "off" : api.state;
+}
 function lmDyingLightToggle() {
     var api = window.LMDyingLight;
-    var st = api && api._lm === 1 ? api.state : (_lmDlFetching ? "loading" : "off");
+    var st = lmDyingLightOwnState(api);
     return st === "on" || st === "loading" ? stopdyinglight() : opendyinglight();
 }
 /* the Tools tab banner (#LEGENDAds2): on/off picture, no remote markup or scripts */
@@ -3972,7 +3978,7 @@ function lmDyingLightBanner() {
     var box = document.getElementById("LEGENDAds2");
     if (!box) return;
     var api = window.LMDyingLight;
-    var st = api && api._lm === 1 ? api.state : (_lmDlFetching ? "loading" : "off");
+    var st = lmDyingLightOwnState(api);
     var on = st === "on", busy = st === "loading";
     var tip = _lmxE(on ? "pkg.dlv3life.turnOff" : busy ? "pkg.dlv3life.loading" : "pkg.dlv3life.turnOn");
     box.innerHTML = '<a class="lm-dl-banner" href="#" role="button" data-lm-dl="toggle" title="' + tip + '" aria-label="' + tip + '"' +

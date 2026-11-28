@@ -712,6 +712,82 @@ if (Object.keys(coreSrc).every(k => coreSrc[k])) {
         f1 === 1 && f2 === 1 && f3 === 2 && frames === 3 && rafs === 5);
     }
   }
+  {
+    /* Dying Light: a recording made with the theme on plays with its look (LMDyingLight.replayLook
+     * with the recorded state at the position), a normal one never asks; the end of the session
+     * gives the normal look back */
+    const dlEnv = (dl, withApi) => {
+      const e = driverEnv(), calls = [];
+      const k = e.add('wss://dl.example/' + (dl ? 1 : 0), small);
+      /* one packet a minute */
+      e.g.RecordedProtocol[k]._lmSide.t = small.map((_, i) => i * 60000);
+      if (dl) e.g.RecordedProtocol[k]._lmSide.dl = dl;
+      const api = { _lm: 1, replayLook(o) { calls.push(o ? Object.assign({}, o) : null); return true; } };
+      if (withApi) e.g.LMDyingLight = api;
+      return { e, k, calls, api, last: () => calls[calls.length - 1] };
+    };
+    const dl = [{ t: 0, on: 1, i: 'nightmare', cy: 1, ck: 100000 }, { t: 360000, on: 0 }, { t: 480000, on: 1, i: 'competitive', cy: 0, ck: 5000, ps: 1 }];
+    {
+      const { e, k, calls, last } = dlEnv(dl, true);
+      e.start(k, 2, false);
+      check('DL replay: on at the take-over with the recorded look at the position (' + JSON.stringify(last()) + ')',
+        calls.length >= 1 && JSON.stringify(last()) === JSON.stringify({ on: 1, i: 'nightmare', cy: 1, ck: 160000 }));
+      e.RS.drive.seek(5, false); e.advance(100);
+      const fwd = last();
+      e.RS.drive.seek(1, false); e.advance(100);
+      const back = last();
+      check('DL replay: a seek moves the recorded clock with it, forwards and back', fwd && fwd.ck === 340000 && back && back.ck === 100000 && back.i === 'nightmare');
+      e.RS.drive.seek(8, false); e.advance(100);
+      check('DL replay: where the recording turned the theme off the normal look comes back', last() === null);
+      e.RS.drive.seek(10, false); e.advance(100);
+      check('DL replay: turned on again later, with that entry\'s look (clock standing still)', JSON.stringify(last()) === JSON.stringify({ on: 1, i: 'competitive', cy: 0, ck: 5000 }));
+      const n = calls.length;
+      e.RS.drive.pause(); e.advance(5000);
+      check('DL replay: nothing asked while paused', calls.length === n);
+      e.RS.close(); e.advance(100);
+      check('DL replay: closing the Studio gives the normal look back, once', last() === null && calls.length === n + 1 && !e.st().driving);
+      e.advance(3000);
+      check('DL replay: nothing asked after the end', calls.length === n + 1);
+    }
+    {
+      const { e, k, calls, last } = dlEnv(dl, true);
+      e.start(k, 0, true);
+      e.advance(130000);
+      const playing = calls.filter(c => c && c.i === 'nightmare');
+      check('DL replay: playing gives the clock again as the position moves (' + playing.map(c => c.ck).join(',') + ')',
+        playing.length >= 2 && playing.every((c, i) => !i || c.ck >= playing[i - 1].ck) && playing[playing.length - 1].ck > 100000);
+      e.connect('wss://live.example:443'); e.advance(100);
+      check('DL replay: a live server joined ends the look', last() === null && !e.st().driving);
+    }
+    {
+      /* a normal recording right after a DL one: the look ends and is not asked again */
+      const a = dlEnv(dl, true), e = a.e;
+      a.e.start(a.k, 2, false);
+      const k2 = e.add('wss://dl.example/normal', small);
+      e.start(k2, 3, false);
+      e.RS.drive.play(1); e.advance(2000); e.RS.drive.seek(1, false); e.advance(100);
+      check('DL replay then a normal one: the look ends at the switch and is not asked again', a.last() === null && a.calls.filter(c => c === null).length === 1 && e.st().key === k2);
+    }
+    {
+      const { e, k, calls } = dlEnv(null, true);
+      e.start(k, 0, true); e.advance(3000); e.RS.drive.seek(2, false); e.advance(100); e.RS.close(); e.advance(100);
+      check('normal replay: the Dying Light look is never asked for or ended', calls.length === 0);
+    }
+    {
+      /* the theme's script not loaded yet: loaded once (LMexpress.js lmDyingLightScript), then the look */
+      const { e, k, calls, api } = dlEnv(dl, false);
+      let loads = 0;
+      e.g.lmDyingLightScript = () => ({ then(ok) { loads++; e.g.LMDyingLight = api; ok(api); } });
+      e.start(k, 2, false);
+      check('DL replay without the script: loaded once, then the look', loads === 1 && calls.length === 1 && calls[0].ck === 160000);
+      const f = dlEnv(dl, false);
+      let tries = 0;
+      f.e.g.lmDyingLightScript = () => ({ then(ok, bad) { tries++; bad(new Error('x')); } });
+      f.e.start(f.k, 2, false);
+      f.e.RS.drive.play(1); f.e.advance(5000);
+      check('DL replay whose script fails: tried once in the session, the replay plays on', tries === 1 && f.calls.length === 0 && f.e.st().driving);
+    }
+  }
 }
 
 }

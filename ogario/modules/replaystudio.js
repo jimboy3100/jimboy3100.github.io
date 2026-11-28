@@ -816,6 +816,53 @@
     function vNow(now) { return P.baseT + (now - P.baseWall) * P.speed * P.dir; }
     /* the replay bar and the phone pause button show the paused state */
     function setPaused(on) { window._lmReplayPaused = !!on; }
+    /* Dying Light in a replay: a recording made with the theme on (REC.side.dl, see cleanDl) is
+     * shown with its look while the Studio plays it (LMDyingLight.replayLook in
+     * extras/dyinglight.js: the fallback zombie skins, the recorded intensity, the scene of the
+     * recorded clock at the position, its sounds and scares silent), the player's switch and
+     * settings unchanged; the end of the session (dispose) gives the normal look back. Recordings
+     * without dl: one check per tick, nothing else. DLS.on: a look was given to LMDyingLight;
+     * at: the dl entry it came from; wall: when (the clock is given again once a second while
+     * playing); noLoad: its script could not be loaded in this session (not tried again). */
+    var DLS = { on: false, at: null, wall: 0, loading: false, noLoad: false };
+    function dlApi() {
+        var a = window.LMDyingLight;
+        return a && a._lm === 1 && typeof a.replayLook === 'function' ? a : null;
+    }
+    function dlEnd() {
+        DLS.at = null;
+        if (!DLS.on) return;
+        DLS.on = false;
+        var a = dlApi();
+        if (a) { try { a.replayLook(null); } catch (e) { } }
+    }
+    /* force: a seek, the take-over or the script that came (else: the same entry within 1 s waits) */
+    function dlSync(force) {
+        var dl = P.driving && REC && REC.side ? REC.side.dl : null;
+        if (!dl || !dl.length) { if (DLS.on) dlEnd(); return; }
+        var ms = tAt(shownPos()), e = null;
+        for (var i = 0; i < dl.length && dl[i].t <= ms; i++) e = dl[i];
+        if (!e || !e.on) { if (DLS.on) dlEnd(); return; }
+        var now = performance.now();
+        if (!force && DLS.on && DLS.at === e && now - DLS.wall < 1000) return;
+        var a = dlApi();
+        if (!a) { dlLoad(); return; }
+        DLS.on = true;
+        DLS.at = e;
+        DLS.wall = now;
+        try { a.replayLook(dlAt(dl, ms)); } catch (e2) { }
+    }
+    /* the theme's script, when it was never turned on in this visit (LMexpress.js lmDyingLightScript) */
+    function dlLoad() {
+        if (DLS.loading || DLS.noLoad || typeof window.lmDyingLightScript !== 'function') return;
+        DLS.loading = true;
+        var done = function (ok) {
+            DLS.loading = false;
+            if (!ok) DLS.noLoad = true;
+            else if (P.driving && dlApi()) dlSync(true);
+        };
+        try { window.lmDyingLightScript().then(function () { done(true); }, function () { done(false); }); } catch (e) { done(false); }
+    }
     /* The replay context (window._lmEvReplayOn, LMEvents context 'replay'; Analytics, Death recap,
      * macros and the match history skip it): on at the take-over of a replay connection, off only once
      * that connection is left for a live server (dispose 'left', from ogario.v4.js). Pause, the end,
@@ -850,6 +897,7 @@
         if (reason === 'left') P.pending = null;
         setPaused(false);
         restoreSkins();
+        dlEnd();
         overlayClear();
         if (window._lmEvReplayOn && !inReplay()) evReplay(false, reason === 'left' ? 'left' : 'stopped');
         ui();
@@ -972,6 +1020,7 @@
         var lim = P.stopAt ? Math.min(REC.n, P.stopAt) : REC.n;
         while (P.pos < lim && REC.t[P.pos] <= vt && k < 300) { handle(P.pos); setPos(P.pos + 1); k++; }
         if (k >= 300) { P.baseT = tAt(P.pos); P.baseWall = now; } /* the page cannot keep up: slow down instead of freezing */
+        dlSync(false);
         if (P.pos >= REC.n) {
             /* P1 fix #43: when playing a live recording, the playhead can reach the end
              * of currently available packets while recording is still ongoing. Instead of
@@ -1076,6 +1125,7 @@
             P.ff = null;
             window._lmReplayHoldUntil = 0;
             setPos(P.pos);
+            dlSync(true);
             if (job.resume && job.rev && P.dir < 0) revStepDone(job);
             else if (job.resume) play(); else ui();
             overlayOn();
@@ -1090,7 +1140,7 @@
         if (!P.driving || !active()) { startReplay(REC.key, Math.max(0, P.pos + dir), false); return; }
         var at = shownPos();
         pause();
-        if (dir > 0 && !P.ff) { if (P.pos < REC.n) { handle(P.pos); setPos(P.pos + 1); } ui(); }
+        if (dir > 0 && !P.ff) { if (P.pos < REC.n) { handle(P.pos); setPos(P.pos + 1); dlSync(false); } ui(); }
         else seekTo(at + (dir > 0 ? 1 : -1), false);
     }
     var leaveAt = 0;
@@ -1149,6 +1199,7 @@
         P.base = grab();
         P.cpRec = {};
         P.cpN = 0;
+        DLS.noLoad = false;
         applySkins(REC.spec);
         /* one replayStart per recording shown (switching recordings: the old one stops first) */
         if (window._lmEvReplayOn && ctxKey !== key) evReplay(false, 'stopped');
