@@ -10,17 +10,21 @@
 const { patternMatches } = require('./references');
 
 const TOKEN_RE = /[A-Za-z0-9_$-]+/g;
+/* whole file names with a stem of one or two characters ('ok.svg'): such a stem alone proves nothing (see named) */
+const SHORT_NAME_RE = /(?<![A-Za-z0-9_$.-])[A-Za-z0-9_$-]{1,2}\.[A-Za-z0-9]{2,5}(?![A-Za-z0-9_$-])/g;
 /* words of a text: code (outside the comment ranges) into code, every word into all */
 function tokenize(text, code, all, ranges) {
-    TOKEN_RE.lastIndex = 0;
-    let m, ri = 0;
-    while ((m = TOKEN_RE.exec(text))) {
-        if (all) all.add(m[0]);
-        if (ranges && ranges.length) {
-            while (ri < ranges.length && ranges[ri][1] <= m.index) ri++;
-            if (ri < ranges.length && ranges[ri][0] <= m.index) continue;
+    for (const re of [TOKEN_RE, SHORT_NAME_RE]) {
+        re.lastIndex = 0;
+        let m, ri = 0;
+        while ((m = re.exec(text))) {
+            if (all) all.add(m[0]);
+            if (ranges && ranges.length) {
+                while (ri < ranges.length && ranges[ri][1] <= m.index) ri++;
+                if (ri < ranges.length && ranges[ri][0] <= m.index) continue;
+            }
+            code.add(m[0]);
         }
-        code.add(m[0]);
     }
 }
 
@@ -30,10 +34,10 @@ function stemOf(p) {
     return i > 0 ? b.slice(0, i) : b;
 }
 /* is the file's name (without extension) written somewhere in the reached files; names of one or two
-   characters ('a', '17') are everywhere and prove nothing */
+   characters ('a', '17') are everywhere and prove nothing, unless the whole file name is written ('ok.svg') */
 function named(p, tokens) {
     const s = stemOf(p);
-    if (s.length < 3) return false;
+    if (s.length < 3) return tokens.has(p.slice(p.lastIndexOf('/') + 1));
     if (tokens.has(s)) return true;
     const parts = s.split(/[^A-Za-z0-9_$-]+/).filter(Boolean);
     return parts.length > 1 && parts.every((x) => tokens.has(x)) && parts.some((x) => x.length >= 3);

@@ -20703,7 +20703,6 @@ var emoticonicons = {
     '(heel)': 'newheel.svg',
     '(kiss)': 'newkiss.svg',
     '(lipstick)': 'newlipstick.svg',
-    //				'(rage)': 'newrage.svg',
     '(teacher)': 'newteacher.svg',
     '(together)': 'newtogether.svg',
     '(toothy)': 'newtoothy.svg',
@@ -40445,7 +40444,7 @@ function thelegendmodproject() {
                 } else if (this.SpecialEffect === "ChristmasTree" || this.SpecialEffect2 === "ChristmasTree") {
                     this.drawImageSpecialSkin("iconSpecialSkinEffectsChristmasTree", this.x + 0.4 * y, this.y + 0.2 * y, y / 1.5, y / 1, style);
                 } else if (this.SpecialEffect === "SantaHat" || this.SpecialEffect2 === "SantaHat") {
-                    this.drawImageSpecialSkin("iconSpecialSkinEffectsSantaHa", this.x - 1.05 * y, this.y + 1.5 * y, y / 1.5, y / 1, style);
+                    this.drawImageSpecialSkin("iconSpecialSkinEffectsSantaHat", this.x - 1.05 * y, this.y + 1.5 * y, y / 1.5, y / 1, style);
                 } else if (this.SpecialEffect === "Flag4July" || this.SpecialEffect2 === "Flag4July") {
                     this.drawImageSpecialSkin("iconSpecialSkinEffectsUSAFlag4July", this.x - 0.9 * y, this.y + 1.1 * y, y / 1.5, y / 1, style);
                 } else if (this.SpecialEffect === "WhiteArrow" || this.SpecialEffect2 === "WhiteArrow") {

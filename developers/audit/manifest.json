@@ -7361,6 +7361,22 @@
         "external": "expandingland, legendworld-help, LegendWorld and deltav4 do not name it (also not in their git history); no version of a userscript, of the two extension zips or of the Expanding Land APK names it"
       },
       "approvedForDeletion": true
+    },
+    {
+      "oldPath": "banners/emoticons/newrage.svg",
+      "canonicalPath": null,
+      "reason": "chat emoticon picture whose (rage) entry in the emoticon table of ogario/ogario.v4.js was commented out from the start (the chat keeps (rage) as text); that dead comment line is removed with it. No page, script, style, setting or test named it otherwise in the whole git history (also ogariov3privateservers.js, removed long ago, had it only in the same commented-out line)",
+      "internalReferencesMigrated": true,
+      "legacyResolverSupported": false,
+      "externalUrlSupported": false,
+      "legacyResolverNeeded": false,
+      "externalUrlNeeded": false,
+      "verification": {
+        "on": "2026-11-28",
+        "legacy": "saved data cannot hold it: the emoticon table is code, not a setting, and its (rage) line never ran",
+        "external": "expandingland, legendworld-help and LegendWorld do not name it (also not in their git history); deltav4 has it only in the same commented-out line; the current extension zips and the Expanding Land APK do not name it; not in sitemap.xml"
+      },
+      "approvedForDeletion": true
     }
   ]
 }

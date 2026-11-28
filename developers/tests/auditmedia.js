@@ -72,8 +72,12 @@ migrated.forEach((r) => {
     r.simple = SIMPLE.test(r.base) && SIMPLE.test(r.encBase);
 });
 const hits = {};
+/* release notes written from the git history (developers/tools/changelog-releases.js) say which files a
+   release removed: there only an address the page loads or links (src, href, content, url()) is a use */
+const NOTES = new Set(['changelog.html', 'rss.xml']);
 if (migrated.length) {
     const esc = (s) => s.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+    const loads = (src, p) => new RegExp('(src|href|content)\\s*=\\s*["\'][^"\'<>]*' + esc(p) + '|url\\(\\s*["\']?[^)"\'<>]*' + esc(p), 'i').test(src);
     texts.forEach((f) => {
         let st; try { st = fs.statSync(path.join(repo, f)); } catch (e) { return; }
         if (!st.isFile() || st.size > 8e6) return;
@@ -84,7 +88,7 @@ if (migrated.length) {
             if (r.simple && !names.has(r.base) && !names.has(r.encBase)) return;
             const p = r.oldPath, base = path.basename(p), dir = path.dirname(p);
             const enc = p.split('/').map(encodeURIComponent).join('/');
-            let found = src.indexOf(p) >= 0 || src.indexOf(enc) >= 0;
+            let found = NOTES.has(f) ? loads(src, p) || loads(src, enc) : src.indexOf(p) >= 0 || src.indexOf(enc) >= 0;
             /* a page in the same folder can name it relatively (src="name.png") */
             if (!found && path.dirname(f) === dir) found = new RegExp('(^|["\'(\\s=]|\\./)' + esc(base) + '(["\')?#\\s]|$)', 'm').test(src);
             /* the skin resolver keeps old skin paths as aliases on purpose (that is the legacy support) */
@@ -166,6 +170,23 @@ Object.keys(PNG).forEach((f) => {
         scan.get('x.js').patterns[0].prefix === 'banners/' && unused.join() === 'gone.js a/');
     const ex = JSON.parse(fs.readFileSync(path.join(repo, 'developers', 'audit', 'exceptions.json'), 'utf8'));
     check('audit: extras/dyinglight.js has its banners/ base narrowed in exceptions.json', (ex.dynamicBases || []).some((e) => e.from === 'extras/dyinglight.js' && e.narrowTo === 'banners/dyinglight/'));
+    /* a file with a one- or two-character stem is named only by its whole name ('(ok)': 'ok.svg' in the
+       chat emoticon table), never by the bare word 'ok' */
+    const H = require(path.join(repo, 'developers', 'audit', 'reachability.js'));
+    const tk = new Set();
+    H.tokenize("var e = { '(ok)': 'ok.svg', '(y)': 'thumb.svg' }; if (ok) go('a.b.png');", tk, null, []);
+    check('audit: a short file name counts only when written whole (ok.svg yes, ok.png / b.png no)',
+        H.named('banners/emoticons/ok.svg', tk) && !H.named('banners/ok.png', tk) && !H.named('banners/b.png', tk) && H.named('banners/emoticons/thumb.svg', tk));
+}
+
+/* special skin effects load 'https://www.legendmod.ml/banners/' + name + '.png' (loadIconSpecialSkins), a
+ * dynamic path the reference scan cannot check: every name the engine draws must be a file (SantaHat
+ * asked for iconSpecialSkinEffectsSantaHa.png, which never existed) */
+{
+    const eng = fs.readFileSync(path.join(repo, 'ogario', 'ogario.v4.js'), 'utf8');
+    const names = [...new Set((eng.match(/drawImageSpecialSkin\("[A-Za-z0-9_]+"/g) || []).map((s) => s.slice(22, -1)))];
+    const lost = names.filter((n) => !tracked.has('banners/' + n + '.png'));
+    check('every special skin effect picture the engine draws exists (' + names.length + ' names' + (lost.length ? ', missing ' + lost.join(', ') : '') + ')', names.length > 20 && !lost.length);
 }
 
 /* the audit's perceptual duplicates (developers/audit/perceptual.js, PNG decoder without Chrome):
