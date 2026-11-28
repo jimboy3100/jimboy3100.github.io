@@ -218,7 +218,6 @@ var PostedThings;
 var setscriptingcom = "YES";
 var usedonceSkin = 0;
 var detailed = "";
-var detailed1;
 
 var userData = {};
 try {
@@ -5509,73 +5508,6 @@ function initializeLM(modVersion) {
     $('*[data-itr="page_play"]').click(function () {
         /* a private room token is a used single-use ticket: not kept as the last IP */
         if (String($('#server-token').val() || '').indexOf('/el-room/') === -1) localStorage.setItem("lastIP", $('#server-token').val());
-        /*
-        if (userData.responseJSON.query != undefined) {
-            userip = userData.responseJSON.query;
-            userip = userip.replace(" ", "_");
-        }
-        if (userData.responseJSON.city != undefined) {
-            usercity = userData.responseJSON.city;
-            usercity = usercity.replace(" ", "_");
-            usercity = usercity.replace(" ", "_");
-            usercity = usercity.replace(" ", "_");
-        }
-        if (userData.responseJSON.country != undefined) {
-            usercountry = userData.responseJSON.country;
-            usercountry = usercountry.replace(" ", "_");
-            usercity = usercity.replace(" ", "_");
-            usercity = usercity.replace(" ", "_");
-        }
-        */
-        var servertosend = "NotFound";
-        var nicknametosend = "NotFound";
-        //			var userid=$('#user-id-tag').text();userid = userid.replace("User id: ", "");			
-        //			var userid = localStorage.getItem("userid");
-        var modetosend = "NotFound";
-        var regiontosend = "NotFound";
-        var currentdate = new Date();
-        var datetime = currentdate.getDate() + "/" +
-            (currentdate.getMonth() + 1) + "/" +
-            currentdate.getFullYear() + "@" +
-            currentdate.getHours() + ":" +
-            currentdate.getMinutes(); //+ ":" +
-        //currentdate.getSeconds();
-        if (searchSip == null) {
-            modetosend = $('#gamemode').val();
-            regiontosend = $('#region').val();
-        } else {
-            if (searchSip == $('#server').val()) {
-                modetosend = realmode;
-                regiontosend = region;
-            }
-        }
-        if ($('#server').val() != "" && $('#server').val() != null && $('#server').val() != undefined) {
-            servertosend = $('#server').val();
-        }
-        if ($('#nick').val() != undefined) { nicknametosend = $('#nick').val(); }
-        nicknametosend = removeEmojis(nicknametosend.replace(/ /g, "_"));
-        if ($('#server').val() != undefined) {
-            if (servertosend.indexOf("#") !== -1) {
-                servertosend = $('#server').val().replace('#', 'Party-');
-            }
-        }
-
-        if (searchSip == null) {
-            detailed1 = "https://www.legendmod.ml/extras/AN.html?" + "Nick=" + nicknametosend + "&Date=" + datetime + "&sip=" + servertosend + "&mode=" + modetosend + "&region=" + regiontosend;
-        } else if (searchSip != null) {
-            detailed1 = "https://www.legendmod.ml/extras/AN.html?" + "Nick=" + nicknametosend + "&Date=" + datetime + "&sip=" + searchSip + "&join=Url" + "&mode=" + modetosend + "&region=" + regiontosend;
-        } else {
-            detailed1 = "https://www.legendmod.ml/extras/AN.html?" + "Nick=" + nicknametosend + "&Date=" + datetime + "&sip=" + servertosend + "&mode=" + modetosend + "&region=" + regiontosend;
-        }
-        $('body').append($('<div id="loaderIframeInfo1"></div>').append($('<iframe id="loaderIframeInfo" name="detailedinfo" allowtransparency="true" scrolling="no" frameBorder="0" style="width:0%; height:0%; border:none;"></iframe>').attr('src', detailed1)));
-        $('#loaderIframeInfo1').hide();
-        /* the own free skin / flag is registered by the core at play() (findOwnedVanillaSkin) */
-        $('#loaderIframeInfo').on('load', function () {
-            $('#loaderIframeInfo').remove();
-        });
-        //setTimeout(function() {
-        //$('#loaderIframeInfo1').remove();
-        //}, 4000);
         return lastIP = $('#server-token').val();
     });
 
@@ -5667,7 +5599,7 @@ function initializeLM(modVersion) {
     $("#menu-footer").text("");
     //$("#agario-main-buttons").after('<div id="LEGENDAds4"></div>'); //
     //$("#LEGENDAds4").load("https://www.legendmod.ml/banners/bannerLMdevs"); //
-    $("#menu-footer").prepend('<span style="float: left; font-size: 13px;"><a target="_blank" onclick="ga(\'send\', \'event\', \'Link\', \'click\', \'legendWebsite\');" href="https://jimboy3100.github.io" style="color: #ffffff;" data-toggle="tooltip" data-title="' + _lmxE('lmx.ex.website') + '" data-placement="left">v' + modVersion +
+    $("#menu-footer").prepend('<span style="float: left; font-size: 13px;"><a target="_blank" href="https://jimboy3100.github.io" style="color: #ffffff;" data-toggle="tooltip" data-title="' + _lmxE('lmx.ex.website') + '" data-placement="left">v' + modVersion +
         '</a></span><span style="float: left;  margin-left: 30%; font-size: 13px;"><a id="MorefpsText" href="https://www.legendmod.ml/?nav=FPS" data-toggle="tooltip" data-title="' + _lmxE('lmx.ex.improvePerformance') + '" data-placement="top" style ="font-size: 13px"; target="_blank">' + _lmxE('pack.moreFps') + '</a></span>' +
         '<a style="float: right;  margin-top: -2px" target="_blank" href="https://www.buymeacoffee.com/legendmod">☕︎</a>');
     /* Build number next to the release label (bug reports can name it), plus a one-time

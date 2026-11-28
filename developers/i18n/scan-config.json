@@ -266,7 +266,8 @@
     "extras/website/backup.html": "no link anywhere (old site copy)",
     "extras/website/massboostX3.html": "no link anywhere (old site copy)",
     "extras/banneranimated8.html": "only extras/banneranimated7bLc.html (deleted) showed it",
-    "extras/rewardday2.html": "the gift button (Reward Day, removed) showed it: results of the April 2023 event"
+    "extras/rewardday2.html": "the gift button (Reward Day, removed) showed it: results of the April 2023 event",
+    "extras/AN.html": "a hidden frame on every Play click loaded it to send a Universal Analytics pageview (Google stopped UA in July 2023)"
   },
   "deletedAssets": {
     "banners/legendpromo2.jpg": "extras/banneranimated5Lc.html",
