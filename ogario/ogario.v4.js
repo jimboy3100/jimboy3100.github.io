@@ -87144,6 +87144,8 @@ Object.defineProperty(Array.prototype, 'stDev', {
     try { localStorage.removeItem('dyinglight1load'); } catch (e) { }
     /* The Mega FFA giveaway (mass counted on imsolo.pro:2102) is removed: its counter and start date are deleted */
     try { ['totalPlayerMassBigFFA', 'PremiumLimitedDateStart'].forEach(function (k) { localStorage.removeItem(k); }); } catch (e) { }
+    /* The ?ref= invite links are removed: the inviter name they stored (never read) is deleted */
+    try { ['lm_referrer', 'lm_ref_time'].forEach(function (k) { localStorage.removeItem(k); }); } catch (e) { }
     /* AgarTool team: AgarTool players with my tag on the same agar.io server as teammates (no socket or timer while its option is off) */
     try {
         var agarToolScript = document.createElement('script');
