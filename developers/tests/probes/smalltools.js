@@ -27,25 +27,14 @@
     var allOff = s.a11yTextScale === 1 && s.a11yHudTextScale === 1;
     if (allOff) need('accessibility off: nothing added', !document.getElementById('lm-a11y-text') && !document.getElementById('lm-a11y-ind'));
     /* Skin collections are part of the player profiles: no window, button, setting or
-     * hotkey of their own; a star on every profile in the skins panel instead */
+     * hotkey of their own */
     T.open('skins');
     need('Skin collections: no window, button, setting, hotkey or command', !T.isOpen() && !document.getElementById('lm-st-skins') && !document.getElementById('lm-skin-collections') &&
       !('skinCollections' in LM_SETTINGS_DEFAULTS) && !('hk-skinCollections' in hotkeysCommand));
-    var star = document.querySelector('#skins .skin-box .lm-prof-star[data-profile="1"]'), p1 = window.profiles && window.profiles[1];
+    /* no favourite stars or gold ring in the skins panel (removed); the search stays */
+    need('no profile stars', !document.querySelector('#skins .lm-prof-star, #skins .lm-prof-fav') && !/lm-prof-star|lm-prof-fav/.test(($('#lm-prof-css').text() || '')));
     if (document.getElementById('skins')) {
-      need('a star on every profile', !!star && document.querySelectorAll('#skins .lm-prof-star').length === document.querySelectorAll('#skins .skin-box').length);
       need('profile search only with more than 15 profiles', !!document.getElementById('lm-prof-search') && (window.profiles.length > 15) === ($('#lm-prof-search').css('display') !== 'none'));
-    }
-    info.profileStars = document.querySelectorAll('#skins .lm-prof-star').length;
-    if (star && p1) {
-      var favWas = p1.fav === true, selWas = $('#skins a.selected').attr('id');
-      star.click();
-      var saved = null;
-      try { saved = JSON.parse(localStorage.getItem('ogarioPlayerProfiles'))[1]; } catch (e) { }
-      need('star click: favourite saved with the profile, ring shown, selection kept', (p1.fav === true) !== favWas && !!saved && (saved.fav === true) === (p1.fav === true) &&
-        $(star).closest('.skin-box').hasClass('lm-prof-fav') === (p1.fav === true) && $('#skins a.selected').attr('id') === selWas);
-      star.click();
-      need('star click again: back as it was', (p1.fav === true) === favWas);
     }
     /* the conflict list is in the Hotkeys window only (its own section, not a header button and
      * not a small tools window / hotkey of its own) */

@@ -1,7 +1,7 @@
 /* Legend Mod small tools: radial command menu, the key check and the conflict list of the Hotkeys
  * window, the HUD hide of Show/hide HUD (Alt+H, the former screenshot mode) with its capture and the
- * screenshot window. (The skin collections window is gone: its favourites and search are part of the
- * player profiles in the skins panel.)
+ * screenshot window. (The skin collections window is gone: its kept skin links became player profiles
+ * in the skins panel.)
  * Everything is off until used: windows and hotkeys without default keys
  * (all listed in the Hotkeys window). Nothing runs per frame while no tool is open.
  * The conflict list of the Hotkeys window is built when its button is pressed (LMSmallTools.renderConflicts).
