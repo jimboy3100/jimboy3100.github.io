@@ -3852,7 +3852,7 @@
     "it": "<b>Preset delle impostazioni</b> (Competitivo, Risparmio batteria, Streamer, HUD pulito) accanto alla ricerca nelle impostazioni, con Annulla, più i badge <b>NUOVO</b> e un filtro \"Mostra le nuove opzioni\" per le opzioni aggiunte di recente."
   },
   "site.index.expandingLandEventsWhen": {
-    "en": "<b>Expanding Land events</b>: when the server runs an event (Double XP, potion rain, golden food, virus storm), a small countdown appears at the top of the screen (\"Double XP: 05:10 left\"); hide it with \"Hide the server event countdown\" in the stats options.",
+    "en": "<b>Expanding Land events</b>: when the server runs an event (Double XP, potion rain, golden food, virus storm), a small countdown appears at the top of the screen (\"Double XP: 05:10 left\").",
     "el": "<b>Events του Expanding Land</b>: όταν ο server τρέχει ένα event (Double XP, βροχή φίλτρων, χρυσή τροφή, καταιγίδα ιών), μια μικρή αντίστροφη μέτρηση εμφανίζεται στο πάνω μέρος της οθόνης («Double XP: 05:10 left»)· κρύψτε την με το «Hide the server event countdown» στις επιλογές στατιστικών.",
     "es": "<b>Eventos de Expanding Land</b>: cuando el servidor lanza un evento (Double XP, lluvia de pociones, comida dorada, tormenta de virus), aparece una pequeña cuenta atrás en la parte superior de la pantalla (\"Double XP: 05:10 left\"); ocúltala con \"Hide the server event countdown\" en las opciones de estadísticas.",
     "bg": "<b>Събития в Expanding Land</b>: когато сървърът провежда събитие (двоен XP, дъжд от отвари, златна храна, вирусна буря), горе на екрана се появява малко обратно броене („Double XP: остават 05:10“); скрийте го с „Скрий обратното броене за събития на сървъра“ в опциите за статистика.",

@@ -3545,24 +3545,6 @@
     "ja": "分析：試合を記録（ダッシュボード、ヒートマップ。このブラウザに保存）",
     "it": "Statistiche avanzate: registra le tue partite (pannello, mappe di calore; salvate in questo browser)"
   },
-  "settings.hideEventBanner": {
-    "en": "Hide the server event countdown",
-    "el": "Απόκρυψη αντίστροφης μέτρησης event του server (Expanding Land)",
-    "es": "Ocultar la cuenta atrás de eventos del servidor (Expanding Land)",
-    "bg": "Скрий обратното броене за събития на сървъра (Expanding Land)",
-    "fr": "Masquer le compte à rebours des événements du serveur (Expanding Land)",
-    "ar": "إخفاء العد التنازلي لأحداث السيرفر (Expanding Land)",
-    "zh": "隱藏伺服器活動倒數（Expanding Land）",
-    "ru": "Скрыть обратный отсчёт событий сервера (Expanding Land)",
-    "de": "Countdown für Server-Events ausblenden (Expanding Land)",
-    "tr": "Sunucu etkinliği geri sayımını gizle (Expanding Land)",
-    "pl": "Ukryj odliczanie wydarzenia serwera (Expanding Land)",
-    "nl": "Aftelling van serverevenementen verbergen (Expanding Land)",
-    "pt": "Ocultar a contagem do evento do servidor (Expanding Land)",
-    "id": "Sembunyikan hitung mundur event server (Expanding Land)",
-    "ja": "サーバーイベントのカウントダウンを隠す（Expanding Land）",
-    "it": "Nascondi il conto alla rovescia degli eventi del server (Expanding Land)"
-  },
   "settings.accessibilityGroup": {
     "en": "Accessibility",
     "el": "Προσβασιμότητα",

@@ -46,9 +46,9 @@ check('every value a slider can show is kept exactly (no float drift: 0.35, -0.1
 check('macroFeeding -100 -> 1 (range)', V('macroFeeding', -100) === 1);
 check('profileNumber 1000000 -> 54', V('profileNumber', 1000000) === 54);
 check('fpsLimit -1 -> 0 (off), 0 stays 0', V('fpsLimit', -1) === 0 && V('fpsLimit', 0) === 0);
-/* removed or merged settings (mass-loss alert, kill feed, HUD helper arrows and cell panel, the removed 25 FPS menu cap, the
+/* removed or merged settings (mass-loss alert, kill feed, the event countdown's hide option, HUD helper arrows and cell panel, the removed 25 FPS menu cap, the
  * automatic Performance mode's own target / message / resolution options, the size symbols in Relative mass) */
-const GONE = ['hudMergeCountdown', 'menuFpsCap', 'adaptivePerfTarget', 'adaptivePerfToasts', 'adaptivePerfRes', 'hudMoveDir', 'hudEdgeTeammates', 'hudEdgeThreats', 'hudCellPanel', 'massLossAlert', 'massLossPct', 'killFeed', 'a11yIndicators'];
+const GONE = ['hudMergeCountdown', 'menuFpsCap', 'adaptivePerfTarget', 'adaptivePerfToasts', 'adaptivePerfRes', 'hudMoveDir', 'hudEdgeTeammates', 'hudEdgeThreats', 'hudCellPanel', 'massLossAlert', 'massLossPct', 'killFeed', 'a11yIndicators', 'hideEventBanner'];
 check('removed settings are no settings any more (a saved value is ignored)', GONE.every(k => !(k in D) && !(k in SCH) && V(k, true) === undefined && V(k, 30) === undefined));
 check('gamepadMoveCurve 100 -> 3', V('gamepadMoveCurve', 100) === 3);
 check('massFormat 1.7 -> 2 (a mode, not a fraction)', V('massFormat', 1.7) === 2);
@@ -153,7 +153,7 @@ check('zoomSmooth is no setting: refused, and a saved value is skipped on load',
   cam.scale = 1; cam._lmFrameF = 0.5; cam.setScale(0, 1); cam.setScale(0, 1);
   check('zoom glide: (9*scale + target)/10 per 60 fps frame whatever an old save had, the same over two 120 fps frames', Math.abs(at60 - 1.1) < 1e-12 && Math.abs(cam.scale - 1.1) < 1e-12 && zctx.LM.viewScale === cam.scale);
 }
-ctx.localStorage.setItem('ogarioSettings', JSON.stringify(Object.assign({}, saved, { a11yIndicators: true, hudRelativeMass: false, menuFpsCap: true, massLossAlert: true, massLossPct: 40, adaptivePerfTarget: 120, hudCellPanel: true, killFeed: true })));
+ctx.localStorage.setItem('ogarioSettings', JSON.stringify(Object.assign({}, saved, { a11yIndicators: true, hudRelativeMass: false, menuFpsCap: true, massLossAlert: true, massLossPct: 40, adaptivePerfTarget: 120, hudCellPanel: true, killFeed: true, hideEventBanner: true })));
 app.loadSettings();
 const reSaved3 = JSON.parse(ctx.localStorage.getItem('ogarioSettings'));
 /* the size symbols were removed, not merged: an old saved value changes nothing (Relative mass stays off) */

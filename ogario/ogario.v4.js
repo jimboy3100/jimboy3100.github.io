@@ -375,7 +375,7 @@ function _lmSessionStats(update) {
 window._lmSessionStats = _lmSessionStats;
 /* Expanding Land scheduled events (opcode 102 type 196, sent only after our opcode 240 caps bit 0x04):
  * a small countdown banner near the top of the screen ("Double XP in 12:34" / "Double XP: 05:10 left").
- * Shown only while the server has sent events for this connection; option hideEventBanner hides it.
+ * Shown while the server has sent events for this connection.
  * Event names come from the server and are only ever set as textContent. */
 function _lmEventBanner(data) {
     if (data !== undefined) {
@@ -389,8 +389,7 @@ function _lmEventBanner(data) {
     if (st && (!lm || !lm.isLegendWorld || (st.socket && lm.socket !== st.socket))) st = window._lmEventState = null;
     if (!st && window._lmEventTimer) { clearInterval(window._lmEventTimer); window._lmEventTimer = null; }
     var lines = [];
-    var dms = typeof defaultmapsettings !== 'undefined' ? defaultmapsettings : window.legendmod5;
-    if (st && !(dms && dms.hideEventBanner)) {
+    if (st) {
         var tr = function (key, en) { var s = window.lmT && window.lmT(key); return (!s || s === key) ? en : s; };
         var fmt = function (secs) {
             secs = Math.max(0, Math.ceil(secs));
@@ -21508,7 +21507,6 @@ var defaultmapsettings = {
      * Game Over card, so a saved value of the old switch is skipped on load */
     matchHistory: false,          /* last 50 lives (mass, time alive, killer, server, mode) kept in this browser (localStorage) */
     analytics: false,             /* record games for the Analytics window (ogario/modules/analytics.js; localStorage, capped) */
-    hideEventBanner: false,       /* hide the Expanding Land event countdown banner (shown only when the server sends events) */
     streamMode: false,
     hideSkinUrl: false,
     showQuickMenu: true,
@@ -25437,9 +25435,6 @@ function thelegendmodproject() {
                     case 'gameOverStats':
                         if (window.LMDeathRecap) LMDeathRecap.sync();
                         break;
-                    case 'hideEventBanner':
-                        _lmEventBanner();
-                        break;
                     case 'autoResp':
                         this.setAutoResp();
                         break;
@@ -26823,7 +26818,7 @@ function thelegendmodproject() {
                 });
                 /* Recently added options: a NEW badge for one build (until the settings were
                  * opened with the badges shown), and a toggle that lists only them. */
-                var NEW_KEYS = ['showStatsAlive', 'mergeRings', 'rainbowMapBorders', 'fpsLimit', 'x16Sound', 'non16Sound', 'showMiniMapTrail', 'lbHideBots', 'hideEventBanner', 'centerWeightCamera', 'rainbowBorderSpeed', 'chatHideWords', 'reducedMotion', 'matchHistory', 'gamepadDeadzone', 'performanceMode', 'recordReplays', 'glAntialias', 'macroSplitDelay', 'macroPopSplitDelay', 'splitPrediction', 'tripleSplitRange', 'chatShowId', 'hudMergeSound', 'hudRelativeMass', 'massFormat', 'volMaster', 'volChat', 'volCommands', 'volGameplay', 'adaptivePerf', 'analytics', 'showStatsFrameTime'];
+                var NEW_KEYS = ['showStatsAlive', 'mergeRings', 'rainbowMapBorders', 'fpsLimit', 'x16Sound', 'non16Sound', 'showMiniMapTrail', 'lbHideBots', 'centerWeightCamera', 'rainbowBorderSpeed', 'chatHideWords', 'reducedMotion', 'matchHistory', 'gamepadDeadzone', 'performanceMode', 'recordReplays', 'glAntialias', 'macroSplitDelay', 'macroPopSplitDelay', 'splitPrediction', 'tripleSplitRange', 'chatShowId', 'hudMergeSound', 'hudRelativeMass', 'massFormat', 'volMaster', 'volChat', 'volCommands', 'volGameplay', 'adaptivePerf', 'analytics', 'showStatsFrameTime'];
                 newBtn.on('click', function () {
                     newOnly = !newOnly;
                     newBtn.toggleClass('active', newOnly);
@@ -26948,9 +26943,9 @@ function thelegendmodproject() {
                 '</div>'
             );
             /* Expanding Land: options that do something only there. The world size, decay and
-             * server Hz parts of the stats line (still dimmed while the stats line is off), the
-             * event countdown, and Reduced motion (its death shake and particles, its entrance spin) */
-            this.addOptions(["showStatsWorldSize", "showStatsDecayInfo", "showStatsServerHz", "hideEventBanner", "reducedMotion"], "expandingLandGroup");
+             * server Hz parts of the stats line (still dimmed while the stats line is off), and
+             * Reduced motion (its death shake and particles, its entrance spin) */
+            this.addOptions(["showStatsWorldSize", "showStatsDecayInfo", "showStatsServerHz", "reducedMotion"], "expandingLandGroup");
             /* Accessibility section (ogario/modules/accessibility.js applies these; all off = unchanged) */
             this.addOptions([], "accessibilityGroup");
             this.addSliderBox(".accessibilityGroup", "a11yTextScale", 1, 1.6, 0.05);

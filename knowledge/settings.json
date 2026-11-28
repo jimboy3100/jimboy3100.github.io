@@ -261,7 +261,6 @@
         "showStatsWorldSize",
         "showStatsDecayInfo",
         "showStatsServerHz",
-        "hideEventBanner",
         "reducedMotion"
       ]
     },

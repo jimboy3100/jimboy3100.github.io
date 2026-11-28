@@ -77,7 +77,7 @@
   var place = { recordReplays: 'replayGroup', 'lm-perf-diag-btn': 'perfGroup',
     adaptivePerf: 'perfGroup', hudMergeSound: 'mergeGroup', mergeRings: 'mergeGroup', virusSound: 'soundsGroup',
     reducedMotion: 'expandingLandGroup', showStatsWorldSize: 'expandingLandGroup', showStatsDecayInfo: 'expandingLandGroup',
-    showStatsServerHz: 'expandingLandGroup', hideEventBanner: 'expandingLandGroup',
+    showStatsServerHz: 'expandingLandGroup',
     'profileNumber-slider': 'profiles', showCellShadows: 'transparencyGroup' };
   Object.keys(place).forEach(function (id) {
     var el = document.getElementById(id);
