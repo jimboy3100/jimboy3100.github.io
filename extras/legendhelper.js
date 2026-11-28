@@ -37,6 +37,9 @@ $('body').append(
     '<div class="modal-footer" style="text-align:left;border-top:1px solid rgba(255,255,255,.1);">' +
     '<button type="button" id="LegendHelperBacktomenu" onclick="return closeLegendHelper(event);" class="btn btn-danger">' + _lmHTx('misc.close') + '</button>' +
     '<button id="TemplatesBtn" onclick="templatesIframe(); return false" class="btn btn-success" style="margin-left:10px;">' + _lmHTx('pack.templates') + '</button>' +
+    /* the Discover features guide (ogario/modules/discovery.js): its only entry, its own title text */
+    (window.LMDiscovery && typeof window.LMDiscovery.open === 'function' ?
+        '<button type="button" id="DiscoverFeaturesBtn" onclick="return openDiscoverFromHelper(event);" class="btn btn-primary" style="margin-left:10px;">' + _lmHTx('modules.discovery.title') + '</button>' : '') +
     '</div>' +
 
     '</div>' +
@@ -64,6 +67,13 @@ function closeLegendHelper(event) {
     if (typeof lmMenuPanelsRestore === 'function') lmMenuPanelsRestore();
     else $("#main-menu, #skins-panel, #quick-menu, #exp-bar").show();
 
+    return false;
+}
+/* Discover features takes the place of this window: closed first, so the menu is back under the
+ * guide and its "Show in settings" and "Open" buttons work as from anywhere else */
+function openDiscoverFromHelper(event) {
+    closeLegendHelper(event);
+    if (window.LMDiscovery && typeof window.LMDiscovery.open === 'function') window.LMDiscovery.open();
     return false;
 }
 function templatesIframe(){

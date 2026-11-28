@@ -146,5 +146,87 @@ check('no server tab or table code', !/renderServer|lm-dc-caps|lm-dc-type|openSe
 
 }
 
+/* its one entry: the "Discover features" button in the footer of the Mod Info window (the real
+ * extras/legendhelper.js, the 'i' of the menu's quick bar); no HUD button, no panel of its own */
+{
+  const helper = fs.readFileSync(path.join(root, 'extras', 'legendhelper.js'), 'utf8');
+  const v4 = fs.readFileSync(path.join(root, 'ogario', 'ogario.v4.js'), 'utf8');
+  check("the menu's 'i' opens the Mod Info window", /id="ModInfoQuick"[^>]*onclick="openhelper\(\);return false;"/.test(v4) && /extras\/legendhelper\.js/.test(v4));
+  check('Mod Info footer has the entry, with the guide\'s own title text and the footer\'s button style',
+    /id="DiscoverFeaturesBtn" onclick="return openDiscoverFromHelper\(event\);" class="btn btn-primary" style="margin-left:10px;">' \+ _lmHTx\('modules\.discovery\.title'\)/.test(helper));
+  /* every place that opens it: only that entry (scripts call LMDiscovery.open themselves) */
+  const openers = [];
+  const walk = d => fs.readdirSync(path.join(root, d), { withFileTypes: true }).forEach(e => {
+    const p = d + '/' + e.name;
+    if (e.isDirectory()) { if (!/^(node_modules|\.git)$/.test(e.name)) walk(p); }
+    else if (/\.(js|html)$/.test(e.name) && /LMDiscovery\.open\b/.test(fs.readFileSync(path.join(root, p), 'utf8'))) openers.push(p);
+  });
+  ['ogario', 'LMexpress', 'LMmobile', 'extras', 'languages'].forEach(walk);
+  check('one entry only (no HUD button, no other menu entry)' + (openers.length !== 2 ? ' (' + openers.join(', ') + ')' : ''),
+    openers.sort().join() === 'extras/legendhelper.js,ogario/modules/discovery.js');
+
+  /* the real file in a vm with a small jQuery stand-in */
+  const run = withDiscovery => {
+    const log = { html: '', removed: [], restored: 0, hidden: 0, opened: 0, order: [] };
+    const $ = sel => {
+      const o = {
+        append: h => { if (sel === 'body') log.html += h; return o; },
+        remove: () => { log.removed.push(sel); log.order.push('close'); return o; },
+        stop: () => o, show: () => o, hide: () => o, html: () => o, attr: () => o, click: () => o
+      };
+      return o;
+    };
+    const hc = { $, JSON, String, lmT: k => k === 'modules.discovery.title' ? 'Discover features' : k,
+      lmMenuPanelsHide: () => { log.hidden++; }, lmMenuPanelsRestore: () => { log.restored++; } };
+    hc.window = hc;
+    if (withDiscovery) hc.LMDiscovery = { open: () => { log.opened++; log.order.push('open'); } };
+    vm.createContext(hc);
+    vm.runInContext(helper, hc);
+    return { hc, log };
+  };
+  const a = run(true);
+  check('the window shows the entry when the guide is loaded', /<button type="button" id="DiscoverFeaturesBtn"[^>]*><span data-i18n="modules\.discovery\.title">Discover features<\/span><\/button>/.test(a.log.html) && a.log.hidden === 1);
+  let prevented = 0;
+  const ev = { preventDefault: () => { prevented++; }, stopPropagation: () => { }, stopImmediatePropagation: () => { } };
+  const r = vm.runInContext('openDiscoverFromHelper', a.hc)(ev);
+  check('the entry opens the guide once', a.log.opened === 1 && r === false && prevented === 1);
+  check('the Mod Info window closes first and the menu comes back under the guide',
+    a.log.order.join() === 'close,open' && a.log.removed[0] === '#legendhelper' && a.log.restored === 1);
+  const b = run(false);
+  check('no entry without the guide (no button that does nothing)', b.log.html.indexOf('DiscoverFeaturesBtn') < 0 && b.log.html.indexOf('TemplatesBtn') > 0);
+}
+
+/* no card points at a missing feature: each card's window function is defined in the mod's code,
+ * each switch is a menu option (addOptions), and the English texts name no removed feature */
+{
+  const files = [];
+  const walk = d => fs.readdirSync(path.join(root, d), { withFileTypes: true }).forEach(e => {
+    const p = d + '/' + e.name;
+    if (e.isDirectory()) walk(p);
+    else if (/\.js$/.test(e.name) && p !== 'ogario/modules/discovery.js') files.push(fs.readFileSync(path.join(root, p), 'utf8'));
+  });
+  ['ogario', 'LMexpress', 'LMmobile'].forEach(walk);
+  const esc = s => s.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+  const defined = p => {
+    const parts = p.split('.'), top = parts[0], name = parts[parts.length - 1];
+    const def = new RegExp('(window|W|root)\\.' + esc(top) + '\\s*=');
+    return files.some(s => def.test(s) && (parts.length === 1 || new RegExp('(\\b' + esc(name) + '\\s*:|\\.' + esc(name) + '\\s*=)').test(s)));
+  };
+  const wins = C.CARDS.filter(c => c.win);
+  const bad = wins.filter(c => typeof c.win.path !== 'string' || !defined(c.win.path)).map(c => c.id);
+  check('every card window is defined in the code' + (bad.length ? ' (missing ' + bad.join(', ') + ')' : ''), wins.length >= 10 && bad.length === 0);
+  const v4 = fs.readFileSync(path.join(root, 'ogario', 'ogario.v4.js'), 'utf8');
+  const menuOpts = new Set();
+  (v4.match(/this\.addOptions\(\[[^\]]*\]/g) || []).forEach(m => (m.match(/"([A-Za-z0-9_]+)"/g) || []).forEach(k => menuOpts.add(k.slice(1, -1))));
+  const noBox = [];
+  C.CARDS.forEach(c => c.opts.forEach(k => { if (!menuOpts.has(k)) noBox.push(k); }));
+  check('every card switch is a settings menu checkbox' + (noBox.length ? ' (missing ' + noBox.join(', ') + ')' : ''), noBox.length === 0);
+  const removed = /command cent|catalog|profile|performance mode|stream companion|macro|merge countdown|cell (mass )?panel|share/i;
+  const named = C.CARDS.filter(c => removed.test(i18n.t(P + 'card.' + c.id + '.desc')) || removed.test(i18n.t(P + 'card.' + c.id))).map(c => c.id);
+  check('no card text names a removed feature' + (named.length ? ' (' + named.join(', ') + ')' : ''), named.length === 0);
+  check('no card of the removed Command Centre, profile search, settings profiles or Performance mode',
+    !C.CARDS.some(c => /command|centre|profile|search|perf/i.test(c.id + ' ' + (c.win && c.win.path || ''))));
+}
+
 console.log(fail ? fail + ' FAILED' : 'all ok');
 process.exit(fail ? 1 : 0);

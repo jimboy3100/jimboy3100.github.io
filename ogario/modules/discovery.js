@@ -4,13 +4,14 @@
  * Analytics, ...) with what it does, one-tap switches for its options (the real menu checkboxes, so
  * setSettings, saving and the NEW badges stay as they are), "Open" for its window and "Show in
  * settings", which opens the menu at the option and makes it blink (LMSmallTools.jump). A
- * switch with a HUD part (bell, cell panel) highlights where it appeared.
+ * switch with a HUD part (the notification bell) highlights where it appeared.
  *
  * It never opens by itself (it used to open once after an update, with a "Show after updates"
  * switch, and from a link in the "What's new" toast).
  * Cards the player has not seen are marked NEW (a card changed since gets cv: 2, 3... and is NEW
  * again); the card ids seen and the last version are in localStorage 'lmDiscover' (validated on read).
- * It has no menu entry; scripts open it with LMDiscovery.open(). (Its "What works on this
+ * Its one entry is the "Discover features" button in the footer of the Mod Info window (the 'i' of
+ * the menu's quick bar, extras/legendhelper.js); scripts open it with LMDiscovery.open(). (Its "What works on this
  * server" table window is removed; Settings keeps its own table for the dimmed "Not available on this server" notes.)
  *
  * The pure parts are in LMDiscovery.core (developers/tests/discovery.js runs this file in a vm).
@@ -70,7 +71,7 @@
     /* ═══ Feature cards ═══ */
 
     /* name and text: card.<id> and card.<id>.desc in the packs; opts: option keys (checkboxes of the settings menu); show: where a switched-on option appears;
-     * open: the window, avail: whether it can be opened here */
+     * win: the window (path: the function that opens it), avail: whether it can be opened here */
     function fn(path) {
         return function () {
             var o = W, p = path.split('.');
@@ -80,16 +81,18 @@
     }
     function opener(path, arg) {
         var get = fn(path), name = path.split('.').pop();
-        return { avail: function () { return !!get(); }, run: function () { var o = get(); if (o) o[name](arg); } };
+        return { path: path, avail: function () { return !!get(); }, run: function () { var o = get(); if (o) o[name](arg); } };
     }
     /* the game stats (Dashboard, Heatmaps, Coach, Objectives) are views of the Replays window */
     var statsWin = {
+        path: 'lmReplayStudio',
         avail: function () { return typeof W.lmReplayStudio === 'function'; },
         run: function () { if (typeof W.lmReplayStudio === 'function') W.lmReplayStudio('view', 'dash'); }
     };
     /* (removed since, so without a card: the merge countdown and cell panel, the Record replays and
      * Analytics switches (every game is recorded), the kill feed and the mass-loss alert, Performance mode and its window,
-     * the settings profiles window, the stream companion and the custom macros) */
+     * the settings profiles window, the stream companion and the custom macros; the User Scripts catalogue
+     * and the gamepad profiles are gone from their cards' texts) */
     var CARDS = [
         { id: 'hudHelpers', opts: ['hudMoveDir', 'hudMergeSound', 'hudRelativeMass', 'hudEdgeTeammates', 'hudEdgeThreats'] },
         { id: 'replayStudio', opts: [], win: opener('lmReplayStudio', 'open') },

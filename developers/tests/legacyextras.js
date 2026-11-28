@@ -53,7 +53,7 @@ function makeDom() {
         check(f + ': the profiles, hotkeys and chat commands of the player are kept', !!o && !('ogarioPlayerProfiles' in o) && !('ogarioHotkeys' in o) && !('ogarioCommands' in o));
     }
     /* removed: Information, Manual templates, Languages (its list, its sync and its once-only toast) */
-    check('Mod Info footer: Close and Templates only', helper.indexOf('<button id="TemplatesBtn"') !== -1 &&
+    check('Mod Info footer: Close, Templates and Discover features (developers/tests/discovery.js) only',helper.indexOf('<button id="TemplatesBtn"') !== -1 &&
         !/Infobtn11|ManualyTemplatesBtn|LanguagesTempBtn|LanguagesTempIframe|manualytemplatesIframe|changeModLanguage2|legendlanguages2|Languagetimesused/.test(helper));
     const lph = rd('languages/LanguagePackHandler.js');
     check('language handler: no Languages page texts and no language changed toast', !/Infobtn11|ManualyTemplatesBtn|LanguagesTempBtn|chooselangtext1|Languagetimesused|Externalletter0c/.test(lph) && /#TemplatesBtn/.test(lph));
