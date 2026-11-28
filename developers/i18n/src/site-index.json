@@ -4320,7 +4320,7 @@
     "it": "Expanding Land: Esc chiude solo la finestra in primo piano, i pulsanti delle pozioni non si possono premere due volte, l'uscita chiude tutte le finestre del negozio."
   },
   "site.index.newSettingsSearchBox": {
-    "en": "<b>New:</b> settings search box, a <b>Bound keys</b> list in Hotkeys, a session summary under the menu, an optional <b>FPS limit</b> (saves battery), and a hotkey to toggle Performance mode.",
+    "en": "<b>New:</b> settings search box, a <b>Bound keys</b> list in Hotkeys, a session summary under the menu and an optional <b>FPS limit</b> (saves battery).",
     "el": "<b>Νέο:</b> πλαίσιο αναζήτησης ρυθμίσεων, λίστα <b>Bound keys</b> στα Hotkeys, σύνοψη συνεδρίας κάτω από το μενού, προαιρετικό <b>όριο FPS</b> (εξοικονομεί μπαταρία) και hotkey για εναλλαγή του Performance mode.",
     "es": "<b>Novedad:</b> cuadro de búsqueda de ajustes, una lista <b>Bound keys</b> en Hotkeys, un resumen de la sesión bajo el menú, un <b>límite de FPS</b> opcional (ahorra batería) y una hotkey para activar el Performance mode.",
     "bg": "<b>Ново:</b> поле за търсене в настройките, списък <b>Зададени клавиши</b> в Клавиши, обобщение на сесията под менюто, незадължително <b>ограничение на FPS</b> (пести батерия) и клавиш за превключване на режима на производителност.",
@@ -4356,7 +4356,7 @@
     "it": "<b>Nuove opzioni</b> (disattivate di base): tempo di sopravvivenza nelle statistiche, massa nel titolo della scheda, bordi della mappa arcobaleno, sfocatura dell'HUD, anelli di fusione on/off. Le caselle del server e del party ora suggeriscono gli ultimi 5 ingressi."
   },
   "site.index.expandingLandHotkeysFor": {
-    "en": "<b>Expanding Land:</b> hotkeys for Leagues, Shop, Challenges, Potions and Claim All; Claim All shows when something is ready. <b>Mobile:</b> optional quick chat buttons, multibox button, and vibration settings.",
+    "en": "<b>Expanding Land:</b> Claim All shows when something is ready. <b>Mobile:</b> optional quick chat buttons, multibox button, and vibration settings.",
     "el": "<b>Expanding Land:</b> hotkeys για Πρωταθλήματα, Κατάστημα, Προκλήσεις, Φίλτρα και Claim All· το Claim All εμφανίζεται όταν κάτι είναι έτοιμο. <b>Κινητά:</b> προαιρετικά κουμπιά γρήγορου chat, κουμπί multibox και ρυθμίσεις δόνησης.",
     "es": "<b>Expanding Land:</b> hotkeys para Ligas, Tienda, Retos, Pociones y Claim All; Claim All aparece cuando hay algo listo. <b>Móvil:</b> botones opcionales de chat rápido, botón de multibox y ajustes de vibración.",
     "bg": "<b>Expanding Land:</b> клавиши за Лиги, Магазин, Предизвикателства, Отвари и Вземи всички; Вземи всички се показва, когато нещо е готово. <b>Мобилни:</b> незадължителни бутони за бърз чат, бутон за мултибокс и настройки за вибрация.",
@@ -4392,7 +4392,7 @@
     "it": "Novità:"
   },
   "site.index.replayPauseSpeedAnd": {
-    "en": "replay pause, speed and seek hotkeys; multibox view and ring hotkeys; optional sounds for 16 pieces and viruses; optional trail of your path on the minimap; a copy button on the Game Over card. Replays no longer jump to the end at Start.",
+    "en": "optional sounds for 16 pieces and viruses; optional trail of your path on the minimap; a copy button on the Game Over card. Replays no longer jump to the end at Start.",
     "el": "hotkeys παύσης, ταχύτητας και μετάβασης replay· hotkeys προβολής και δαχτυλιδιών multibox· προαιρετικοί ήχοι για 16 κομμάτια και ιούς· προαιρετικό ίχνος της διαδρομής σας στο minimap· κουμπί αντιγραφής στην κάρτα Game Over. Τα replays δεν πηδούν πια στο τέλος στην Έναρξη.",
     "es": "hotkeys de pausa, velocidad y salto de repeticiones; hotkeys de vista y anillos de multibox; sonidos opcionales para 16 piezas y para virus; rastro opcional de tu recorrido en el minimapa; un botón de copiar en la tarjeta de Game Over. Las repeticiones ya no saltan al final al iniciar.",
     "bg": "клавиши за пауза, скорост и превъртане на повторения; клавиши за изгледа и пръстените на мултибокса; незадължителни звуци за 16 части и вируси; незадължителна следа от пътя ви на миникартата; бутон за копиране на картата Game Over. Повторенията вече не скачат до края при Start.",
@@ -4446,7 +4446,7 @@
     "it": "<b>Novità:</b> Su/Giù nella casella della chat richiama i tuoi ultimi messaggi; slider per luminosità e saturazione del gioco, velocità di scorrimento dello zoom e velocità del bordo arcobaleno; simbolo personalizzato per i settori dello sfondo. <b>Nuove opzioni</b> (disattivate di base): telecamera sul centro di massa, avviso NESSUN FOCUS, statistiche in basso al centro. Incollare un link del party nella ricerca non lascia più un velo scuro."
   },
   "site.index.newOptionsOffBy2": {
-    "en": "<b>New options</b> (off by default): all-time personal bests with a New best! badge on the Game Over card, ping jitter next to PING, mobile Stop on release. Hotkey to copy the server link.",
+    "en": "<b>New options</b> (off by default): all-time personal bests with a New best! badge on the Game Over card, ping jitter next to PING, mobile Stop on release.",
     "el": "<b>Νέες επιλογές</b> (απενεργοποιημένες από προεπιλογή): προσωπικά ρεκόρ όλων των εποχών με σήμα New best! στην κάρτα Game Over, διακύμανση ping δίπλα στο PING, Stop on release στο κινητό. Hotkey για αντιγραφή του συνδέσμου server.",
     "es": "<b>Nuevas opciones</b> (desactivadas por defecto): récords personales históricos con la insignia New best! en la tarjeta de Game Over, variación del ping junto a PING, Stop on release en móvil. Hotkey para copiar el enlace del servidor.",
     "bg": "<b>Нови опции</b> (изключени по подразбиране): лични рекорди за всички времена със значка Нов рекорд! на картата Game Over, колебание на пинга до PING, мобилно Спиране при пускане. Клавиш за копиране на връзката към сървъра.",
